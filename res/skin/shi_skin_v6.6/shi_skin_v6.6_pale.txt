@@ -1,0 +1,1169 @@
+<html lang="ja">
+<head>
+<link rel="stylesheet" type="text/css" href="<SKINPATH/>shi_skin.css">
+<script type="text/JavaScript"><!--
+// スキン情報
+var SkinName = "しぃスキン";
+var SkinVersion = "6.6";
+var SkinType = "Pale";
+var Browser = new Array();
+Browser["name"] = new Array("JaneSyrup", "かちゅ～しゃ", "ホットゾヌ", "A Bone");
+var BrowserNum = 0;
+
+// 初期設定 (on = 1, off = 0)
+var Config = new Array();
+Config["mail"] = 1; // メール表示：
+Config["select"] = 0; // 選択文字加工：
+Config["scroll"] = 1; // スムーズスクロール：
+Config["face"] = 1; // フェイス変化：
+
+// 広域変数
+Browser["anchor"] = new Array("", "a", "ID", "Res");
+var Res = document.all.tags("DL");
+var LinkCheckRegExp = new RegExp("^..?tps?:\/\/|www\.", "i");
+var PictCheckRegExp = new RegExp("\.png$|\.jp(g|e|eg)$|\.gif$|\.bmp$", "i");
+var ResNodeNum = new Array();
+ResNodeNum["name"] = 1;
+ResNodeNum["mail"] = 3;
+ResNodeNum["message"] = 5;
+ResNodeNum["id"] = 6;
+var FaceColor = new Array();
+FaceColor["sage"] = "#acd0e3";
+FaceColor["age"] = "#ffc18e";
+FaceColor["new"] = "#ffd777";
+FaceColor["cap"] = "#ffa4b8";
+FaceColor["maru"] = "#c1bed6";
+FaceColor["trip"] = "#c2df97";
+FaceColor["mailAge"] = "#fd5e4c";
+FaceColor["mailNormal"] = "#008a8a";
+if (SkinType == "ﾊﾟｽﾃﾙ") {
+	FaceColor["sage"] = "#81cae2";
+	FaceColor["age"] = "#ffa26a";
+	FaceColor["new"] = "#ffd777";
+	FaceColor["cap"] = "#ff95ad";
+	FaceColor["maru"] = "#a3aadb";
+	FaceColor["trip"] = "#b3d77d";
+}
+
+// 機能の終了処理
+function functionEnd() {
+	focus();
+	if (AutoNewRes == "check") return;
+	event.returnValue = false;
+}
+
+// 設定変更
+function changeConfig(mode) {
+	var button;
+	if (mode == "mail") {
+		var mail = document.all.tags("U");
+		for (var i = 0; i < mail.length; i++) {
+			mail(i).style.visibility = (Config[mode]) ? "hidden" : "visible";
+		}
+		button = configMailButton;
+	} else if (mode == "select") {
+		button = configSelectButton;
+	} else if (mode == "scroll") {
+		button = configScrollButton;
+	} else if (mode == "face") {
+		button = configFaceButton;
+	}
+	button.style.color = (button.style.color != "#3462ed") ? "#3462ed" : "";
+	Config[mode] = (Config[mode]) ? 0 : 1;
+	functionEnd();
+}
+function configMail() {
+	if (!Config["mail"]) {
+		document.write('<style type="text/css">');
+		document.write('u {visibility: hidden ;}');
+		document.write('</style>');
+	}
+}
+
+// クリックでフォーカスをはずす
+function clickBlur() {
+	var e = event.srcElement;
+	if (e.tagName == "A") {
+		if (Browser["name"][BrowserNum] == "ホットゾヌ") {
+			if (e.className == "menu" || e.parentElement.className == "menu" || e.className == "menuButton") {
+				e.blur();
+ 			}
+		} else {
+			e.blur();
+		}
+	}
+}
+document.onclick = clickBlur;
+
+// 検索文字列チェック
+function sWordCheck(promptValue, promptInputValue) {
+	var word = new String(document.selection.createRange().text);
+	if (word.length == 0) {
+		word = prompt(promptValue, promptInputValue);
+	} else if (Config["select"]) {
+		word = prompt(promptValue, word);
+	}
+	if (!(word == "" || word == null || word == promptInputValue)) {
+		return(word);
+	}
+}
+
+// ウィンドウを開く
+function windowOpen(url) {
+	var target = "Blank";
+	if (Browser["name"][BrowserNum] == "JaneSyrup" || Browser["name"][BrowserNum] == "A Bone") {
+		target = "_self";
+	}
+	window.open(url, target);
+	functionEnd();
+}
+
+// レスアンカー処理
+function getResAnchorName(res) {
+	var name = res.parentNode.previousSibling.name;
+	return(name);
+}
+function splitResAnchorName(name) {
+	if (Browser["name"][BrowserNum] != "JaneSyrup") {
+		name = name.split(Browser["anchor"][BrowserNum])[1];
+	}
+	return(name);
+}
+function addResAnchorName(name) {
+	var name = Browser["anchor"][BrowserNum] + name;
+	return(name);
+}
+function getResAnchorScroll(name) {
+	var scrollMargin = document.all.item(name).offsetTop - document.body.scrollTop;
+	return(scrollMargin);
+}
+
+// 自動処理
+var AutoFlag = false;
+var AutoNewRes = false;
+function auto() {
+	faceChange(Res[Res.length-1]);
+	if (AutoNewRes) {
+		if (!AutoFlag) return;
+		autoFindO();
+		autoFilter();
+	} else {
+		AutoNewRes = "check";
+		moveScroll('new');
+		AutoNewRes = true;
+	}
+}
+function autoFlagCheck() {
+	for (var i = 0; i < 6; i++) {
+		if (FindOColor["word"][i]) return true;
+	}
+	if (FilterHistory['mode'].length != 0) return true;
+	return false;
+}
+
+// フェイス変化
+function faceChange(res) {
+	var face = res.childNodes[0].childNodes[0];
+	var name = res.childNodes[ResNodeNum["name"]];
+	var mail = res.childNodes[ResNodeNum["mail"]];
+	var faceValue, faceColor, mailColor;
+	if (!Config["face"]) {
+		face.innerHTML = "∧ ∧<br>(,,・д・)";
+		face.style.backgroundColor = FaceColor["new"];
+		return;
+	}
+	if (mail.innerText.indexOf("sage") != -1) {
+		faceValue = "∧＿∧<br>（　´∀｀）";
+		faceColor = FaceColor["sage"];
+	} else if (mail.innerText.indexOf("age") != -1) {
+		faceValue = "∧＿∧<br>（　・∀・）";
+		faceColor = FaceColor["age"];
+		mailColor = FaceColor["mailAge"];
+	} else {
+		if (res.id == "n") {
+			faceValue = "∧ ∧<br>(,,・д・)";
+			faceColor = FaceColor["new"];
+		}
+		mailColor = FaceColor["mailNormal"];
+	}
+	if (name.innerText.indexOf("★") != -1) {
+		faceValue = "(￣ー￣)<br>ﾆﾔﾘｯ★";
+		faceColor = FaceColor["cap"];
+	} else if (name.innerText.indexOf("●") != -1) {
+		faceValue = "∧,,∧<br>ミ,,ﾟДﾟミ";
+		faceColor = FaceColor["maru"];
+	} else if (name.innerText.indexOf("◆") != -1) {
+		faceValue = "∧ ∧<br>（,,ﾟДﾟ）";
+		faceColor = FaceColor["trip"];
+	}
+	if (faceValue) {
+		face.innerHTML = faceValue;
+		face.style.backgroundColor = faceColor;
+	}
+	mail.style.color = mailColor;
+}
+
+// 既得レスのフェイス変化
+function oldFaceChange() {
+	for (var i = 0; i < Res.length; i++) {
+		if (Res(i).id == "n") break;
+		faceChange(Res(i));
+	}
+	functionEnd();
+}
+
+// メニュー表示
+var VMenuList = new Array();
+function showMenu(menu, position) {
+	if (menu.style.visibility == "visible") return;
+	var e = event.srcElement;
+	if (e.parentElement.className == "face") {
+		e = e.parentElement;
+	}
+	var top = e.offsetTop;
+	var left = e.offsetLeft + e.offsetWidth;
+	if (e.parentElement.className == "menu") {
+		top += e.parentElement.offsetTop;
+		left += e.parentElement.offsetLeft;
+	} else if (e.className == "menuButton") {
+		left -= 1;
+	}
+	if ((top + menu.offsetHeight) > (document.body.clientHeight + document.body.scrollTop)) {
+		top -= (top + menu.offsetHeight) - (document.body.clientHeight + document.body.scrollTop);
+	}
+	if ((left + menu.offsetWidth) > (document.body.clientWidth + document.body.scrollLeft)) {
+		left -= e.offsetWidth + menu.offsetWidth - 1;
+	}
+	menu.style.top = top;
+	menu.style.left = left;
+	menu.style.visibility = "visible";
+	if (VMenuList.length == 0) {
+		VMenuList[0] = e;
+	}
+	VMenuList[VMenuList.length] = menu;
+}
+function hideMenu() {
+	var check, e = event.toElement;
+	if (e) {
+		if (e.className == "face" || e.parentElement.className == "face") {
+			if (VMenuList[0].className == "face") {
+				return;
+			}
+		}
+		check = 0;
+		for (var i = VMenuList.length; i; i--) {
+			if (e == VMenuList[i - 1] || e.parentElement == VMenuList[i - 1]) {
+				var tmp = VMenuList.length;
+				while (i < tmp) {
+					VMenuList[VMenuList.length - 1].style.visibility = "hidden";
+					VMenuList.length--;
+					i++;
+				}
+				check = 1;
+				break;
+			}
+		}
+		if (check == 0) {
+			for (var i = VMenuList.length; i > 1; i--) {
+				VMenuList[i - 1].style.visibility = "hidden";
+			}
+			VMenuList.length = 0;
+		}
+	}
+	event.cancelBubble = true;
+}
+
+// スクロール操作
+var BeforeResAnchorName = null;
+var BeforeResAnchorScroll = null;
+var ResScrollMargin = 11;
+function getNowRes() {
+	if (Math.round(document.body.scrollTop / document.body.scrollHeight) < 0.5) {
+		for (var i = 0; i < Res.length; i++) {
+			if (Res(i).parentElement.offsetTop > document.body.scrollTop) {
+				return(Res(i));
+			}
+		}
+		for (var i = Res.length; i; i--) {
+			if (Res(i - 1).parentElement.style.display != 'none') {
+				return(Res(i - 1));
+			}
+		}
+	} else {
+		for (var i = Res.length; i; i--) {
+			if (Res(i - 1).parentElement.offsetTop < document.body.scrollTop) {
+				for (var j = i; j < Res.length; j++) {
+					if (Res(j).parentElement.style.display != 'none') {
+						return(Res(j));
+					}
+				}
+				return(Res(i));
+			}
+		}
+	}
+}
+function smoothScroll(scrollValue) {
+	var scrollHeight = scrollValue - document.body.scrollTop;
+	document.body.scrollLeft = 0;
+	if (Config["scroll"]) {
+		var divValue = 20;
+		var scrollHeightDiv = scrollHeight / divValue;
+		scrollBy(0, scrollHeight % divValue);
+		for (var i = 0; i < divValue; i++) {
+			scrollBy(0, scrollHeightDiv);
+		}
+	} else {
+		scrollBy(0, scrollHeight);
+	}
+	functionEnd();
+}
+function memoryScroll(resAnchorName, scrollMargin) {
+	var nowRes, nowResAnchorName, nowResAnchorScroll;
+	if (VMenuList.length != 0 && VMenuList[0].className == "face") {
+		nowRes = VMenuList[0].parentNode;
+	} else if (getNowRes()) {
+		nowRes = getNowRes();
+	} else {
+		functionEnd();
+		return;
+	}
+	nowResAnchorName = getResAnchorName(nowRes);
+	nowResAnchorScroll = getResAnchorScroll(nowResAnchorName);
+	if (scrollMargin) {
+		smoothScroll(document.all.item(resAnchorName).offsetTop - scrollMargin);
+	} else {
+		smoothScroll(document.all.item(resAnchorName).offsetTop - ResScrollMargin);
+	}
+	if (nowResAnchorName.offsetTop - nowResAnchorScroll != document.body.scrollTop) {
+		BeforeResAnchorName = nowResAnchorName;
+		BeforeResAnchorScroll = nowResAnchorScroll;
+	}
+}
+function moveScroll(mode) {
+	if (mode == 'new') {
+		for (var i = 0; i < Res.length; i++) {
+			if (Res(i).id == "n") {
+				memoryScroll(getResAnchorName(Res(i)));
+				return;
+			}
+		}
+		functionEnd();
+	} else if (mode == 'return') {
+		if (BeforeResAnchorName != null && BeforeResAnchorName.offsetTop - BeforeResAnchorScroll != document.body.scrollTop) {
+			memoryScroll(BeforeResAnchorName, BeforeResAnchorScroll);
+		}
+		functionEnd();
+	} else if (mode == 'top') {
+		memoryScroll(getResAnchorName(Res[0]));
+	} else if (mode == 'end') {
+		for (var i = Res.length; i > 0; i--) {
+			if (Res[i - 1].parentNode.style.display != "none") {
+				memoryScroll(getResAnchorName(Res[i - 1]));
+				return;
+			}
+		}
+		functionEnd();
+	}
+}
+
+// フィルタ
+var FilterHistory = new Array();
+FilterHistory['mode'] = new Array();
+FilterHistory['elem'] = new Array();
+FilterHistory['word'] = new Array();
+var FilterReverseFlag = false;
+function filter(mode, elem) {
+	var nowRes, nodeNum, word, tmp, link, check;
+	if (VMenuList.length != 0 && VMenuList[0].className == "face") {
+		nowRes = VMenuList[0].parentNode;
+		if (elem == 'thisId') {
+			nodeNum = ResNodeNum["id"];
+			word = nowRes.childNodes[nodeNum].innerText.split("ID:")[1];
+			if (!word) {
+				alert(" ∧ ∧\n( ´ー｀)　ＩＤがネーヨ\n ＼　<");
+				functionEnd();
+				return;
+			}
+		} else if (elem == 'thisName') {
+			nodeNum = ResNodeNum["name"];
+			word = nowRes.childNodes[nodeNum].innerText;
+		} else if (elem == 'name') {
+			nodeNum = ResNodeNum["name"];
+			var promptInputValue = "検索する文字列を入力して (　ﾟдﾟ)ﾎｽｨ…";
+			var promptValue = "\n【 名前中の文字で 】　［ 表示レス数： "+(Res.length)+" ］";
+			var word = sWordCheck(promptValue, promptInputValue);
+			if (!word) {
+				functionEnd();
+				return;
+			}
+		} else if (elem == 'message') {
+			nodeNum = ResNodeNum["message"];
+			var promptInputValue = "検索する文字列を入力して (　ﾟдﾟ)ﾎｽｨ…";
+			var promptValue = "\n【 本文中の文字で 】　［ 表示レス数： "+(Res.length)+" ］";
+			var word = sWordCheck(promptValue, promptInputValue);
+			if (!word) {
+				functionEnd();
+				return;
+			}
+		}
+	} else {
+		nowRes = getNowRes();
+	}
+	if (mode == 'all') {
+		for (var i = 0; i < Res.length; i++) {
+			Res[i].parentNode.style.display = '';
+		}
+	} else if (mode == 'reverse') {
+		for (var i = 0; i < Res.length; i++) {
+			if (Res[i].parentNode.style.display == 'none') {
+				Res[i].parentNode.style.display = '';
+			} else {
+				Res[i].parentNode.style.display = 'none';
+			}
+		}
+	} else if (mode == 'abone') {
+		for (var i = 0; i < Res.length; i++) {
+			if (Res[i].childNodes[nodeNum].innerText.indexOf(word) != -1) {
+				Res[i].parentNode.style.display = 'none';
+			}
+		}
+	} else if (mode == 'extract') {
+		for (var i = 0; i < Res.length; i++) {
+			if (Res[i].childNodes[nodeNum].innerText.indexOf(word) == -1) {
+				Res[i].parentNode.style.display = 'none';
+			}
+		}
+		if (elem == 'name' || elem == 'message') {
+			findO(SelectColorNum, word);
+		}
+	} else if (mode == 'link' || mode == 'picture') {
+		nodeNum = ResNodeNum["message"];
+		tmp = LinkCheckRegExp;
+		if (mode == 'picture') {
+			tmp = PictCheckRegExp;
+		}
+		for (var i = 0; i < Res.length; i++) {
+			link = Res[i].childNodes[nodeNum].getElementsByTagName('A');
+			check = 0;
+			if (link.length) {
+				for (var j = 0; j < link.length; j++) {
+					if (link[j].innerText.search(tmp) != -1) {
+						check = 1;
+						break;
+					}
+				}
+				if (check == 0) {
+					Res[i].parentNode.style.display = 'none';
+				}
+			} else {
+				Res[i].parentNode.style.display = 'none';
+			}
+		}
+	}
+	if (mode == 'all' || mode == 'reverse') {
+		if (nowRes) {
+			smoothScroll(document.all.item(getResAnchorName(nowRes)).offsetTop - ResScrollMargin);
+		} else {
+			smoothScroll(0);
+		}
+	} else {
+		memoryScroll(getResAnchorName(nowRes));
+	}
+	BeforeResAnchorScroll = null;
+	if (mode == 'all') {
+		if (!autoFlagCheck()) AutoFlag = false;
+		FilterHistory['mode'].length = 0;
+		FilterHistory['elem'].length = 0;
+		FilterHistory['word'].length = 0;
+		FilterReverseFlag = false;
+	} else if (mode == 'reverse') {
+		if (FilterReverseFlag == false) {
+			FilterReverseFlag = true;
+		} else {
+			FilterReverseFlag = false;
+		}
+	} else {
+		AutoFlag = true;
+		FilterHistory['elem'][FilterHistory['mode'].length] = elem;
+		FilterHistory['word'][FilterHistory['mode'].length] = word;
+		FilterHistory['mode'][FilterHistory['mode'].length] = mode;
+	}
+}
+function autoFilter() {
+	var mode, elem, nodeNum, word, tmp, link, check;
+	var lastRes = Res[Res.length-1];
+	for (var i = 0; i < FilterHistory['mode'].length; i++) {
+		mode = FilterHistory['mode'][i];
+		elem = FilterHistory['elem'][i];
+		word = FilterHistory['word'][i];
+		if (elem == 'thisId') {
+			nodeNum = ResNodeNum["id"];
+		} else if (elem == 'thisName' || elem == 'name') {
+			nodeNum = ResNodeNum["name"];
+		} else if (elem == 'message') {
+			nodeNum = ResNodeNum["message"];
+		}
+		if (mode == 'abone') {
+			if (lastRes.childNodes[nodeNum].innerText.indexOf(word) != -1) {
+				lastRes.parentNode.style.display = 'none';
+			}
+		} else if (mode == 'extract') {
+			if (lastRes.childNodes[nodeNum].innerText.indexOf(word) == -1) {
+				lastRes.parentNode.style.display = 'none';
+			}
+		} else if (mode == 'link' || mode == 'picture') {
+			tmp = LinkCheckRegExp;
+			if (mode == 'picture') {
+				tmp = PictCheckRegExp;
+			}
+			nodeNum = ResNodeNum["message"];
+			link = lastRes.childNodes[nodeNum].getElementsByTagName('A');
+			check = 0;
+			if (link.length) {
+				for (var j = 0; j < link.length; j++) {
+					if (link[j].href.search(tmp) != -1 && !(link[j].href.search(ThreadCheckRegExp) != -1)) {
+						check = 1;
+						break;
+					}
+				}
+				if (check == 0) {
+					lastRes.parentNode.style.display = 'none';
+				}
+			} else {
+				lastRes.parentNode.style.display = 'none';
+			}
+		}
+	}
+}
+
+// マルチ検索
+var LastSearchEngine = "Google 日本語";
+function multiSearch(engine) {
+	if (!engine) {
+		engine = LastSearchEngine;
+	}
+	var promptValue = "\n【 マルチ検索 】　［ 検索エンジン： "+engine+" ］";
+	var promptInputValue = "検索する文字列を入力して (　ﾟдﾟ)ﾎｽｨ…";
+	var word = sWordCheck(promptValue, promptInputValue);
+	if (!word) {
+		functionEnd();
+		return;
+	}
+	var url;
+	switch (engine) {
+		case "Google 日本語":
+		url = "http://www.google.com/search?num=50&q="+ word +"&hl=ja&lr=lang_ja"; break;
+		case "Google ｲﾒｰｼﾞ":
+		url = "http://images.google.com/images?q="+ word +"&hl=ja&lr=lang_ja"; break;
+		case "excite ﾃｷｽﾄ翻訳 英和":
+		url = "http://www.excite.co.jp/world/text/?wb_lp=ENJA&before="+ word; break;
+		case "excite ﾃｷｽﾄ翻訳 和英":
+		url = "http://www.excite.co.jp/world/text/?wb_lp=JAEN&before="+ word; break;
+		case "excite ｳｪﾌﾞ翻訳 英和":
+		url = "http://www.excite.co.jp/world/url/?wb_url="+ word +"&wb_lp=ENJA&wb_dis=2&wb_co=excitejapan"; break;
+		case "goo 英和辞典":
+		url = "http://dictionary.goo.ne.jp/cgi-bin/dict_search.cgi?sw=0&MT="+ word; break;
+		case "goo 和英辞典":
+		url = "http://dictionary.goo.ne.jp/cgi-bin/dict_search.cgi?sw=1&MT="+ word; break;
+		case "goo 国語辞典":
+		url = "http://dictionary.goo.ne.jp/cgi-bin/dict_search.cgi?sw=2&MT="+ word; break;
+		case "goo 新語辞典":
+		url = "http://dictionary.goo.ne.jp/cgi-bin/dict_search.cgi?sw=3&MT="+ word; break;
+		case "現代用語の基礎知識":
+		url = "http://www.infoseek.co.jp/GTitles?qt="+ word +"&svx=310640&rf=1&qp=0&nh=10&col=GN"; break;
+		case "MapFanWeb 地図検索":
+		url = "http://www.mapfan.com/index.cgi?ADDR="+ word; break;
+		case "ZDNet Japan記事検索":
+		url = "http://zdsearch.zdnet.co.jp/index.cgi?whence=0&result=normal&query="+ word +"&idxname=news&sort=score&max=10"; break;
+		case "Yahoo!オークション":
+		url = "http://search.auctions.yahoo.co.jp/search/auc?p="+ word +"&alocale=0jp&acc=jp"; break;
+		case "フレッシュアイ":
+		url = "http://search.fresheye.com/?term=monthly&SUBMIT=%8C%9F%8D%F5&kw="+ word; break;
+		case "ｽﾚｯﾄﾞﾀｲﾄﾙ検索 (2ch)":
+		url = "http://ruitomo.com/~gulab/search.cgi?k="+ word +"&o=K&2=t"; break;
+		case "web.archive.org":
+		url = "http://web.archive.org/archive_request_ng?collection=web&url="+ word; break;
+	}
+	LastSearchEngine = engine;
+	windowOpen(url);
+}
+
+// ハイライト検索
+var SelectColorNum = 0;
+var FindOColor = new Array();
+FindOColor["name"] = new Array("青", "緑", "紫", "黄", "橙", "深緑");
+FindOColor["color"] = new Array("royalblue", "lightseagreen", "slateblue", "gold", "salmon", "teal");
+FindOColor["find"] = new Array();
+FindOColor["word"] = new Array();
+for (var i = 0; i < 7; i++) {
+	FindOColor["find"][i] = -1;
+	FindOColor["word"][i] = null;
+}
+function findO(colorNum ,word) {
+	var promptValue = "\n【 ハイライト検索 】　［ 選択しているカラー： "+FindOColor["name"][colorNum]+" ］";
+	var promptInputValue = "検索する文字列を入力して (　ﾟдﾟ)ﾎｽｨ…";
+	if (!word) {
+		word = sWordCheck(promptValue, promptInputValue);
+		if (!word) {
+			functionEnd();
+			return;
+		}
+	}
+	var color = FindOColor["color"][colorNum];
+	var i = 0;
+	var doc = document.body.createTextRange();
+	while (doc.findText(word,i) == true) {
+		var findWord = '<span style="color: #f5f5f5 ;background: '+color+' ;" id="find_'+colorNum+'">'+doc.text+'</span>';
+		doc.pasteHTML(findWord);
+		doc.collapse();
+		if (i==0) {
+			var nowRes, nowResAnchorName, nowResAnchorScroll;
+			if (VMenuList.length != 0 && VMenuList[0].className == "face") {
+				nowRes = VMenuList[0].parentNode;
+			} else if (getNowRes()) {
+				nowRes = getNowRes();
+			}
+			nowResAnchorName = getResAnchorName(nowRes);
+			nowResAnchorScroll = getResAnchorScroll(nowResAnchorName);
+			FindOColor["find"][colorNum] = 0;
+			findOScroll(colorNum, false);
+			if (nowResAnchorName.offsetTop - nowResAnchorScroll != document.body.scrollTop) {
+				BeforeResAnchorName = nowResAnchorName;
+				BeforeResAnchorScroll = nowResAnchorScroll;
+			}
+		}
+		i++;
+	}
+	if (i==0) {
+		alert(" ∧ ∧\n( ´ー｀)　ひとつもネーヨ\n ＼　<");
+		FindOColor["find"][colorNum] = -1;
+	} else {
+		alert ("（・∀・） "+i+" 個ﾊｹｰﾝ!!");
+		FindOColor["find"][colorNum]--;
+		FindOColor["word"][colorNum] = word;
+		AutoFlag = true;
+		SelectColorNum = colorNum;
+	}
+	functionEnd();
+}
+function autoFindO() {
+	var lastRes = Res[Res.length-1];
+	for (var i = 0; i < 6; i++) {
+		if (FindOColor["word"][i]) {
+			var word = FindOColor["word"][i]
+			var findWord = '<span style="color: #f5f5f5 ;background: '+FindOColor["color"][i]+' ;" id="find_'+i+'">'+word+'</span>';
+			lastRes.innerHTML = lastRes.innerHTML.split(word).join(findWord);
+		}
+	}
+}
+
+// ハイライトカラー指定削除
+function findOCancel(colorNum) {
+	var findWord = document.all.tags("SPAN");
+	var check = true;
+	if (FindOColor["find"][colorNum] < 0) {
+		alert(" ∧ ∧\n( ´ー｀)　【 "+FindOColor["name"][colorNum]+" 】 のハイライトはネーヨ\n ＼　<");
+		functionEnd();
+		return;
+	}
+	while (check) {
+		check = false;
+		if (findWord != null && findWord.length != null) {
+			for (var i = 0; i < findWord.length; i++) {
+				if (findWord(i).id == ("find_"+colorNum)) {
+					findWord(i).outerHTML = findWord(i).innerText;
+					check = true;
+				}
+			}
+		}
+	}
+	FindOColor["find"][colorNum] = -1;
+	FindOColor["word"][colorNum] = null;
+	if (!autoFlagCheck()) AutoFlag = false;
+	functionEnd();
+}
+
+// ハイライト表示
+function findOScroll(colorNum, shift) {
+	var findWord, findWordScroll;
+	if (colorNum != 6) {
+		if (FindOColor["find"][colorNum] < 0) {
+			alert(" ∧ ∧\n( ´ー｀)　【 "+FindOColor["name"][colorNum]+" 】 のハイライトはネーヨ\n ＼　<");
+			functionEnd();
+			return;
+		}
+		findWord = document.all.item("find_"+colorNum);
+	} else if (document.all.tags("SPAN").length == 0) {
+		alert(" ∧ ∧\n( ´ー｀)　ハイライトがひとつもネーヨ\n ＼　<");
+		functionEnd();
+		return;
+	} else {
+		findWord = document.all.tags("SPAN");
+	}
+	if (shift != true) {
+		FindOColor["find"][colorNum]++;
+		if (findWord.length <= FindOColor["find"][colorNum]) {
+			FindOColor["find"][colorNum] = 0;
+		}
+	} else {
+		FindOColor["find"][colorNum]--;
+		if (FindOColor["find"][colorNum] < 0) {
+			FindOColor["find"][colorNum] = findWord.length-1;
+		}
+	}
+	if (colorNum != 6) {
+		if (findWord.length) {
+			findWordScroll = document.all.item("find_"+colorNum, FindOColor["find"][colorNum]).offsetTop;
+		} else {
+			findWordScroll = findWord.offsetTop;
+		}
+	} else {
+		findWordScroll = findWord(FindOColor["find"][colorNum]).offsetTop;
+	}
+	smoothScroll(findWordScroll - document.body.clientHeight / 2);
+}
+
+// ハイライトカラー変更
+function findOColorChange(colorNum, shift) {
+	if (colorNum != 6) {
+		SelectColorNum = colorNum;
+	} else {
+		if (shift != true) {
+			SelectColorNum++;
+			if (5 < SelectColorNum) {
+				SelectColorNum = 0;
+			}
+		} else {
+			SelectColorNum--;
+			if (SelectColorNum < 0) {
+				SelectColorNum = 5;
+			}
+		}
+	}
+	findOColorChangeButton.style.backgroundColor = FindOColor["color"][SelectColorNum];
+	findOColorChangeButton.style.color = "#f5f5f5";
+	functionEnd();
+}
+
+// レス番ジャンプ
+function resJump(num) {
+	var targetRes, lastResNum;
+	for (var i = Res.length; i > 0; i--) {
+		if (Res[i - 1].parentNode.style.display != "none") {
+			lastResNum = splitResAnchorName(getResAnchorName(Res[i - 1]));
+			break;
+		}
+	}
+	var promptValue = "\n【 レス番ジャンプ 】　［ 最後のレス番： "+lastResNum+" ］";
+	var promptInputValue = "ジャンプするレス番を入力して (　ﾟдﾟ)ﾎｽｨ…";
+	if (!num) {
+		num = sWordCheck(promptValue, promptInputValue);
+		if (!num) {
+			functionEnd();
+			return;
+		}
+	}
+	if (document.all.item(addResAnchorName(num)) == null) {
+		alert(" ∧ ∧\n( ´ー｀)　そんなレス番見つからネーヨ\n ＼　<");
+		functionEnd();
+	} else {
+		memoryScroll(addResAnchorName(num));
+	}
+}
+
+// しおり
+var BookMarkAnchor = new Array();
+BookMarkAnchor["name"] = new Array(6);
+BookMarkAnchor["scroll"] = new Array(6);
+function bookMark(n, mode) {
+	var nowRes;
+	if (mode != 'set') {
+		if (BookMarkAnchor["name"][n] == null) {
+			mode = 'set';
+		} else {
+			if (BookMarkAnchor["name"][n].offsetTop - BookMarkAnchor["scroll"][n] != document.body.scrollTop) {
+				memoryScroll(BookMarkAnchor["name"][n], BookMarkAnchor["scroll"][n]);
+			}
+		}
+	}
+	if (mode == 'set') {
+		if (VMenuList.length != 0 && VMenuList[0].className == "face") {
+			nowRes = VMenuList[0].parentNode;
+		} else {
+			nowRes = getNowRes();
+		}
+		if (nowRes) {
+			BookMarkAnchor["name"][n] = getResAnchorName(nowRes);
+			BookMarkAnchor["scroll"][n] = getResAnchorScroll(BookMarkAnchor["name"][n]);
+			document.all.item("bookMarkButton_"+n).style.color = "#008a8a";
+			document.all.item("setBookMarkButton_"+n).style.color = "#3462ed";
+		}
+		functionEnd();
+	}
+}
+
+// ステータスビュー
+function statusView() {
+	var tmp, findNum = new Array(6), bookMarkNameNum = new Array("", "１", "２", "３", "４", "５");
+	var alertValue = "《 ステータスビュー 》\n\n";
+	alertValue += "【 選択しているカラー 】 ［ "+ FindOColor["name"][SelectColorNum] +" ］\n";
+	alertValue += "【 ハイライトの数 】 ［ "+ document.all.tags("SPAN").length +" ］\n";
+	for (var i = 0; i < 6; i++) {
+		if (-1 < FindOColor["find"][i]) {
+			if (document.all.item("find_"+i).length) {
+				findNum[i] = document.all.item("find_"+i).length;
+			} else {
+				findNum[i] = 1;
+			}
+			tmp = Math.round(findNum[i] / document.all.tags("SPAN").length * 100);
+			alertValue += "　　【 "+ FindOColor["name"][i] +" 】 ［ "+ findNum[i] +" ］ "+ tmp +"%\n";
+		}
+	}
+	tmp = 0;
+	for (var i = 0; i < Res.length; i++) {
+		if (Res[i].parentNode.style.display != "none") {
+			tmp++;
+		}
+	}
+	alertValue += "【 表示レス数 】 ［ "+ tmp +" / "+ Res.length +" ］ "+ Math.round(tmp / Res.length * 100) +"%\n";
+	for (var i = 1; i < 6; i++) {
+		if (BookMarkAnchor["name"][i] != null) {
+			alertValue += "　　【 しおり "+ bookMarkNameNum[i] +" 】 ［ "+ splitResAnchorName(BookMarkAnchor["name"][i]) +" ］\n";
+		}
+	}
+	alertValue += "【 検索エンジン 】 ［ "+ LastSearchEngine +" ］\n";
+	tmp = (Config["mail"]) ? "あり" : "なし";
+	alertValue += "【 メール表示 】 ［ "+ tmp +" ］\n";
+	tmp = (Config["select"]) ? "あり" : "なし";
+	alertValue += "【 選択文字加工 】 ［ "+ tmp +" ］\n";
+	tmp = (Config["scroll"]) ? "あり" : "なし";
+	alertValue += "【 スムーズスクロール 】 ［ "+ tmp +" ］\n";
+	tmp = (Config["face"]) ? "あり" : "なし";
+	alertValue += "【 フェイス変化 】 ［ "+ tmp +" ］\n";
+	alert(alertValue);
+	functionEnd();
+}
+
+// 使用フィルタ
+function useFilter() {
+	var tmp, mode, elem, word, filter = new Array();
+	var alertValue = "《 使用フィルタ 》\n\n";
+	for (var i = 0; i < FilterHistory['mode'].length; i++) {
+		word = FilterHistory['word'][i];
+		if (FilterHistory['elem'][i] == 'thisId') {
+			elem = "ＩＤ";
+		} else if (FilterHistory['elem'][i] == 'name' || FilterHistory['elem'][i] == 'thisName') {
+			elem = "名前";
+		} else if (FilterHistory['elem'][i] == 'message') {
+			elem = "本文中の文字";
+		}
+		if (FilterHistory['mode'][i] == 'abone') {
+			mode = elem + " で 透明あぼ～ん";
+		} else if (FilterHistory['mode'][i] == 'extract') {
+			mode = elem + " で 抽出";
+		} else if (FilterHistory['mode'][i] == 'link') {
+			mode = "リンクがあるレスを表示";
+			word = "";
+		} else if (FilterHistory['mode'][i] == 'picture') {
+			mode = "画像があるレスを表示";
+			word = "";
+		}
+		alertValue += "【 フィルタ "+[i + 1]+" 】 ［ "+mode+" ］\n";
+		alertValue += "　　"+word+"\n";
+	}
+	if (FilterHistory['mode'].length == 0) {
+		alertValue += "　　なし\n";
+	}
+	if (FilterReverseFlag != false) {
+		alertValue += "【 反転表示 】 ［ 使用 ］\n";
+	}
+	alert(alertValue);
+	functionEnd();
+}
+
+// リンクタグを挿入
+function insertLinkTag() {
+	var word = new String(document.selection.createRange().text);
+	var alertValue = "【 リンクタグを挿入 】\n";
+	alertValue += "http://以降のアドレスを選択して (　ﾟдﾟ)ﾎｽｨ…";
+	if (word.length == 0) {
+		if (word.length == 0) {
+			word = alert(alertValue);
+			functionEnd();
+			return;
+		}
+	}
+	var doc = document.selection.createRange();
+	word = '<a href=\"http://'+ word +'\">http://'+ word +'</a>';
+	doc.pasteHTML(word);
+	functionEnd();
+}
+
+// １行ＡＡ
+function oneLineAA() {
+	clipboardData.setData('text',event.srcElement.innerText);
+	functionEnd();
+}
+
+// リンクの後にボタンを挿入
+function insMenuButton() {
+	var e = event.srcElement;
+	if (e.href.search(PictCheckRegExp) == -1) {
+		var insHTML = '<a href="#" title="ここで開く" class="menuButton" onClick="openURL(\'link\');">Open</a>';
+		e.insertAdjacentHTML('AfterEnd',insHTML);
+	} else {
+		var insHTML = '<a href="#" title="ここで開く" class="menuButton" onClick="openURL(\'image\');">Open</a>';
+		e.insertAdjacentHTML('AfterEnd',insHTML);
+		e.nextSibling.style.backgroundColor = "#fff0f3";
+	}
+	e.id = "replaced";
+}
+// リンクボタンのクリック
+function openURL(mode) {
+	var e = event.srcElement;
+	var url = e.previousSibling.href, insHTML;
+	if (e.innerText == "404...") {
+		functionEnd();
+		return;
+	}
+	if (e.innerText == "Open") {
+		if (mode == 'link') {
+			insHTML = '<object data="' + url + '" width="100%" height="50%" onmouseover="focus();">ERROR</object>';
+		} else if (mode == 'image') {
+			insHTML = '<img src="'+ url +'" title="クリックで原寸表示" class="image_filter" onError="notFound();" onClick="clickImage();" onmouseover="mouseoverImage(this, 100);" onmouseout="mouseoverImage(this, 30)">';
+		}
+		e.insertAdjacentHTML('AfterEnd',insHTML);
+		e.innerText = "Hide";
+		e.title = "|)彡ｶｸｽ!";
+		e.id = "saw";
+	} else {
+		if (e.id == "saw") {
+			e.title = "|∀・) ﾐﾀﾖ";
+		} else {
+			e.title = "ここで開く";
+		}
+		e.nextSibling.removeNode();
+		e.innerText = "Open";
+	}
+	functionEnd();
+}
+// リンク先が404
+function notFound() {
+	var e = event.srcElement;
+	e.previousSibling.innerText = "404...";
+	e.previousSibling.title = "(´･ω･`)ｼｮﾎﾞｰﾝ";
+	e.previousSibling.style.color = "#fd5e4c";
+	e.removeNode();
+}
+// 画像のクリック
+function clickImage() {
+	var e = event.srcElement;
+	if (e.className == "image_filter") {
+		e.className = "";
+		e.title = "";
+	} else {
+		e.className = "image_filter";
+		e.title = "クリックで原寸表示";
+	}
+}
+// 画像上のマウス
+function mouseoverImage(image, num) {
+	if(image.className == "image_filter") {
+		image.style.filter = "Alpha(opacity="+ num +")";
+	}
+}
+// URL Checkerでチェック
+function urlCheck() {
+	var button = VMenuList[0];
+	if (button.innerText == "404...") {
+		functionEnd();
+		return;
+	}
+	var url = button.previousSibling.href;
+	url = "http://www.tekijuku.com/URL/?url="+ url;
+	var insHTML = '<object class="url_checker" data="' + url + '" onError="notFound();" width="100%" height="50%" onmouseover="focus();">ERROR</object>';
+	if (button.nextSibling.tagName == "OBJECT" || button.nextSibling.tagName == "IMG") {
+		button.nextSibling.removeNode();
+	}
+	button.insertAdjacentHTML('AfterEnd',insHTML);
+	button.innerText = "Hide";
+	button.title = "|)彡ｶｸｽ!";
+	functionEnd();
+}
+// マウスの判定
+function checkMouseOver() {
+	var e = event.srcElement;
+	if (e.className == "face" || e.parentElement.className == "face") {
+		showMenu(faceMenu);
+	} else if (e.className == "menuButton" || e.parentElement.className == "menuButton") {
+		showMenu(menuLink);
+	} else if (e.tagName == 'A' && e.innerText.search(LinkCheckRegExp) != -1  && e.innerText.search(/\/read\.cgi|\/kako\//i) == -1 && e.id != "replaced") {
+		insMenuButton();
+	}
+}
+document.onmouseover = checkMouseOver;
+function checkMouseOut() {
+	var e = event.srcElement;
+	if (e.className == "face" || e.parentElement.className == "face" || e.className == "menu" || e.parentElement.className == "menu" || e.className == "menuButton") {
+		hideMenu();
+	}
+}
+document.onmouseout = checkMouseOut;
+
+// ショートカット
+function sCut() {
+	var code = window.event.keyCode;
+	//alert(code);
+	switch(code){
+		case 78: case 110: // 'N','n' 新着レス表示
+		moveScroll('new'); break;
+		case 84: case 116: // 'T','t' 最初のレス表示
+		moveScroll('top'); break;
+		case 82: case 114: // 'R','r' 前の位置に戻る
+		moveScroll('return'); break;
+		case 69: case 101: // 'E','e' 最後のレス表示
+		moveScroll('end'); break;
+		case 70: case 102: // 'F','f' ハイライト検索
+		findO(SelectColorNum); break;
+		case 99: // 'c' ハイライトカラー順変更
+		findOColorChange(6, false); break;
+		case 67: // 'C' ハイライトカラー逆順変更
+		findOColorChange(6, true); break;
+		case 120: // 'x' ハイライトカラー指定順表示
+		findOScroll(SelectColorNum, false); break;
+		case 88: // 'X' ハイライトカラー指定逆順表示
+		findOScroll(SelectColorNum, true); break;
+		case 122: // 'z' ハイライト順表示
+		findOScroll(6, false); break;
+		case 90: // 'Z' ハイライト逆順表示
+		findOScroll(6, true); break;
+		case 68: case 100: // 'D','d' ハイライトカラー指定削除
+		findOCancel(SelectColorNum); break;
+		case 83: case 115: // 'S','s' マルチ検索
+		multiSearch(LastSearchEngine); break;
+		case 49: case 50: case 51: case 52: case 53: // '1'～'5' スクロール位置しおり
+		bookMark(code - 48); break;
+		case 33: case 34: case 35: case 36: case 37: // Shift+'1'～'5' しおりを挟む
+		bookMark(code - 32, set); break;
+		case 74: case 106: // 'J','j' レス番ジャンプ
+		resJump(); break;
+		case 86: case 118: // 'V','v' ステータスビュー
+		statusView(); break;
+		case 79: case 111: // 'O','o' 既得レスのフェイス変化
+		oldFaceChange(); break;
+		case 72: case 104: // 'H','h' ヘルプ
+		help(); break;
+		case 65: case 97: // 'A','a' 全レス表示
+		filter('all'); break;
+		case 73: case 105: // 'I','i' リンクタグを挿入
+		insertLinkTag(); break;
+		case 76: case 108: // 'L','l' リンクがあるレスを表示
+		filter('link'); break;
+		case 80: case 112: // 'P','p' 画像があるレスを表示
+		filter('picture'); break;
+		case 81: case 113: // 'Q','q' 表示を反転
+		filter('reverse'); break;
+		case 85: case 117: // 'U','u' 使用フィルタ
+		useFilter(); break;
+		case 77: case 109: // 'M','m' メール欄表示
+		changeConfig('mail'); break;
+		case 44: // ',' 選択文字加工
+		changeConfig('select'); break;
+		case 46: // '.' スクロール
+		changeConfig('scroll'); break;
+		case 47: // '/' フェイス変化
+		changeConfig('face'); break;
+		default:
+		return; break;
+	}
+}
+document.onkeypress = sCut;
+
+// ヘルプ
+function help() {
+	document.body.style.filter = "Gray()";
+	var helpTop = "《 "+ SkinName +" ver"+ SkinVersion +" "+ SkinType +" for "+ Browser["name"][BrowserNum] +" 》\n\n";
+	while (1) {
+		var alertValue = "【 基本的な使い方 】\n";
+		alertValue += " マウスカーソルを各レス左のＡＡフェイス\n";
+		alertValue += "にもっていくとメニューが表示されます。\n";
+		alertValue += "各メニューのポップアップを見てもらえば\n";
+		alertValue += "大抵の機能と使い方はわかると思います。\n";
+		alertValue += " 文字入力を求められる機能は、目的の\n";
+		alertValue += "文字列を選択してボタンを押すとラクです。\n";
+		alertValue += "１ボタンのショートカットも充実してるので\n";
+		alertValue += "ポップアップの( )内を見て使ってください。\n";
+		alertValue += "キーボード派の人はVが便利です。\n\n";
+		alertValue += "【 フェイス変化 】\n";
+		alertValue += " キャップ、●、トリップ、age、sageで\n";
+		alertValue += "変化します。メール欄はage、sageのみ。\n";
+		alertValue += "\t\t\t　　　１ / ３ \n";
+		if (!confirm(helpTop+alertValue)) {
+			break;
+		}
+		alertValue = "【 前の位置に戻る 】\n";
+		alertValue += " この機能はハイライト表示以外の機能で\n";
+		alertValue += "移動したあとならいつでも使えます。\n";
+		alertValue += " メニューを使ったレス、または画面に表示\n";
+		alertValue += "している中で一番上のレスを記憶します。\n";
+		alertValue += " もしレスが表示されてなかったら近くの\n";
+		alertValue += "レスを表示します。\n\n";
+		alertValue += "【 自動処理 】\n";
+		alertValue += " フィルタ、ハイライト検索を使ったら\n";
+		alertValue += "新着レスを自動で処理します。\n";
+		alertValue += " ハイライト検索の単語は１色１語です。\n";
+		alertValue += " この機能を使えるのはFooterを使わない\n";
+		alertValue += "Jane系とかちゅ～しゃのみです。\n";
+		alertValue += "\t\t\t　　　２ / ３ \n";
+		if (!confirm(helpTop+alertValue)) {
+			break;
+		}
+		alertValue = "【 リンクの後ろに付くボタン 】\n";
+		alertValue += " リンクの場合はそこで開くだけですが、\n";
+		alertValue += "画像の場合はグロ対策にフィルタつきで\n";
+		alertValue += "縮小表示します。隠すこともできます。\n\n";
+		alertValue += "【 １行ＡＡ 】\n";
+		alertValue += " 自動的にクリップボードにコピーされます。\n";
+		alertValue += "【 既得レスのフェイス変化 】\n";
+		alertValue += " レス数が多いと非常に時間がかかります。\n\n";
+		alertValue += "【 設定 】\n";
+		alertValue += " Headerの最初に初期設定があります。\n";
+		alertValue += "設定が変わるとメニューが青くなります。\n\n";
+		var helpEnd = "では、楽しい２ｃｈライフを！\tby しぃファン\n";
+		if (!confirm(helpTop+alertValue+helpEnd)) {
+			break;
+		}
+	}
+	document.body.style.filter = "";
+	functionEnd();
+}
+//--></script>
+</head>
+<body>
+<div id="faceMenu"          class="menu" style="width: 52 ;"><a href="#" title="前の位置に戻る (R)" onClick="moveScroll('return');" onMouseOver="showMenu(menuMoveScroll);">Ｒeturn</a><a href="#" title="使用フィルタ (U)" onClick="useFilter();" onMouseOver="showMenu(menuFilter);">Filter</a><a href="#" title="ハイライト検索 (F)" onClick="findO(SelectColorNum);" onMouseOver="showMenu(menuFindO);">Ｆind</a><a href="#" title="ステータスビュー (V)" onClick="statusView();" onMouseOver="showMenu(menuEtc);">Ｖiew</a></div>
+<div id="menuMoveScroll"    class="menu" style="width: 58 ;"><a href="#" title="最後のレス表示 (E)" onClick="moveScroll('end');">▼ Ｅnd</a><a href="#" title="レス番ジャンプ (J)" onClick="resJump();" onMouseOver="showMenu(menuBookMark);">◆ Ｊump</a><a href="#" title="最初のレス表示 (T)" onClick="moveScroll('top');">▲ Ｔop</a><a href="#" title="新着レス表示 (N)" onClick="moveScroll('new');">◇ Ｎew</a></div>
+<div id="menuBookMark"      class="menu" style="width: 55 ;"><a href="#" title="しおり １ (1)" id="bookMarkButton_1" onClick="bookMark(1);" onMouseOver="showMenu(menuSetBookMark_1);">しおり １</a><a href="#" title="しおり ２ (2)" id="bookMarkButton_2" onClick="bookMark(2);" onMouseOver="showMenu(menuSetBookMark_2);">しおり ２</a><a href="#" title="しおり ３ (3)" id="bookMarkButton_3" onClick="bookMark(3);" onMouseOver="showMenu(menuSetBookMark_3);">しおり ３</a><a href="#" title="しおり ４ (4)" id="bookMarkButton_4" onClick="bookMark(4);" onMouseOver="showMenu(menuSetBookMark_4);">しおり ４</a><a href="#" title="しおり ５ (5)" id="bookMarkButton_5" onClick="bookMark(5);" onMouseOver="showMenu(menuSetBookMark_5);">しおり ５</a></div>
+<div id="menuSetBookMark_1" class="menu" style="width: 77 ;"><a href="#" title="しおりを挟む (Shift + 1)" id="setBookMarkButton_1" onClick="bookMark(1, 'set');">しおりを挟む</a></div>
+<div id="menuSetBookMark_2" class="menu" style="width: 77 ;"><a href="#" title="しおりを挟む (Shift + 2)" id="setBookMarkButton_2" onClick="bookMark(2, 'set');">しおりを挟む</a></div>
+<div id="menuSetBookMark_3" class="menu" style="width: 77 ;"><a href="#" title="しおりを挟む (Shift + 3)" id="setBookMarkButton_3" onClick="bookMark(3, 'set');">しおりを挟む</a></div>
+<div id="menuSetBookMark_4" class="menu" style="width: 77 ;"><a href="#" title="しおりを挟む (Shift + 4)" id="setBookMarkButton_4" onClick="bookMark(4, 'set');">しおりを挟む</a></div>
+<div id="menuSetBookMark_5" class="menu" style="width: 77 ;"><a href="#" title="しおりを挟む (Shift + 5)" id="setBookMarkButton_5" onClick="bookMark(5, 'set');">しおりを挟む</a></div>
+<div id="menuFilter"        class="menu" style="width: 60 ;"><a href="#" title="全レス表示 (A)" onClick="filter('all');">Ａll Res</a><a href="#" title="透明あぼ～ん" onClick="return false;" onMouseOver="showMenu(menuFilterAbone);">あぼ～ん</a><a href="#" title="抽出" onClick="return false;" onMouseOver="showMenu(menuFilterExtract);">抽出</a><a href="#" title="表示を反転 (Q)" onClick="filter('reverse');">反転</a><a href="#" title="リンクがあるレスを表示 (L)" onClick="filter('link');">Ｌink</a><a href="#" title="画像があるレスを表示 (P)" onClick="filter('picture');">Ｐicture</a></div>
+<div id="menuFilterAbone"   class="menu" style="width:100 ;"><a href="#" title="このＩＤで透明あぼ～ん" onClick="filter('abone', 'thisId');">このＩＤで</a><a href="#" title="この名前で透明あぼ～ん" onClick="filter('abone', 'thisName');">この名前で</a><a href="#" title="名前中の文字で透明あぼ～ん" onClick="filter('abone', 'name');">名前中の文字で</a><a href="#" title="本文中の文字で透明あぼ～ん" onClick="filter('abone', 'message');">本文中の文字で</a></div>
+<div id="menuFilterExtract" class="menu" style="width:100 ;"><a href="#" title="このＩＤで抽出" onClick="filter('extract', 'thisId');">このＩＤで</a><a href="#" title="この名前で抽出" onClick="filter('extract', 'thisName');">この名前で</a><a href="#" title="名前中の文字で抽出" onClick="filter('extract', 'name');">名前中の文字で<a href="#" title="本文中の文字で抽出" onClick="filter('extract', 'message');">本文中の文字で</a></div>
+<div id="menuFindO"         class="menu" style="width: 53 ;"><a href="#" title="マルチ検索 (S)" onClick="multiSearch();" onMouseOver="showMenu(menuMultiSearch);">Ｓearch</a><a href="#" title="ハイライトカラー順変更 (C)" id="findOColorChangeButton" onClick="findOColorChange(6, false);" onMouseOver="showMenu(menuFindOColorChange);">Ｃolor</a><a href="#" title="ハイライトカラー指定順表示 (X)" onClick="findOScroll(SelectColorNum, false);" onMouseOver="showMenu(menuFindOScroll);">▼ 表示</a><a href="#" title="ハイライトカラー指定削除 (D)" onClick="findOCancel(SelectColorNum);">Ｄelete</a></div>
+<div id="menuMultiSearch"   class="menu" style="width:135 ;"><a href="#" onClick="multiSearch(this.innerText);">Google 日本語</a><a href="#" onClick="multiSearch(this.innerText);">Google ｲﾒｰｼﾞ</a><a href="#" onClick="multiSearch(this.innerText);">excite ﾃｷｽﾄ翻訳 英和</a><a href="#" onClick="multiSearch(this.innerText);">excite ﾃｷｽﾄ翻訳 和英</a><a href="#" onClick="multiSearch(this.innerText);">excite ｳｪﾌﾞ翻訳 英和</a><a href="#" onClick="multiSearch(this.innerText);">goo 英和辞典</a><a href="#" onClick="multiSearch(this.innerText);">goo 和英辞典</a><a href="#" onClick="multiSearch(this.innerText);">goo 国語辞典</a><a href="#" onClick="multiSearch(this.innerText);">goo 新語辞典</a><a href="#" onClick="multiSearch(this.innerText);">現代用語の基礎知識</a><a href="#" onClick="multiSearch(this.innerText);">MapFanWeb 地図検索</a><a href="#" onClick="multiSearch(this.innerText);">ZDNet Japan記事検索</a><a href="#" onClick="multiSearch(this.innerText);">Yahoo!オークション</a><a href="#" onClick="multiSearch(this.innerText);">フレッシュアイ</a><a href="#" onClick="multiSearch(this.innerText);">web.archive.org</a><a href="#" onClick="multiSearch(this.innerText);">ｽﾚｯﾄﾞﾀｲﾄﾙ検索 (2ch)</a></div>
+<div id="menuFindOColorChange" class="menu" style="width: 50 ;"><a href="#" title="ハイライトカラーを 青 に変更" onClick="findOColorChange(0, false);" style="background: royalblue ;">青</a><a href="#" title="ハイライトカラーを 緑 に変更" onClick="findOColorChange(1, false);" style="background: lightseagreen ;">緑</a><a href="#" title="ハイライトカラーを 紫 に変更" onClick="findOColorChange(2, false);" style="background: slateblue ;">紫</a><a href="#" title="ハイライトカラーを 黄 に変更" onClick="findOColorChange(3, false);" style="background: gold ;">黄</a><a href="#" title="ハイライトカラーを 橙 に変更" onClick="findOColorChange(4, false);" style="background: salmon ;">橙</a><a href="#" title="ハイライトカラーを 深緑 に変更" onClick="findOColorChange(5, false);" style="background: teal ;">深緑</a></div>
+<div id="menuFindOScroll"   class="menu" style="width: 23 ;"><a href="#" title="ハイライトカラー指定逆順表示 (Shift + X)" onClick="findOScroll(SelectColorNum, true);">▲</a><a href="#" title="ハイライト順表示 (Z)" onClick="findOScroll(6, false);">▽</a><a href="#" title="ハイライト逆順表示 (Shift + Z)" onClick="findOScroll(6, true);">△</a></div>
+<div id="menuEtc"           class="menu" style="width: 55 ;"><a href="#" title="スキンの設定" onClick="return false;" onMouseOver="showMenu(menuConfig);">設定</a><a href="#" title="リンクタグを挿入 (I)" onClick="insertLinkTag();">Insert</a><a href="#" title="既得レスのフェイス変化 (O)" onClick="oldFaceChange();">Ｏld AA</a><a href="#" title="ヘルプ (H)" onClick="help();">Ｈelp</a><a href="#" title="１行ＡＡ" onClick="return false;" onMouseOver="showMenu(menuOneLineAA);">１行ＡＡ</a><a href="#" title="２ｃｈ リンク集" onClick="return false;" onMouseOver="showMenu(menuQuickLink);">リンク集</a></div>
+<div id="menuConfig"        class="menu" style="width: 88 ;"><a href="#" title="メール欄表示 (M)" id="configMailButton" onClick="changeConfig('mail');">メール欄表示</a><a href="#" title="選択文字加工 ( , )" id="configSelectButton" onClick="changeConfig('select');">選択文字加工</a><a href="#" title="スムーズスクロール ( . )" id="configScrollButton" onClick="changeConfig('scroll');">スクロール</a><a href="#" title="フェイス変化 (/)" id="configFaceButton" onClick="changeConfig('face');">フェイス変化</a></div>
+<div id="menuOneLineAA"     class="menu" style="width:112 ;font-size: 12 ;" onClick="oneLineAA();"><a href="#">（・∀・）ｲｲ!</a><a href="#">(ﾟдﾟ)ｳﾏｰ</a><a href="#">ｷﾀ━━（ﾟ∀ﾟ）━━!!!</a><a href="#">ヽ(`Д´)ﾉ ｳﾜｧｧﾝ!!</a><a href="#">（　´_ゝ`）ﾌｰﾝ</a><a href="#">( ´ー｀)y-~~ﾏﾀｰﾘ</a><a href="#">|冫､ )ｼﾞｰ　　|)彡ｻｯ</a><a href="#">Σ（´Д｀ｽﾞｶﾞｰﾝ</a><a href="#">(((( ；ﾟДﾟ)))</a><a href="#">｡･ﾟ･(ﾉД`)･ﾟ･｡</a><a href="#">（ﾟεﾟ）ｷﾆｼﾅｲ!!</a><a href="#">（´-`）.｡oO（</a><a href="#">(;´Д｀)ﾊｧﾊｧ</a><a href="#">(-＿-) ｳﾂﾀﾞｼﾉｳ</a><a href="#">(　ﾟдﾟ)ﾎｽｨ…</a><a href="#">(´･ω･`)ｼｮﾎﾞｰﾝ</a></div>
+<div id="menuQuickLink"     class="menu" style="width:157 ;"><a href="#" onClick="windowOpen('http://www.monazilla.org/')" title="最新版のチェック">★monazilla.org(w</a><a href="#" onClick="windowOpen('http://www1.odn.ne.jp/mimizun/')" title="過去ログが検索できます">みみずん検索</a><a href="#" onClick="windowOpen('http://www.aa.wakwak.com/~rewmew/')" title="面白スレ紹介サイト">スレの杜</a><a href="#" onClick="windowOpen('http://www.yuko2ch.net/')" title="裕子ﾀﾝ(;´Д｀)ﾊｧﾊｧ">ﾊﾞｰﾁｬﾙ２ちゃんねらー裕子</a><a href="#" onClick="windowOpen('http://www24.big.or.jp/~faru/')" title="２ｃｈの動向がわかる">２ちゃんねる研究</a><a href="#" onClick="windowOpen('http://www.big.or.jp/~monadowa/')" title="アスキーアート作品展示">(新)モナー童話集</a><a href="#" onClick="windowOpen('http://logo.s3.xrea.com/')" title="みんな凝ってて正直スゴイ">2ちゃんねる ロゴギャラリー</a><a href="#" onClick="windowOpen('http://homepage2.nifty.com/thekb/gikope/')" title="ギコペのデータ">暇な人のデータ置き場</a><a href="#" onClick="windowOpen('http://members.tripod.co.jp/maruheso/aadic/')" title="AAの全てがここに">AA大辞典(仮)</a><a href="#" onClick="windowOpen('http://freezone.kakiko.com/jiten/')" title="本にもなった２ｃｈの辞典">２典</a><a href="#" onClick="windowOpen('http://www.skipup.com/~niwatori/')" title="わからないことがあったら">2ch初心者のためのページ</a><a href="#" onClick="windowOpen('http://www.2ch.net/guide/')" title="読まないやつは逝ってよし">２ちゃんねるガイド</a><a href="#" onClick="windowOpen('http://mappy.mobileboat.net/~seek/')" title="繋がらないときはココ">2ch鯖監視所</a><a href="#" onClick="windowOpen('http://www.2ch.net/2ch.html')" title="「ハッキング」から「今晩のおかず」まで">■２ちゃんねる</a></div>
+<div id="menuLink"          class="menu" style="width: 85 ;"><a href="#" title="URL Checkerでチェック" onClick="urlCheck();">URL Checker</a></div>
+<script>focus();configMail();</script>
+
+<!-- NewRes.htm -->
+<div><dl id=n><a href="menu:&PLAINNUMBER" class="face"><div></div>&PLAINNUMBER</a><i><b>■</b> &NAME <b>■</b></b></i>　<u>&MAIL</u></u><dd>&MESSAGE<dt>DATE:&DATE</dl></div><script>auto();</script>
+
+<!-- Res.htm -->
+<div><dl><a href="menu:&PLAINNUMBER" class="face"><div>∧ ∧<br>(*ﾟーﾟ)</div>&PLAINNUMBER</a><i><b>■</b> &NAME <b>■</b></b></i>　<u>&MAIL</u></u><dd>&MESSAGE<dt>DATE:&DATE</dl></div>

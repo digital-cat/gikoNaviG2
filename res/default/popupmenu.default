@@ -1,0 +1,29 @@
+; ポップアップメニュー設定ファイル
+
+[BrowserTab]
+;ブラウザタブポップアップメニュー設定
+main.01=ItemReloadAction
+main.02=-
+main.03=FavoriteAddAction
+main.04=RoundItem
+main.05=-
+main.06=BoardThreadItem
+main.07=-
+main.08=BrowserTabCloseAction
+main.09=NotSelectTabCloseAction
+main.10=LeftTabCloseAction
+main.11=RightTabCloseAction
+main.12=-
+main.13=ActiveLogDeleteAction
+main.14=-
+main.15=AllTabCloseAction
+;; サブメニューの作り方
+;; " ではじめると第一階層用のラベルを作れる
+;; sub.ラベルにしたキー.0X の形でサブメニューを列挙する
+;; 下は、タブ操作をサブメニューに追加した例
+;main.16="タブ
+;sub.main.16.01=BrowserTabCloseAction
+;sub.main.16.02=NotSelectTabCloseAction
+;sub.main.16.03=LeftTabCloseAction
+;sub.main.16.04=RightTabCloseAction
+;sub.main.16.05=AllTabCloseAction

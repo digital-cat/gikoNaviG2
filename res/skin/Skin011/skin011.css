@@ -1,0 +1,57 @@
+a	{text-decoration: none ;}
+a:link	{color: #0c00cc ;}
+a:visited	{color: #8c8c8c ;}
+a:active	{color: #1987e5 ;}
+a:hover	{color: #1987e5 ;}
+body ,b, #message	{
+	color: #000000 ;
+	font-weight: normal ;
+	font-family: "ÇlÇr ÇoÉSÉVÉbÉN" ;
+}
+body	{background-color: #e6ebec ;}
+img	{border: 0 ;}
+div	{margin: 0 15 0 ;}
+.top	{width: 100% ;}
+.left	{
+	float: left ;
+	position: relative ;
+	left: -3 ;z-index: 1 ;
+}
+.right	{
+	float: right ;
+	position: relative ;
+	left: 3 ;top: -22 ;
+	z-index: 1 ;
+}
+.name, .name b	{
+	font: bold 12px "Osaka","ÇlÇr ÇoÉSÉVÉbÉN" ;
+}
+.name	{
+	background-image: url(img\t.gif) ;
+	text-align: center ;
+	padding: 5 0 0 0 ;
+	width: 100% ;
+	height: 22px ;
+	float: none ;
+	position: relative ;
+	left: -40 ;
+	z-index: 0 ;
+}
+.main	{
+	border: 1 solid #8c8c8c ;
+	background-image: url(img\bg.gif) ;
+	padding: 5 10 10 ;
+	width: 100% ;
+	position: relative ;
+	top: -22 ;
+	z-index: 2 ;
+}
+.date	{
+	font: 11px "ÇlÇr ÉSÉVÉbÉN" ;
+	text-align: right ;
+	margin: 0 0 2 0 ;
+	width: 100% ;
+}
+.message	{
+	width: 100% ;
+}

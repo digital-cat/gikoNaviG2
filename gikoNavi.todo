@@ -1,0 +1,23 @@
+～TWebBrowserの掟～
+	Delphiのオートメーションはわかり難く、気を抜くと参照カウントが減りすぎてしまったり、残ってしまいます。
+	eggcakeが調べたこれらを回避する方法をここに書いておきます。
+	
+	正しい方法
+		if Assigned(WebBrowser.ControlInterface.Document) then;
+		OleVariant := OleVariant(WebBrowser.Document);
+		OleVariant := WebBrowser.OleObject.Document;
+		IHTMLDocument2 := WebBrowser.ControlInterface.Document as IHTMLDocument2;
+		IHTMLDocument2 := IDispatch(OleVariant(WebBrowser.Document)) as IHTMLDocument2;
+		IHTMLDocument2 := IDispatch(WebBrowser.OleObject.Document) as IHTMLDocument2;
+
+・レス送信エディタの「送信箱へ保存」が未実装。
+　よっふぃ～的には無くてもいいと思う。
+
+・過去ログ検索の高速化。
+
+・過去ログ Google 検索。
+
+・プラグインの設定画面。
+　2ch プラグインだったらログインのアカウントとか設定できるようなもの。
+
+・ヘルプ作成。

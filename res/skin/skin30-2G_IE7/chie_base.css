@@ -1,0 +1,93 @@
+@charset "Shift_JIS";
+*   {font-family:"‚l‚r ‚oƒSƒVƒbƒN"}
+/* ‚Ó‚¿–³‚µ */
+body   {margin:0px;padding:0px;}
+/* ƒŠƒ“ƒN */
+dt a{text-decoration:none;}
+dd a{text-decoration:underline;line-height:1.1}
+
+/* ŒŸõŒ‹‰Ê */
+#foundPanel{color:LightSlateGray;}
+#foundPanel div {font-family:"‚l‚r ƒSƒVƒbƒN";}
+#foundPanel div span{font-family:Times;cursor:hand;}
+#foundPanel a      {color:LightSlateGray;}
+#foundPanel a:hover{color:#000;}
+
+/* dt */
+dt{
+ padding:0.3em;
+ border-width:1px 0px;
+ border-color:#999;
+ border-style:solid;
+}
+
+/* –¼‘O */
+dt u {
+ margin:1ex;
+ text-decoration:none;
+ cursor:hand;
+}
+u a{border-width:0px;padding:0px;}
+
+/* ID */
+dt span{
+ float:right;
+/* margin-left:1em;*/
+ margin-top:-23px;
+ margin-right:0.5em;
+ font-family:"‚l‚r ƒSƒVƒbƒN";
+ font-size:95%;
+ cursor: hand;
+}
+dt span a{font-family:"‚l‚r ƒSƒVƒbƒN";}
+
+/* dd */
+dd{
+ padding:0.5em 1em 0.5em 0em;
+ word-break:break-all;
+ word-wrap:break-word;
+}
+
+/* ƒ{ƒ^ƒ“ */
+input,button{ /*‚±‚±‚Å‚Ìw’è‚Íimage.css‚Åã‘‚«‚³‚ê‚é*/
+ font-family:"Terminal";
+ font-size:8px;
+ margin:2px;
+ border:1px solid #BCB5B5;
+}
+#controlPanel{
+ position:absolute;
+ top:expression(body.scrollTop+3);
+ right:3px;
+ padding:2px 3px;
+ background-color:#789;
+ z-index:6;
+ visibility:hidden;
+}
+#command {text-align:center}
+#command input{
+ font-family:"‚l‚r ƒSƒVƒbƒN";
+ font-size:9pt;
+ margin:1px;
+ width:98px;
+}
+#context {
+ position:absolute;
+ visibility:hidden;
+ background-color:Menu;
+ border-style:solid;
+ border-width:2px;
+ border-color:ThreeDHighlight ThreeDDarkShadow ThreeDDarkShadow ThreeDHighlight;
+ padding:1px;
+ z-index:7;
+}
+#context div{
+ display:block;
+ font:menu;
+ padding:4px 17px;
+ cursor:hand;
+}
+#sizeinfo{
+ background-color:transparent;
+ border:none;
+}

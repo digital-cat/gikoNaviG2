@@ -1,0 +1,6 @@
+# 行頭の#はコメント
+# 対象URLの正規表現(AWK)[TAB]実行プログラム(内部で"に囲まれる)[TAB]確認ダイアログを出す(true/other)[TAB]ギコナビでも処理する(true/other)
+# youtubeはFirefoxに送る（確認不要）
+#http://jp.youtube.com/watch\?.*	C:\Program Files\Mozilla Firefox\firefox.exe	false	false
+# ニコニコ動画も、Firefoxに送る（毎回確認する）
+#http://www.nicovideo.jp/watch/sm[0-9]+$	C:\Program Files\Mozilla Firefox\firefox.exe	true	false

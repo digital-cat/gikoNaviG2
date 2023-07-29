@@ -1,0 +1,78 @@
+body	{color: #000000; font: normal x-small "MS PGothic"; background-color: #AFB7D0; background-image: url(bg.gif)}
+a	{text-decoration: none}
+span a:hover	{color: #F6FC11}
+div	{color: #2d3e57; margin: 20 0 8 0 ; width: 100%; text-align: left}
+
+/* BOOK MARK */
+.bookmk	{width: 100%; text-align: center}
+.bmtext	{color: #0000CC; font: bold 14 "MS PGothic"; padding: 24 0 0 14; border-width: 0 0 0 0;
+	  width:208px; height:67px; text-align: left; background-image: url(bookmk.gif); background-repeat: no-repeat }
+
+/* RES NUMBER */
+div h1	{color: #36006C; margin: 0 0 -5 46}
+.newno	{color: #11FC4C; font: bold 12 "Arial"; background: #2c2f45; border-color: #7d8c82; border-style: solid;
+	 border-width: 0 2 2 0; margin-right: 6; width: 50; text-align: center; float: left}
+.oldno	{color: #858585; font: bold 12 "Arial"; background: #2c2f45; border-color: #7d8c82; border-style: solid;
+	 border-width: 0 2 2 0; margin-right: 6; width: 50; text-align: center; float: left}
+.newno a{color: #11FC4C;}
+.oldno a{color: #858585;}
+
+/* NAME & E-MAIL */
+div h2	{font: bold 12 "MS UI Gothic"; margin: 3 0 0 0}
+.sage	{color: #FF0066; font: bold 10 "MS PGothic"; background: #2c2f45; border-color: #7d8c82;
+	 border-style: solid; border-width: 0 1 1 0; width: 14; text-align: center}
+.age	{color: #66FFFF; font: bold 10 "MS PGothic"; background: #2c2f45; border-color: #7d8c82;
+	 border-style: solid; border-width: 0 1 1 0; width: 14; text-align: center}
+
+/* Siori */
+.siori	{color: #F7F7F7; font: normal 10 "MS PGothic"; filter: Shadow(color=#AAAAAA, direction=130);
+	 width: 35; text-align: center; float: right; margin: -10 -8 0 0}
+
+/* RES MESSAGE */
+div h3	{color: #36006C; font: normal x-small "MS PGothic"; padding: 1 4; margin: 0}
+dl	{color: #222222; background: #F7F7F7; border-width: 0 2 2 0; border-style: solid;
+	 border-color: #666666; padding: 3; margin: 7 0 0 42}
+dt	{margin: 12 10 5 10}
+h3 a:hover	{color: #8AB8F1}
+h3 a:link	{color: #0000ff};
+h3 a:visited	{color: #990099};
+
+/* CHECK BOX */
+dd	{color: #888899; font: normal 10 "Verdana"; text-align: right; margin: 0 0 0 0}
+input	{margin: 0 0 2 0; height: 12}
+
+/* ZONU */
+.n_zonu	{margin: -41 0 0 -2; width: 44; height: 44; background-image: url(n_zonu.gif); background-repeat: no-repeat}
+.s_zonu	{margin: -41 0 0 -2; width: 44; height: 44; background-image: url(s_zonu.gif); background-repeat: no-repeat}
+.sn_zonu{margin: -41 0 0 -2; width: 44; height: 44; background-image: url(sn_zonu.gif); background-repeat: no-repeat}
+.ss_zonu{margin: -41 0 0 -2; width: 44; height: 44; background-image: url(ss_zonu.gif); background-repeat: no-repeat}
+.trip	{margin: 2 0 0 0}
+.cap	{margin: 2 0 0 0}
+
+/* RES FOOTER */
+div h4	{color: #7B7B7B; font: normal 10 "Verdana"; background: #D7D7F7; border-color: #666666; border-style: solid;
+	 border-width: 0 2 2 0; padding: 0 5 0 7; margin: -2 0 0 0; text-align: center; height: 16;}
+/* Å£ Å• BUTTON */
+button	{color: #888899; font: normal 12 "MS PGothic"; background: #D7D7F7; border: 0; margin: -10 0 0 0;
+	 width: 15; height: 12; text-align: center; float: right; cursor: hand}
+/* TODAY's RES */
+.today	{color: #FF7777; font: normal 10 "Times New Roman"}
+.resid	{color: #7B7B7B; font: normal 9 "Verdana"; float: left; margin:1 0 0 -3;}
+
+/* PAGE HEADER */
+h5	{color: #6B6B6B; font: normal 10 "MS PGothic"; margin: -13 2 -13 0; text-align: right; width: 100%}
+.rescnt	{font: normal 10 "Arial"}
+
+/* PAGE FOOTER */
+h6	{color: #6B6B6B; font: normal 10 "MS PGothic"; margin: 13 2 0 0; text-align: left; width: 100%}
+.footer {float: right}
+.getcnt	{font: normal 10 "Arial"}
+
+/* PREVIEW IMAGE */
+.imgbtn1{color: #AAAAAA; font: bold 11 "Times New Roman"; background: #D7D7F7; border: 0; margin: -12 0 0 0;
+	 width: 30; height: 13; text-align: center; float: right; cursor: auto}
+.imgbtn2{color: #FF9090; font: bold 11 "Times New Roman"; background: #D7D7F7; border: 0; margin: -12 0 0 0;
+	 width: 30; height: 13; text-align: center; float: right; cursor: auto}
+.imgmode{display: block; margin: 5 0 0 0; padding: 0; color: #0000FF; font: bold 11 "Arial"}
+.viewimg{display: inline; width: 100; cursor: crosshair}
+.hide	{display: none}

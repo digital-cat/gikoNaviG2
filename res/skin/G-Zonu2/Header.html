@@ -1,0 +1,179 @@
+<?std2chSKIN version="1.0"?>
+<html lang="ja">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=Shift_JIS">
+<meta name="SKINPATH" content="<SKINPATH/>">
+<link rel="stylesheet" type="text/css" href="<SKINPATH/>G-Zonu2.css">
+<script type="text/JavaScript">
+<!--
+var w_before = 0;
+var sage_stat = false;
+
+// PREVIEW IMAGE (Top) /////////////////
+var ready_stat = false;
+function resno(obj){
+	var rno = obj.parentElement.parentElement.id;
+	return parseInt(rno.substr(1));
+}
+// Link Error
+function no_image(obj){
+	obj.parentElement.style.color = "red";
+	obj.parentElement.children[0].innerText = "↓Link Error";
+}
+// Image Loaded
+function ok_image(obj){
+	obj.parentElement.children[0].className = "hide";
+	obj.className = "viewimg";
+}
+// Zoom In/Out - [Shift]+Wheel (IE6 only)
+function w_zoom(obj){
+	if (event.shiftKey){
+		var img_t = document.body.scrollTop - event.offsetY;
+		var img_p = event.offsetY / obj.height;
+		var wd = obj.width+(event.wheelDelta/120)*(-150);
+		if    (wd>1600){wd=1600;}
+		else if(wd<100){wd=100;}
+		obj.style.pixelWidth=wd;
+		document.body.scrollTop=img_t+obj.height*img_p;
+	}
+}
+// Zoom In: Click, Zoom Out: [Shift]+Click
+// Original Size: [Ctrl]+Click, Thumbnail: [Ctrl]+[Shift]+Click
+function zoom(obj){
+	var img_t = document.body.scrollTop - event.offsetY;
+	var img_p = event.offsetY / obj.height;
+	if (event.shiftKey){
+		if(obj.width-150>100 && !event.ctrlKey){obj.style.pixelWidth-=150;}
+		else                                   {obj.style.pixelWidth =100;}
+	}else{
+		if     (event.ctrlKey) {obj.style.width="auto";obj.style.pixelWidth=obj.width;}
+		else if(obj.width<1600){obj.style.pixelWidth += 150;}
+	}
+	document.body.scrollTop = img_t + obj.height * img_p;
+}
+// [img] button
+function m_over(){
+	if (!ready_stat) return false;
+	var w = resno(event.srcElement);
+	var msg = document.all.item("M"+w).innerHTML;
+	var lnk = msg.match(/<a[^>]+href="[^>]+(\.png"|\.j(pg|peg|pe|fif)"|\.gif"|\.bmp")/i);
+	if (lnk){
+		event.srcElement.style.color = 'red';
+		event.srcElement.style.cursor = 'hand';
+	}
+}
+// [img] button
+function m_out(){
+	if (!ready_stat) return false;
+	if (event.srcElement.className=="imgbtn1"){event.srcElement.style.color = '#AAAAAA';}
+	else                                      {event.srcElement.style.color = '#FF9090';}
+	event.srcElement.style.cursor = 'auto';
+}
+// Preview/Hide Image (Click [img] button)
+function preview(){
+	if (!ready_stat) return false;
+	var anchorHead=document.anchors[0].name.replace(/\d/,"")
+	var i,f,p;
+	var w = resno(event.srcElement);
+	var sv_height = document.getElementById("W"+w).clientHeight;
+	var obj = document.all.item("I"+w);
+	if (obj) {
+		if (obj.length) {
+			for (i=0; i<obj.length; i++){
+				if (obj(i).className != "hide")
+					obj(i).className = "hide";
+				else
+	 				obj(i).className = "imgmode";
+			}
+		}else{
+			if (obj.className != "hide")
+			 	obj.className = "hide";
+			else
+				obj.className = "imgmode";
+		}
+		if (sv_height > event.clientY)
+			document.body.scrollTop = document.anchors.item(anchorHead + w).offsetTop;
+	}else{
+		obj = document.all.item("M"+w);
+		var msg = obj.innerHTML;
+		var lnk = msg.match(/<a[^>]+href="[^>]+(\.png"|\.j(pg|peg|pe|fif)"|\.gif"|\.bmp")/ig);
+		if (lnk){
+			for (i=0,f=0; lnk[i]; i++){
+				var img = '<DIV class="imgmode" ID="I' + w +'"><span>Loading...</span><IMG class="hide" src=' + lnk[i].match(/\".+\"/) + ' onclick="zoom(this)" onmousewheel="w_zoom(this)" onerror="no_image(this)" onload="ok_image(this)"></DIV>';
+				p = msg.indexOf(lnk[i],f);
+				if (p != -1){
+					msg = msg.substr(0,p) + img + msg.substr(p);
+					f = p + img.length + lnk[i].length;
+				}
+			}
+			obj.innerHTML = msg;
+			if (sv_height > event.clientY)
+				document.body.scrollTop = document.anchors.item(anchorHead + w).offsetTop;
+			event.srcElement.className = "imgbtn2";
+		}
+	}
+	window.focus();
+}
+// PREVIEW IMAGE (Bottom) /////////////////
+
+// JUMP BUTTON (▲)
+function scroll_top() {
+	var w = resno(event.srcElement);
+	var anchorHead=document.anchors[0].name.replace(/\d/,"")
+	if(w<=w_before || w_before==0){document.body.scrollTop=0;}
+	else                          {document.body.scrollTop=document.anchors.item(anchorHead + w_before).offsetTop;}
+	w_before = w;
+	return false;
+}
+// JUMP BUTTON (▼)
+function scroll_bottom() {
+	var w = resno(event.srcElement);
+	var anchorHead=document.anchors[0].name.replace(/\d/,"");
+	if(w>=w_before){document.body.scrollTop=document.body.scrollHeight;}
+	else           {document.body.scrollTop=document.anchors.item(anchorHead + w_before).offsetTop;}
+	w_before = w;
+	return false;
+}
+//Sage Check
+function sage(m){
+	sage_stat = false;
+	if     (m.indexOf("sage")!=-1){sage_stat=true;document.write(' <span class="sage">↓</span> ');}
+	else if((m.indexOf("age")!=-1) || m=="0")    {document.write(' <span class="age">↑</span> ');}
+}
+//ID Check
+function id(rid){
+	var c="#7B7B7B";
+	var i;
+	if (rid != ""){
+		if(rid.length>=6){
+			for(i=0,c="#";i<6;i++){c=c+"0123456789ABCDEF".charAt(rid.charCodeAt(i) % 16);}
+		}
+		document.write('<span class="resid">' + '■'.fontcolor(c) + rid + '</span>');
+	}
+}
+//Zonu
+function zonu(){
+ var divs=document.getElementsByTagName("DIV");
+ var path=document.getElementsByName("SKINPATH")[0].content;
+ var l=divs.length;
+ for(var i=l;i--;){
+  if(!divs[i].id){continue}
+  var obj = divs[i].childNodes[1].childNodes[1];if(!obj){break}
+  var name= divs[i].childNodes[0].childNodes[2].childNodes[1].innerText;
+  var mail= divs[i].childNodes[0].childNodes[2].childNodes[2].nodeValue;
+  if(mail.match(/sage/)){obj.className="s_zonu"}
+  else                  {obj.className="n_zonu"}
+  var imgSrc="",imgW=0,imgH=0;
+  if     (name.match(/★/)){imgSrc=path+"cap.gif"; imgW=16;imgH=16;}
+  else if(name.match(/◆/)){imgSrc=path+"trip.gif";imgW=14;imgH=17;}
+  with(obj.firstChild){
+   src=imgSrc;style.width=imgW;style.height=imgH;
+  }
+ }
+}
+!-->
+</script>
+</head>
+<body link="#36006C" vlink="#36006C" alink="#F6FC11" onload="ready_stat=true;zonu()">
+<h5><BOARDNAME/> 【<BBSNAME/>】</h5>
+<form>

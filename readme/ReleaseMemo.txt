@@ -1,0 +1,64 @@
+リリースに関する覚書
+
+gikoNaviのリリースの時のフォルダ構成、ファイル構成
+
+\gikoNavi\
+	|
+	|-gikoNavi.avi
+	|-gikoNavi.bmp
+	|-gikoNabi.exe
+	|-readme.txt
+	|-setup.exe
+	|-setup.inf
+	|-Samba.default
+	|
+	|-\config\
+	|	|
+	|	|-\Board\
+	|	|	|-ギコナビ.txt
+	|	|	|-したらばＢＢＳ.txt
+	|	|	|-したらばＪＢＢＳ.txt
+	|	|	|-まちＢＢＳ.txt
+	|	|
+	|	|-\BoardPlugin\
+	|	|	|-MachiBBSPlugIn.dll
+	|	|	|-ShitarabaJBBSPlugIn.dll
+	|	|	|-ShitarabaPlugIn.dll
+	|	|
+	|	|-\css\
+	|	|	|
+	|	|	|-default.css
+	|	|	|-フォントサイズ10pt.css
+	|	|	|-フォントサイズ11pt.css
+	|	|	|-フォントサイズ12pt.css
+	|	|	|-フォントサイズ14pt.css
+	|	|	|-フォントサイズ16pt.css
+	|	|	|-注意.txt
+	|	|
+	|	|-\skin\
+	|		|-\afune\
+	|		|	|-(中身は省略)
+	|		|
+	|		|-\G-Zonu2\
+	|		|	|-(中身は省略)
+	|		|
+	|		|-\shi_skin_v6.6\
+	|		|	|-(中身は省略)
+	|		|
+	|		|-\Skin011\
+	|		|	|-(中身は省略)
+	|		|
+	|		|-\skin30-2G\
+	|		|	|-(中身は省略)
+	|		|
+	|		|-\skin30-3G\
+	|			|-(中身は省略)
+	|
+	|-\Sound\
+		|-エラー.wav
+		|-取得成功(差分).wav
+		|-取得成功.wav
+		|-未更新.wav
+
+これ以外の*.txt, *.iniなどは上書きアップデートをかける人がいるので、
+入れないようにする。

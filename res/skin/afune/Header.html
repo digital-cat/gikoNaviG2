@@ -1,0 +1,62 @@
+<?std2chSKIN version="1.0"?>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="ja">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=Shift_JIS">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title>afune+2 by サ骨</title>
+<style type="text/css">
+<!--
+/* 全般 */
+body { background-color: #EFEFEF; color: #000000; font-family: "ＭＳ Ｐゴシック" }
+div.o { margin: 0pt 0pt 12pt; padding: 0px; display: none}
+div.o div { margin: 0px 0px 0px 40px; padding: 0px}
+div.n { margin: 0pt 0pt 12pt; padding: 0px}
+div.n div { margin: 0px 0px 0px 40px; padding: 0px}
+form { margin-left: 40px}
+input.button { height: 19px; width: 60px; font-family: "ＭＳ Ｐゴシック"; font-size: 12px; border-style: solid; border-width: 1px}
+textarea { height: 15px; border: solid 1px #333333; background-color: #EFEFEF; color: #000000; ime-mode: inactive}
+body.afune div.o {display: block}
+.msg { color: rgb(0,64,0); background-color: #DEEFDE; border: solid 1px rgb(0,64,0); font-family: "ＭＳ ゴシック"; font-size: 10.5pt; padding: 2px 0px 0px 1px}
+/* 上から名前(通常)、名前(メール欄0)*3、投稿日。 */
+span { color: #228B22}
+.n0 a:link { color: #228B22; text-decoration: none}
+.n0 a:visited { color: #228B22; text-decoration: none}
+.n0 a:active { color: #228B22; text-decoration: none}
+span span { color: #000000;}
+/* 新着レス番号 */
+.nn a:link { color: #CC3300; text-decoration: none}
+.nn a:visited { color: #660099; text-decoration: none}
+.nn a:active { color: #FF0000; text-decoration: none}
+/* 既得レス番号 */
+.on a:link { color: #0000FF; text-decoration: none}
+.on a:visited { color: #660099; text-decoration: none}
+.on a:active { color: #FF0000; text-decoration: none}
+/* リンク */
+a:link { color: #0000FF; text-decoration: underline}
+a:visited { color: #660099; text-decoration: underline}
+a:active { color: #FF0000; text-decoration: underline}
+-->
+</style>
+<script type="text/JavaScript">
+<!--
+//あふーん機能(既得レス表示)
+function fukky() {body.className = "afune"; gorua.style.display = "none"; uma.style.display = "block";}
+function afune() {body.className = ""; uma.style.display = "none"; gorua.style.display = "block";}
+//メアド欄0でリンクが消えるやつ
+function hid(mail) { 
+if (mail == "0") { document.write("<span class=\"n0\">"); } 
+else { document.write("<span>"); } 
+} 
+-->
+</script>
+</head>
+<body id="body">
+<form name="gorua" id="gorua" method="post" action="" style="display: block">
+<input type="button" class="button" value="( ﾟДﾟ)ｺﾞﾙｧ" onClick="fukky()"> 
+<textarea name="textfield" rows="1" cols="24" accesskey="c"></textarea>
+<span class="msg">　新 着　</span></form>
+<form name="uma" id="uma" method="post" action="" style="display: none">
+<input type="button" class="button" value="( ﾟдﾟ)ｳﾏｰ" onClick="afune()"> 
+<textarea name="textfield" rows="1" cols="24" accesskey="c"></textarea>
+<span class="msg">　通 常　</span></form>

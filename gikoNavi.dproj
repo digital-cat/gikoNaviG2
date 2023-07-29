@@ -1,0 +1,243 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectGuid>{16cc67ab-5baa-4419-8e9e-6158c8831de9}</ProjectGuid>
+    <MainSource>gikoNavi.dpr</MainSource>
+    <Configuration Condition=" '$(Configuration)' == '' ">Release</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <DCC_DCCCompiler>DCC32</DCC_DCCCompiler>
+    <DCC_DependencyCheckOutputName>gikoNavi.exe</DCC_DependencyCheckOutputName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <Version>7.0</Version>
+    <DCC_DebugInformation>False</DCC_DebugInformation>
+    <DCC_LocalDebugSymbols>False</DCC_LocalDebugSymbols>
+    <DCC_SymbolReferenceInfo>0</DCC_SymbolReferenceInfo>
+    <DCC_Define>RELEASE;DELPRO</DCC_Define>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <Version>7.0</Version>
+    <DCC_Define>DEBUG;DELPRO</DCC_Define>
+  </PropertyGroup>
+  <ProjectExtensions>
+    <Borland.Personality>Delphi.Personality</Borland.Personality>
+    <Borland.ProjectType>VCLApplication</Borland.ProjectType>
+    <BorlandProject>
+<BorlandProject><Delphi.Personality><Parameters><Parameters Name="UseLauncher">False</Parameters><Parameters Name="LoadAllSymbols">True</Parameters><Parameters Name="LoadUnspecifiedSymbols">False</Parameters></Parameters><VersionInfo><VersionInfo Name="IncludeVerInfo">True</VersionInfo><VersionInfo Name="AutoIncBuild">False</VersionInfo><VersionInfo Name="MajorVer">1</VersionInfo><VersionInfo Name="MinorVer">72</VersionInfo><VersionInfo Name="Release">0</VersionInfo><VersionInfo Name="Build">862</VersionInfo><VersionInfo Name="Debug">False</VersionInfo><VersionInfo Name="PreRelease">True</VersionInfo><VersionInfo Name="Special">False</VersionInfo><VersionInfo Name="Private">False</VersionInfo><VersionInfo Name="DLL">False</VersionInfo><VersionInfo Name="Locale">1041</VersionInfo><VersionInfo Name="CodePage">932</VersionInfo></VersionInfo><VersionInfoKeys><VersionInfoKeys Name="CompanyName"></VersionInfoKeys><VersionInfoKeys Name="FileDescription">２ちゃんねる用ブラウザ　ギコナビ(避難所版II)</VersionInfoKeys><VersionInfoKeys Name="FileVersion">1.72.0.862</VersionInfoKeys><VersionInfoKeys Name="InternalName">gikoNavi</VersionInfoKeys><VersionInfoKeys Name="LegalCopyright">monazillaプロジェクト &amp; （ヒ）</VersionInfoKeys><VersionInfoKeys Name="LegalTrademarks"></VersionInfoKeys><VersionInfoKeys Name="OriginalFilename">gikoNavi</VersionInfoKeys><VersionInfoKeys Name="ProductName">ギコナビ</VersionInfoKeys><VersionInfoKeys Name="ProductVersion">1.0.0.0</VersionInfoKeys><VersionInfoKeys Name="Comments">２ちゃんねる用ブラウザ　ギコナビ(避難所版II)</VersionInfoKeys></VersionInfoKeys><Excluded_Packages>
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      <Excluded_Packages Name="$(BDS)\bin\bcboffice2k100.bpl">CodeGear C++Builder Office 2000 Servers Package</Excluded_Packages>
+      <Excluded_Packages Name="$(BDS)\bin\bcbofficexp100.bpl">CodeGear C++Builder Office XP Servers Package</Excluded_Packages>
+      <Excluded_Packages Name="$(BDS)\bin\dcloffice2k100.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
+      <Excluded_Packages Name="$(BDS)\bin\dclofficexp100.bpl">Microsoft Office XP Sample Automation Server Wrapper Components</Excluded_Packages>
+    </Excluded_Packages><Source><Source Name="MainSource">gikoNavi.dpr</Source></Source></Delphi.Personality></BorlandProject></BorlandProject>
+  </ProjectExtensions>
+  <Import Project="$(MSBuildBinPath)\Borland.Delphi.Targets" />
+  <ItemGroup>
+    <DelphiCompile Include="gikoNavi.dpr">
+      <MainSource>MainSource</MainSource>
+    </DelphiCompile>
+    <DCCReference Include="AbonInfo.pas" />
+    <DCCReference Include="AbonInfoSet.pas">
+      <Form>AbonInfoEdit</Form>
+    </DCCReference>
+    <DCCReference Include="AbonUnit.pas" />
+    <DCCReference Include="About.pas">
+      <Form>AboutDialog</Form>
+    </DCCReference>
+    <DCCReference Include="AddressHistory.pas">
+      <Form>AddressHistoryDM</Form>
+      <DesignClass>TDataModule</DesignClass>
+    </DCCReference>
+    <DCCReference Include="BbsThrSel.pas">
+      <Form>BbsThreadSel</Form>
+    </DCCReference>
+    <DCCReference Include="Belib.pas" />
+    <DCCReference Include="bmRegExp\bmregexp.pas" />
+    <DCCReference Include="BoardGroup.pas" />
+    <DCCReference Include="BrowserRecord.pas" />
+    <DCCReference Include="Component\GikoCoolBar.pas" />
+    <DCCReference Include="Component\GikoListView.pas" />
+    <DCCReference Include="Component\GikoPanel.pas" />
+    <DCCReference Include="DefaultFileManager.pas" />
+    <DCCReference Include="Dolib.pas" />
+    <DCCReference Include="Editor.pas">
+      <Form>EditorForm</Form>
+    </DCCReference>
+    <DCCReference Include="Encrypt\UBase64.pas" />
+    <DCCReference Include="Encrypt\UCryptAuto.pas" />
+    <DCCReference Include="ExternalBoardItem.pas" />
+    <DCCReference Include="ExternalBoardManager.pas" />
+    <DCCReference Include="ExternalBoardPlugInMain.pas" />
+    <DCCReference Include="ExternalFilePath.pas" />
+    <DCCReference Include="ExternalThreadItem.pas" />
+    <DCCReference Include="ExtPreviewDatamodule.pas">
+      <Form>ExtPreviewDM</Form>
+      <DesignClass>TDataModule</DesignClass>
+    </DCCReference>
+    <DCCReference Include="Favorite.pas">
+      <Form>FavoriteDM</Form>
+      <DesignClass>TDataModule</DesignClass>
+    </DCCReference>
+    <DCCReference Include="FavoriteAdd.pas">
+      <Form>FavoriteAddDialog</Form>
+    </DCCReference>
+    <DCCReference Include="FavoriteArrange.pas">
+      <Form>FavoriteArrangeDialog</Form>
+    </DCCReference>
+    <DCCReference Include="Gesture.pas" />
+    <DCCReference Include="GestureModel.pas" />
+    <DCCReference Include="Giko.pas">
+      <Form>GikoForm</Form>
+    </DCCReference>
+    <DCCReference Include="GikoBayesian.pas" />
+    <DCCReference Include="GikoDataModule.pas">
+      <Form>GikoDM</Form>
+      <DesignClass>TDataModule</DesignClass>
+    </DCCReference>
+    <DCCReference Include="GikoDB.pas" />
+    <DCCReference Include="GikoMessage.pas" />
+    <DCCReference Include="GikoSystem.pas" />
+    <DCCReference Include="GikoUtil.pas" />
+    <DCCReference Include="GikoXMLDoc.pas" />
+    <DCCReference Include="gzip_delphi2\gzip.pas" />
+    <DCCReference Include="gzip_delphi2\zlib.pas" />
+    <DCCReference Include="HintWindow.pas" />
+    <DCCReference Include="HistoryList.pas" />
+    <DCCReference Include="HTMLCreate.pas" />
+    <DCCReference Include="HTMLDocumentEvent.pas" />
+    <DCCReference Include="IndividualAbon.pas">
+      <Form>IndividualAbonForm</Form>
+    </DCCReference>
+    <DCCReference Include="IndyModule.pas">
+      <Form>IndyMdl</Form>
+      <DesignClass>TDataModule</DesignClass>
+    </DCCReference>
+    <DCCReference Include="InputAssist.pas">
+      <Form>InputAssistForm</Form>
+    </DCCReference>
+    <DCCReference Include="InputAssistDataModule.pas">
+      <Form>InputAssistDM</Form>
+      <DesignClass>TDataModule</DesignClass>
+    </DCCReference>
+    <DCCReference Include="ItemDownload.pas" />
+    <DCCReference Include="KeySetting.pas">
+      <Form>KeySettingForm</Form>
+    </DCCReference>
+    <DCCReference Include="Kotehan.pas">
+      <Form>KotehanDialog</Form>
+    </DCCReference>
+    <DCCReference Include="KuroutSetting.pas">
+      <Form>KuroutOption</Form>
+    </DCCReference>
+    <DCCReference Include="ListSelect.pas">
+      <Form>ListSelectDialog</Form>
+    </DCCReference>
+    <DCCReference Include="ListViewUtils.pas" />
+    <DCCReference Include="lkJSON\uLkJSON.pas" />
+    <DCCReference Include="MainForm.pas">
+      <Form>MainWindow</Form>
+    </DCCReference>
+    <DCCReference Include="MojuUtils.pas" />
+    <DCCReference Include="MoveHistoryItem.pas" />
+    <DCCReference Include="NewBoard.pas">
+      <Form>NewBoardDialog</Form>
+    </DCCReference>
+    <DCCReference Include="NewBoardURL.pas">
+      <Form>NewBoardURLForm</Form>
+    </DCCReference>
+    <DCCReference Include="NewFavoriteFolder.pas">
+      <Form>NewFavoriteFolderDialog</Form>
+    </DCCReference>
+    <DCCReference Include="NgEditor.pas">
+      <Form>NgEdit</Form>
+    </DCCReference>
+    <DCCReference Include="Option.pas">
+      <Form>OptionDialog</Form>
+    </DCCReference>
+    <DCCReference Include="PopupMenuSetting.pas">
+      <Form>PopupMenuSettingDialog</Form>
+    </DCCReference>
+    <DCCReference Include="PopupMenuUtil.pas" />
+    <DCCReference Include="Preview.pas" />
+    <DCCReference Include="RegExpTester.pas">
+      <Form>RegExpTest</Form>
+    </DCCReference>
+    <DCCReference Include="ReplaceDataModule.pas">
+      <Form>ReplaceDM</Form>
+      <DesignClass>TDataModule</DesignClass>
+    </DCCReference>
+    <DCCReference Include="ResPopupBrowser.pas" />
+    <DCCReference Include="res\ExternalBoardPlugIn\Y_TextConverter.pas" />
+    <DCCReference Include="Round.pas">
+      <Form>RoundDialog</Form>
+    </DCCReference>
+    <DCCReference Include="RoundData.pas" />
+    <DCCReference Include="RoundName.pas">
+      <Form>RoundNameDialog</Form>
+    </DCCReference>
+    <DCCReference Include="SambaTimer.pas" />
+    <DCCReference Include="Search.pas">
+      <Form>SearchDialog</Form>
+    </DCCReference>
+    <DCCReference Include="Setting.pas" />
+    <DCCReference Include="SHA1Unit.pas" />
+    <DCCReference Include="SkinFiles.pas" />
+    <DCCReference Include="Sort.pas" />
+    <DCCReference Include="Splash.pas">
+      <Form>SplashWindow</Form>
+    </DCCReference>
+    <DCCReference Include="ThreadControl.pas" />
+    <DCCReference Include="ThreadNGEdt.pas">
+      <Form>ThreadNGEdit</Form>
+    </DCCReference>
+    <DCCReference Include="ThreadSearch.pas">
+      <Form>ThreadSrch</Form>
+    </DCCReference>
+    <DCCReference Include="ToolBarSetting.pas">
+      <Form>ToolBarSettingDialog</Form>
+    </DCCReference>
+    <DCCReference Include="ToolBarUtil.pas" />
+    <DCCReference Include="Trip.pas" />
+    <DCCReference Include="UpdateCheck.pas">
+      <Form>UpdateCheckForm</Form>
+    </DCCReference>
+    <DCCReference Include="WideMemo.pas" />
+    <DCCReference Include="YofUtils.pas" />
+    <None Include="gikoNavi.todo" />
+  </ItemGroup>
+</Project>
