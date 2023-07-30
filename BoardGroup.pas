@@ -524,18 +524,22 @@ var
 	protocol, host, path, document, port, bookmark : string;
 	BBSID, BBSKey : string;
 	i, bi : Integer;
+  chkURL : String;  // for 5ch
 begin
-
-	boardURL	:= GikoSys.GetThreadURL2BoardURL( inURL );
+  // for 5ch
+  chkURL := inURL;
+  GikoSys.Regulate2chURL(chkURL);
+  // for 5ch
+	boardURL	:= GikoSys.GetThreadURL2BoardURL( chkURL );
 	board			:= BBSsFindBoardFromURL( boardURL );
 	if board = nil then
 		Result := nil
 	else begin
-		Result := board.FindThreadFromURL( inURL );
+		Result := board.FindThreadFromURL( chkURL );
 		//Ç‡ÇµÇ‡2chÇÃî¬Ç»ÇÁ
 		if (Result = nil) and (board.Is2ch) then begin
-			GikoSys.ParseURI( inURL, protocol, host, path, document, port, bookmark );
-			GikoSys.Parse2chURL( inURL, path, document, BBSID, BBSKey );
+			GikoSys.ParseURI( chkURL, protocol, host, path, document, port, bookmark );
+			GikoSys.Parse2chURL( chkURL, path, document, BBSID, BBSKey );
 			Result := board.FindThreadFromFileName(BBSKey + '.dat');
 		end else if (Result = nil) and not (board.Is2ch) then begin
 		//ÉvÉâÉOÉCÉìånÇÃíTçıÅiéÂÇ…URLÇ™ìríÜÇ≈ïœçXÇ…Ç»Ç¡ÇΩóﬁ)
@@ -543,8 +547,8 @@ begin
 				bi := Length(BoardGroups) - 1;
 				for i := 1 to bi do begin
 					if (BoardGroups[i].BoardPlugIn <> nil) and (Assigned(Pointer(BoardGroups[i].BoardPlugIn.Module))) then begin
-						if BoardGroups[i].BoardPlugIn.AcceptURL( inURL ) = atThread then begin
-							tmpThread		:= TThreadItem.Create( BoardGroups[i].BoardPlugIn, Board, inURL );
+						if BoardGroups[i].BoardPlugIn.AcceptURL( chkURL ) = atThread then begin
+							tmpThread		:= TThreadItem.Create( BoardGroups[i].BoardPlugIn, Board, chkURL );
 							if not board.IsThreadDatRead then begin
 								GikoSys.ReadSubjectFile( board );
 							end;
