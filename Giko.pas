@@ -2182,7 +2182,7 @@ begin
 		FPreviewURL := Text2;
 		PreviewTimer.Interval := GikoSys.Setting.PreviewWait;
 		PreviewTimer.Enabled := True;
-	end else if (Pos('about:blank', Text2) = 1) or (Pos('http://', Text2) = 1) or (Pos('mailto:', Text2) = 1) then begin
+	end else if (Pos('about:blank', Text2) = 1) or (Pos('http://', Text2) = 1) or (Pos('https://', Text2) = 1) or (Pos('mailto:', Text2) = 1) then begin
 		if (Pos('mailto:', Text2) = 1) and (GikoSys.Setting.RespopupMailTo) then begin
 			s := StringReplace(Text2, 'mailto:', '', [rfIgnoreCase]);
 			//ギコナビスレ パート3の466氏に感謝
