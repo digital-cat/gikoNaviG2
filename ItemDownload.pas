@@ -1581,7 +1581,8 @@ begin
 		OldCnt := 0;
 		try
 		//		if FileExists(FileName) and (ResponseCode = 206) then begin
-			if FileExists(FileName) and (State = gdsDiffComplete) then begin
+			//if FileExists(FileName) and (State = gdsDiffComplete) then begin
+			if FileExists(FileName) and (State = gdsDiffComplete) and (ForceDownload = False) and (IsAbone = False) then begin  // Indy10でレスポンスコード変わった？
 				loopCnt := 10;
 				repeat
 					finish := true;
