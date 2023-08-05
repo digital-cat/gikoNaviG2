@@ -3,7 +3,7 @@ unit Editor;
 interface
 
 uses
-	Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
+	Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Math,
 	Dialogs, StdCtrls, ComCtrls, ExtCtrls, ToolWin, Menus, OleCtrls, Registry,
 {$IF Defined(DELPRO) }
 //	SHDocVw,
@@ -292,6 +292,8 @@ type
         function isGobaku: Boolean;
     //! UTF8Ç≈URLEncode
     function URLEncodeUTF8(const src: String) : String;
+    //! ñ{ï∂ï∂éöóÒéÊìæ
+    function GetBodyText(): String;
 	protected
 		procedure CreateParams(var Params: TCreateParams); override;
 	public
@@ -486,10 +488,11 @@ const
 	TAB_LENGTH	= 4;
 begin
 
-    if (FUseUC = True) then
-	    body := BodyEditUC.EncodeText
-    else
-        body := BodyEdit.Text;
+//    if (FUseUC = True) then
+//	    body := BodyEditUC.EncodeText
+//    else
+//        body := BodyEdit.Text;
+  body := GetBodyText();
 
 	if AmpToCharRefAction.Checked then
 		// & ÇÃíuä∑ÇÕàÍî‘ç≈èâÇ…Ç‚ÇÈÇ±Ç∆
@@ -653,10 +656,11 @@ begin
 
     Board := GetBoard;
 
-    if (FUseUC = True) then
-        BodyLen := Length(BodyEditUC.EncodeText)
-    else
-        BodyLen := Length(BodyEdit.Text);
+//    if (FUseUC = True) then
+//        BodyLen := Length(BodyEditUC.EncodeText)
+//    else
+//        BodyLen := Length(BodyEdit.Text);
+  BodyLen := Length(GetBodyText());
 
 	if (not GikoSys.Setting.UseMachineTime) and
 		 ((Board.LastGetTime = 0) or
@@ -879,7 +883,7 @@ begin
 			end;
 
 			//GetSendData(Source);
-			GetSendData(Source, is2ch, (is2ch = False));  // for 5ch
+			GetSendData(Source, False, (is2ch = False));  // for 5ch
 
 			//IdAntiFreeze.Active := True;
       IndyMdl.StartAntiFreeze(100); // for Indy10
@@ -1207,10 +1211,11 @@ begin
     if (ini <> nil) then begin
         try
             sDate := IntToStr(GikoSys.DateTimeToInt(Now));
-            if (FUseUC = True) then
-                Body := BodyEditUC.EncodeText
-            else
-                Body := BodyEdit.Text;
+//            if (FUseUC = True) then
+//                Body := BodyEditUC.EncodeText
+//            else
+//                Body := BodyEdit.Text;
+            Body := GetBodyText();
 
             ini.WriteString(sDate, 'Name', NameComboBox.Text);
             ini.WriteString(sDate, 'EMail', MailComboBox.Text);
@@ -2881,28 +2886,47 @@ begin
 end;
 
 function TEditorForm.URLEncodeUTF8(const src: String) : String;
-const
-  DUMMY_URL = 'https://dummy.com/';
-var
-  url: String;
-  urlEnc: String;
-  dummy: Boolean;
-  dummyLen: Integer;
 begin
-  dummyLen := Length(DUMMY_URL);
-  dummy := ((AnsiPos('https://', src) < 1) and (AnsiPos('http://', src) < 1));
+  Result := FURI.ParamsEncode(src, IndyUTF8Encoding());
+end;
 
-  if dummy then
-    url := DUMMY_URL + src
-  else
-    url := src;
+//! ñ{ï∂ï∂éöóÒéÊìæ
+function TEditorForm.GetBodyText(): String;
+var
+  idx: Integer;
+  max: Integer;
+  empty: Boolean;
+  line: String;
+  encLines: TStringList;
+begin
+  encLines := TStringList.Create;
+  try
+    if FUseUC then begin
+      encLines.LineBreak := #13#10;
+      encLines.Text := BodyEditUC.EncodeText;
+    end;
 
-  urlEnc := FURI.URLEncode(url, IndyUTF8Encoding());
+    max := ifThen(FUseUC, encLines.Count, BodyEdit.Lines.Count);
+    if max < 1 then
+      Exit;
 
-  if dummy then
-    Result := Copy(urlEnc, dummyLen + 1, Length(urlEnc) - dummyLen)
-  else
-    Result := urlEnc;
+    empty := True;
+    for idx := max - 1 downto 0 do begin
+      if FUseUC then
+        line := encLines[idx]
+      else
+        line := BodyEdit.Lines[idx];
+      if (empty = False) or (line <> '') then begin
+        if empty = True then begin
+          empty := False;
+          Result := line;
+        end else
+          Result := line + #13#10 + Result;
+      end;
+    end;
+  finally
+    encLines.Free;
+  end;
 end;
 
 end.
