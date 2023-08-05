@@ -298,28 +298,8 @@ begin
 end;
 
 function TShitarabaJBBSAcquireBoardDialog.URLEncodeUTF8(const src: String) : String;
-const
-  DUMMY_URL = 'https://dummy.com/';
-var
-  url: String;
-  urlEnc: String;
-  dummy: Boolean;
-  dummyLen: Integer;
 begin
-  dummyLen := Length(DUMMY_URL);
-  dummy := ((AnsiPos('https://', src) < 1) and (AnsiPos('http://', src) < 1));
-
-  if dummy then
-    url := DUMMY_URL + src
-  else
-    url := src;
-
-  urlEnc := FURI.URLEncode(url, IndyUTF8Encoding());
-
-  if dummy then
-    Result := Copy(urlEnc, dummyLen + 1, Length(urlEnc) - dummyLen)
-  else
-    Result := urlEnc;
+  Result := FURI.ParamsEncode(src, IndyUTF8Encoding());
 end;
 
 function TShitarabaJBBSAcquireBoardDialog.UTF8toSJIS(pUtf8: PChar): String;
