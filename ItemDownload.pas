@@ -108,6 +108,7 @@ type
 		FErrText: string;
 		FForceDownload: Boolean;
 		FIsAbone : Boolean;
+  	FRangeStart: Integer;
 	public
 		procedure SaveListFile;
 		procedure SaveItemFile;
@@ -124,6 +125,7 @@ type
 		property ErrText: string read FErrText write FErrText;
 		property ForceDownload: Boolean read FForceDownload write FForceDownload;
 		property IsAbone : Boolean read FIsAbone write FIsAbone;
+    property RangeStart: Integer read FRangeStart write FRangeStart;
 	end;
 
 implementation
@@ -240,7 +242,7 @@ var
 	URL: string;
 	CgiStatus: TCgiStatus;
 	Modified: TDateTime;
-	RangeStart: Integer;
+	//RangeStart: Integer;
 	AdjustLen: Integer;
 	Idx: Integer;
 	ATitle: string;
@@ -255,6 +257,7 @@ const
 	ADJUST_MARGIN	= 16;
 begin
 	while not Terminated do begin
+    Item.RangeStart := 0;
 		//===== プラグイン
 		FAbort := False;
 		boardPlugIn := nil;
@@ -337,7 +340,7 @@ begin
 				//DAT or Subject取得
 				//********************
 				Item.ResponseCode := 0;
-				RangeStart := 0;
+				Item.RangeStart := 0;
 				AdjustLen := 0;
 				Modified := 0;
 				if Item.DownType = gdtBoard then begin
@@ -379,7 +382,7 @@ begin
 						if Assigned(OnDownloadMsg) then
 							Synchronize(FireDownloadMsg);
 						Modified := ZERO_DATE;
-						RangeStart := 0;
+						Item.RangeStart := 0;
 						AdjustLen := 0;
 					end else begin
 						Modified := Item.ThreadItem.LastModified;
@@ -388,13 +391,13 @@ begin
 							Writeln('RangeStart: ' + IntToStr(Item.ThreadItem.Size));
 							{$ENDIF}
 							// あぼーんチェックのため adjustMargin バイト前から取得
-							RangeStart := Item.ThreadItem.Size;
+							Item.RangeStart := Item.ThreadItem.Size;
 							AdjustLen := -adjustMargin;
 						end;
 					end;
 				end;
 				Item.IsAbone := False;
-				DownloadResult := DatDownload(Item.DownType, URL, Modified, RangeStart, AdjustLen);
+				DownloadResult := DatDownload(Item.DownType, URL, Modified, Item.RangeStart, AdjustLen);
 				{$IFDEF DEBUG}
 				Writeln('ResponseCode: ' + IntToStr(FIndy.ResponseCode));
 				{$ENDIF}
@@ -427,7 +430,7 @@ begin
 						if ATitle = '' then
 							ATitle := '（名称不明）';
 						//差分取得かつ１バイト目がLFでない場合は「あぼーん」されているかもしれんので再取得
-						RangeStart := 0;
+						Item.RangeStart := 0;
 						AdjustLen := 0;
 						FMsg := '★「あぼーん」を検出したので再取得を行います - [' + ATitle + ']';
 						FIcon := gmiWhat;
@@ -435,7 +438,7 @@ begin
 							DeleteFile(ChangeFileExt(Item.FThreadItem.GetThreadFileName,'.NG'));
 						if Assigned(OnDownloadMsg) then
 							Synchronize(FireDownloadMsg);
-						if not DatDownload(Item.DownType, URL, ZERO_DATE, RangeStart, AdjustLen) then
+						if not DatDownload(Item.DownType, URL, ZERO_DATE, Item.RangeStart, AdjustLen) then
 							Item.State := gdsError;
 						{$IFDEF DEBUG}
 						Writeln('あぼーん再取得後');
@@ -471,9 +474,9 @@ begin
 						Synchronize(FireDownloadMsg);
 					URL := Item.ThreadItem.GetDatgzURL;
 					Modified := Item.ThreadItem.LastModified;
-					RangeStart := 0;
+					Item.RangeStart := 0;
 					AdjustLen := 0;
-					if not DatDownload(Item.DownType, URL, Modified, RangeStart, AdjustLen) then
+					if not DatDownload(Item.DownType, URL, Modified, Item.RangeStart, AdjustLen) then
 						Item.State := gdsError;
 					{$IFDEF DEBUG}
 					Writeln('ResponseCode: ' + IntToStr(Item.ResponseCode));
@@ -493,9 +496,9 @@ begin
 						Synchronize(FireDownloadMsg);
 					URL := ChangeFileExt(URL, '');
 					Modified := Item.ThreadItem.LastModified;
-					RangeStart := 0;
+					Item.RangeStart := 0;
 					AdjustLen := 0;
-					if not DatDownload(Item.DownType, URL, Modified, RangeStart, AdjustLen) then
+					if not DatDownload(Item.DownType, URL, Modified, Item.RangeStart, AdjustLen) then
 						Item.State := gdsError;
 					{$IFDEF DEBUG}
 					Writeln('ResponseCode: ' + IntToStr(Item.ResponseCode));
@@ -536,9 +539,9 @@ begin
 						Synchronize(FireDownloadMsg);
 					URL := Item.ThreadItem.GetOfflaw2SoURL;
 					Modified := Item.ThreadItem.LastModified;
-					RangeStart := 0;
+					Item.RangeStart := 0;
 					AdjustLen := 0;
-					if not DatDownload(Item.DownType, URL, Modified, RangeStart, AdjustLen) then begin
+					if not DatDownload(Item.DownType, URL, Modified, Item.RangeStart, AdjustLen) then begin
 						{$IFDEF DEBUG}
 						Writeln('ResponseCode: ' + IntToStr(Item.ResponseCode));
 						{$ENDIF}
@@ -596,10 +599,10 @@ begin
                             Synchronize(FireDownloadMsg);
                         URL := Item.ThreadItem.GetRokkaURL(FSessionID);
                         Modified := Item.ThreadItem.LastModified;
-                        RangeStart := 0;
+                        Item.RangeStart := 0;
                         AdjustLen := 0;
 
-                        if not DatDownload(Item.DownType, URL, Modified, RangeStart, AdjustLen) then begin
+                        if not DatDownload(Item.DownType, URL, Modified, Item.RangeStart, AdjustLen) then begin
                             {$IFDEF DEBUG}
                             Writeln('ResponseCode: ' + IntToStr(Item.ResponseCode));
                             {$ENDIF}
@@ -645,10 +648,10 @@ begin
                 Synchronize(FireDownloadMsg);
             URL := GetOysterURL(URL);
             Modified := Item.ThreadItem.LastModified;
-            RangeStart := 0;
+            Item.RangeStart := 0;
             AdjustLen := 0;
 
-            if not DatDownload(Item.DownType, URL, Modified, RangeStart, AdjustLen) then begin
+            if not DatDownload(Item.DownType, URL, Modified, Item.RangeStart, AdjustLen) then begin
               {$IFDEF DEBUG}
               Writeln('ResponseCode: ' + IntToStr(Item.ResponseCode));
               {$ENDIF}
@@ -687,9 +690,9 @@ begin
                             Synchronize(FireDownloadMsg);
 						URL := Item.ThreadItem.GetExternalBoardKakoDatURL;
 						Modified := Item.ThreadItem.LastModified;
-						RangeStart := 0;
+						Item.RangeStart := 0;
 						AdjustLen := 0;
-						if not DatDownload(Item.DownType, URL, Modified, RangeStart, AdjustLen) then
+						if not DatDownload(Item.DownType, URL, Modified, Item.RangeStart, AdjustLen) then
 							Item.State := gdsError;
 						{$IFDEF DEBUG}
 						Writeln('ResponseCode: ' + IntToStr(Item.ResponseCode));
@@ -1582,7 +1585,7 @@ begin
 		try
 		//		if FileExists(FileName) and (ResponseCode = 206) then begin
 			//if FileExists(FileName) and (State = gdsDiffComplete) then begin
-			if FileExists(FileName) and (State = gdsDiffComplete) and (ForceDownload = False) and (IsAbone = False) then begin  // Indy10でレスポンスコード変わった？
+			if FileExists(FileName) and (State = gdsDiffComplete) and (self.RangeStart > 0) then begin  // Indy10でレスポンスコード変わった？
 				loopCnt := 10;
 				repeat
 					finish := true;
