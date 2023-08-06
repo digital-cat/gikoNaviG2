@@ -2722,7 +2722,10 @@ begin
 		end;
     end;
 
-	Result := 'Cookie: ' + Result + 'NAME=' + NameComboBox.Text + '; MAIL=' + MailComboBox.Text;
+	//Result := 'Cookie: ' + Result + 'NAME=' + NameComboBox.Text + '; MAIL=' + MailComboBox.Text;
+	Result := 'Cookie: ' + Result;
+  if Board.Is2ch = False then   // Å´ÇTÇøÇ·ÇÒÇ≈ÇÕïsóvÇ…Ç»Ç¡ÇΩÇÁÇµÇ¢
+    Result := Result + 'NAME=' + NameComboBox.Text + '; MAIL=' + MailComboBox.Text;
 
     if HAP <> '' then
     	Result := Result + '; HAP=' + HAP + '; ';
