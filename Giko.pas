@@ -1256,8 +1256,9 @@ begin
 	//ダウンロードオブジェクト
 	CreateControlThread();
 
-	// 絞込検索履歴
-	SelectComboBox.Items.Assign( GikoSys.Setting.SelectTextList );
+  // ツールバーの初期化の影響？でコンボボックスが初期化される(？)ため最後の方へ移動 for D2007
+	//// 絞込検索履歴
+	//SelectComboBox.Items.Assign( GikoSys.Setting.SelectTextList );
 
 	//ブラウザタブ設定
 	SetBrowserTabState;
@@ -1372,6 +1373,9 @@ begin
     // D&Dを受け取る
     DragAcceptFiles(ListView.Handle, True);
 
+  // ツールバーの初期化の影響？でコンボボックスが初期化される(？)ため上からここへ移動 for D2007
+	// 絞込検索履歴
+	SelectComboBox.Items.Assign( GikoSys.Setting.SelectTextList );
 
     // 初期化に失敗したモジュールチェック
     if (FavoriteDM.AbEnd) then begin
