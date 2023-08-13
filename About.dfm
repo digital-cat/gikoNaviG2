@@ -5,7 +5,7 @@ object AboutDialog: TAboutDialog
   VertScrollBar.Visible = False
   BorderStyle = bsDialog
   Caption = #12496#12540#12472#12519#12531#24773#22577
-  ClientHeight = 244
+  ClientHeight = 255
   ClientWidth = 323
   Color = clBtnFace
   Font.Charset = SHIFTJIS_CHARSET
@@ -152,12 +152,13 @@ object AboutDialog: TAboutDialog
   end
   object Panel2: TPanel
     Left = 0
-    Top = 203
+    Top = 214
     Width = 323
     Height = 41
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 1
+    ExplicitTop = 203
     object ButtonPanel: TPanel
       Left = 129
       Top = 0
@@ -194,19 +195,21 @@ object AboutDialog: TAboutDialog
     Left = 0
     Top = 41
     Width = 323
-    Height = 162
+    Height = 173
     Align = alClient
     Caption = 'VersionPanel'
     TabOrder = 2
+    ExplicitHeight = 162
     object VersionMemo: TMemo
       Left = 1
       Top = 1
       Width = 321
-      Height = 160
+      Height = 171
       Align = alClient
       ReadOnly = True
       ScrollBars = ssBoth
       TabOrder = 0
+      ExplicitHeight = 160
     end
   end
 end

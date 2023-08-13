@@ -5,7 +5,7 @@ interface
 uses
 	Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
 	StdCtrls, Menus, Clipbrd, ExtCtrls, UrlMon, ShellAPI, MMSystem,
-	GikoSystem;
+	GikoSystem, IndyModule;
 
 type
 	TAboutDialog = class(TForm)
@@ -91,6 +91,14 @@ begin
 	VersionMemo.Lines.Add('');
 	VersionMemo.Lines.Add('<IE>');
 	VersionMemo.Lines.Add(Trim(GikoSys.GetIEVersion));
+{$IFDEF DEBUG}
+	VersionMemo.Lines.Add('');
+	VersionMemo.Lines.Add('<Indy>');
+  VersionMemo.Lines.Add(IndyMdl.GetIndyVersion);
+{$ENDIF}
+	VersionMemo.Lines.Add('');
+	VersionMemo.Lines.Add('<OpenSSL>');
+  VersionMemo.Lines.Add(IndyMdl.GetOpenSSLVersion);
 end;
 
 
