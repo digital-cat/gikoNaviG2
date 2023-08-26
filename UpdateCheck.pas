@@ -80,11 +80,13 @@ end;
 function TUpdateCheckForm.CheckUpdate(nightbuild :Boolean): Boolean;
 const
 {$IFDEF DEBUG}
-//	CHECK_URL = 'http://gikonavi.sourceforge.jp/updater/debug.txt';
-	CHECK_URL = 'https://gikonavigoeson.osdn.jp/updater/debug.txt';
+//	CHECK_URL = 'https://gikonavi.osdn.jp/updater/debug.txt';
+//	CHECK_URL = 'https://gikonavigoeson.osdn.jp/updater/debug.txt';
+	CHECK_URL = 'https://digital-cat.github.io/gikog2/updater/debug.txt';
 {$ELSE}
-//	CHECK_URL = 'http://gikonavi.sourceforge.jp/updater/latest.txt';
-	CHECK_URL = 'https://gikonavigoeson.osdn.jp/updater/latest.txt';
+//	CHECK_URL = 'https://gikonavi.osdn.jp/updater/latest.txt';
+//	CHECK_URL = 'https://gikonavigoeson.osdn.jp/updater/latest.txt';
+	CHECK_URL = 'https://digital-cat.github.io/gikog2/updater/latest.txt';
 {$ENDIF}
 var
     value, url : string;
