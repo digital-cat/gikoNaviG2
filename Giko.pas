@@ -6510,8 +6510,12 @@ var
 	idx : Integer;
 begin
 		idx := BrowserTab.IndexOfTabAt(MousePos.X, MousePos.Y);
+    if idx = -1 then begin
+      Handled := True;  // タブじゃない所ではタブのメニューを出さない
+      Exit;
+    end;
 		if BrowserTab.TabIndex <> idx then begin
-		BrowserTab.TabIndex := idx;
+      BrowserTab.TabIndex := idx;
 			BrowserTab.OnChange(nil);
 		end;
 end;
