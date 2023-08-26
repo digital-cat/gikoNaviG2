@@ -2,20 +2,21 @@
 AppName=ギコナビ
 AppVerName=ギコナビ
 AppId=gikoNavi
-AppMutex=http://gikonavigoeson.sourceforge.jp/gikonavi/mutex
-AppPublisherURL=http://gikonavigoeson.sourceforge.jp/
+AppMutex=gikoNaviSetupMutex
+AppPublisherURL=https://github.com/digital-cat/gikoNaviG2
 AppendDefaultDirName = no
 ;DefaultDirName={pf}\gikonavi
-DefaultDirName={code:GetBase}\gikonavi
-VersionInfoDescription=ギコナビ(避難所版)セットアッププログラム
+;DefaultDirName={code:GetBase}\gikonavi
+DefaultDirName=C:\gikonavi
+VersionInfoDescription=ギコナビ(避難所版II)セットアッププログラム
 DefaultGroupName=ギコナビ
 ; 自分の環境に合わせてください
-SourceDir=C:\work\Setup\Release70-860
-OutputDir=C:\work\Setup\Output
-SetupIconFile=C:\work\Setup\GikoSetup.ico
+SourceDir=D:\giko\Setup\Release72-865
+OutputDir=D:\giko\Setup\Output
+SetupIconFile=D:\giko\Setup\GikoSetup.ico
 ; ギコナビのバージョンにあわせてください
-VersionInfoVersion=1.70.1.860
-OutputBaseFilename=gikoNavi_b70_setup
+VersionInfoVersion=1.72.0.865
+OutputBaseFilename=gikoNavi_b72_865_setup
 
 
 
@@ -32,8 +33,9 @@ Name: "{app}\config\NGwords"
 
 
 [Files]
-Source: * ; Destdir: {app} ;Excludes: "gikoNavi.exe" ;
+Source: * ; Destdir: {app} ;Excludes: "gikoNavi.exe,*.dll" ;
 Source: "gikoNavi.exe" ; Destdir: {app} ;Permissions: everyone-full; Flags: ignoreversion
+Source: "*.dll" ; Destdir: {app} ;Permissions: everyone-full; Flags: ignoreversion
 Source: "Sound\*" ; Destdir: {app}\Sound ;Flags: createallsubdirs recursesubdirs ;
 Source: "config\*" ; Destdir: {app}\config ;Excludes: "*.dll";Flags: createallsubdirs recursesubdirs ;
 Source: "config\BoardPlugin\*.dll" ; Destdir: {app}\config\BoardPlugin ;Flags: ignoreversion;
@@ -41,11 +43,12 @@ Source: "config\BoardPlugin\*.dll" ; Destdir: {app}\config\BoardPlugin ;Flags: i
 [Icons]
 Name: "{group}\Readme"; Filename: "{app}\readme.txt"; Tasks: startmenuicon
 Name: "{group}\Readme_Goeson"; Filename: "{app}\readme_goeson.txt"; Tasks: startmenuicon
+Name: "{group}\Readme_G2"; Filename: "{app}\readme_g2.txt"; Tasks: startmenuicon
 Name: "{group}\ギコナビ"; Filename: "{app}\gikoNavi.exe"; WorkingDir: "{app}"; Tasks: startmenuicon
 Name: "{commondesktop}\ギコナビ"; Filename: "{app}\gikoNavi.exe"; WorkingDir: "{app}"; Tasks: desktopicon
 
 [Run]
-Filename: "{app}\readme_goeson.txt"; Description: "READMEを表示する"; Flags: postinstall shellexec skipifsilent unchecked
+Filename: "{app}\readme_g2.txt"; Description: "READMEを表示する"; Flags: postinstall shellexec skipifsilent unchecked
 Filename: "{app}\gikoNavi.exe"; Description: "アプリケーションを起動する"; Flags: postinstall shellexec skipifsilent
 
 [UninstallDelete]
