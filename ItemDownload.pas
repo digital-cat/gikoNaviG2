@@ -648,8 +648,6 @@ begin
                 Synchronize(FireDownloadMsg);
             URL := GetOysterURL(URL);
             Modified := Item.ThreadItem.LastModified;
-            Item.RangeStart := 0;
-            AdjustLen := 0;
 
             if not DatDownload(Item.DownType, URL, Modified, Item.RangeStart, AdjustLen) then begin
               {$IFDEF DEBUG}
