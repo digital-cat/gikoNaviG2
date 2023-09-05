@@ -131,7 +131,7 @@ type
 implementation
 
 uses
-	Y_TextConverter, MojuUtils, HTMLCreate, ReplaceDataModule;
+	Y_TextConverter, MojuUtils, HTMLCreate, ReplaceDataModule, DmSession5ch;
 
 constructor TDownloadThread.Create(CreateSuspended: Boolean);
 begin
@@ -1055,7 +1055,7 @@ end;
 
 procedure TDownloadThread.GetSessionID;
 begin
-	FSessionID := GikoSys.Dolib.SessionID;
+	FSessionID := Session5ch.SessionID;
 end;
 
 procedure TDownloadThread.Abort;

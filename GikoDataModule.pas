@@ -534,8 +534,8 @@ uses
 	GikoBayesian, About, ShellAPI,
 	RoundName, RoundData, Menus, ListViewUtils,
 	ThreadControl, GikoMessage, InputAssist,
-    DefaultFileManager, Forms, NewBoardURL, UpdateCheck,
-    PopupMenuSetting, ThreadSearch, ThreadNGEdt;
+  DefaultFileManager, Forms, NewBoardURL, UpdateCheck,
+  PopupMenuSetting, ThreadSearch, ThreadNGEdt, DmSession5ch;
 
 const
 	MSG_ERROR : string = 'エラー';
@@ -1946,11 +1946,11 @@ end;
 procedure TGikoDM.LoginActionExecute(Sender: TObject);
 var
 	TmpCursor: TCursor;
-	msg : String;
+//	msg : String;
 begin
-	if GikoSys.Dolib.Connected then begin
+	if Session5ch.Connected then begin
 		//ログアウト
-		GikoSys.Dolib.Disconnect;
+		Session5ch.Disconnect;
 		LoginAction.Checked := False;
 		GikoForm.AddMessageList(GikoSys.GetGikoMessage(gmLogout), nil, gmiOK);
 		LoginAction.Caption := 'ログイン(&L)';
@@ -1959,66 +1959,19 @@ begin
 		GikoForm.ScreenCursor := crHourGlass;
 		try
 			//通常ログイン
-			if not GikoSys.Setting.ForcedLogin then begin
-				GikoSys.Dolib.ClientUA := 'gikoNavi/1.00';
-				GikoSys.Dolib.UserName := GikoSys.Setting.UserID;
-				GikoSys.Dolib.Password := GikoSys.Setting.Password;
-				if GikoSys.Setting.ReadProxy then begin
-					GikoSys.Dolib.ProxyAddress := GikoSys.Setting.ReadProxyAddress;
-					GikoSys.Dolib.ProxyPort := GikoSys.Setting.ReadProxyPort;
-				end else begin
-					GikoSys.Dolib.ProxyAddress := '';
-					GikoSys.Dolib.ProxyPort := 0;
-				end;
-				if GikoSys.Dolib.Connect then begin
-					LoginAction.Checked := True;
-					GikoForm.AddMessageList(GikoSys.GetGikoMessage(gmLogin) + GikoSys.Setting.UserID, nil, gmiOK);
-					LoginAction.Caption := 'ログアウト(&L)';
-					//LoginToolButton.Style := tbsCheck;
-				end else begin
+      if Session5ch.Connect then begin
+        LoginAction.Checked := True;
+        GikoForm.AddMessageList(GikoSys.GetGikoMessage(gmLogin) + GikoSys.Setting.UserID, nil, gmiOK);
+        LoginAction.Caption := 'ログアウト(&L)';
+        //LoginToolButton.Style := tbsCheck;
+      end else begin
 		//			MsgBox(Handle, 'ログイン出来ませんでした', 'エラー', MB_OK or MB_ICONSTOP);
-					GikoForm.AddMessageList(GikoSys.Dolib.ErrorMsg, nil, gmiNG);
-					GikoForm.PlaySound('Error');
-					LoginAction.Checked := False;
-					//LoginToolButton.Down := False;
-					///LoginToolButton.Style := tbsButton;
-				end;
-			end else begin
-				msg := '強制ログインモードでは，サーバの証明書の有効性をチェックしません。' + #13#10
-						+ '偽装サーバの場合、あなたのパスワード盗まれる可能性があります。' + #13#10
-						+ 'このモードでログインを試みますか？' + #13#10;
-				if MsgBox(GikoForm.Handle, msg, '警告', MB_YESNO or MB_ICONEXCLAMATION) = IDYES	 then begin
-					GikoSys.Dolib.ClientUA := 'gikoNavi/1.00';
-					GikoSys.Dolib.UserName := GikoSys.Setting.UserID;
-					GikoSys.Dolib.Password := GikoSys.Setting.Password;
-					if GikoSys.Setting.ReadProxy then begin
-						GikoSys.Dolib.ProxyAddress := GikoSys.Setting.ReadProxyAddress;
-						GikoSys.Dolib.ProxyPort := GikoSys.Setting.ReadProxyPort;
-					end else begin
-						GikoSys.Dolib.ProxyAddress := '';
-						GikoSys.Dolib.ProxyPort := 0;
-					end;
-					//SSL障害用強制ログイン
-					GikoSys.Dolib.ForcedConnect;
-					if GikoSys.Dolib.Connect then begin
-						LoginAction.Checked := True;
-						GikoForm.AddMessageList(GikoSys.GetGikoMessage(gmForceLogin) + GikoSys.Setting.UserID, nil, gmiOK);
-						LoginAction.Caption := 'ログアウト(&L)';
-						//LoginToolButton.Style := tbsCheck;
-						end else begin
-			//			MsgBox(Handle, 'ログイン出来ませんでした', 'エラー', MB_OK or MB_ICONSTOP);
-						GikoForm.AddMessageList(GikoSys.Dolib.ErrorMsg, nil, gmiNG);
-						GikoForm.PlaySound('Error');
-						LoginAction.Checked := False;
-						//LoginToolButton.Down := False;
-						//LoginToolButton.Style := tbsButton;
-					end;
-				end else begin
-					LoginAction.Checked := False;
-					//LoginToolButton.Down := False;
-					//LoginToolButton.Style := tbsButton;
-				end;
-			end;
+        GikoForm.AddMessageList(Session5ch.ErrorMsg, nil, gmiNG);
+        GikoForm.PlaySound('Error');
+        LoginAction.Checked := False;
+        //LoginToolButton.Down := False;
+        ///LoginToolButton.Style := tbsButton;
+      end;
 		finally
 			GikoForm.ScreenCursor := TmpCursor;
 		end;

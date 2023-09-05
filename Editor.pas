@@ -312,7 +312,7 @@ implementation
 uses
 	Giko, ItemDownload, MojuUtils, GikoMessage,  Imm,
   InputAssistDataModule, InputAssist, HTMLCreate, IdCookie, GikoDataModule,
-  Belib;
+  Belib, DmSession5ch;
 const
 	CAPTION_NAME_NEW: string = 'ギコナビ スレ立てエディタ';
 	CAPTION_NAME_RES: string = 'ギコナビ レスエディタ';
@@ -678,7 +678,7 @@ begin
 		MsgBox(Handle, Msg, ERROR, MB_OK or MB_ICONSTOP);
 		Result := False;
 	end else begin
-		if (not GikoSys.Dolib.Connected) and (AnsiPos('●', NameComboBox.Text) <> 0) then begin
+		if (not Session5ch.Connected) and (AnsiPos('●', NameComboBox.Text) <> 0) then begin
 			Msg := 'ログインしていないので●の機能は利用出来ません。'#13#10
 					 + 'このまま送信してもよろしいですか？';
 			rc := MsgBox(Handle, Msg, '確認', MB_YESNO or MB_ICONQUESTION);
@@ -1172,7 +1172,7 @@ begin
   end;
   // for UTF8
 
-	SessionID := GikoSys.Dolib.SessionID;
+	SessionID := Session5ch.SessionID;
 	if SessionID <> '' then
 		s := 'sid=' + HttpEncode(SessionID) + '&'
 	else

@@ -1686,7 +1686,7 @@ begin
 		ini.WriteString('Attestation', 'Password', Encrypt(FPassword));
 		ini.WriteBool('Attestation', 'AutoLogin', FAutoLogin);
 		ini.WriteBool('Attestation', 'FForcedLogin', FForcedLogin);
-		ini.WriteString('Attestation', 'FDolibURL', FDolibURL);
+//		ini.WriteString('Attestation', 'FDolibURL', FDolibURL);
 
 		//URLクリック時起動アプリ
 		ini.WriteBool('URLApp', 'Select', FURLApp);

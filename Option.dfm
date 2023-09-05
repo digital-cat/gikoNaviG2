@@ -60,16 +60,12 @@ object OptionDialog: TOptionDialog
     Top = 4
     Width = 509
     Height = 389
-    ActivePage = NGwordSheet
+    ActivePage = UserIDSheet
     MultiLine = True
     TabOrder = 3
     OnChange = OptionTabChange
     object ConnectSheet: TTabSheet
       Caption = #25509#32154
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object ReadProxyGroupBox: TGroupBox
         Left = 12
         Top = 4
@@ -255,7 +251,7 @@ object OptionDialog: TOptionDialog
           Top = 43
           Width = 417
           Height = 20
-          ItemHeight = 0
+          ItemHeight = 12
           TabOrder = 0
           Text = 'BoardURLComboBox'
         end
@@ -282,10 +278,6 @@ object OptionDialog: TOptionDialog
     object Font1Sheet: TTabSheet
       Caption = #12501#12457#12531#12488
       ImageIndex = 1
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Bevel1: TBevel
         Left = 8
         Top = 100
@@ -677,10 +669,6 @@ object OptionDialog: TOptionDialog
     end
     object TabSheet3: TTabSheet
       Caption = #12473#12524#12483#12489#19968#35239
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object GroupBox9: TGroupBox
         Left = 12
         Top = 8
@@ -841,10 +829,6 @@ object OptionDialog: TOptionDialog
     object ThreadSheet: TTabSheet
       Caption = #12473#12524#12483#12489#65297
       ImageIndex = 5
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object GroupBox1: TGroupBox
         Left = 12
         Top = 8
@@ -980,10 +964,6 @@ object OptionDialog: TOptionDialog
     object TabSheet1: TTabSheet
       Caption = #12473#12524#12483#12489#65298
       ImageIndex = 7
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object TabAddRadioGroup: TRadioGroup
         Left = 12
         Top = 288
@@ -1548,10 +1528,6 @@ object OptionDialog: TOptionDialog
     object NGwordSheet: TTabSheet
       Caption = #12354#12412#65374#12435
       ImageIndex = 11
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object GroupBox14: TGroupBox
         Left = 12
         Top = 8
@@ -1659,10 +1635,6 @@ object OptionDialog: TOptionDialog
     object UserIDSheet: TTabSheet
       Caption = #65298#12385#12419#12435#12397#12427
       ImageIndex = 9
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object GroupBox3: TGroupBox
         Left = 12
         Top = 8
@@ -1692,13 +1664,14 @@ object OptionDialog: TOptionDialog
           Width = 89
           Height = 12
           Caption = 'ForcedLoginLabel'
+          Enabled = False
         end
         object Tora3URLLabel: TLabel
           Left = 329
           Top = 126
-          Width = 129
+          Width = 110
           Height = 12
-          Caption = 'http://ronin.bbspink.com/'
+          Caption = 'https://uplift.5ch.net/'
           Font.Charset = SHIFTJIS_CHARSET
           Font.Color = clBlue
           Font.Height = -12
@@ -1743,6 +1716,7 @@ object OptionDialog: TOptionDialog
           Width = 125
           Height = 19
           Caption = #24375#21046#12525#12464#12452#12531#12514#12540#12489
+          Enabled = False
           TabOrder = 3
         end
       end
@@ -1812,7 +1786,7 @@ object OptionDialog: TOptionDialog
           Top = 20
           Width = 140
           Height = 20
-          ItemHeight = 0
+          ItemHeight = 12
           TabOrder = 0
           Text = 'BoukenComboBox'
           OnChange = BoukenComboBoxChange

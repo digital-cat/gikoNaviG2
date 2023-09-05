@@ -67,6 +67,50 @@
       
       
       
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
       <Excluded_Packages Name="$(BDS)\bin\bcboffice2k100.bpl">CodeGear C++Builder Office 2000 Servers Package</Excluded_Packages>
       <Excluded_Packages Name="$(BDS)\bin\bcbofficexp100.bpl">CodeGear C++Builder Office XP Servers Package</Excluded_Packages>
       <Excluded_Packages Name="$(BDS)\bin\dcloffice2k100.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
@@ -101,6 +145,10 @@
     <DCCReference Include="Component\GikoListView.pas" />
     <DCCReference Include="Component\GikoPanel.pas" />
     <DCCReference Include="DefaultFileManager.pas" />
+    <DCCReference Include="DmSession5ch.pas">
+      <Form>Session5ch</Form>
+      <DesignClass>TDataModule</DesignClass>
+    </DCCReference>
     <DCCReference Include="Dolib.pas" />
     <DCCReference Include="Editor.pas">
       <Form>EditorForm</Form>

@@ -94,7 +94,8 @@ uses
   NgEditor in 'NgEditor.pas' {NgEdit},
   RegExpTester in 'RegExpTester.pas' {RegExpTest},
   BbsThrSel in 'BbsThrSel.pas' {BbsThreadSel},
-  IndyModule in 'IndyModule.pas' {IndyMdl: TDataModule};
+  IndyModule in 'IndyModule.pas' {IndyMdl: TDataModule},
+  DmSession5ch in 'DmSession5ch.pas' {Session5ch: TDataModule};
 
 {$R *.RES}
 {$R gikoResource.res}
@@ -155,6 +156,7 @@ begin
   Application.CreateForm(TGikoForm, GikoForm);
   Application.CreateForm(TUpdateCheckForm, UpdateCheckForm);
   Application.CreateForm(TIndyMdl, IndyMdl);
+  Application.CreateForm(TSession5ch, Session5ch);
   Application.Run;
 		ReleaseMutex(hMutex);
 	end;

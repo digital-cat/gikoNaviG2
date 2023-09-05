@@ -330,7 +330,8 @@ const
 	DEFAULT_TABFONT_NAME: string = 'ÇlÇr ÇoÉSÉVÉbÉN';
 	DEFAULT_TABFONT_SIZE: Integer = 9;
 //	URL_TORA3: WideString = 'http://2ch.tora3.net/';
-	URL_TORA3: WideString = 'https://ronin.bbspink.com/';
+//	URL_TORA3: WideString = 'https://ronin.bbspink.com/';
+	URL_TORA3: WideString = 'https://uplift.5ch.net/';
 	DEFAULT_CSS_FILENAME = 'default.css';
 
 {$R *.DFM}
@@ -772,7 +773,7 @@ begin
 	UserIDEdit.Text := GikoSys.Setting.UserID;
 	PasswordEdit.Text := GikoSys.Setting.Password;
 	AutoLoginCheckBox.Checked := GikoSys.Setting.AutoLogin;
-	ForcedLoginCheckBox.Checked := GikoSys.Setting.ForcedLogin;
+//	ForcedLoginCheckBox.Checked := GikoSys.Setting.ForcedLogin;
 	//ÉçÉOÉtÉHÉãÉ_
 	if GikoSys.Setting.NewLogFolder = '' then
 		LogFolderEdit.Text := GikoSys.Setting.LogFolder
@@ -1079,7 +1080,7 @@ begin
 	GikoSys.Setting.UserID := UserIDEdit.Text;
 	GikoSys.Setting.Password := PasswordEdit.Text;
 	GikoSys.Setting.AutoLogin := AutoLoginCheckBox.Checked;
-	GikoSys.Setting.ForcedLogin := ForcedLoginCheckBox.Checked;
+//	GikoSys.Setting.ForcedLogin := ForcedLoginCheckBox.Checked;
 	GikoSys.Setting.URLApp := URLAppCheckBox.Checked;
 	GikoSys.Setting.URLAppFile := AppFolderEdit.Text;
 
