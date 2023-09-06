@@ -713,7 +713,7 @@ type
         //! アイコン読み込み
         procedure LoadIcon();
         //! ポップアップメニュー読み込み
-        procedure LoadPopupMenu();
+//        procedure LoadPopupMenu();
 	protected
 		procedure CreateParams(var Params: TCreateParams); override;
 		procedure WndProc(var Message: TMessage); override;
@@ -8206,11 +8206,11 @@ begin
 end;
 
 //! ポップアップメニュー読み込み
-procedure TGikoForm.LoadPopupMenu();
+{procedure TGikoForm.LoadPopupMenu();
 begin
 
 
-end;
+end;}
 
 initialization
 				OleInitialize(nil);

@@ -295,7 +295,7 @@ type
 		FPassword: string;
 		FAutoLogin: Boolean;
                 FForcedLogin: Boolean;
-		FDolibURL: string;
+//		FDolibURL: string;
 
 		//URLクリック時起動アプリ
 		FURLApp: Boolean;
@@ -741,7 +741,7 @@ type
 		property Password: string read FPassword write FPassword;
 		property AutoLogin: Boolean read FAutoLogin write FAutoLogin;
 		property ForcedLogin: Boolean read FForcedLogin write FForcedLogin;
-		property DolibURL: string read FDolibURL write FDolibURL;
+//		property DolibURL: string read FDolibURL write FDolibURL;
 
 		property URLApp: Boolean read FURLApp write FURLApp;
 		property URLAppFile: string read FURLAppFile write FURLAppFile;

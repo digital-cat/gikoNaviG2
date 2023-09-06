@@ -2313,7 +2313,7 @@ end;
 procedure TGikoDM.BeLogInOutActionExecute(Sender: TObject);
 var
 	TmpCursor: TCursor;
-	msg : String;
+//	msg : String;
 begin
 	if GikoSys.Belib.Connected then begin
 		//ログアウト

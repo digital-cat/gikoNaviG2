@@ -368,6 +368,7 @@ var
     orgStrings, newStrings: TStringList;
     i: Integer;
 begin
+  Result := False;
     orgini := TMemIniFile.Create(GikoSys.GetBoardFileName);
     orgStrings := TStringList.Create;
     newStrings := TStringList.Create;

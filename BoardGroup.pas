@@ -907,6 +907,7 @@ var
     chkURL: String;
     chkLen: Integer;
 begin
+    chkLen := 0;
     Result := nil;
     for i := 0 to Length(HOST_NAME) - 1 do begin
         idx := Pos(HOST_NAME[i], inURL);

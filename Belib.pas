@@ -58,7 +58,7 @@ implementation
 const
 	BELIB_LOGIN_UA      = 'BELIB/1.00';
 	BELIB_LOGIN_HOST    = 'be.5ch.net';
-	BELIB_LOGIN_URL     = '/test/login.php';
+	BELIB_LOGIN_URL     = '/log';
 	BELIB_2CH_UA        = 'X-2ch-UA:';
 	BELIB_ENOMEM_STRING = 'ÉÅÉÇÉäÇ™ë´ÇËÇ‹ÇπÇÒÅB';
 	BELIB_LOGIN_ERROR   = 'ERROR:';
@@ -202,7 +202,7 @@ begin
 			if not Assigned(hRequest) then
 				MakeError(FSession, GetLastError())
 			else begin
-				UserInfo := Format('m=%s&p=%s', [HttpEncode(ID), HttpEncode(Pass)]);
+				UserInfo := Format('mail=%s&pass=%s', [HttpEncode(ID), HttpEncode(Pass)]);
                 Header := 'Content-Type: application/x-www-form-urlencoded'#13#10;
 				UserAgent := Format('%s %s', [BELIB_2CH_UA, ClientUA]) + #13#10;
                 Header := Header + UserAgent;

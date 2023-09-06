@@ -14,7 +14,7 @@ uses
 {$IFEND}
 	StrUtils,			//  for D2007
 	{HttpApp,} URLMon, IdGlobal, IdURI, {Masks,}
-	Setting, BoardGroup, gzip, Dolib, bmRegExp, AbonUnit,
+	Setting, BoardGroup, gzip, {Dolib,} bmRegExp, AbonUnit,
 	ExternalBoardManager, ExternalBoardPlugInMain,
 	GikoBayesian, GikoMessage, Belib;
 
@@ -107,7 +107,7 @@ type
 	private
 		{ Private 宣言 }
 		FSetting: TSetting;
-		FDolib: TDolib;
+//		FDolib: TDolib;
 		FAWKStr: TAWKStr;
 		FResRange : Longint;
 		FBayesian	: TGikoBayesian;	//!< ベイジアンフィルタ
@@ -167,7 +167,7 @@ type
 
 		function DivideSubject(Line: string): TSubjectRec;
 		property Setting: TSetting read FSetting write FSetting;
-		property Dolib: TDolib read FDolib write FDolib;
+//		property Dolib: TDolib read FDolib write FDolib;
 		property Belib: TBelib read FBelib write FBelib;
 
 		function UrlToID(url: string): string;
@@ -302,6 +302,7 @@ uses
 const
 	FOLDER_INDEX_VERSION					= '1.01';
 	USER_AGENT										= 'Monazilla';
+	USER_AGENT_VERSION            = '1.00';
 	DEFAULT_NGWORD_FILE_NAME : String = 'NGword.txt';
 	NGWORDs_DIR_NAME : String 		= 'NGwords';
 
@@ -331,7 +332,7 @@ constructor TGikoSys.Create;
 begin
     Inherited;
 	FSetting := TSetting.Create;
-	FDolib := TDolib.Create;
+//	FDolib := TDolib.Create;
     FBelib := TBelib.Create;
 	FAWKStr := TAWKStr.Create(nil);
 	if DirectoryExists(GetConfigDir) = false then begin
@@ -387,7 +388,7 @@ begin
 	FreeAndNil(FAbon);
 	FreeAndNil(FAWKStr);
     FreeAndNil(FBelib);
-	FreeAndNil(FDolib);
+//	FreeAndNil(FDolib);
 	FreeAndNil(FSetting);
 	inherited;
 end;
@@ -542,22 +543,22 @@ end;
 //! UserAgent取得
 function TGikoSys.GetUserAgent: string;
 begin
-	if Dolib.Connected then begin
-		Result := Format('%s %s/%s%d/%s', [
-								Dolib.UserAgent,
-								APP_NAME,
-								BETA_VERSION_NAME_E,
-								BETA_VERSION,
-								Version]);
-	end else begin
+//	if Dolib.Connected then begin
+//		Result := Format('%s %s/%s%d/%s', [
+//								Dolib.UserAgent,
+//								APP_NAME,
+//								BETA_VERSION_NAME_E,
+//								BETA_VERSION,
+//								Version]);
+//	end else begin
 		Result := Format('%s/%s %s/%s%d/%s', [
 								USER_AGENT,
-								Dolib.Version,
+								USER_AGENT_VERSION,
 								APP_NAME,
 								BETA_VERSION_NAME_E,
 								BETA_VERSION,
 								Version]);
-	end;
+//	end;
 end;
 
 {!

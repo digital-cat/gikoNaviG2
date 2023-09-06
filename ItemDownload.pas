@@ -66,17 +66,17 @@ type
 		procedure WorkEnd(Sender: TObject; AWorkMode: TWorkMode);
 		//procedure Work(Sender: TObject; AWorkMode: TWorkMode; const AWorkCount: Integer);
 		procedure Work(Sender: TObject; AWorkMode: TWorkMode; AWorkCount: Int64);           // for Indy10
-		function ParseCgiStatus(Content: string): TCgiStatus;
-        function ParseRokkaStatus(Content: string): TCgiStatus;
-		function CgiDownload(ItemType: TGikoDownloadType; URL: string; Modified: TDateTime): Boolean;
+//		function ParseCgiStatus(Content: string): TCgiStatus;
+//        function ParseRokkaStatus(Content: string): TCgiStatus;
+//		function CgiDownload(ItemType: TGikoDownloadType; URL: string; Modified: TDateTime): Boolean;
 		function DatDownload(ItemType: TGikoDownloadType; URL: string; Modified: TDateTime; RangeStart: Integer; AdjustLen: Integer): Boolean;
-		procedure DeleteStatusLine(Item: TDownloadItem);
+//		procedure DeleteStatusLine(Item: TDownloadItem);
 		procedure InitHttpClient(client: TIdHttp);
 		procedure ClearHttpClient(client: TIdHttp);
 		procedure FireWork;
 		procedure FireWorkBegin;
 		procedure FireWorkEnd;
-        procedure GetLastModified;
+//        procedure GetLastModified;
    	protected
 		procedure Execute; override;
     //! 5chURLからoysterURL取得
@@ -526,112 +526,112 @@ begin
 				end;
 }
 
-				if (Item.DownType = gdtThread) and (Item.ResponseCode = 302) then begin
-					{$IFDEF DEBUG}
-					Writeln('offlaw2.soで取得');
-					{$ENDIF}
-					ATitle := Item.ThreadItem.Title;
-					if ATitle = '' then
-						ATitle := '（名称不明）';
-					FMsg := '★dat.gzが存在しないためofflaw2.soを利用します - [' + ATitle + ']';
-					FIcon := gmiWhat;
-					if Assigned(OnDownloadMsg) then
-						Synchronize(FireDownloadMsg);
-					URL := Item.ThreadItem.GetOfflaw2SoURL;
-					Modified := Item.ThreadItem.LastModified;
-					Item.RangeStart := 0;
-					AdjustLen := 0;
-					if not DatDownload(Item.DownType, URL, Modified, Item.RangeStart, AdjustLen) then begin
-						{$IFDEF DEBUG}
-						Writeln('ResponseCode: ' + IntToStr(Item.ResponseCode));
-						{$ENDIF}
-						Item.State := gdsError;
+//				if (Item.DownType = gdtThread) and (Item.ResponseCode = 302) then begin
+//					{$IFDEF DEBUG}
+//					Writeln('offlaw2.soで取得');
+//					{$ENDIF}
+//					ATitle := Item.ThreadItem.Title;
+//					if ATitle = '' then
+//						ATitle := '（名称不明）';
+//					FMsg := '★dat.gzが存在しないためofflaw2.soを利用します - [' + ATitle + ']';
+//					FIcon := gmiWhat;
+//					if Assigned(OnDownloadMsg) then
+//						Synchronize(FireDownloadMsg);
+//					URL := Item.ThreadItem.GetOfflaw2SoURL;
+//					Modified := Item.ThreadItem.LastModified;
+//					Item.RangeStart := 0;
+//					AdjustLen := 0;
+//					if not DatDownload(Item.DownType, URL, Modified, Item.RangeStart, AdjustLen) then begin
+//						{$IFDEF DEBUG}
+//						Writeln('ResponseCode: ' + IntToStr(Item.ResponseCode));
+//						{$ENDIF}
+//						Item.State := gdsError;
+///
+//						if (Item.DownType = gdtThread) and (Item.ResponseCode = 302) then begin
+//							FMsg := '板が移転したかもしれないので板更新を行ってください。';
+//							FIcon := gmiNG;
+//							if Assigned(OnDownloadMsg) then
+//								Synchronize(FireDownloadMsg);
+//						end;
+///
+//					end else begin
+//						{$IFDEF DEBUG}
+//						Writeln('ResponseCode: ' + IntToStr(Item.ResponseCode));
+//						{$ENDIF}
+//						if Item.ResponseCode = 200 then begin
+//							{$IFDEF DEBUG}
+//							Writeln('CGIStatus: OK');
+//							{$ENDIF}
+//                            if Copy(Item.Content, 1, 5) = 'ERROR' then begin
+//                                {$IFDEF DEBUG}
+//                                Writeln('Offlow2Error');
+//                                {$ENDIF}
+//                                Item.ResponseCode := 404;
+//                                Item.State := gdsError;
+//                                Item.ErrText := 'スレは存在しないようです。' + Item.Content;
+//                            end else begin
+//                                GetLastModified;
+//                            end;
+//						end else begin
+//							{$IFDEF DEBUG}
+//							Writeln('CGIStatus: 404(ERROR)');
+//							{$ENDIF}
+//							Item.ResponseCode := 404;
+//							Item.State := gdsError;
+//							Item.ErrText := CgiStatus.FErrText;
+//						end;
+//					end;
+//				end;
 
-						if (Item.DownType = gdtThread) and (Item.ResponseCode = 302) then begin
-							FMsg := '板が移転したかもしれないので板更新を行ってください。';
-							FIcon := gmiNG;
-							if Assigned(OnDownloadMsg) then
-								Synchronize(FireDownloadMsg);
-						end;
-
-					end else begin
-						{$IFDEF DEBUG}
-						Writeln('ResponseCode: ' + IntToStr(Item.ResponseCode));
-						{$ENDIF}
-						if Item.ResponseCode = 200 then begin
-							{$IFDEF DEBUG}
-							Writeln('CGIStatus: OK');
-							{$ENDIF}
-                            if Copy(Item.Content, 1, 5) = 'ERROR' then begin
-                                {$IFDEF DEBUG}
-                                Writeln('Offlow2Error');
-                                {$ENDIF}
-                                Item.ResponseCode := 404;
-                                Item.State := gdsError;
-                                Item.ErrText := 'スレは存在しないようです。' + Item.Content;
-                            end else begin
-                                GetLastModified;
-                            end;
-						end else begin
-							{$IFDEF DEBUG}
-							Writeln('CGIStatus: 404(ERROR)');
-							{$ENDIF}
-							Item.ResponseCode := 404;
-							Item.State := gdsError;
-							Item.ErrText := CgiStatus.FErrText;
-						end;
-					end;
-				end;
-
-				if (Item.DownType = gdtThread) and ((Item.ResponseCode = 302) or (Item.ResponseCode = 404)) then begin
-    				FSessionID := '';
-	    			Synchronize(GetSessionID);
-                    if (FSessionID <> '') then begin
-                        {$IFDEF DEBUG}
-                        Writeln('Rokkaで取得');
-                        {$ENDIF}
-                        ATitle := Item.ThreadItem.Title;
-                        if ATitle = '' then
-                            ATitle := '（名称不明）';
-                        FMsg := '★offlow2.soに存在しないためRokkaを利用します - [' + ATitle + ']';
-                        FIcon := gmiWhat;
-                        if Assigned(OnDownloadMsg) then
-                            Synchronize(FireDownloadMsg);
-                        URL := Item.ThreadItem.GetRokkaURL(FSessionID);
-                        Modified := Item.ThreadItem.LastModified;
-                        Item.RangeStart := 0;
-                        AdjustLen := 0;
-
-                        if not DatDownload(Item.DownType, URL, Modified, Item.RangeStart, AdjustLen) then begin
-                            {$IFDEF DEBUG}
-                            Writeln('ResponseCode: ' + IntToStr(Item.ResponseCode));
-                            {$ENDIF}
-                            Item.State := gdsError;
-                        end else begin
-                            CgiStatus := ParseRokkaStatus(Item.Content);
-                            {$IFDEF DEBUG}
-                            Writeln('ResponseCode: ' + IntToStr(Item.ResponseCode));
-                            {$ENDIF}
-                            case CgiStatus.FStatus of
-                                gcsOK: begin
-                                    {$IFDEF DEBUG}
-                                    Writeln('CGIStatus: OK');
-                                    {$ENDIF}
-                                    Item.ResponseCode := 200;
-                                    DeleteStatusLine(Item);
-                                end;
-                                gcsERR: begin
-                                    {$IFDEF DEBUG}
-                                    Writeln('CGIStatus: 404(ERROR)');
-                                    {$ENDIF}
-                                    Item.ResponseCode := 404;
-                                    Item.State := gdsError;
-                                    Item.ErrText := CgiStatus.FErrText;
-                                end;
-                            end;
-                        end;
-                    end;
-				end;
+//				if (Item.DownType = gdtThread) and ((Item.ResponseCode = 302) or (Item.ResponseCode = 404)) then begin
+//    				FSessionID := '';
+//	    			Synchronize(GetSessionID);
+//                    if (FSessionID <> '') then begin
+//                        {$IFDEF DEBUG}
+//                        Writeln('Rokkaで取得');
+//                        {$ENDIF}
+//                        ATitle := Item.ThreadItem.Title;
+//                        if ATitle = '' then
+//                            ATitle := '（名称不明）';
+//                        FMsg := '★offlow2.soに存在しないためRokkaを利用します - [' + ATitle + ']';
+//                        FIcon := gmiWhat;
+//                        if Assigned(OnDownloadMsg) then
+//                            Synchronize(FireDownloadMsg);
+//                        URL := Item.ThreadItem.GetRokkaURL(FSessionID);
+//                        Modified := Item.ThreadItem.LastModified;
+//                        Item.RangeStart := 0;
+//                        AdjustLen := 0;
+///
+//                        if not DatDownload(Item.DownType, URL, Modified, Item.RangeStart, AdjustLen) then begin
+//                            {$IFDEF DEBUG}
+//                            Writeln('ResponseCode: ' + IntToStr(Item.ResponseCode));
+//                            {$ENDIF}
+//                            Item.State := gdsError;
+//                        end else begin
+//                            CgiStatus := ParseRokkaStatus(Item.Content);
+//                            {$IFDEF DEBUG}
+//                            Writeln('ResponseCode: ' + IntToStr(Item.ResponseCode));
+//                            {$ENDIF}
+//                            case CgiStatus.FStatus of
+//                                gcsOK: begin
+//                                    {$IFDEF DEBUG}
+//                                    Writeln('CGIStatus: OK');
+//                                    {$ENDIF}
+//                                    Item.ResponseCode := 200;
+//                                    DeleteStatusLine(Item);
+//                                end;
+//                                gcsERR: begin
+//                                    {$IFDEF DEBUG}
+//                                    Writeln('CGIStatus: 404(ERROR)');
+//                                    {$ENDIF}
+//                                    Item.ResponseCode := 404;
+//                                    Item.State := gdsError;
+//                                    Item.ErrText := CgiStatus.FErrText;
+//                                end;
+//                            end;
+//                        end;
+//                    end;
+//				end;
 
         // DAT落ち／過去ログ取得
 				if (Item.DownType = gdtThread) and ((Item.ResponseCode = 302) or (Item.ResponseCode = 404)) then begin
@@ -872,84 +872,84 @@ begin
 end;
 
 
-function TDownloadThread.CgiDownload(ItemType: TGikoDownloadType; URL: string; Modified: TDateTime): Boolean;
-var
-	ResponseCode: Integer;
-	ResStream: TMemoryStream;
-begin
-	ResponseCode := -1;
-	//FIndy.Request.ContentRangeStart := 0;
-	//FIndy.Request.ContentRangeEnd := 0;
-  FIndy.Request.Ranges.Text := IndyMdl.MakeRangeHeader(0, 0);  // for Indy10
-
-	FIndy.Request.CustomHeaders.Clear;
-	if (Modified <> 0) and (Modified <> ZERO_DATE) then begin
-		FIndy.Request.LastModified := modified - OffsetFromUTC;
-	end;
-	FIndy.Request.AcceptEncoding := '';
-	FIndy.Request.Accept := 'text/html';
-	ResStream := TMemoryStream.Create;
-	try
-		try
-			ResStream.Clear;
-			{$IFDEF DEBUG}
-			Writeln('URL: ' + URL);
-			{$ENDIF}
-			FIndy.Get(URL, ResStream);
-			Item.Content := GikoSys.GzipDecompress(ResStream, FIndy.Response.ContentEncoding);
-			Item.LastModified := FIndy.Response.LastModified;
-			//差分取得で１バイト前からとってきたときはマイナスする
-			Item.ContentLength := Length(Item.Content);
-			//無いと思うけど。。。
-			if Item.Content = '' then
-				Result := False
-			else
-				Result := True;
-			{$IFDEF DEBUG}
-			Writeln('取得で例外なし');
-			{$ENDIF}
-			ResponseCode := FIndy.ResponseCode;
-		except
-			on E: EIdSocketError do begin
-				Item.Content := '';
-				Item.LastModified := ZERO_DATE;
-				Item.ContentLength := 0;
-				Item.ErrText := E.Message;
-				Result := False;
-				ResponseCode := -1;
-				Screen.Cursor := crDefault;
-			end;
-			on E: EIdConnectException do begin
-				Item.Content := '';
-				Item.LastModified := ZERO_DATE;
-				Item.ContentLength := 0;
-				Item.ErrText := E.Message;
-				Result := False;
-				ResponseCode := -1;
-				Screen.Cursor := crDefault;
-			end;
-			on E: Exception do begin
-				{$IFDEF DEBUG}
-				Writeln('取得で例外あり');
-				Writeln('E.Message: ' + E.Message);
-				{$ENDIF}
-				Item.Content := '';
-				Item.LastModified := ZERO_DATE;
-				Item.ContentLength := 0;
-				Item.ErrText := E.Message;
-				ResponseCode := FIndy.ResponseCode;
-				Result := False;
-				Screen.Cursor := crDefault;
-			end;
-		end;
-	finally
-		if (Item.ContentLength = 0) and (ResponseCode = 206) then
-			Item.ResponseCode := 304
-		else
-			Item.ResponseCode := ResponseCode;
-		ResStream.Free;
-	end;
-end;
+//function TDownloadThread.CgiDownload(ItemType: TGikoDownloadType; URL: string; Modified: TDateTime): Boolean;
+//var
+//	ResponseCode: Integer;
+//	ResStream: TMemoryStream;
+//begin
+//	ResponseCode := -1;
+//	//FIndy.Request.ContentRangeStart := 0;
+//	//FIndy.Request.ContentRangeEnd := 0;
+//  FIndy.Request.Ranges.Text := IndyMdl.MakeRangeHeader(0, 0);  // for Indy10
+///
+//	FIndy.Request.CustomHeaders.Clear;
+//	if (Modified <> 0) and (Modified <> ZERO_DATE) then begin
+//		FIndy.Request.LastModified := modified - OffsetFromUTC;
+//	end;
+//	FIndy.Request.AcceptEncoding := '';
+//	FIndy.Request.Accept := 'text/html';
+//	ResStream := TMemoryStream.Create;
+//	try
+//		try
+//			ResStream.Clear;
+//			{$IFDEF DEBUG}
+//			Writeln('URL: ' + URL);
+//			{$ENDIF}
+//			FIndy.Get(URL, ResStream);
+//			Item.Content := GikoSys.GzipDecompress(ResStream, FIndy.Response.ContentEncoding);
+//			Item.LastModified := FIndy.Response.LastModified;
+//			//差分取得で１バイト前からとってきたときはマイナスする
+//			Item.ContentLength := Length(Item.Content);
+//			//無いと思うけど。。。
+//			if Item.Content = '' then
+//				Result := False
+//			else
+//				Result := True;
+//			{$IFDEF DEBUG}
+//			Writeln('取得で例外なし');
+//			{$ENDIF}
+//			ResponseCode := FIndy.ResponseCode;
+//		except
+//			on E: EIdSocketError do begin
+//				Item.Content := '';
+//				Item.LastModified := ZERO_DATE;
+//				Item.ContentLength := 0;
+//				Item.ErrText := E.Message;
+//				Result := False;
+//				ResponseCode := -1;
+//				Screen.Cursor := crDefault;
+//			end;
+//			on E: EIdConnectException do begin
+//				Item.Content := '';
+//				Item.LastModified := ZERO_DATE;
+//				Item.ContentLength := 0;
+//				Item.ErrText := E.Message;
+//				Result := False;
+//				ResponseCode := -1;
+//				Screen.Cursor := crDefault;
+//			end;
+//			on E: Exception do begin
+//				{$IFDEF DEBUG}
+//				Writeln('取得で例外あり');
+//				Writeln('E.Message: ' + E.Message);
+//				{$ENDIF}
+//				Item.Content := '';
+//				Item.LastModified := ZERO_DATE;
+//				Item.ContentLength := 0;
+//				Item.ErrText := E.Message;
+//				ResponseCode := FIndy.ResponseCode;
+//				Result := False;
+//				Screen.Cursor := crDefault;
+//			end;
+//		end;
+//	finally
+//		if (Item.ContentLength = 0) and (ResponseCode = 206) then
+//			Item.ResponseCode := 304
+//		else
+//			Item.ResponseCode := ResponseCode;
+//		ResStream.Free;
+//	end;
+//end;
 
 function TDownloadThread.DatDownload(ItemType: TGikoDownloadType; URL: string; Modified: TDateTime; RangeStart: Integer; AdjustLen: Integer): Boolean;
 var
@@ -1139,144 +1139,144 @@ begin
 		FNumber);
 end;
 
-function TDownloadThread.ParseCgiStatus(Content: string): TCgiStatus;
-var
-	StatusLine: string;
-	Line: string;
-	Idx: Integer;
-	Status: string;
-	Size: string;
-	Msg: string;
-begin
-// [+OK] の場合は差分
-// [-INCR] (Incorrect)の場合はすべてのデータ
-// [-ERR (テキスト)]の場合はなんかエラー
-// 例：+OK 23094/512K
-//		 -INCR 23094/512K
-//		 -ERR そんな板ないです
-	Idx := AnsiPos(#10, Content);
-	StatusLine := Copy(Content, 0, Idx);
+//function TDownloadThread.ParseCgiStatus(Content: string): TCgiStatus;
+//var
+//	StatusLine: string;
+//	Line: string;
+//	Idx: Integer;
+//	Status: string;
+//	Size: string;
+//	Msg: string;
+//begin
+//// [+OK] の場合は差分
+//// [-INCR] (Incorrect)の場合はすべてのデータ
+//// [-ERR (テキスト)]の場合はなんかエラー
+//// 例：+OK 23094/512K
+////		 -INCR 23094/512K
+////		 -ERR そんな板ないです
+//	Idx := AnsiPos(#10, Content);
+//	StatusLine := Copy(Content, 0, Idx);
+///
+//	Idx := AnsiPos(' ', Content);
+//	Status := Copy(StatusLine, 0, Idx - 1);
+//	Line := Copy(StatusLine, Idx + 1, Length(StatusLine));
+///
+////	Idx := AnsiPos('/', Line);
+//	if Trim(Status) = '-ERR' then
+//		Msg := Trim(Line)
+//	else
+//		Size := Copy(Line, 0, Idx - 1);
+///
+//	if Trim(Status) = '+OK' then
+//		Result.FStatus := gcsOK
+//	else if Trim(Status) = '-INCR' then
+//		Result.FStatus := gcsINCR
+//	else if Trim(Status) = '-ERR' then begin
+//		Result.FStatus := gcsERR;
+//		Result.FErrText := Msg;
+//		Result.FSize := 0;
+//		Exit;
+//	end else begin
+//		{$IFDEF DEBUG}
+//		Writeln(Status);
+//		{$ENDIF}
+//		Result.FStatus := gcsERR;
+//		Result.FErrText := 'エラーなんだけど、よく分からないエラー';
+//		Result.FSize := 0;
+//		Exit;
+//	end;
+///
+//	if GikoSys.IsNumeric(Size) then
+//		Result.FSize := StrToInt(Size)
+//	else begin
+//		Result.FSize := 0;
+//		Result.FStatus := gcsERR;
+//		Result.FErrText := 'ステータス解析失敗[' + StatusLine + ']';
+//	end;
+//end;
 
-	Idx := AnsiPos(' ', Content);
-	Status := Copy(StatusLine, 0, Idx - 1);
-	Line := Copy(StatusLine, Idx + 1, Length(StatusLine));
-
-//	Idx := AnsiPos('/', Line);
-	if Trim(Status) = '-ERR' then
-		Msg := Trim(Line)
-	else
-		Size := Copy(Line, 0, Idx - 1);
-
-	if Trim(Status) = '+OK' then
-		Result.FStatus := gcsOK
-	else if Trim(Status) = '-INCR' then
-		Result.FStatus := gcsINCR
-	else if Trim(Status) = '-ERR' then begin
-		Result.FStatus := gcsERR;
-		Result.FErrText := Msg;
-		Result.FSize := 0;
-		Exit;
-	end else begin
-		{$IFDEF DEBUG}
-		Writeln(Status);
-		{$ENDIF}
-		Result.FStatus := gcsERR;
-		Result.FErrText := 'エラーなんだけど、よく分からないエラー';
-		Result.FSize := 0;
-		Exit;
-	end;
-
-	if GikoSys.IsNumeric(Size) then
-		Result.FSize := StrToInt(Size)
-	else begin
-		Result.FSize := 0;
-		Result.FStatus := gcsERR;
-		Result.FErrText := 'ステータス解析失敗[' + StatusLine + ']';
-	end;
-end;
-
-function TDownloadThread.ParseRokkaStatus(Content: string): TCgiStatus;
-var
-	StatusLine: string;
-	Idx: Integer;
-	Status: string;
-begin
-//	　レスポンス : 1行目にrokkaの処理結果が記述されます
-//	　　"Success XXX"　- 成功　XXXにdatの状態（取得元）が記述されます
-//	　　　　　　　　　　　Live　　　　ライブスレッド
-//	　　　　　　　　　　　Pool　　　　dat落ちスレッド
-//	　　　　　　　　　　　Archive 　　過去ログ
-//	　　　　　　　　　　 以降の行にDAT形式(name<>email<>datetime<>body<>[title])でログが記述されています
-//	　　"Error XXX"　　- 何らかのエラーです　XXX がエラーコードです。
-//	　　　　　　　　　　　13 　　　not found　　　　　　要求されたdatが見つかりませんでした
-//	　　　　　　　　　　　8008135　inputError 　　　　　リクエストURLのSERVERかBOARDが正しくないです
-//	　　　　　　　　　　　666　　　urlError 　　　　　　OPTIONSまたはQueryStringが正しくないです
-//	　　　　　　　　　　　69 　　　authenticationError　KAGIが不正（有効期限切れその他）
-//	　　　　　　　　　　　420　　　timeLimitError 　　　アクセス間隔が短すぎます
-//	　　　　　　　　　　　42 　　　methodError　　　　　そのHTTPメソッドは許可されていません
-	Idx := AnsiPos(#10, Content);
-    if (Idx > 0) then
-	    StatusLine := Copy(Content, 0, Idx)
-    else
-        StatusLine := Content;
-
-    if (AnsiPos('Success', StatusLine) = 1) then begin
-		Result.FStatus := gcsOK;
-        Delete(StatusLine, 1, 7);
-        Status := Trim(StatusLine);
-        if (Status = 'Live') then                   // 多分これは来ない
-    		Result.FErrText := '取得成功（ライブスレッド）'
-        else if (Status = 'Pool') then
-    		Result.FErrText := '取得成功（dat落ちスレッド）'
-        else if (Status = 'Archive') then
-    		Result.FErrText := '取得成功（過去ログ）'
-        else    // ???
-    		Result.FErrText := '取得成功';
-    end
-    else if (AnsiPos('Error', StatusLine) = 1) then begin
-		Result.FStatus := gcsERR;
-        Delete(StatusLine, 1, 5);
-        Status := Trim(StatusLine);
-        if (Status = '13') then
-    		Result.FErrText := '要求されたdatが見つかりませんでした'
-        else if (Status = '8008135') then
-    		Result.FErrText := 'リクエストURLのSERVERかBOARDが正しくないです'
-        else if (Status = '666') then
-    		Result.FErrText := 'OPTIONSまたはQueryStringが正しくないです'
-        else if (Status = '69') then
-    		Result.FErrText := 'KAGIが不正（有効期限切れその他）'
-        else if (Status = '20') then
-    		Result.FErrText := 'アクセス間隔が短すぎます'
-        else if (Status = '42') then
-    		Result.FErrText := 'そのHTTPメソッドは許可されていません'
-        else    // ???
-    		Result.FErrText := '取得エラー[' + Status + ']';
-    end
-    else begin
-		Result.FStatus := gcsERR;
-		Result.FErrText := 'ステータス解析失敗[' + StatusLine + ']';
-    end;
-	Result.FSize := 0;
-end;
+//function TDownloadThread.ParseRokkaStatus(Content: string): TCgiStatus;
+//var
+//	StatusLine: string;
+//	Idx: Integer;
+//	Status: string;
+//begin
+////	　レスポンス : 1行目にrokkaの処理結果が記述されます
+////	　　"Success XXX"　- 成功　XXXにdatの状態（取得元）が記述されます
+////	　　　　　　　　　　　Live　　　　ライブスレッド
+////	　　　　　　　　　　　Pool　　　　dat落ちスレッド
+////	　　　　　　　　　　　Archive 　　過去ログ
+////	　　　　　　　　　　 以降の行にDAT形式(name<>email<>datetime<>body<>[title])でログが記述されています
+////	　　"Error XXX"　　- 何らかのエラーです　XXX がエラーコードです。
+////	　　　　　　　　　　　13 　　　not found　　　　　　要求されたdatが見つかりませんでした
+////	　　　　　　　　　　　8008135　inputError 　　　　　リクエストURLのSERVERかBOARDが正しくないです
+////	　　　　　　　　　　　666　　　urlError 　　　　　　OPTIONSまたはQueryStringが正しくないです
+////	　　　　　　　　　　　69 　　　authenticationError　KAGIが不正（有効期限切れその他）
+////	　　　　　　　　　　　420　　　timeLimitError 　　　アクセス間隔が短すぎます
+////	　　　　　　　　　　　42 　　　methodError　　　　　そのHTTPメソッドは許可されていません
+//	Idx := AnsiPos(#10, Content);
+//    if (Idx > 0) then
+//	    StatusLine := Copy(Content, 0, Idx)
+//    else
+//        StatusLine := Content;
+///
+//    if (AnsiPos('Success', StatusLine) = 1) then begin
+//		Result.FStatus := gcsOK;
+//        Delete(StatusLine, 1, 7);
+//        Status := Trim(StatusLine);
+//        if (Status = 'Live') then                   // 多分これは来ない
+//    		Result.FErrText := '取得成功（ライブスレッド）'
+//        else if (Status = 'Pool') then
+//    		Result.FErrText := '取得成功（dat落ちスレッド）'
+//        else if (Status = 'Archive') then
+//    		Result.FErrText := '取得成功（過去ログ）'
+//        else    // ???
+//    		Result.FErrText := '取得成功';
+//    end
+//    else if (AnsiPos('Error', StatusLine) = 1) then begin
+//		Result.FStatus := gcsERR;
+//        Delete(StatusLine, 1, 5);
+//        Status := Trim(StatusLine);
+//        if (Status = '13') then
+//    		Result.FErrText := '要求されたdatが見つかりませんでした'
+//        else if (Status = '8008135') then
+//    		Result.FErrText := 'リクエストURLのSERVERかBOARDが正しくないです'
+//        else if (Status = '666') then
+//    		Result.FErrText := 'OPTIONSまたはQueryStringが正しくないです'
+//        else if (Status = '69') then
+//    		Result.FErrText := 'KAGIが不正（有効期限切れその他）'
+//        else if (Status = '20') then
+//    		Result.FErrText := 'アクセス間隔が短すぎます'
+//        else if (Status = '42') then
+//    		Result.FErrText := 'そのHTTPメソッドは許可されていません'
+//        else    // ???
+//    		Result.FErrText := '取得エラー[' + Status + ']';
+//    end
+//    else begin
+//		Result.FStatus := gcsERR;
+//		Result.FErrText := 'ステータス解析失敗[' + StatusLine + ']';
+//    end;
+//	Result.FSize := 0;
+//end;
 
 //１行目を消して、コンテンツサイズを設定する
-procedure TDownloadThread.DeleteStatusLine(Item: TDownloadItem);
-var
-	SList: TStringList;
-begin
-	SList := TStringList.Create;
-	try
-		SList.Text := Item.Content;
-		//1行目を削除
-		if SList.Count > 1 then
-			SList.Delete(0);
-        Item.Content := SList.Text;
-		//改行コードをCRLF -> LFと考えて、行数分だけマイナス
-        Item.ContentLength := Length(SList.Text) - SList.Count;
-	finally
-		SList.Free;
-	end;
-end;
+//procedure TDownloadThread.DeleteStatusLine(Item: TDownloadItem);
+//var
+//	SList: TStringList;
+//begin
+//	SList := TStringList.Create;
+//	try
+//		SList.Text := Item.Content;
+//		//1行目を削除
+//		if SList.Count > 1 then
+//			SList.Delete(0);
+//        Item.Content := SList.Text;
+//		//改行コードをCRLF -> LFと考えて、行数分だけマイナス
+//        Item.ContentLength := Length(SList.Text) - SList.Count;
+//	finally
+//		SList.Free;
+//	end;
+//end;
 
 procedure TDownloadItem.SaveListFile;
 var
@@ -1324,14 +1324,14 @@ var
 			if boardItem.Items[index].No > boardItem.IntData then
 				boardItem.Items[index].AgeSage := gasAge
 			//順位が上がってないけど、レスがついてたら、Sageに
-			else if boardItem.Items[index].AllResCount <> inCount then
+			else if boardItem.Items[index].AllResCount <> Integer(inCount) then
 				boardItem.Items[index].AgeSage := gasSage
 			//順位上がってないし、レスの増減も無ければ、None
 			else
 				boardItem.Items[index].AgeSage := gasNone;
 
 			boardItem.Items[index].No						:= boardItem.IntData;
-			boardItem.Items[index].AllResCount	:= inCount;
+			boardItem.Items[index].AllResCount	:= Integer(inCount);
 		end;
 
 	end;
@@ -1711,66 +1711,66 @@ begin
 	end;
 end;
 
-procedure TDownloadThread.GetLastModified;
-var
-	ResultDate: TDateTime;
-	ResList: TStringList;
-	LastRes: String;
-	KwPos: Integer;
-    ResRow: Integer;
-    DTIdx: Integer;
-    Ok: Boolean;
-    AWKStr: TAWKStr;
-	RStart: Integer;
-	RLength: Integer;
-begin
-	AWKStr := TAWKStr.Create(nil);
-    Ok := False;
-	ResultDate := Item.LastModified;
-	ResList := TStringList.Create;
-	try
-		ResList.Text := Item.Content;
-        for ResRow := ResList.Count - 1 downto 0 do begin
-            if (ResRow > 999) then
-                continue;
-			LastRes := ResList.Strings[ResRow];
-			KwPos := Pos('<>', LastRes);
-			if (KwPos < 1) then
-                continue;
-			Delete(LastRes, 1, KwPos + 1);
-			KwPos := Pos('<>', LastRes);
-			if (KwPos < 1) then
-                continue;
-			Delete(LastRes, 1, KwPos + 1);
-			// '2013/04/22(月) 02:32:36'
-			SetLength(LastRes, 23);
-			Delete(LastRes, 11, 4);		// 曜日削除
-
-            // 日付確認
-//            AWKStr.RegExp := '(\d{4})/(0[1-9]|1[0-2])/(0[1-9]|[12][0-9]|3[01])';
-            AWKStr.RegExp := '(19|20)([0-9][0-9])/(0[1-9]|1[0-2])/(0[1-9]|[12][0-9]|3[01])';
-        	if (AWKStr.Match(AWKStr.ProcessEscSeq(LastRes), RStart, RLength) = 1) then begin
-
-                AWKStr.RegExp := '([01][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])';
-                if (AWKStr.Match(AWKStr.ProcessEscSeq(LastRes), RStart, RLength) < 1) then begin
-        			SetLength(LastRes, 10);
-                    LastRes := LastRes + ' 00:00:00';
-                end;
-
-                try
-                    ResultDate := StrToDateTime(LastRes);
-                    Ok := True;
-                except
-                end;
-            end;
-            if (Ok = True) then
-                break;
-		end;
-	finally
-		ResList.Free;
-	end;
-    Item.LastModified :=ResultDate;
-	FreeAndNil(AWKStr);
-end;
+//procedure TDownloadThread.GetLastModified;
+//var
+//	ResultDate: TDateTime;
+//	ResList: TStringList;
+//	LastRes: String;
+//	KwPos: Integer;
+//    ResRow: Integer;
+////    DTIdx: Integer;
+//    Ok: Boolean;
+//    AWKStr: TAWKStr;
+//	RStart: Integer;
+//	RLength: Integer;
+//begin
+//	AWKStr := TAWKStr.Create(nil);
+//    Ok := False;
+//	ResultDate := Item.LastModified;
+//	ResList := TStringList.Create;
+//	try
+//		ResList.Text := Item.Content;
+//        for ResRow := ResList.Count - 1 downto 0 do begin
+//            if (ResRow > 999) then
+//                continue;
+//			LastRes := ResList.Strings[ResRow];
+//			KwPos := Pos('<>', LastRes);
+//			if (KwPos < 1) then
+//                continue;
+//			Delete(LastRes, 1, KwPos + 1);
+//			KwPos := Pos('<>', LastRes);
+//			if (KwPos < 1) then
+//                continue;
+//			Delete(LastRes, 1, KwPos + 1);
+//			// '2013/04/22(月) 02:32:36'
+//			SetLength(LastRes, 23);
+//			Delete(LastRes, 11, 4);		// 曜日削除
+///
+//            // 日付確認
+////            AWKStr.RegExp := '(\d{4})/(0[1-9]|1[0-2])/(0[1-9]|[12][0-9]|3[01])';
+//            AWKStr.RegExp := '(19|20)([0-9][0-9])/(0[1-9]|1[0-2])/(0[1-9]|[12][0-9]|3[01])';
+//        	if (AWKStr.Match(AWKStr.ProcessEscSeq(LastRes), RStart, RLength) = 1) then begin
+///
+//                AWKStr.RegExp := '([01][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])';
+//                if (AWKStr.Match(AWKStr.ProcessEscSeq(LastRes), RStart, RLength) < 1) then begin
+//        			SetLength(LastRes, 10);
+//                    LastRes := LastRes + ' 00:00:00';
+//                end;
+///
+//                try
+//                    ResultDate := StrToDateTime(LastRes);
+//                    Ok := True;
+//                except
+//                end;
+//            end;
+//            if (Ok = True) then
+//                break;
+//		end;
+//	finally
+//		ResList.Free;
+//	end;
+//    Item.LastModified :=ResultDate;
+//	FreeAndNil(AWKStr);
+//end;
 
 end.

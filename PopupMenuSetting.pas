@@ -473,7 +473,7 @@ var
     ini : TMemIniFile;
     sec, key, subkey : String;
     node : TTreeNode;
-    idx, mainIdx, subIdx : Integer;
+    {idx,} mainIdx, subIdx : Integer;
 begin
     ini := TMemIniFile.Create(GikoSys.Setting.GetConfigDir + PopupMenuUtil.INI_FILENAME);
     try

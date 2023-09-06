@@ -1,9 +1,9 @@
 object PopupMenuSettingDialog: TPopupMenuSettingDialog
   Left = 288
   Top = 163
-  Width = 529
-  Height = 360
   Caption = #12509#12483#12503#12450#12483#12503#12513#12491#12517#12540#35373#23450
+  ClientHeight = 321
+  ClientWidth = 513
   Color = clBtnFace
   Font.Charset = SHIFTJIS_CHARSET
   Font.Color = clWindowText
@@ -60,24 +60,27 @@ object PopupMenuSettingDialog: TPopupMenuSettingDialog
     Left = 0
     Top = 41
     Width = 513
-    Height = 281
+    Height = 280
     Align = alClient
     BevelOuter = bvNone
     TabOrder = 1
+    ExplicitHeight = 281
     object Splitter1: TSplitter
       Left = 285
       Top = 0
-      Height = 281
+      Height = 280
       Align = alRight
+      ExplicitHeight = 281
     end
     object Panel1: TPanel
       Left = 0
       Top = 0
       Width = 285
-      Height = 281
+      Height = 280
       Align = alClient
       BevelOuter = bvNone
       TabOrder = 0
+      ExplicitHeight = 281
       object Panel2: TPanel
         Left = 177
         Top = 0
@@ -164,15 +167,16 @@ object PopupMenuSettingDialog: TPopupMenuSettingDialog
       Left = 288
       Top = 0
       Width = 225
-      Height = 281
+      Height = 280
       Align = alRight
       BevelOuter = bvNone
       TabOrder = 1
+      ExplicitHeight = 281
       object MenuTreeView: TTreeView
         Left = 0
         Top = 0
         Width = 225
-        Height = 281
+        Height = 280
         Align = alClient
         HideSelection = False
         Indent = 19
@@ -185,6 +189,7 @@ object PopupMenuSettingDialog: TPopupMenuSettingDialog
         OnDblClick = MenuTreeViewDblClick
         OnEdited = MenuTreeViewEdited
         OnEditing = MenuTreeViewEditing
+        ExplicitHeight = 281
       end
     end
   end
