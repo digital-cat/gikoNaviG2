@@ -251,8 +251,9 @@ var
 	lastContent		: string;
 	logFile				: TFileStream;
 	adjustMargin	: Integer;
-    Host: String;
-    Sep: Integer;
+//    Host: String;
+//    Sep: Integer;
+  ResDate: String;
 const
 	ADJUST_MARGIN	= 16;
 begin
@@ -634,31 +635,72 @@ begin
 //				end;
 
         // DAT落ち／過去ログ取得
-				if (Item.DownType = gdtThread) and ((Item.ResponseCode = 302) or (Item.ResponseCode = 404)) then begin
-          if GikoSys.Is2chURL(URL) then begin
-            {$IFDEF DEBUG}
-            Writeln('oysterでDAT落ち／過去ログ取得');
-            {$ENDIF}
-            ATitle := Item.ThreadItem.Title;
-            if ATitle = '' then
-                ATitle := '（名称不明）';
-            FMsg := '★oysterを利用します - [' + ATitle + ']';
-            FIcon := gmiWhat;
-            if Assigned(OnDownloadMsg) then
-                Synchronize(FireDownloadMsg);
-            URL := GetOysterURL(URL);
-            Modified := Item.ThreadItem.LastModified;
+				if (Item.DownType = gdtThread) and
+           ((Item.ResponseCode = 302) or (Item.ResponseCode = 404)) and
+           GikoSys.Is2chURL(URL) and (Item.IsAbone = False) then begin
+          {$IFDEF DEBUG}
+          Writeln('oysterでDAT落ち／過去ログ取得');
+          {$ENDIF}
+          ATitle := Item.ThreadItem.Title;
+          if ATitle = '' then
+              ATitle := '（名称不明）';
+          FMsg := '★oysterを利用します - [' + ATitle + ']';
+          FIcon := gmiWhat;
+          if Assigned(OnDownloadMsg) then
+              Synchronize(FireDownloadMsg);
+          URL := GetOysterURL(URL);
+          Modified := Item.ThreadItem.LastModified;
 
-            if not DatDownload(Item.DownType, URL, Modified, Item.RangeStart, AdjustLen) then begin
+          DownloadResult := DatDownload(Item.DownType, URL, Modified, Item.RangeStart, AdjustLen);
+
+          {$IFDEF DEBUG}
+          Writeln('ResponseCode: ' + IntToStr(Item.ResponseCode));
+          {$ENDIF}
+          if Item.ResponseCode = 416 then begin
+            Item.IsAbone := True;
+            DownloadResult := True;
+          end else if DownloadResult and (AdjustLen < 0) then begin
+            if Copy( Item.Content, 1, adjustMargin ) <> lastContent then
+              Item.IsAbone := True;
+          end;
+
+          ResDate := FIndy.Response.RawHeaders.Values['Date'];
+          if Trim(ResDate) <> '' then begin
+              Item.ThreadItem.ParentBoard.LastGetTime := GikoSys.DateStrToDateTime(ResDate);
+          end;
+
+          if DownloadResult then begin
+            {$IFDEF DEBUG}
+            Writeln('Date:' + ResDate);
+            {$ENDIF}
+            if Item.IsAbone then begin
               {$IFDEF DEBUG}
+              Writeln('あぼーん検出');
+              {$ENDIF}
+              ATitle := Item.ThreadItem.Title;
+              if ATitle = '' then
+                ATitle := '（名称不明）';
+              //差分取得かつ１バイト目がLFでない場合は「あぼーん」されているかもしれんので再取得
+              Item.RangeStart := 0;
+              AdjustLen := 0;
+              FMsg := '★「あぼーん」を検出したので再取得を行います - [' + ATitle + ']';
+              FIcon := gmiWhat;
+              if FileExists(ChangeFileExt(Item.FThreadItem.GetThreadFileName,'.NG')) = true then
+                DeleteFile(ChangeFileExt(Item.FThreadItem.GetThreadFileName,'.NG'));
+              if Assigned(OnDownloadMsg) then
+                Synchronize(FireDownloadMsg);
+              if not DatDownload(Item.DownType, URL, ZERO_DATE, Item.RangeStart, AdjustLen) then
+                Item.State := gdsError;
+              {$IFDEF DEBUG}
+              Writeln('あぼーん再取得後');
               Writeln('ResponseCode: ' + IntToStr(Item.ResponseCode));
               {$ENDIF}
-              Item.State := gdsError;
-            end else begin
-              {$IFDEF DEBUG}
-              Writeln('ResponseCode: ' + IntToStr(Item.ResponseCode));
-              {$ENDIF}
+            end else if AdjustLen < 0 then begin
+              // 差分取得が出来た場合はあぼーんチェック用に取得した余分なサイズを削除
+              Item.Content := Copy(Item.Content, adjustMargin + 1, MaxInt);
             end;
+          end else begin
+            Item.State := gdsError;
           end;
 				end;
         ///
@@ -667,14 +709,15 @@ begin
 				// 2ch外部板
 				//********************
 //				if not GikoSys.Is2chHost(GikoSys.UrlToServer(URL)) then begin
-                Host := URL;
-                Sep := Pos('://', Host);
-                if (Sep > 0) then
-                    Delete(Host, 1, Sep + 2);
-                Sep := Pos('/', Host);
-                if (Sep > 0) then
-                    SetLength(Host, Sep - 1);
-				if not GikoSys.Is2chHost(Host) then begin
+//                Host := URL;
+//                Sep := Pos('://', Host);
+//                if (Sep > 0) then
+//                    Delete(Host, 1, Sep + 2);
+//                Sep := Pos('/', Host);
+//                if (Sep > 0) then
+//                    SetLength(Host, Sep - 1);
+//				if not GikoSys.Is2chHost(Host) then begin
+				if not GikoSys.Is2chURL(URL) then begin
 					if (Item.DownType = gdtThread) and (Item.ResponseCode = 404) then begin
 						{$IFDEF DEBUG}
 						Writeln('外部板過去ログ取得');
