@@ -11,12 +11,12 @@ DefaultDirName=C:\gikonavi
 VersionInfoDescription=ギコナビ(避難所版II)セットアッププログラム
 DefaultGroupName=ギコナビ
 ; 自分の環境に合わせてください
-SourceDir=D:\giko\Setup\Release72-866
+SourceDir=D:\giko\Setup\Release73-867
 OutputDir=D:\giko\Setup\Output
 SetupIconFile=D:\giko\Setup\GikoSetup.ico
 ; ギコナビのバージョンにあわせてください
-VersionInfoVersion=1.72.0.866
-OutputBaseFilename=gikoNavi_b72_866_setup
+VersionInfoVersion=1.73.0.867
+OutputBaseFilename=gikoNavi_b73_setup
 
 
 

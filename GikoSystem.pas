@@ -287,7 +287,7 @@ const
 	ZERO_DATE: Integer	= 25569;
 	BETA_VERSION_NAME_E = 'beta';
 	BETA_VERSION_NAME_J = 'ÊÞÀ';
-	BETA_VERSION				= 72;
+	BETA_VERSION				= 73;
 	BETA_VERSION_BUILD	= '';				//!< debug”Å‚È‚Ç
 	APP_NAME						= 'gikoNavi';
 	BE_PHP_URL = 'https://be.5ch.net/test/p.php?i=';
