@@ -3579,8 +3579,19 @@ end;
 
 //! 2ch/5chのURLを実際に呼べる形にする
 procedure TGikoSys.Regulate2chURL(var url: String);
+const
+  SP_5CHURL  = 'https://itest.5ch.net/';
+  SP_PNKURL  = 'https://itest.bbspink.com/';
+  DOMAIN_5CH = '5ch.net';
+  DOMAIN_PNK = 'bbspink.com';
 var
   idx: Integer;
+  start: Integer;
+  len: Integer;
+  domain: String;
+  path: String;
+  dir: String;
+  dirList: TStringList;
 begin
   if not Is2chURL(url) then
     Exit;
@@ -3591,6 +3602,49 @@ begin
   idx := Pos('.2ch.net/', url);
   if idx > 0 then
     url[idx + 1] := '5';  // 2ch.net -> 5ch.net
+
+  { スマホURL -> PCURL
+  https://itest.5ch.net/egg/test/read.cgi/software/1689155355
+    ↓
+  https://egg.5ch.net/test/read.cgi/software/1689155355
+  }
+  if Pos(SP_5CHURL, url) = 1 then begin
+    start := Length(SP_5CHURL);
+    domain := DOMAIN_5CH;
+  end else if Pos(SP_PNKURL, url) = 1 then begin
+    start := Length(SP_PNKURL);
+    domain := DOMAIN_PNK;
+  end else
+    Exit;   // スマホURLではない
+
+  // パス部のみ取り出し
+  path := Copy(url, start, Length(url) - start + 1);
+  idx := Pos('?', path);
+  if idx > 0 then
+    SetLength(path, idx - 1);
+  idx := Pos('#', path);
+  if idx > 0 then
+    SetLength(path, idx - 1);
+
+  dirList := TStringList.Create;
+  try
+    start := 2;   // ルート'/'の次から
+    len := Length(path);
+    while start < len do begin
+      idx := PosEx('/', path, start);
+      if idx < 1 then
+        Break;
+      dir := Copy(path, start, idx - start);
+      start := idx + 1;
+      dirList.Add(dir);
+    end;
+
+    if dirList.Count = 5 then begin
+      url := Format('https://%s.%s/test/read.cgi/%s/%s/', [dirList[0], domain, dirList[3], dirList[4]]);
+    end;
+  finally
+    dirList.Free;
+  end;
 end;
 
 //! 2ch/5chのURLかどうか
