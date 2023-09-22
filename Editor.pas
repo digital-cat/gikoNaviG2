@@ -897,7 +897,6 @@ begin
 
 			ResultType := GetResultType(ResponseText);
 
-
 			if ResultType = grtOK then begin
 				if (GikoSys.Setting.UseSamba) and  (FSambaTimer.Enabled) then
                 begin
@@ -1530,31 +1529,19 @@ end;
 
 procedure TEditorForm.IdLogDebugReceive(ASender: TIdConnectionIntercept;
   var ABuffer: TIdBytes); // for Indy10
-var
-	StringStream: TStringStream;
 begin
-	StringStream := TStringStream.Create('');
 	try
-		//StringStream.CopyFrom(AStream, AStream.Size);
-    StringStream.Write(ABuffer, Length(ABuffer));   // for Indy10
-		FDebugStrReceive := FDebugStrReceive + StringStream.DataString;
+		FDebugStrReceive := FDebugStrReceive + BytesToString(ABuffer);
 	finally
-		StringStream.Free;
 	end;
 end;
 
 procedure TEditorForm.IdLogDebugSend(ASender: TIdConnectionIntercept;
   var ABuffer: TIdBytes); // for Indy10
-var
-	StringStream: TStringStream;
 begin
-	StringStream := TStringStream.Create('');
 	try
-		//StringStream.CopyFrom(AStream, AStream.Size);
-    StringStream.Write(ABuffer, Length(ABuffer));   // for Indy10
-		FDebugStrSend := FDebugStrSend + StringStream.DataString;
+		FDebugStrSend := FDebugStrSend + BytesToString(ABuffer);
 	finally
-		StringStream.Free;
 	end;
 end;
 
