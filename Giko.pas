@@ -4810,19 +4810,22 @@ var
 	tmpThread			: TThreadItem;
 	shiftDown			: Boolean;
 	ctrlDown			: Boolean;
+  regURL        : String;
 begin
 
-	GikoSys.ParseURI( inURL, protocol, host, path, document, port, bookmark );
-	GikoSys.Parse2chURL( inURL, path, document, BBSID, BBSKey );
+  regURL := inURL;
+  GikoSys.Regulate2chURL(regURL);
+	GikoSys.ParseURI( regURL, protocol, host, path, document, port, bookmark );
+	GikoSys.Parse2chURL( regURL, path, document, BBSID, BBSKey );
     // アクションから呼ばれるとshift/ctrlはおしっぱの場合がほとんどなのでマスクする
     if not KeyMask then begin
         shiftDown	:= GetAsyncKeyState(VK_SHIFT) = Smallint($8001);
         ctrlDown	:= GetAsyncKeyState(VK_CONTROL) = Smallint($8001);
         if shiftDown then begin
-            GikoSys.OpenBrowser(inURL, gbtUserApp);
+            GikoSys.OpenBrowser(regURL, gbtUserApp);
             Exit;
         end else if ctrlDown then begin
-            GikoSys.OpenBrowser(inURL, gbtIE);
+            GikoSys.OpenBrowser(regURL, gbtIE);
             Exit;
         end;
     end;
@@ -4833,10 +4836,10 @@ begin
 		bi := Length(BoardGroups) - 1;
 		for i := 1 to bi do begin
 			if (BoardGroups[i].BoardPlugIn <> nil) and (Assigned(Pointer(BoardGroups[i].BoardPlugIn.Module))) then begin
-				case BoardGroups[i].BoardPlugIn.AcceptURL( inURL ) of
+				case BoardGroups[i].BoardPlugIn.AcceptURL( regURL ) of
 				atThread:
 					begin
-						boardURL 	:= BoardGroups[i].BoardPlugIn.ExtractBoardURL( inURL );
+						boardURL 	:= BoardGroups[i].BoardPlugIn.ExtractBoardURL( regURL );
 						Board		:= BBSsFindBoardFromURL( boardURL );
 
 
@@ -4851,7 +4854,7 @@ begin
 								ShowBBSTree( BBSs[ 1 ] );
 							}
 						end else begin
-							tmpThread		:= TThreadItem.Create( BoardGroups[i].BoardPlugIn, Board, inURL );
+							tmpThread		:= TThreadItem.Create( BoardGroups[i].BoardPlugIn, Board, regURL );
 							if not Board.IsThreadDatRead then begin
 								GikoSys.ReadSubjectFile( Board );
 								tmpThread.Free;
@@ -4869,7 +4872,7 @@ begin
 							end else begin
 								tmpThread.Free;
 							end;
-							OpenThreadItem(ThreadItem, inURL);
+							OpenThreadItem(ThreadItem, regURL);
 							Exit;
 						end;
 					end;
@@ -4877,7 +4880,7 @@ begin
 				atBoard:
 					begin
 						Board := BBSsFindBoardFromURL(
-									BoardGroups[i].BoardPlugIn.ExtractBoardURL( inURL )
+									BoardGroups[i].BoardPlugIn.ExtractBoardURL( regURL )
 									);
 						if Board <> nil then begin
 							if FActiveBBS <> Board.ParentCategory.ParenTBBS then
@@ -4895,11 +4898,11 @@ begin
 
 
 	if (Length( Trim(BBSKey) ) > 0) and (Length( Trim(BBSID) ) > 0) then begin
-		boardURL := GikoSys.Get2chThreadURL2BoardURL( inURL );
+		boardURL := GikoSys.Get2chThreadURL2BoardURL( regURL );
 		Board := BBSsFindBoardFromURL( boardURL );
 		if Board = nil then begin
 			 // 入るべき板が見つからなかったので、普通のブラウザで開く
-			 GikoSys.OpenBrowser(inURL, gbtUserApp);
+			 GikoSys.OpenBrowser(regURL, gbtUserApp);
 			 Exit;
 		end else begin
 			// 外部の板なのに2chのURLにされてしまった奴をここで確認する
@@ -4908,14 +4911,14 @@ begin
 			tmp1 := Copy(host, AnsiPos('.', host) + 1, Length(host));
 			tmp2 := Copy(host2, AnsiPos('.', host2) + 1, Length(host2));
 			if ( not GikoSys.Is2chHost(tmp1)) and (tmp1 <> tmp2) then begin
-				GikoSys.OpenBrowser(inURL, gbtUserApp);
+				GikoSys.OpenBrowser(regURL, gbtUserApp);
 				Exit;
 			end;
 		end;
 
 		if not Board.IsThreadDatRead then
 			GikoSys.ReadSubjectFile(Board);
-		URL := GikoSys.Get2chBrowsableThreadURL( inURL );
+		URL := GikoSys.Get2chBrowsableThreadURL( regURL );
 		ThreadItem := Board.FindThreadFromURL( URL );
 		//　過去ログ倉庫から、ダウソしたスレが発見できないのでここで探すようにする (2004/01/22)
 		if ThreadItem = nil then begin
@@ -4939,13 +4942,13 @@ begin
 				else
 					ThreadItem.DownloadHost := '';
 			end;
-			OpenThreadItem(ThreadItem, inURL);
+			OpenThreadItem(ThreadItem, regURL);
 		except
 		end;
 	end else begin
-		Board := BBSsFindBoardFromURL( inURL );
+		Board := BBSsFindBoardFromURL( regURL );
 		if Board = nil then begin
-			GikoSys.OpenBrowser(inURL, gbtAuto);
+			GikoSys.OpenBrowser(regURL, gbtAuto);
 		end else begin
 			if FActiveBBS <> Board.ParentCategory.ParenTBBS then
 				ShowBBSTree( Board.ParentCategory.ParenTBBS );

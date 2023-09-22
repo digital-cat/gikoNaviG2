@@ -3581,27 +3581,53 @@ end;
 procedure TGikoSys.Regulate2chURL(var url: String);
 var
   idx: Integer;
-  is2ch: Boolean;
 begin
-  idx := AnsiPos('.2ch.net/', url);
-  if idx > 0 then begin
-    url[idx + 1] := '5';  // 2ch.net -> 5ch.net
-    is2ch := True;
-  end else begin
-    is2ch := (AnsiPos('.5ch.net/', url) > 0) or
-             (AnsiPos('.bbspink.com/', url) > 0);
-  end;
+  if not Is2chURL(url) then
+    Exit;
 
-  if is2ch and (AnsiPos('http://', url) = 1) then
+  if url[5] = ':' then
     Insert('s', url, 5);  // http:// -> https://
+
+  idx := Pos('.2ch.net/', url);
+  if idx > 0 then
+    url[idx + 1] := '5';  // 2ch.net -> 5ch.net
 end;
 
 //! 2ch/5chのURLかどうか
 function TGikoSys.Is2chURL(url: String): Boolean;
+const
+  PROTOCOL2CH: array [0..1] of String = ('http://', 'https://');
+  DOMAIN2CH: array [0..2] of String = ('.2ch.net/', '.5ch.net/', '.bbspink.com/');
+var
+  idx: Integer;
+  start: Integer;
+  first: Integer;
+  i: Integer;
 begin
-  Result := (AnsiPos('.5ch.net/', url) > 0) or
-            (AnsiPos('.2ch.net/', url) > 0) or
-            (AnsiPos('.bbspink.com/', url) > 0);
+  Result := False;
+  start := 0;
+
+  for i := Low(PROTOCOL2CH) to High(PROTOCOL2CH) do begin
+    if Pos(PROTOCOL2CH[i], url) = 1 then begin
+      start := Length(PROTOCOL2CH[i]) + 1;
+      Break;
+    end;
+  end;
+
+  if start = 0 then
+    Exit;   // 対象外のプロトコル
+
+  first := PosEx('/', url, start);  // ルートの'/'
+  if first < 1 then
+    Exit;   // パス部がないURL
+
+  for i := Low(DOMAIN2CH) to High(DOMAIN2CH) do begin
+    idx := Pos(DOMAIN2CH[i], url);
+    if (idx > 0) and (idx < first) then begin
+      Result := True;
+      Exit;
+    end;
+  end;
 end;
 
 //! したらばのURLかどうか
