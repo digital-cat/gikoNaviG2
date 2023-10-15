@@ -898,6 +898,7 @@ var
   idx: Integer;
   url1: String;
   dat: String;
+  oysURL: String;
 begin
   Result := URL;
 
@@ -911,7 +912,14 @@ begin
   idx := idx + 4;
   dat := Copy(URL, idx + 1, Length(URL) - idx);
 
-  Result := Format('%s/oyster/%s/%s', [url1, Copy(dat, 1, 4), dat]);
+  oysURL := Format('%s/oyster/%s/%s', [url1, Copy(dat, 1, 4), dat]);
+
+  FSessionID := '';
+  Synchronize(GetSessionID);
+  if (FSessionID <> '') then
+      oysURL := oysURL + '?sid=' + FSessionID;  // これはRokkaと同じやり方。もしかしてヘッダに設定が正解？
+
+  Result := oysURL;
 end;
 
 

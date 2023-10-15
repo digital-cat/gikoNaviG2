@@ -431,6 +431,8 @@ type
     K4: TMenuItem;
     WikiFAQ1: TMenuItem;
     ThrNGEdit: TMenuItem;
+    RangeBon: TMenuItem;
+    N87: TMenuItem;
 				procedure FormCreate(Sender: TObject);
 		procedure FormDestroy(Sender: TObject);
         procedure SaveSettingAll();
@@ -789,8 +791,10 @@ type
 		procedure IndividualAbonID(Atype : Integer);
 		//このレスあぼ～ん
 		procedure IndividualAbon(Atag, Atype : Integer);
-        //同一IDをNGワードに登録
-        procedure AddIDtoNGWord(invisible : boolean);
+    //同一IDをNGワードに登録
+    procedure AddIDtoNGWord(invisible : boolean);
+    //範囲あぼ～ん
+    procedure RangeAbon(Atag: Integer);
 		//ブラウザの再描画 true:全てのタブ false:アクティブなタブのみ
 		procedure RepaintAllTabsBrowser();
 		//リンクバー設定
@@ -889,7 +893,7 @@ uses
 	About, Option, Round, Splash, Sort, ListSelect, Imm,
 	NewBoard, MojuUtils, Clipbrd, GikoBayesian,Y_TextConverter,
 	HTMLCreate, ListViewUtils, GikoDataModule, GikoMessage,
-  InputAssistDataModule, Types, ReplaceDataModule, PopupMenuUtil;
+  InputAssistDataModule, Types, ReplaceDataModule, PopupMenuUtil, RangeAbon;
 
 const
 	BLANK_HTML: string = 'about:blank';
@@ -7558,6 +7562,65 @@ begin
 		body.Free;
 	end;
 
+end;
+//範囲あぼ～ん
+procedure TGikoForm.RangeAbon(Atag: Integer);
+var
+  abonForm:   TRangeAbonForm;
+  fromNo:     Integer;
+  toNo:       Integer;
+  abonType:   Integer;
+  doc:        IHTMLDocument2;
+  ThreadItem: TThreadItem;
+  ReadList:   TStringList;
+  wordCount:  TWordCount;
+begin
+	ThreadItem := GetActiveContent(True);
+  // 範囲あぼーん画面表示
+  abonType := -1;
+  abonForm := TRangeAbonForm.Create(self);
+  try
+    abonForm.FromNo := Atag;
+    abonForm.ToNo   := Atag;
+    abonForm.MaxNo  := ThreadItem.Count;
+    if abonForm.ShowModal <> mrOk then
+      Exit;
+    fromNo   := abonForm.FromNo;
+    toNo     := abonForm.ToNo;
+    abonType := abonForm.AbonType;
+  finally
+    abonForm.Free;
+  end;
+
+  if (abonType <> 0) and (abonType <> 1) then
+    Exit;
+
+  if not Assigned(FActiveContent) then
+    Exit;
+  doc := FActiveContent.Browser.ControlInterface.Document as IHTMLDocument2;
+  if not Assigned(doc) then
+    Exit;
+
+	ReadList := TStringList.Create;
+	wordCount := TWordCount.Create;
+	try
+		ThreadItem.ScrollTop := (doc.body as IHTMLElement2).ScrollTop;
+{$IFDEF SPAM_FILTER_ENABLED}
+		// スパムに設定
+		ReadList.LoadFromFile( ThreadItem.GetThreadFileName );
+		GikoSys.SpamCountWord( ReadList[ abonType - 1 ], wordCount );
+		GikoSys.SpamForget( wordCount, False );	// ハムを解除
+		GikoSys.SpamLearn( wordCount, True );		// スパムに設定
+{$ENDIF}
+    //範囲指定で個別あぼ～んファイルに追加
+    GikoSys.FAbon.AddRangeAbon(fromNo, toNo, abonType, ChangeFileExt(ThreadItem.GetThreadFileName, '.NG'));
+	finally
+		wordCount.Free;
+		ReadList.Free;
+	end;
+	FActiveContent.Repaint := true;
+	if ThreadItem <> nil then
+		InsertBrowserTab( ThreadItem, True );
 end;
 
 procedure TGikoForm.KokoPopupMenuPopup(Sender: TObject);

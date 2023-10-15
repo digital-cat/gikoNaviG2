@@ -93,7 +93,8 @@ uses
   RegExpTester in 'RegExpTester.pas' {RegExpTest},
   BbsThrSel in 'BbsThrSel.pas' {BbsThreadSel},
   IndyModule in 'IndyModule.pas' {IndyMdl: TDataModule},
-  DmSession5ch in 'DmSession5ch.pas' {Session5ch: TDataModule};
+  DmSession5ch in 'DmSession5ch.pas' {Session5ch: TDataModule},
+  RangeAbon in 'RangeAbon.pas' {RangeAbonForm};
 
 {$R *.RES}
 {$R gikoResource.res}

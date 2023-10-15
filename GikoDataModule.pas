@@ -258,6 +258,8 @@ type
     GoWikiFAQWebPageAction: TAction;
     ThreadSearchAction: TAction;
     ThreadNgEditAction: TAction;
+    RangeAbonAction: TAction;
+    ThreadRangeAbonAction: TAction;
 	procedure EditNGActionExecute(Sender: TObject);
 	procedure ReloadActionExecute(Sender: TObject);
 	procedure GoFowardActionExecute(Sender: TObject);
@@ -478,6 +480,8 @@ type
     procedure GoWikiFAQWebPageActionExecute(Sender: TObject);
     procedure ThreadSearchActionExecute(Sender: TObject);
     procedure ThreadNgEditActionExecute(Sender: TObject);
+    procedure RangeAbonActionExecute(Sender: TObject);
+    procedure ThreadRangeAbonActionExecute(Sender: TObject);
   private
 	{ Private 宣言 }
 	procedure ClearResFilter;
@@ -2555,6 +2559,20 @@ end;
 procedure TGikoDM.IndividualAbonID0ActionExecute(Sender: TObject);
 begin
 	GikoForm.IndividualAbonID(0);
+end;
+// *************************************************************************
+//! 範囲あぼ～ん（このレス）
+// *************************************************************************
+procedure TGikoDM.RangeAbonActionExecute(Sender: TObject);
+begin
+  GikoForm.RangeAbon(GikoForm.KokoPopupMenu.Tag);
+end;
+// *************************************************************************
+//! 範囲あぼ～ん（スレッド）
+// *************************************************************************
+procedure TGikoDM.ThreadRangeAbonActionExecute(Sender: TObject);
+begin
+  GikoForm.RangeAbon(0);
 end;
 ////////////////////////////////ブラウザポップアップまでおしまい/////////////////////
 // *************************************************************************
