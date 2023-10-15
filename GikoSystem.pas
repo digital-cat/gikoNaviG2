@@ -275,7 +275,7 @@ type
     //! 2ch/5chのURLを実際に呼べる形にする
     procedure Regulate2chURL(var url: String);
     //! 2ch/5chのURLかどうか
-    function Is2chURL(url: String): Boolean;
+    function Is2chURL(url: String; shortening: Boolean = False): Boolean;
     //! したらばのURLかどうか
     function IsShitarabaURL(url: String): Boolean;
 	end;
@@ -3585,13 +3585,15 @@ const
   DOMAIN_5CH = '5ch.net';
   DOMAIN_PNK = 'bbspink.com';
 var
-  idx: Integer;
+  idx1: Integer;
+  idx2: Integer;
   start: Integer;
   len: Integer;
   domain: String;
   path: String;
   dir: String;
   dirList: TStringList;
+  param: String;
 begin
   if not Is2chURL(url) then
     Exit;
@@ -3599,9 +3601,9 @@ begin
   if url[5] = ':' then
     Insert('s', url, 5);  // http:// -> https://
 
-  idx := Pos('.2ch.net/', url);
-  if idx > 0 then
-    url[idx + 1] := '5';  // 2ch.net -> 5ch.net
+  idx1 := Pos('.2ch.net/', url);
+  if idx1 > 0 then
+    url[idx1 + 1] := '5'; // 2ch.net -> 5ch.net
 
   { スマホURL -> PCURL
   https://itest.5ch.net/egg/test/read.cgi/software/1689155355
@@ -3619,28 +3621,34 @@ begin
 
   // パス部のみ取り出し
   path := Copy(url, start, Length(url) - start + 1);
-  idx := Pos('?', path);
-  if idx > 0 then
-    SetLength(path, idx - 1);
-  idx := Pos('#', path);
-  if idx > 0 then
-    SetLength(path, idx - 1);
+  idx1 := Pos('?', path);
+  idx2 := Pos('#', path);
+  if (idx2 > 0) and ((idx1 < 1) or (idx2 < idx1)) then
+    idx1 := idx2;
+  if idx1 > 0 then begin
+    param := Copy(path, idx1, Length(path) - idx1 + 1);
+    SetLength(path, idx1 - 1);
+  end;
 
   dirList := TStringList.Create;
   try
     start := 2;   // ルート'/'の次から
     len := Length(path);
     while start < len do begin
-      idx := PosEx('/', path, start);
-      if idx < 1 then
+      idx1 := PosEx('/', path, start);
+      if idx1 < 1 then
         Break;
-      dir := Copy(path, start, idx - start);
-      start := idx + 1;
+      dir := Copy(path, start, idx1 - start);
+      start := idx1 + 1;
       dirList.Add(dir);
     end;
 
-    if dirList.Count = 5 then begin
+    if dirList.Count >= 5 then begin
       url := Format('https://%s.%s/test/read.cgi/%s/%s/', [dirList[0], domain, dirList[3], dirList[4]]);
+      if dirList.Count > 5 then
+        url := url + dirList[5];
+      if param <> '' then
+        url := url + param;
     end;
   finally
     dirList.Free;
@@ -3648,23 +3656,32 @@ begin
 end;
 
 //! 2ch/5chのURLかどうか
-function TGikoSys.Is2chURL(url: String): Boolean;
+function TGikoSys.Is2chURL(url: String; shortening: Boolean = False): Boolean;
 const
   PROTOCOL2CH: array [0..1] of String = ('http://', 'https://');
+  PROTOCOL2CH_SH = '://';
+  PROTOCOL2CH_SH_MAX = 6;
   DOMAIN2CH: array [0..2] of String = ('.2ch.net/', '.5ch.net/', '.bbspink.com/');
 var
   idx: Integer;
   start: Integer;
   first: Integer;
   i: Integer;
+  p: Integer;
 begin
   Result := False;
   start := 0;
 
-  for i := Low(PROTOCOL2CH) to High(PROTOCOL2CH) do begin
-    if Pos(PROTOCOL2CH[i], url) = 1 then begin
-      start := Length(PROTOCOL2CH[i]) + 1;
-      Break;
+  if shortening then begin
+    p := Pos(PROTOCOL2CH_SH, url);
+    if (p > 0) and (p <= PROTOCOL2CH_SH_MAX) then
+      start := p + Length(PROTOCOL2CH_SH);
+  end else begin
+    for i := Low(PROTOCOL2CH) to High(PROTOCOL2CH) do begin
+      if Pos(PROTOCOL2CH[i], url) = 1 then begin
+        start := Length(PROTOCOL2CH[i]) + 1;
+        Break;
+      end;
     end;
   end;
 

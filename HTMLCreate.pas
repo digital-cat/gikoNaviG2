@@ -4,7 +4,7 @@ interface
 
 uses
 	Windows, Messages, SysUtils, Classes, {Graphics,} Controls, {Forms,}
-	ComCtrls, IniFiles, ShellAPI, Math, GikoSystem,
+	ComCtrls, IniFiles, ShellAPI, Math, GikoSystem, StrUtils,
 {$IF Defined(DELPRO) }
 	SHDocVw,
 	MSHTML,
@@ -46,6 +46,7 @@ type
 		{ Private 宣言 }
 		anchorLen			: Integer;
 		pURLCHARs,pURLCHARe : PChar;
+		pURLC5CHs,pURLC5CHe : PChar;
 		pANCHORs, pANCHORe  : PChar;
 		pCTAGLs,  pCTAGLe   : PChar;
 		pCTAGUs,  pCTAGUe   : PChar;
@@ -109,6 +110,10 @@ const
 									 + 'abcdefghijklmnopqrstuvwxyz'
 									 + 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 									 + '#$%&()*+,-./:;=?@[]^_`{|}~!''\';
+	URL_CHAR_5CH: string = '0123456789'
+									 + 'abcdefghijklmnopqrstuvwxyz'
+									 + 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+									 + '#$%&*+,-./:;=?@^_';
 	ANCHOR_REF	= 'href=';
 	CLOSE_TAGAL = '</a>';
 	CLOSE_TAGAU = '</A>';
@@ -127,6 +132,8 @@ begin
 	pANCHORe  := pANCHORs + Length(ANCHOR_REF);
 	pURLCHARs := PChar(URL_CHAR);
 	pURLCHARe := pURLCHARs + Length(URL_CHAR);
+  pURLC5CHs := PChar(URL_CHAR_5CH);
+  pURLC5CHe := pURLC5CHs + Length(URL_CHAR_5CH);
 	pCTAGLs	  := PChar(CLOSE_TAGAL);
 	pCTAGLe   := pCTAGLs + 4;
 	pCTAGUs   := PChar(CLOSE_TAGAU);
@@ -277,7 +284,8 @@ var
 	pp, pe : PChar;
 	s : String;
 	len : Integer;
-    urllen: Integer;
+  urllen: Integer;
+  url5ch, ok: Boolean;
 begin
 	s := PRes.FBody;
 	PRes.FBody := '';
@@ -329,9 +337,15 @@ begin
 				Delete(s, 1, idx - 1);
 				b := Length( s ) + 1;
 				pp      := PChar(s);
+        url5ch := GikoSys.Is2chURL(s, True);  // 5chのURLかどうか（プロトコル部の短縮許容）
 				for i := 1 to b do begin
 					//１バイト文字でURLに使えない文字なら
-					if (AnsiStrPosEx(pURLCHARs, pURLCHARe, pp, pp + 1) = nil) then begin
+          if url5ch then begin
+            ok := (AnsiStrPosEx(pURLC5CHs, pURLC5CHe, pp, pp + 1) = nil);
+          end else begin
+            ok := (AnsiStrPosEx(pURLCHARs, pURLCHARe, pp, pp + 1) = nil);
+          end;
+					if ok then begin
 						url := Copy(s, 1, i - 1);
 						Delete(s, 1, i - 1);
             urllen := Length(url);
