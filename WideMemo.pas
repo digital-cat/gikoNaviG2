@@ -3,20 +3,20 @@ unit WideMemo;
 interface
 
 uses
-    Messages, Windows, Controls, StdCtrls, SysUtils, Classes, Types;
+    Messages, Windows, Controls, StdCtrls, SysUtils, Classes, Types, TntStdCtrls;
 
 type
     TWideMemo = class;
 
-    TWideMemo = class(TMemo)
+    TWideMemo = class(TTntMemo)
 private
-    function GetWideText: WideString;
+//    function GetWideText: WideString;
     function GetEncodeText: AnsiString;
     procedure SetEncodeText(SrcText: AnsiString);
-    function SetClipboard(SrcText: WideString): Boolean;
-    function GetClipboard(IsClear: Boolean): WideString;
+//    function SetClipboard(SrcText: WideString): Boolean;
+//    function GetClipboard(IsClear: Boolean): WideString;
 protected
-    procedure CreateWindowHandle(const Params: TCreateParams); override;
+//    procedure CreateWindowHandle(const Params: TCreateParams); override;
 public
     constructor Create(AOwner: TComponent); override;
     procedure Free;
@@ -38,47 +38,47 @@ begin
     inherited Free;
 end;
 
-procedure TWideMemo.CreateWindowHandle(const Params: TCreateParams);
-var
-    ClassName: WideString;
-begin
-    with Params do
-    begin
-        ClassName := WideString(WinClassName);
-        WindowHandle := CreateWindowExW(ExStyle, PWideChar(ClassName), '', Style,
-                                        X, Y, Width, Height, WndParent, 0,
-                                        HInstance, Param);
-        SendMessage(WindowHandle, WM_SETTEXT, 0, Longint(Caption));
-    end;
-end;
+//procedure TWideMemo.CreateWindowHandle(const Params: TCreateParams);
+//var
+//    ClassName: WideString;
+//begin
+//    with Params do
+//    begin
+//        ClassName := WideString(WinClassName);
+//        WindowHandle := CreateWindowExW(ExStyle, PWideChar(ClassName), '', Style,
+//                                        X, Y, Width, Height, WndParent, 0,
+//                                        HInstance, Param);
+//        SendMessage(WindowHandle, WM_SETTEXT, 0, Longint(Caption));
+//    end;
+//end;
 
-function TWideMemo.GetWideText: WideString;
-var
-//    Len: Integer;
-//    LenUC: Integer;
-//    BufUC: PWideChar;
-//    BufUCSize: Integer;
-    PosS: LongWord;
-    PosE: LongWord;
-begin
-//    Len := GetWindowTextLengthW(Handle);
-//    Len := Perform(WM_GETTEXTLENGTH, 0, 0);
-//    LenUC := Len + 1;
-//    BufUCSize := LenUC * SizeOf(WideChar);
-//    BufUC := AllocMem(BufUCSize);
-//    ZeroMemory(BufUC, BufUCSize);
-//    GetWindowTextW(Handle, BufUC, LenUC);
-//    SendMessageW(Handle, WM_GETTEXT, WPARAM(LenUC), LPARAM(BufUC));
-//    Result := WideString(BufUC);
-//    FreeMem(BufUC);
-
-	SendMessage(Handle, EM_GETSEL, WPARAM(@PosS), LPARAM(@PosE));
-	SendMessage(Handle, EM_SETSEL, 0, GetWindowTextLengthW(Handle));
-	SendMessage(Handle, WM_COPY, 0, 0);
-	SendMessage(Handle, EM_SETSEL, WPARAM(PosS), LPARAM(PosE));
-
-    Result := GetClipboard(True);
-end;
+//function TWideMemo.GetWideText: WideString;
+//var
+////    Len: Integer;
+////    LenUC: Integer;
+////    BufUC: PWideChar;
+////    BufUCSize: Integer;
+//    PosS: LongWord;
+//    PosE: LongWord;
+//begin
+////    Len := GetWindowTextLengthW(Handle);
+////    Len := Perform(WM_GETTEXTLENGTH, 0, 0);
+////    LenUC := Len + 1;
+////    BufUCSize := LenUC * SizeOf(WideChar);
+////    BufUC := AllocMem(BufUCSize);
+////    ZeroMemory(BufUC, BufUCSize);
+////    GetWindowTextW(Handle, BufUC, LenUC);
+////    SendMessageW(Handle, WM_GETTEXT, WPARAM(LenUC), LPARAM(BufUC));
+////    Result := WideString(BufUC);
+////    FreeMem(BufUC);
+///
+//	SendMessage(Handle, EM_GETSEL, WPARAM(@PosS), LPARAM(@PosE));
+//	SendMessage(Handle, EM_SETSEL, 0, GetWindowTextLengthW(Handle));
+//	SendMessage(Handle, WM_COPY, 0, 0);
+//	SendMessage(Handle, EM_SETSEL, WPARAM(PosS), LPARAM(PosE));
+///
+//    Result := GetClipboard(True);
+//end;
 
 function TWideMemo.GetEncodeText: AnsiString;
 const
@@ -93,7 +93,8 @@ var
     TextSJ: AnsiString;
     TextUC: WideString;
 begin
-    TextUC := GetWideText;
+//    TextUC := GetWideText;
+    TextUC := Text;
     BufUC := PWideChar(TextUC);
     Len := Length(TextUC);
     LenUC := Len + 1;
@@ -150,69 +151,71 @@ begin
         Delete(TextSJ, 1, CodePos);
     end;
 
-    SetWindowTextW(Handle, PWideChar(TextUC));
+//    SetWindowTextW(Handle, PWideChar(TextUC));
+  Text := TextUC;
 end;
 
-function TWideMemo.SetClipboard(SrcText: WideString): Boolean;
-var
-    LenUC: Integer;
-    BufUC: PWideChar;
-    BufUCSize: Integer;
-    MemHandle: HGLOBAL;
-    CopySize: Integer;
-begin
-    LenUC := Length(SrcText);
-    CopySize := LenUC * SizeOf(WideChar);
-    BufUCSize := (LenUC + 1) * SizeOf(WideChar);
-    MemHandle := GlobalAlloc(GMEM_DDESHARE or GMEM_MOVEABLE, BufUCSize);
-    BufUC := GlobalLock(MemHandle);
-    ZeroMemory(BufUC, BufUCSize);
-    CopyMemory(BufUC, PWideChar(SrcText), CopySize);
-    GlobalUnlock(MemHandle);
+//function TWideMemo.SetClipboard(SrcText: WideString): Boolean;
+//var
+//    LenUC: Integer;
+//    BufUC: PWideChar;
+//    BufUCSize: Integer;
+//    MemHandle: HGLOBAL;
+//    CopySize: Integer;
+//begin
+//    LenUC := Length(SrcText);
+//    CopySize := LenUC * SizeOf(WideChar);
+//    BufUCSize := (LenUC + 1) * SizeOf(WideChar);
+//    MemHandle := GlobalAlloc(GMEM_DDESHARE or GMEM_MOVEABLE, BufUCSize);
+//    BufUC := GlobalLock(MemHandle);
+//    ZeroMemory(BufUC, BufUCSize);
+//    CopyMemory(BufUC, PWideChar(SrcText), CopySize);
+//    GlobalUnlock(MemHandle);
+///
+//    if (OpenClipboard(Handle) = True) then begin
+//        EmptyClipboard;
+//        SetClipboardData(CF_UNICODETEXT, MemHandle);
+//        CloseClipboard;
+//        Result := True;
+//    end else begin
+//        GlobalFree(MemHandle);
+//        Result := False;
+//    end;
+//end;
 
-    if (OpenClipboard(Handle) = True) then begin
-        EmptyClipboard;
-        SetClipboardData(CF_UNICODETEXT, MemHandle);
-        CloseClipboard;
-        Result := True;
-    end else begin
-        GlobalFree(MemHandle);
-        Result := False;
-    end;
-end;
-
-function TWideMemo.GetClipboard(IsClear: Boolean): WideString;
-var
-    TextGet: WideString;
-    MemHandle: HGLOBAL;
-    TextP: PWideChar;
-begin
-    if (OpenClipboard(Handle) = True) then begin
-        MemHandle := GetClipboardData(CF_UNICODETEXT);
-        if (MemHandle <> 0) then begin
-            TextP := PWideChar(GlobalLock(MemHandle));
-            if not (TextP = nil) then begin
-                TextGet := WideString(TextP);
-                GlobalUnlock(MemHandle);
-            end;
-        end;
-        if (IsClear = True) then
-            EmptyClipboard;
-        CloseClipboard;
-    end;
-    Result := TextGet;
-end;
+//function TWideMemo.GetClipboard(IsClear: Boolean): WideString;
+//var
+//    TextGet: WideString;
+//    MemHandle: HGLOBAL;
+//    TextP: PWideChar;
+//begin
+//    if (OpenClipboard(Handle) = True) then begin
+//        MemHandle := GetClipboardData(CF_UNICODETEXT);
+//        if (MemHandle <> 0) then begin
+//            TextP := PWideChar(GlobalLock(MemHandle));
+//            if not (TextP = nil) then begin
+//                TextGet := WideString(TextP);
+//                GlobalUnlock(MemHandle);
+//            end;
+//        end;
+//        if (IsClear = True) then
+//            EmptyClipboard;
+//        CloseClipboard;
+//    end;
+//    Result := TextGet;
+//end;
 
 procedure TWideMemo.InsertText(InsText: WideString);
 var
-//    SelS: LongWord;
-//    SelE: LongWord;
-//    FullText: WideString;
-//    AftCurPos: LongInt;
-    TextOrg: WideString;
+    SelS: LongWord;
+    SelE: LongWord;
+    FullText: WideString;
+    AftCurPos: LongInt;
+//    TextOrg: WideString;
 begin
-(*
-    FullText := GetWideText;
+
+//    FullText := GetWideText;
+    FullText := Text;
 
     SelS := 0;
     SelE := 0;
@@ -227,8 +230,8 @@ begin
     AftCurPos := LongInt(SelS) + Length(InsText);
 
     SendMessageW(Handle, EM_SETSEL, AftCurPos, AftCurPos);
-*)
 
+(*
     TextOrg := GetClipboard(False);
 
     if (SetClipboard(InsText) = True) then begin
@@ -238,7 +241,7 @@ begin
         SetClipboard(TextOrg);
     end;
 
-    Change;
+    Change; *)
 end;
 
 procedure TWideMemo.QuotePaste(QuoteStr: AnsiString);
@@ -249,7 +252,8 @@ var
     RetChar: WideString;
     Ret: Integer;
 begin
-    TextSrc := GetClipboard(False);
+//    TextSrc := GetClipboard(False);
+    TextSrc := Text;
     QuoteUC := QuoteStr;
     RetChar := AnsiString(#13#10);
 
