@@ -7456,9 +7456,10 @@ var
 	ReadList		: TStringList;
 	wordCount		: TWordCount;
 {$ENDIF}
-    id, dateStr: String;
-    ThreadTitle: String;
-    Idx: Integer;
+  id, dateStr: String;
+  ThreadTitle: String;
+  Idx: Integer;
+  len: Integer;
 begin
 	No := KokoPopupMenu.Tag;
 	if No = 0 then Exit;
@@ -7473,6 +7474,13 @@ begin
             if (Idx < 1) then
                 Break;
             Delete(ThreadTitle, Idx, 1);
+        end;
+        // slipを除去
+        idx := Pos('ID:', id);
+        if idx > 0 then begin
+          len := idx + 10;    // 'I'の位置 + 'D:'2桁 + ID8桁
+          if len < Length(id) then
+            SetLength(id, len);
         end;
         // コメントとして、スレッド名と今日の日付を追加
         DateTimeToString(dateStr, 'yyyymmdd', Now);
