@@ -16,12 +16,12 @@ DefaultDirName=C:\gikonavi
 VersionInfoDescription=ギコナビ(避難所版II)セットアッププログラム
 DefaultGroupName=ギコナビ
 ; 自分の環境に合わせてください
-SourceDir=D:\giko\Setup\Release74-869
+SourceDir=D:\giko\Setup\Release74-870
 OutputDir=D:\giko\Setup\Output
 SetupIconFile=D:\giko\Setup\GikoSetup.ico
 ; ギコナビのバージョンにあわせてください
-VersionInfoVersion=1.74.0.869
-OutputBaseFilename=gikoNavi_b74_869_up_setup
+VersionInfoVersion=1.74.0.870
+OutputBaseFilename=gikoNavi_b74_870_up_setup
 CreateUninstallRegKey=no
 
 [Tasks]
@@ -48,8 +48,8 @@ Source: "config\BoardPlugin\*.dll" ; Destdir: {app}\config\BoardPlugin ;Flags: i
 
 [Icons]
 ;Name: "{group}\Readme"; Filename: "{app}\readme.txt"; Tasks: startmenuicon
-Name: "{group}\Readme_Goeson"; Filename: "{app}\readme_goeson.txt"; Tasks: startmenuicon
-Name: "{group}\Readme_G2"; Filename: "{app}\readme_g2.txt"; Tasks: startmenuicon
+;Name: "{group}\Readme_Goeson"; Filename: "{app}\readme_goeson.txt"; Tasks: startmenuicon
+;Name: "{group}\Readme_G2"; Filename: "{app}\readme_g2.txt"; Tasks: startmenuicon
 ;Name: "{group}\ギコナビ"; Filename: "{app}\gikoNavi.exe"; Tasks: startmenuicon
 ;Name: "{commondesktop}\ギコナビ"; Filename: "{app}\gikoNavi.exe"; Tasks: desktopicon
 
