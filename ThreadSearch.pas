@@ -73,8 +73,6 @@ type
     function ParsJson(JsonStream: TMemoryStream): Boolean;
     procedure SetCm(Content: string);
     function HTMLEncode(const HTML: string): String;
-    procedure InitHttpClient(client: TIdHttp);
-    procedure ClearHttpClient(client: TIdHttp);
     procedure MenuBbsClick(Sender: TObject);
   public
     { Public 宣言 }
@@ -100,7 +98,7 @@ const
 
 implementation
 
-uses GikoSystem, GikoDataModule, MojuUtils, BoardGroup;
+uses GikoSystem, GikoDataModule, MojuUtils, BoardGroup, IndyModule;
 
 {$R *.dfm}
 
@@ -212,7 +210,7 @@ begin
     RspStream := TMemoryStream.Create;
 
     Ok := False;
-    InitHttpClient(Indy);
+    TIndyMdl.InitHTTP(Indy);
     try
         Indy.Get(URL, RspStream);
         Ok := True;
@@ -449,62 +447,6 @@ begin
 	DstStr := CustomStringReplace(DstStr, '&gt;',   '>');
 	DstStr := CustomStringReplace(DstStr, '&quot;', '"');
 	Result := CustomStringReplace(DstStr, '&amp;',  '&');
-end;
-
-procedure TThreadSrch.InitHttpClient(client: TIdHttp);
-begin
-	ClearHttpClient(client);
-	client.Disconnect;
-	client.Request.UserAgent := GikoSys.GetUserAgent;
-	//client.RecvBufferSize := Gikosys.Setting.RecvBufferSize;    for Indy10
-	client.ProxyParams.BasicAuthentication := False;
-	client.ReadTimeout := GikoSys.Setting.ReadTimeOut;
-    client.ConnectTimeout := GikoSys.Setting.ReadTimeOut;
-	{$IFDEF DEBUG}
-	Writeln('------------------------------------------------------------');
-	{$ENDIF}
-	//FIndy.AllowCookies := False;
-	if GikoSys.Setting.ReadProxy then begin
-		if GikoSys.Setting.ProxyProtocol then
-			client.ProtocolVersion := pv1_1
-		else
-			client.ProtocolVersion := pv1_0;
-		client.ProxyParams.ProxyServer := GikoSys.Setting.ReadProxyAddress;
-		client.ProxyParams.ProxyPort := GikoSys.Setting.ReadProxyPort;
-		client.ProxyParams.ProxyUsername := GikoSys.Setting.ReadProxyUserID;
-		client.ProxyParams.ProxyPassword := GikoSys.Setting.ReadProxyPassword;
-		if GikoSys.Setting.ReadProxyUserID <> '' then
-			client.ProxyParams.BasicAuthentication := True;
-		{$IFDEF DEBUG}
-		Writeln('プロキシ設定あり');
-		Writeln('ホスト: ' + GikoSys.Setting.ReadProxyAddress);
-		Writeln('ポート: ' + IntToStr(GikoSys.Setting.ReadProxyPort));
-		{$ENDIF}
-	end else begin
-		if GikoSys.Setting.Protocol then
-			client.ProtocolVersion := pv1_1
-		else
-			client.ProtocolVersion := pv1_0;
-		client.ProxyParams.ProxyServer := '';
-		client.ProxyParams.ProxyPort := 80;
-		client.ProxyParams.ProxyUsername := '';
-		client.ProxyParams.ProxyPassword := '';
-		{$IFDEF DEBUG}
-		Writeln('プロキシ設定なし');
-		{$ENDIF}
-	end;
-end;
-
-procedure TThreadSrch.ClearHttpClient(client: TIdHttp);
-begin
-	client.Request.CustomHeaders.Clear;
-	client.Request.RawHeaders.Clear;
-	client.Request.Clear;
-	client.Response.CustomHeaders.Clear;
-	client.Response.RawHeaders.Clear;
-	client.Response.Clear;
-
-	client.ProxyParams.Clear;
 end;
 
 procedure TThreadSrch.ResultListDblClick(Sender: TObject);

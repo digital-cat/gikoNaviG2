@@ -106,7 +106,7 @@ begin
     try
         ResStream := TMemoryStream.Create;
         try
-            TNewBoardDialog.InitHTTPClient(IdHTTP);
+            TIndyMdl.InitHTTP(IdHTTP);
             IdHTTP.Request.Referer := '';
             IdHTTP.Request.AcceptEncoding := 'gzip';
 

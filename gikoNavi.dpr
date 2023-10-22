@@ -36,7 +36,6 @@ uses
   Preview in 'Preview.pas',
   HTMLDocumentEvent in 'HTMLDocumentEvent.pas',
   Kotehan in 'Kotehan.pas' {KotehanDialog},
-  HintWindow in 'HintWindow.pas',
   GikoUtil in 'GikoUtil.pas',
   ToolBarSetting in 'ToolBarSetting.pas' {ToolBarSettingDialog},
   ToolBarUtil in 'ToolBarUtil.pas',

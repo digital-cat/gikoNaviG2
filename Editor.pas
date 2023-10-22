@@ -238,8 +238,6 @@ type
 		function GetResultType(ResponseText: string): TGikoResultType;
 		/// 本文の取得
 		function GetBody : string;
-		//IdHttpの初期化
-		procedure InitIdHTTP(http: TIdHTTP);
 		procedure ShowBoardInformation(ABoard: TBoard; AMemo: TMemo);
 		function GetTitlePictureURL(body: TStringList; ABoard: TBoard): string;
 		procedure ShowTitlePicture();
@@ -773,29 +771,6 @@ begin
 	end;
 end;
 
-procedure TEditorForm.InitIdHTTP(http: TIdHTTP);
-begin
-	http.Request.Clear;
-	http.ProxyParams.BasicAuthentication := False;
-	if GikoSys.Setting.WriteProxy then begin
-		http.ProxyParams.ProxyServer := GikoSys.Setting.WriteProxyAddress;
-		http.ProxyParams.ProxyPort := GikoSys.Setting.WriteProxyPort;
-		http.ProxyParams.ProxyUsername := GikoSys.Setting.WriteProxyUserID;
-		http.ProxyParams.ProxyPassword := GikoSys.Setting.WriteProxyPassword;
-		if GikoSys.Setting.ReadProxyUserID <> '' then
-			http.ProxyParams.BasicAuthentication := True;
-	end else begin
-		http.ProxyParams.ProxyServer := '';
-		http.ProxyParams.ProxyPort := 80;
-		http.ProxyParams.ProxyUsername := '';
-		http.ProxyParams.ProxyPassword := '';
-	end;
-	http.Request.UserAgent := GikoSys.GetUserAgent;
-	http.Request.AcceptEncoding := '';
-    http.AllowCookies := True;
-    http.ReadTimeout := GikoSys.Setting.ReadTimeOut;
-    http.ConnectTimeout := GikoSys.Setting.ReadTimeOut;
-end;
 //! 送信中止のためのメニューの再生
 procedure TEditorForm.CancelSend(ABoard: TBoard; ASysMenu: HMENU);
 begin
@@ -827,7 +802,10 @@ begin
 	State := gdsError;
   Board := GetBoard;
 
-	InitIdHTTP(Indy);
+  TIndyMdl.InitHTTP(Indy, True);
+  Indy.Request.AcceptEncoding := '';
+  Indy.AllowCookies := True;
+
 	if FThreadItem = nil then begin
 		URL := FBoard.GetSendURL;
 		Indy.Request.Referer := GikoSys.UrlToServer(FBoard.URL) + 'test/bbs.cgi';
@@ -1831,7 +1809,8 @@ end;
 procedure TEditorForm.GetWebData(const URL: string; const RefURL: string;
              Modified: TDateTime; stream: TStream);
 begin
-    InitIdHTTP(Indy);
+    TIndyMdl.InitHTTP(Indy);
+    Indy.Request.AcceptEncoding := '';
     Indy.Request.Referer := RefURL;
     Indy.Request.LastModified := Modified;
     

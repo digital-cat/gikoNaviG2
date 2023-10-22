@@ -71,8 +71,6 @@ type
 //		function CgiDownload(ItemType: TGikoDownloadType; URL: string; Modified: TDateTime): Boolean;
 		function DatDownload(ItemType: TGikoDownloadType; URL: string; Modified: TDateTime; RangeStart: Integer; AdjustLen: Integer): Boolean;
 //		procedure DeleteStatusLine(Item: TDownloadItem);
-		procedure InitHttpClient(client: TIdHttp);
-		procedure ClearHttpClient(client: TIdHttp);
 		procedure FireWork;
 		procedure FireWorkBegin;
 		procedure FireWorkEnd;
@@ -151,7 +149,7 @@ end;
 
 destructor TDownloadThread.Destroy;
 begin
-	ClearHttpClient(FIndy);
+  TIndyMdl.ClearHTTP(FIndy);
 	FIndy.Free;
   FSSL.Free;  // for https
     FWorkData.FWorkCS.Free;
@@ -175,66 +173,7 @@ begin
 										[Day, Copy(StrMonth, 1 + 3 * (Month - 1), 3),
 										 Year, Hour, Min, Sec]);
 end;
-// ******************************************************************
-// HTTPClientの初期化
-// ******************************************************************
-procedure TDownloadThread.InitHttpClient(client: TIdHttp);
-begin
-	ClearHttpClient(client);
-	client.Disconnect;
-	client.Request.UserAgent := GikoSys.GetUserAgent;
-	//client.RecvBufferSize := Gikosys.Setting.RecvBufferSize;  for Indy10
-	client.ProxyParams.BasicAuthentication := False;
-	client.ReadTimeout := GikoSys.Setting.ReadTimeOut;
-    client.ConnectTimeout := GikoSys.Setting.ReadTimeOut;
-	{$IFDEF DEBUG}
-	Writeln('------------------------------------------------------------');
-	{$ENDIF}
-	//FIndy.AllowCookies := False;
-	if GikoSys.Setting.ReadProxy then begin
-		if GikoSys.Setting.ProxyProtocol then
-			client.ProtocolVersion := pv1_1
-		else
-			client.ProtocolVersion := pv1_0;
-		client.ProxyParams.ProxyServer := GikoSys.Setting.ReadProxyAddress;
-		client.ProxyParams.ProxyPort := GikoSys.Setting.ReadProxyPort;
-		client.ProxyParams.ProxyUsername := GikoSys.Setting.ReadProxyUserID;
-		client.ProxyParams.ProxyPassword := GikoSys.Setting.ReadProxyPassword;
-		if GikoSys.Setting.ReadProxyUserID <> '' then
-			client.ProxyParams.BasicAuthentication := True;
-		{$IFDEF DEBUG}
-		Writeln('プロキシ設定あり');
-		Writeln('ホスト: ' + GikoSys.Setting.ReadProxyAddress);
-		Writeln('ポート: ' + IntToStr(GikoSys.Setting.ReadProxyPort));
-		{$ENDIF}
-	end else begin
-		if GikoSys.Setting.Protocol then
-			client.ProtocolVersion := pv1_1
-		else
-			client.ProtocolVersion := pv1_0;
-		client.ProxyParams.ProxyServer := '';
-		client.ProxyParams.ProxyPort := 80;
-		client.ProxyParams.ProxyUsername := '';
-		client.ProxyParams.ProxyPassword := '';
-		{$IFDEF DEBUG}
-		Writeln('プロキシ設定なし');
-		{$ENDIF}
-	end;
-end;
-// ******************************************************************
-// HTTPClientのリクエストとレスポンスのデータの消去
-// ******************************************************************
-procedure TDownloadThread.ClearHttpClient(client: TIdHttp);
-begin
-	client.Request.CustomHeaders.Clear;
-	client.Request.RawHeaders.Clear;
-	client.Request.Clear;
-	client.Response.CustomHeaders.Clear;
-	client.Response.RawHeaders.Clear;
-	client.Response.Clear;
 
-	client.ProxyParams.Clear;
-end;
 procedure TDownloadThread.Execute;
 var
 	ResStream: TMemoryStream;
@@ -311,7 +250,7 @@ begin
 
 		FAbort := False;
 		//===== プラグインを使用しない場合
-		InitHttpClient(FIndy);
+    TIndyMdl.InitHTTP(FIndy);
 		adjustMargin := 0;
 		if Item.DownType = gdtThread then begin
 			if FileExists( Item.ThreadItem.GetThreadFileName ) then begin
@@ -869,7 +808,7 @@ begin
 			ResStream.Free;
 		end;
 
-		ClearHttpClient(FIndy);
+    TIndyMdl.ClearHTTP(FIndy);
 
 		if Terminated then Break;
 		Suspend;

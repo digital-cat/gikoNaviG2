@@ -170,7 +170,8 @@ end;
 // *************************************************************************
 procedure	InitializeSocket(
 	inSocket : TIdHTTP;
-  inSSL : TIdSSLIOHandlerSocketOpenSSL    // for https
+  inSSL : TIdSSLIOHandlerSocketOpenSSL;    // for https
+  writeMethod: Boolean = False
 );
 begin
 
@@ -191,49 +192,8 @@ begin
 		if Assigned( OnWorkEnd ) then
 			inSocket.OnWorkEnd		:= OnWorkEnd;
 
-		// 通信に関する設定
-		inSocket.Request.CustomHeaders.Clear;
-		inSocket.Response.Clear;
-		inSocket.Request.Clear;
+    TIndyMdl.InitHTTP(inSocket, writeMethod);
 
-		inSocket.Request.UserAgent	:= GikoSys.GetUserAgent;
-		//inSocket.RecvBufferSize			:= Gikosys.Setting.RecvBufferSize;    for Indy10
-		inSocket.ProxyParams.BasicAuthentication := False;
-		inSocket.ReadTimeout := GikoSys.Setting.ReadTimeOut;
-        inSocket.ConnectTimeout := GikoSys.Setting.ReadTimeOut;
-		{$IFDEF DEBUG}
-		Writeln('------------------------------------------------------------');
-		{$ENDIF}
-		//inSocket.AllowCookies := False;
-		if GikoSys.Setting.ReadProxy then begin
-			if GikoSys.Setting.ProxyProtocol then
-				inSocket.ProtocolVersion := pv1_1
-			else
-				inSocket.ProtocolVersion := pv1_0;
-			inSocket.ProxyParams.ProxyServer		:= GikoSys.Setting.ReadProxyAddress;
-			inSocket.ProxyParams.ProxyPort			:= GikoSys.Setting.ReadProxyPort;
-			inSocket.ProxyParams.ProxyUsername	:= GikoSys.Setting.ReadProxyUserID;
-			inSocket.ProxyParams.ProxyPassword	:= GikoSys.Setting.ReadProxyPassword;
-			if GikoSys.Setting.ReadProxyUserID <> '' then
-				inSocket.ProxyParams.BasicAuthentication := True;
-			{$IFDEF DEBUG}
-			Writeln('プロキシ設定あり');
-			Writeln('ホスト: ' + GikoSys.Setting.ReadProxyAddress);
-			Writeln('ポート: ' + IntToStr( GikoSys.Setting.ReadProxyPort ));
-			{$ENDIF}
-		end else begin
-			if GikoSys.Setting.Protocol then
-				inSocket.ProtocolVersion := pv1_1
-			else
-				inSocket.ProtocolVersion := pv1_0;
-			inSocket.ProxyParams.ProxyServer		:= '';
-			inSocket.ProxyParams.ProxyPort			:= 80;
-			inSocket.ProxyParams.ProxyUsername	:= '';
-			inSocket.ProxyParams.ProxyPassword	:= '';
-			{$IFDEF DEBUG}
-			Writeln('プロキシ設定なし');
-			{$ENDIF}
-		end;
 	end;
 
 end;
@@ -377,7 +337,7 @@ begin
 	httpSocket := TIdHTTP.Create( nil );
   ssl := TIdSSLIOHandlerSocketOpenSSL.Create( nil );    // for https
 	try
-		InitializeSocket( httpSocket, ssl );                // for https
+		InitializeSocket( httpSocket, ssl, True );          // for https
 		httpSocket.Request.CustomHeaders.Add('Pragma: no-cache');
 		httpSocket.Request.AcceptLanguage	:= 'ja';
 		httpSocket.Request.Accept					:= 'image/gif, image/x-xbitmap, image/jpeg, image/pjpeg, */*';
