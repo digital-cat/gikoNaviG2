@@ -19,13 +19,13 @@ uses
 	{HintWindow,} GikoCoolBar, GikoListView, Search, ExternalBoardManager,
 	ExternalBoardPlugInMain, StdActns, Variants, ExtActns,IdTCPConnection,
 	IdBaseComponent, IdTCPClient, AppEvnts, BrowserRecord, MoveHistoryItem,
-    ShellAPI,Preview, HistoryList, ResPopupBrowser, ExtPreviewDatamodule,
-  SHDocVw;
+	ShellAPI,Preview, HistoryList, ResPopupBrowser, ExtPreviewDatamodule,
+	SHDocVw, WideCtrls;
 
 const
 	NGWORDNAME_PANEL = 3;
 	THREADSIZE_PANEL = 2;
-    USER_POPUPCLEAR		= WM_USER + 2005;	///< wParam : TWebBrowser
+	USER_POPUPCLEAR		= WM_USER + 2005;	///< wParam : TWebBrowser
 type
 
 	TToolBarSettingSenderType = (tssNone, tssMain, tssList, tssBrowser);
@@ -52,12 +52,12 @@ type
 		MessageListView: TListView;
 		MessageSplitter: TSplitter;
 		Panel3: TPanel;
-    CabinetCloseSpeedButton: TSpeedButton;
+		CabinetCloseSpeedButton: TSpeedButton;
 		ToolBar1: TToolBar;
 		CabinetSelectToolButton: TToolButton;
 		HistoryToolBar: TToolBar;
-    HistoryShowToolButton: TToolButton;
-    HistoryAllClearToolButton: TToolButton;
+		HistoryShowToolButton: TToolButton;
+		HistoryAllClearToolButton: TToolButton;
 		ItemIcon16: TImageList;
 		ItemIcon32: TImageList;
 		HotToobarImageList: TImageList;
@@ -282,7 +282,7 @@ type
 		SelectItemNameCopyAction1: TMenuItem;
 		B6: TMenuItem;
 		T9: TMenuItem;
-    NameCopyPMenu: TMenuItem;
+		NameCopyPMenu: TMenuItem;
 		SelectComboBox: TComboBox;
 		MainCoolBarPopupMenu: TPopupMenu;
 		StdToolBarVisiblePMenu: TMenuItem;
@@ -317,13 +317,13 @@ type
 		IndividualAbon1: TMenuItem;
 		N41: TMenuItem;
 		IndividualAbon2: TMenuItem;
-    AntiIndivAbonMenuItem: TMenuItem;
+		AntiIndivAbonMenuItem: TMenuItem;
 		AntiIndividualAbon: TMenuItem;
 		N49: TMenuItem;
 		N51: TMenuItem;
 		N52: TMenuItem;
 		SearchBoardName: TMenuItem;
-    TreeSelectLogDeleteSeparator: TMenuItem;
+		TreeSelectLogDeleteSeparator: TMenuItem;
 		N54: TMenuItem;
 		A13: TMenuItem;
 		FavoriteTreePopupMenu: TPopupMenu;
@@ -332,8 +332,8 @@ type
 		N56: TMenuItem;
 		FavoriteTreeDeletePopupMenu: TMenuItem;
 		FavoriteToolBar: TToolBar;
-    FavoriteAddToolButton: TToolButton;
-    FavoriteArrangeToolButton: TToolButton;
+		FavoriteAddToolButton: TToolButton;
+		FavoriteArrangeToolButton: TToolButton;
 		FavoriteTreeBrowseFolderPopupMenu: TMenuItem;
 		N57: TMenuItem;
 		FavoriteTreeReloadPopupMenu: TMenuItem;
@@ -347,93 +347,93 @@ type
 		ExportFavoriteFileAction1: TMenuItem;
 		N6: TMenuItem;
 		N17: TMenuItem;
-    N18: TMenuItem;
-    N20: TMenuItem;
-	N24: TMenuItem;
-    N62: TMenuItem;
-	N61: TMenuItem;
-	N63: TMenuItem;
-    N64: TMenuItem;
-    dummy1: TMenuItem;
-	TreeSelectLogDeletePopupMenu: TMenuItem;
-	N65: TMenuItem;
-    BBSSelectPopupMenu: TPopupMenu;
+		N18: TMenuItem;
+		N20: TMenuItem;
+		N24: TMenuItem;
+		N62: TMenuItem;
+		N61: TMenuItem;
+		N63: TMenuItem;
+		N64: TMenuItem;
+		dummy1: TMenuItem;
+		TreeSelectLogDeletePopupMenu: TMenuItem;
+		N65: TMenuItem;
+		BBSSelectPopupMenu: TPopupMenu;
 		PlugInMenu: TMenuItem;
-	TreeSelectNamePupupMenu: TMenuItem;
-    BrowserPanel: TPanel;
-	SelectTimer: TTimer;
-    SelectThreadSave: TMenuItem;
-    N55: TMenuItem;
-    N66: TMenuItem;
-    dat1: TMenuItem;
+		TreeSelectNamePupupMenu: TMenuItem;
+		BrowserPanel: TPanel;
+		SelectTimer: TTimer;
+		SelectThreadSave: TMenuItem;
+		N55: TMenuItem;
+		N66: TMenuItem;
+		dat1: TMenuItem;
 		OpenLogFolder: TMenuItem;
-    Browser: TWebBrowser;
-    TabSave: TMenuItem;
-	TabOpen: TMenuItem;
-    ResRangePopupMenu: TPopupMenu;
-    ResRangeHundPMenuItem: TMenuItem;
-    ResRangeKokoPMenuItem: TMenuItem;
-    ResRangeNewPMenuItem: TMenuItem;
-    ResRangeAllPMenuItem: TMenuItem;
-	BrowsBoradHeadAction1: TMenuItem;
-    ThreadRangePopupMenu: TPopupMenu;
-    A15: TMenuItem;
-    L8: TMenuItem;
-	N67: TMenuItem;
-    N68: TMenuItem;
-    S6: TMenuItem;
-    N69: TMenuItem;
-    ResRangeSelectPMenuItem: TMenuItem;
-    ListColumnPopupMenu: TPopupMenu;
-    N70: TMenuItem;
-    ID1: TMenuItem;
-    ID2: TMenuItem;
-    N53: TMenuItem;
-    ID3: TMenuItem;
-    N71: TMenuItem;
-    N72: TMenuItem;
-    N73: TMenuItem;
-    SelectComboBoxPanel: TPanel;
-    SelectComboBoxSplitter: TImage;
-    N74: TMenuItem;
-    WikiFAQ: TMenuItem;
-    GikoApplicationEvents: TApplicationEvents;
-    N22: TMenuItem;
-    N42: TMenuItem;
-    DAT2: TMenuItem;
-    N75: TMenuItem;
-    DAT3: TMenuItem;
-    N76: TMenuItem;
-    FavoriteTreeItemNameCopyPopupMenu: TMenuItem;
-    N77: TMenuItem;
-    N78: TMenuItem;
-    SaveThreadFile: TMenuItem;
-    N79: TMenuItem;
-    HTML1: TMenuItem;
-    DAT4: TMenuItem;
-    N80: TMenuItem;
-    SameBoardThreadItem: TMenuItem;
-    N81: TMenuItem;
-    N82: TMenuItem;
-    IDNG1: TMenuItem;
-    IDNG2: TMenuItem;
-    ResPopupClearTimer: TTimer;
-    TaskTrayPopupMenu: TPopupMenu;
-    Exit1: TMenuItem;
-    N83: TMenuItem;
-    UpdateGikonaviAction1: TMenuItem;
-    N84: TMenuItem;
-    N85: TMenuItem;
-    URL2: TMenuItem;
-    URLPATHINFO1: TMenuItem;
-    URLQUERYSTRING1: TMenuItem;
-    N86: TMenuItem;
-    K4: TMenuItem;
-    WikiFAQ1: TMenuItem;
-    ThrNGEdit: TMenuItem;
-    RangeBon: TMenuItem;
-    N87: TMenuItem;
-				procedure FormCreate(Sender: TObject);
+		Browser: TWebBrowser;
+		TabSave: TMenuItem;
+		TabOpen: TMenuItem;
+		ResRangePopupMenu: TPopupMenu;
+		ResRangeHundPMenuItem: TMenuItem;
+		ResRangeKokoPMenuItem: TMenuItem;
+		ResRangeNewPMenuItem: TMenuItem;
+		ResRangeAllPMenuItem: TMenuItem;
+		BrowsBoradHeadAction1: TMenuItem;
+		ThreadRangePopupMenu: TPopupMenu;
+		A15: TMenuItem;
+		L8: TMenuItem;
+		N67: TMenuItem;
+		N68: TMenuItem;
+		S6: TMenuItem;
+		N69: TMenuItem;
+		ResRangeSelectPMenuItem: TMenuItem;
+		ListColumnPopupMenu: TPopupMenu;
+		N70: TMenuItem;
+		ID1: TMenuItem;
+		ID2: TMenuItem;
+		N53: TMenuItem;
+		ID3: TMenuItem;
+		N71: TMenuItem;
+		N72: TMenuItem;
+		N73: TMenuItem;
+		SelectComboBoxPanel: TPanel;
+		SelectComboBoxSplitter: TImage;
+		N74: TMenuItem;
+		WikiFAQ: TMenuItem;
+		GikoApplicationEvents: TApplicationEvents;
+		N22: TMenuItem;
+		N42: TMenuItem;
+		DAT2: TMenuItem;
+		N75: TMenuItem;
+		DAT3: TMenuItem;
+		N76: TMenuItem;
+		FavoriteTreeItemNameCopyPopupMenu: TMenuItem;
+		N77: TMenuItem;
+		N78: TMenuItem;
+		SaveThreadFile: TMenuItem;
+		N79: TMenuItem;
+		HTML1: TMenuItem;
+		DAT4: TMenuItem;
+		N80: TMenuItem;
+		SameBoardThreadItem: TMenuItem;
+		N81: TMenuItem;
+		N82: TMenuItem;
+		IDNG1: TMenuItem;
+		IDNG2: TMenuItem;
+		ResPopupClearTimer: TTimer;
+		TaskTrayPopupMenu: TPopupMenu;
+		Exit1: TMenuItem;
+		N83: TMenuItem;
+		UpdateGikonaviAction1: TMenuItem;
+		N84: TMenuItem;
+		N85: TMenuItem;
+		URL2: TMenuItem;
+		URLPATHINFO1: TMenuItem;
+		URLQUERYSTRING1: TMenuItem;
+		N86: TMenuItem;
+		K4: TMenuItem;
+		WikiFAQ1: TMenuItem;
+		ThrNGEdit: TMenuItem;
+		RangeBon: TMenuItem;
+		N87: TMenuItem;
+		procedure FormCreate(Sender: TObject);
 		procedure FormDestroy(Sender: TObject);
         procedure SaveSettingAll();
 		procedure BrowserStatusTextChange(Sender: TObject;
@@ -534,43 +534,43 @@ type
 		procedure FavoriteTreeViewEndDrag(Sender, Target: TObject; X,
 			Y: Integer);
 		procedure FavoriteTreeBrowseBoardPopupMenuClick(Sender: TObject);
-    procedure BrowserTabContextPopup(Sender: TObject; MousePos: TPoint;
-      var Handled: Boolean);
-    procedure BrowserTabPopupMenuPopup(Sender: TObject);
-    procedure BrowserTabResize(Sender: TObject);
-    procedure TreeViewKeyDown(Sender: TObject; var Key: Word;
-      Shift: TShiftState);
-    procedure FavoriteTreeViewMouseDown(Sender: TObject;
+		procedure BrowserTabContextPopup(Sender: TObject; MousePos: TPoint;
+			var Handled: Boolean);
+		procedure BrowserTabPopupMenuPopup(Sender: TObject);
+		procedure BrowserTabResize(Sender: TObject);
+		procedure TreeViewKeyDown(Sender: TObject; var Key: Word;
+			Shift: TShiftState);
+		procedure FavoriteTreeViewMouseDown(Sender: TObject;
 			Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
-    procedure MessagePanelResize(Sender: TObject);
+		procedure MessagePanelResize(Sender: TObject);
 		procedure OnResized;
-	procedure SelectTimerTimer(Sender: TObject);
+		procedure SelectTimerTimer(Sender: TObject);
 		procedure ListViewColumnRightClick(Sender: TObject;
-      Column: TListColumn; Point: TPoint);
-	procedure ListViewCustomDrawItem(Sender: TCustomListView;
-      Item: TListItem; State: TCustomDrawState; var DefaultDraw: Boolean);
-    procedure FormActivate(Sender: TObject);
-    procedure BrowserPanelResize(Sender: TObject);
-    procedure MenuToolBarResize(Sender: TObject);
-    procedure ListToolBarResize(Sender: TObject);
-    procedure BrowserToolBarResize(Sender: TObject);
-	procedure KokoPopupMenuPopup(Sender: TObject);
-	procedure ListViewKeyUp(Sender: TObject; var Key: Word;
-	  Shift: TShiftState);
-    procedure FavoriteTreeViewEditing(Sender: TObject; Node: TTreeNode;
-      var AllowEdit: Boolean);
-	procedure CabinetCloseSpeedButtonClick(Sender: TObject);
-    procedure FavoriteArrangeToolButtonClick(Sender: TObject);
-    procedure GikoApplicationEventsMessage(var Msg: tagMSG;
-	  var Handled: Boolean);
-    procedure GikoApplicationEventsDeactivate(Sender: TObject);
-    procedure GikoApplicationEventsException(Sender: TObject; E: Exception);
-    procedure TreeViewMouseDown(Sender: TObject; Button: TMouseButton;
-      Shift: TShiftState; X, Y: Integer);
-    procedure GetResURLMenuClick(Sender: TObject);
-    procedure MainCoolBarContextPopup(Sender: TObject; MousePos: TPoint;
-      var Handled: Boolean);
-    procedure ResPopupClearTimerTimer(Sender: TObject);
+			Column: TListColumn; Point: TPoint);
+		procedure ListViewCustomDrawItem(Sender: TCustomListView;
+			Item: TListItem; State: TCustomDrawState; var DefaultDraw: Boolean);
+		procedure FormActivate(Sender: TObject);
+		procedure BrowserPanelResize(Sender: TObject);
+		procedure MenuToolBarResize(Sender: TObject);
+		procedure ListToolBarResize(Sender: TObject);
+		procedure BrowserToolBarResize(Sender: TObject);
+		procedure KokoPopupMenuPopup(Sender: TObject);
+		procedure ListViewKeyUp(Sender: TObject; var Key: Word;
+			Shift: TShiftState);
+		procedure FavoriteTreeViewEditing(Sender: TObject; Node: TTreeNode;
+			var AllowEdit: Boolean);
+		procedure CabinetCloseSpeedButtonClick(Sender: TObject);
+		procedure FavoriteArrangeToolButtonClick(Sender: TObject);
+		procedure GikoApplicationEventsMessage(var Msg: tagMSG;
+			var Handled: Boolean);
+		procedure GikoApplicationEventsDeactivate(Sender: TObject);
+		procedure GikoApplicationEventsException(Sender: TObject; E: Exception);
+		procedure TreeViewMouseDown(Sender: TObject; Button: TMouseButton;
+			Shift: TShiftState; X, Y: Integer);
+		procedure GetResURLMenuClick(Sender: TObject);
+		procedure MainCoolBarContextPopup(Sender: TObject; MousePos: TPoint;
+			var Handled: Boolean);
+		procedure ResPopupClearTimerTimer(Sender: TObject);
 	private
 		{ Private 宣言 }
 		FEnabledCloseButton: Boolean;
@@ -615,15 +615,16 @@ type
 		FResRangeMenuSelect	: Longint;			///< ResRangeButton で選択されている項目 (フォーマットは ResRange 互換)
 		FStartUp : Boolean;
 		FIsHandledWheel	: Boolean;			///< 既に受け取った WM_MOUSEWHEEL かどうか
-				DiffComp: Boolean;                      //Add by Genyakun スレが更新されたときにTrueになる
+		DiffComp: Boolean;                      //Add by Genyakun スレが更新されたときにTrueになる
 		FOrigenCaption: String;				//お気に入りツリーのアイテム編集時の編集前の文字列
 		FPreviewBrowserRect: TRect;			///< プレビューの表示位置を記憶する
 		FActionListGroupIndexes: array of Integer;	///<GikoDM上のアクションリストの各アクションに設定されたGroupIndexを保存する配列
-        FResPopupBrowser: TResPopupBrowser;
-        FUpdateExePath: string;    ///ギコナビ更新インストーラパス
-        FUpdateExeArgs: string;    ///ギコナビ更新インストーラ引数
-        FKokoPopupThreadItem: TThreadItem;
-        FCwSave: Word;  // 8087CW値保存
+		FResPopupBrowser: TResPopupBrowser;
+		FUpdateExePath: string;    ///ギコナビ更新インストーラパス
+		FUpdateExeArgs: string;    ///ギコナビ更新インストーラ引数
+		FKokoPopupThreadItem: TThreadItem;
+		FCwSave: Word;  // 8087CW値保存
+		BrowserNameLabelUC: TWideLabel;
 		procedure DownloadEnd(Sender: TObject; Item: TDownloadItem);
 		procedure DownloadMsg(Sender: TObject; Item: TDownloadItem; Msg: string; Icon: TGikoMessageIcon);
 		procedure WorkBegin(Sender: TObject; AWorkMode: TWorkMode; const AWorkCountMax: Integer; Number: Integer; const AWorkTitle: string);
@@ -694,28 +695,28 @@ type
 		procedure RefreshListView(Thread: TThreadItem);
 		//! スレッド一覧の表示範囲設定チェッククリア
 		procedure ClearThreadRengeAction;
-        //! タスクトレイのアイコン削除＆フォーム表示
-        procedure UnStoredTaskTray;
-        //! レスエディタの表示非表示
-        procedure ShowEditors(nCmdShow: Integer);
-        //! もっとも古いBrowserの開放
-        procedure ReleaseOldestBrowser;
-        //! アクティブなタブと同じ板の開いているスレッドをメニューアイテムに追加
-        procedure AddMenuSameBoardThread(MenuItem: TMenuItem);
-        //!  アクティブなタブと同じ板の開いているスレッドクリックイベント
-        procedure SameBoardThreadSubItemOnClick(Sender: TObject);
-        //! ポップアップブラウザ作成
-        procedure CreateResPopupBrowser;
-        //! ファイルチェック
-        function isValidFile(FileName: String) : boolean;
-        //! ListViewのD&D受け取り
-        procedure AcceptDropFiles(var Msg: TMsg);
-        //! スレッド一覧更新処理
-        procedure UpdateListView();
-        //! アイコン読み込み
-        procedure LoadIcon();
-        //! ポップアップメニュー読み込み
-//        procedure LoadPopupMenu();
+		//! タスクトレイのアイコン削除＆フォーム表示
+		procedure UnStoredTaskTray;
+		//! レスエディタの表示非表示
+		procedure ShowEditors(nCmdShow: Integer);
+		//! もっとも古いBrowserの開放
+		procedure ReleaseOldestBrowser;
+		//! アクティブなタブと同じ板の開いているスレッドをメニューアイテムに追加
+		procedure AddMenuSameBoardThread(MenuItem: TMenuItem);
+		//!  アクティブなタブと同じ板の開いているスレッドクリックイベント
+		procedure SameBoardThreadSubItemOnClick(Sender: TObject);
+		//! ポップアップブラウザ作成
+		procedure CreateResPopupBrowser;
+		//! ファイルチェック
+		function isValidFile(FileName: String) : boolean;
+		//! ListViewのD&D受け取り
+		procedure AcceptDropFiles(var Msg: TMsg);
+		//! スレッド一覧更新処理
+		procedure UpdateListView();
+		//! アイコン読み込み
+		procedure LoadIcon();
+		//! ポップアップメニュー読み込み
+//		procedure LoadPopupMenu();
 	protected
 		procedure CreateParams(var Params: TCreateParams); override;
 		procedure WndProc(var Message: TMessage); override;
@@ -753,8 +754,8 @@ type
 		property ScreenCursor : TCursor read GetScreenCursor write SetScreenCursor;
 		property ActiveBBS : TBBS read FActiveBBS write FActiveBBS;
 		property WorkCount: Integer read FWorkCount write FWorkCount;
-        property UpdateExePath: string read FUpdateExePath write FUpdateExePath;
-        property UpdateExeArgs: string read FUpdateExeArgs write FUpdateExeArgs;
+		property UpdateExePath: string read FUpdateExePath write FUpdateExePath;
+		property UpdateExeArgs: string read FUpdateExeArgs write FUpdateExeArgs;
 
 		procedure SetContent(inThread: TBrowserRecord);
 		function GetActiveContent(popup :Boolean = false): TThreadItem;
@@ -775,8 +776,8 @@ type
 		property ListViewBackGroundColor: TColor read FListViewBackGroundColor write SetListViewBackGroundColor;
 		property UseOddResOddColor : Boolean read FUseOddResOddColor write FUseOddResOddColor;
 		property OddColor : TColor read FOddColor write FOddColor;
-        //! レスメニューアクティブスレッドアイテム
-        property KokoPopupThreadItem : TThreadItem read FKokoPopupThreadItem;
+		//! レスメニューアクティブスレッドアイテム
+		property KokoPopupThreadItem : TThreadItem read FKokoPopupThreadItem;
 
 		function FindToolBarButton( bar : TToolBar; action : TAction ) : TToolButton;
 		procedure OnPlugInMenuItem( Sender : TObject );
@@ -791,10 +792,10 @@ type
 		procedure IndividualAbonID(Atype : Integer);
 		//このレスあぼ～ん
 		procedure IndividualAbon(Atag, Atype : Integer);
-    //同一IDをNGワードに登録
-    procedure AddIDtoNGWord(invisible : boolean);
-    //範囲あぼ～ん
-    procedure RangeAbon(Atag: Integer);
+		//同一IDをNGワードに登録
+		procedure AddIDtoNGWord(invisible : boolean);
+		//範囲あぼ～ん
+		procedure RangeAbon(Atag: Integer);
 		//ブラウザの再描画 true:全てのタブ false:アクティブなタブのみ
 		procedure RepaintAllTabsBrowser();
 		//リンクバー設定
@@ -810,8 +811,8 @@ type
 		procedure DeleteTab(ThreadItem: TThreadItem); overload;
 		//タブを削除 ブラウザレコード（タブ）指定
 		procedure DeleteTab(BrowserRecord: TBrowserRecord); overload;
-        // タブ削除（実装部）
-        procedure DeleteTab(index, selectIndex: Integer); overload;
+		// タブ削除（実装部）
+		procedure DeleteTab(index, selectIndex: Integer); overload;
 		//現在表示しているスレッドをスクロール
 		procedure BrowserMovement(const AName: string); overload;
 		//現在表示しているスレッドをスクロール
@@ -846,14 +847,14 @@ type
 		//! ツールバーにスレ絞込みコンボボックスを設定する
 		procedure SetSelectComboBox();
 
-        //! タスクトレイに格納したアイコンをクリックしたときの処理
-        procedure TaskTrayIconMessage(var Msg : TMsg); message WM_USER + 2010;
-        //! タスクトレイにアイコン登録＆フォーム隠し
-        procedure StoredTaskTray;
-        //! 同IDレスアンカー表示
-        procedure ShowSameIDAncher(const AID: String);
-        //! スレタイ表示更新
-        procedure UpdateThreadTitle;
+		//! タスクトレイに格納したアイコンをクリックしたときの処理
+		procedure TaskTrayIconMessage(var Msg : TMsg); message WM_USER + 2010;
+		//! タスクトレイにアイコン登録＆フォーム隠し
+		procedure StoredTaskTray;
+		//! 同IDレスアンカー表示
+		procedure ShowSameIDAncher(const AID: String);
+		//! スレタイ表示更新
+		procedure UpdateThreadTitle;
 	published
 		property EnabledCloseButton: Boolean read FEnabledCloseButton write SetEnabledCloseButton;
 	end;
@@ -881,7 +882,7 @@ type
 
 var
 	GikoForm: TGikoForm;
-    g_AppTerminated: Boolean = False;
+	g_AppTerminated: Boolean = False;
 
 implementation
 
@@ -893,7 +894,7 @@ uses
 	About, Option, Round, Splash, Sort, ListSelect, Imm,
 	NewBoard, MojuUtils, Clipbrd, GikoBayesian,Y_TextConverter,
 	HTMLCreate, ListViewUtils, GikoDataModule, GikoMessage,
-  InputAssistDataModule, Types, ReplaceDataModule, PopupMenuUtil, RangeAbon;
+	InputAssistDataModule, Types, ReplaceDataModule, PopupMenuUtil, RangeAbon;
 
 const
 	BLANK_HTML: string = 'about:blank';
@@ -908,7 +909,7 @@ const
 	USER_MINIMIZED					= WM_USER + 2002;
 	USER_SETLINKBAR					= WM_USER + 2003;
 	USER_DOCUMENTCOMPLETE		= WM_USER + 2004;	///< wParam : TWebBrowser
-    USER_TASKTRAY               = WM_USER + 2010;
+	USER_TASKTRAY               = WM_USER + 2010;
 {$R *.DFM}
 
 procedure TGikoForm.CreateParams(var Params: TCreateParams);
@@ -942,12 +943,12 @@ begin
 	Writeln('============================================================');
 {$ENDIF}
 //try
-    // ゼロ割例外の現在の設定を保存する
-    FCwSave := Get8087CW;
-    if ( AnsiPos('9.0', GikoSys.GetIEVersion()) = 1 ) then begin
-        // IE 9の場合だけ、無効ビットを立てる
-        Set8087CW(FCwSave or $0004);
-    end;
+	// ゼロ割例外の現在の設定を保存する
+	FCwSave := Get8087CW;
+	if ( AnsiPos('9.0', GikoSys.GetIEVersion()) = 1 ) then begin
+		// IE 9の場合だけ、無効ビットを立てる
+		Set8087CW(FCwSave or $0004);
+	end;
 	Sort.SetSortDate(Now());
 
 	FTreeType := gttNone;
@@ -960,11 +961,11 @@ begin
 	//これ以後Set～で再設定するまで、ActionのCheckedをいじるときは注意！
 	GetGroupIndex(GikoDM.GikoFormActionList);
 	FSearchDialog := nil;
-    FResPopupBrowser := nil;
+	FResPopupBrowser := nil;
 	CreateBrowsers(BROWSER_COUNT);
-    FIconData.uID := 0;
-    FUpdateExePath := '';
-    FUpdateExeArgs := '';
+	FIconData.uID := 0;
+	FUpdateExePath := '';
+	FUpdateExeArgs := '';
 
 	//メニューフォント
 	SetMenuFont;
@@ -972,8 +973,8 @@ begin
 	//手のカーソル
 	Screen.Cursors[5] := LoadCursor(HInstance, 'GIKOHAND');
 
-    // アイコンの読み取り
-    LoadIcon;
+	// アイコンの読み取り
+	LoadIcon;
 
 	//アドレス履歴読み込み
 	AddressHistoryDM.ReadHistory(AddressComboBox.Items, GikoSys.Setting.MaxRecordCount);
@@ -1055,10 +1056,10 @@ begin
 		Ord( grrKoko ):	GikoDM.OnlyKokoResAction.Checked	:= True;
 		Ord( grrNew ):	GikoDM.OnlyNewResAction.Checked	:= True;
 		10..65535:
-            begin
-                GikoDM.OnlyAHundredResAction.Checked		:= True;
-                GikoSys.ResRange := GikoSys.Setting.ResRangeExCount;
-            end;
+			begin
+				GikoDM.OnlyAHundredResAction.Checked		:= True;
+				GikoSys.ResRange := GikoSys.Setting.ResRangeExCount;
+			end;
 		end;
 	end;
 
@@ -1091,6 +1092,21 @@ begin
 		end;
 	end;
 
+
+
+  // ブラウザタブのスレッド名ラベルをUnicode対応版に差し替え
+	BrowserNameLabelUC := TWideLabel.Create(Self);
+  BrowserNameLabelUC.ParentFont    := False;
+  BrowserNameLabelUC.ShowAccelChar := False;
+  BrowserNameLabelUC.Transparent   := True;
+	BrowserNameLabelUC.Parent := BrowserNameLabel.Parent;
+	BrowserNameLabelUC.Left   := BrowserNameLabel.Left;
+	BrowserNameLabelUC.Top    := BrowserNameLabel.Top;
+	BrowserNameLabelUC.Width  := BrowserNameLabel.Width;
+	BrowserNameLabelUC.Height := BrowserNameLabel.Height;
+	BrowserNameLabelUC.Font   := BrowserNameLabel.Font;
+  BrowserNameLabelUC.Layout := BrowserNameLabel.Layout; 
+	BrowserNameLabel.Visible  := False;
 
 	//ブラウザタブフォント
 	BrowserTab.Font.Name := GikoSys.Setting.BrowserTabFontName;
@@ -1130,8 +1146,8 @@ begin
 	ProgressBar.Height := StatusBar.Height - 2;
 	ProgressBar.Position := 0;
 
-    // スレッド名NGリスト
-    ThreadNgList := TThreadNgList.Create;
+	// スレッド名NGリスト
+	ThreadNgList := TThreadNgList.Create;
 
 	// 外部板プラグインをロード(ReadBoardFile, LoadHistory より先に行うこと)
 	InitializeBoardPlugIns;
@@ -1210,7 +1226,7 @@ begin
 
 	// 履歴読み込み
 	FHistoryList.LoadFromFile(GikoSys.GetConfigDir + 'History.xml',
-        TreeView, FTreeType);
+			TreeView, FTreeType);
 
 	//お気に入り読み込み
 	FavoriteDM.SetFavTreeView(FavoriteTreeView);
@@ -1260,7 +1276,7 @@ begin
 	//ダウンロードオブジェクト
 	CreateControlThread();
 
-  // ツールバーの初期化の影響？でコンボボックスが初期化される(？)ため最後の方へ移動 for D2007
+	// ツールバーの初期化の影響？でコンボボックスが初期化される(？)ため最後の方へ移動 for D2007
 	//// 絞込検索履歴
 	//SelectComboBox.Items.Assign( GikoSys.Setting.SelectTextList );
 
@@ -1268,7 +1284,7 @@ begin
 	SetBrowserTabState;
 
 	BrowserBoardNameLabel.Caption := '';
-	BrowserNameLabel.Caption := '';
+	BrowserNameLabelUC.Caption := '';
 	FWorkCount := 0;
 
 	FTabHintIndex := -1;
@@ -1341,10 +1357,10 @@ begin
 
 //	dummy1.Caption	:= ItemReservPMenu.Caption;
 //	dummy1.Hint     := ItemReservPMenu.Hint;
-    // ブラウザポップアップメニューの初期化
-    PopupMenuUtil.ReadSetting(GikoDM.GikoFormActionList, BrowserTabPopupMenu);
-    // マウスジェスチャー
-    MouseGesture := TMouseGesture.Create;
+	// ブラウザポップアップメニューの初期化
+	PopupMenuUtil.ReadSetting(GikoDM.GikoFormActionList, BrowserTabPopupMenu);
+	// マウスジェスチャー
+	MouseGesture := TMouseGesture.Create;
 
 {$IFDEF SPAM_FILTER_ENABLED}
 	// スパムフィルタ学習履歴
@@ -1358,8 +1374,8 @@ begin
 	if GikoSys.Setting.AutoLogin then
 		GikoDM.LoginAction.Execute;
 
-    if GikoSys.Setting.BeAutoLogin then
-        GikoDM.BeLogInOutAction.Execute;
+	if GikoSys.Setting.BeAutoLogin then
+		GikoDM.BeLogInOutAction.Execute;
 
 	//キャプションが上書きされてしまうので、ここで再設定
 	FavoriteAddToolButton.Caption := '追加...';
@@ -1368,30 +1384,30 @@ begin
 	//入力アシスト機構の初期化
 	InputAssistDM.Init(GikoSys.GetInputAssistFileName);
 
-    //置換設定ファイルの読み込み
-    ReplaceDM.LoadFromFile(GikoSys.GetReplaceFileName);
+	//置換設定ファイルの読み込み
+	ReplaceDM.LoadFromFile(GikoSys.GetReplaceFileName);
 
-    //レスポップアップ消去タイマー
-    ResPopupClearTimer.Interval := GikoSys.Setting.RespopupWait;
+	//レスポップアップ消去タイマー
+	ResPopupClearTimer.Interval := GikoSys.Setting.RespopupWait;
 
-    // D&Dを受け取る
-    DragAcceptFiles(ListView.Handle, True);
+	// D&Dを受け取る
+	DragAcceptFiles(ListView.Handle, True);
 
-  // ツールバーの初期化の影響？でコンボボックスが初期化される(？)ため上からここへ移動 for D2007
+	// ツールバーの初期化の影響？でコンボボックスが初期化される(？)ため上からここへ移動 for D2007
 	// 絞込検索履歴
 	SelectComboBox.Items.Assign( GikoSys.Setting.SelectTextList );
 
-    // 初期化に失敗したモジュールチェック
-    if (FavoriteDM.AbEnd) then begin
-        GikoUtil.MsgBox(Self.Handle,
-            'お気に入りの初期化に失敗しました。ギコナビを終了します。'#13#10 +
-            'ギコナビフォルダを開きます、config/' + Favorite.FAVORITE_FILE_NAME +
-            ' を config/~' + Favorite.FAVORITE_FILE_NAME + '(前回起動時のお気に入り)で'#13#10 +
-             '置き換える事で直る可能性があります。',
-            '初期化異常');
-        GikoDM.GikoFolderOpenAction.Execute;
-        Self.Close;
-    end;
+	// 初期化に失敗したモジュールチェック
+	if (FavoriteDM.AbEnd) then begin
+		GikoUtil.MsgBox(Self.Handle,
+						'お気に入りの初期化に失敗しました。ギコナビを終了します。'#13#10 +
+						'ギコナビフォルダを開きます、config/' + Favorite.FAVORITE_FILE_NAME +
+						' を config/~' + Favorite.FAVORITE_FILE_NAME + '(前回起動時のお気に入り)で'#13#10 +
+						'置き換える事で直る可能性があります。',
+						'初期化異常');
+		GikoDM.GikoFolderOpenAction.Execute;
+		Self.Close;
+	end;
 
 end;
 
@@ -1513,16 +1529,16 @@ end;
 ///
 procedure TGikoForm.FormShow(Sender: TObject);
 var
-   	item        : TThreadItem;
-    MonCnt: Integer;
-    MonOk: Boolean;
-    MonR: Integer;
-    MonB: Integer;
-    Right: Integer;
-    Bottom: Integer;
+	item        : TThreadItem;
+	MonCnt: Integer;
+	MonOk: Boolean;
+	MonR: Integer;
+	MonB: Integer;
+	Right: Integer;
+	Bottom: Integer;
 begin
 	if FStartUp then begin
-    	FStartUp := false;
+		FStartUp := false;
 		ShowWindow(Application.Handle, SW_HIDE);
 		//FormCreateでやると可視設定が反映されない場合があるのでFormShowでやることにした
 		//ツールバー表示
@@ -1553,60 +1569,60 @@ begin
 
 		//FormCreteから移動。
 		if GikoSys.Setting.TabAutoLoadSave then begin
-            GikoDM.TabsOpenAction.Tag := 1;
+			GikoDM.TabsOpenAction.Tag := 1;
 			GikoDM.TabsOpenAction.Execute;
-            GikoDM.TabsOpenAction.Tag := 0;
-            if (GikoSys.Setting.LastCloseTabURL <> '') then begin
-                if ( FActiveContent <> nil) and (FActiveContent.Browser <> nil) then begin
-            		while (FActiveContent.Browser.ReadyState <> READYSTATE_COMPLETE) and
-    			    	(FActiveContent.Browser.ReadyState <> READYSTATE_INTERACTIVE) do begin
-                        // メッセージを受け取らないようにスリープに変更
-                        Sleep(1);
-                    end;
-		        end;
-                item := BBSsFindThreadFromURL( GikoSys.Setting.LastCloseTabURL );
-                GikoSys.Setting.LastCloseTabURL := '';
-                if (item <> nil) and (item.IsLogFile) then begin
-                    OpenThreadItem(item, item.URL);
-                end;
-                //ShowWindow(Self.Handle, SW_SHOW);
-            end;
+			GikoDM.TabsOpenAction.Tag := 0;
+			if (GikoSys.Setting.LastCloseTabURL <> '') then begin
+				if ( FActiveContent <> nil) and (FActiveContent.Browser <> nil) then begin
+					while (FActiveContent.Browser.ReadyState <> READYSTATE_COMPLETE) and
+						(FActiveContent.Browser.ReadyState <> READYSTATE_INTERACTIVE) do begin
+						// メッセージを受け取らないようにスリープに変更
+						Sleep(1);
+					end;
+				end;
+				item := BBSsFindThreadFromURL( GikoSys.Setting.LastCloseTabURL );
+				GikoSys.Setting.LastCloseTabURL := '';
+				if (item <> nil) and (item.IsLogFile) then begin
+					OpenThreadItem(item, item.URL);
+				end;
+				//ShowWindow(Self.Handle, SW_SHOW);
+			end;
 		end;
 
 //===== マルチモニタ環境でFormCreateではフォーム位置が正しく反映されない場合
 //===== があるためFormShow初回で座標設定を行う
-        Top := GikoSys.Setting.WindowTop;
-        Left := GikoSys.Setting.WindowLeft;
-        Height := GikoSys.Setting.WindowHeight;
-        Width := GikoSys.Setting.WindowWidth;
+		Top := GikoSys.Setting.WindowTop;
+		Left := GikoSys.Setting.WindowLeft;
+		Height := GikoSys.Setting.WindowHeight;
+		Width := GikoSys.Setting.WindowWidth;
 
-        //ウィンドウが画面外なら画面内に移動する
-        Right := Left + Width;
-        Bottom := Top + Height;
-        MonOk := False;
-        MonCnt := 0;
-        while (MonCnt < Screen.MonitorCount) do begin
-            MonR := Screen.Monitors[MonCnt].Left + Screen.Monitors[MonCnt].Width;
-            MonB := Screen.Monitors[MonCnt].Top  + Screen.Monitors[MonCnt].Height;
+		//ウィンドウが画面外なら画面内に移動する
+		Right := Left + Width;
+		Bottom := Top + Height;
+		MonOk := False;
+		MonCnt := 0;
+		while (MonCnt < Screen.MonitorCount) do begin
+			MonR := Screen.Monitors[MonCnt].Left + Screen.Monitors[MonCnt].Width;
+			MonB := Screen.Monitors[MonCnt].Top  + Screen.Monitors[MonCnt].Height;
 
-            if ((Left  >= Screen.Monitors[MonCnt].Left) and (Left   <  MonR) and
-                (Top   >= Screen.Monitors[MonCnt].Top)  and (Top    <  MonB) and
-                (Right  > Screen.Monitors[MonCnt].Left) and (Right  <= MonR) and
-                (Bottom > Screen.Monitors[MonCnt].Top)  and (Bottom <= MonB)) then begin
-                MonOk := True;
-                Break;
-            end;
+			if ((Left  >= Screen.Monitors[MonCnt].Left) and (Left   <  MonR) and
+				(Top   >= Screen.Monitors[MonCnt].Top)  and (Top    <  MonB) and
+				(Right  > Screen.Monitors[MonCnt].Left) and (Right  <= MonR) and
+				(Bottom > Screen.Monitors[MonCnt].Top)  and (Bottom <= MonB)) then begin
+				MonOk := True;
+				Break;
+			end;
 
-            MonCnt := MonCnt + 1;
-        end;
+			MonCnt := MonCnt + 1;
+		end;
 
-        if (MonOk = False) then begin
-            Left := 0;
-            Top := 0;
-        end;
+		if (MonOk = False) then begin
+			Left := 0;
+			Top := 0;
+		end;
 
-        if GikoSys.Setting.WindowMax then
-            WindowState := wsMaximized;
+		if GikoSys.Setting.WindowMax then
+			WindowState := wsMaximized;
 //==========================================================================
 	end;
 end;
@@ -3021,7 +3037,7 @@ begin
 		Thread.Browser.Navigate(BLANK_HTML);
 		BrowserBoardNameLabel.Caption := '';
 		ItemBoardImage.Picture := nil;
-		BrowserNameLabel.Caption := '';
+		BrowserNameLabelUC.Caption := '';
 		ItemImage.Picture := nil;
         BrowserNullTab.Thread := nil;
 		//TOleControl(BrowserNullTab.Browser).Visible := true;
@@ -3079,7 +3095,7 @@ begin
 		if (Thread <> nil) and (ThreadItem <>nil) then begin
 			BrowserBoardNameLabel.Caption := ThreadPTitle;
 			ItemIcon16.GetBitmap(4, ItemBoardImage.Picture.Bitmap);
-            BrowserNameLabel.Caption := GikoSys.TrimThreadTitle(ThreadTitle);
+            BrowserNameLabelUC.EncodeCaption := GikoSys.TrimThreadTitle(ThreadTitle);
 			ItemImage.Picture := nil;
 			if ThreadIsLog then
 				if ThreadNewArraical then
@@ -3090,7 +3106,7 @@ begin
 				ItemImageList.GetBitmap(1, ItemImage.Picture.Bitmap);
 
 			ItemImage.Left := BrowserBoardNameLabel.Left + BrowserBoardNameLabel.Width + 8;
-			BrowserNameLabel.Left := ItemImage.Left + 20;
+			BrowserNameLabelUC.Left := ItemImage.Left + 20;
 
 		end;
 		//ActiveContent　の更新
@@ -8274,7 +8290,7 @@ begin
 
     if (FActiveContent <> nil) and (FActiveContent.Thread <> nil) then begin
         DspTitle := GikoSys.TrimThreadTitle(FActiveContent.Thread.Title);
-        BrowserNameLabel.Caption := DspTitle;
+        BrowserNameLabelUC.EncodeCaption := DspTitle;
         Self.Caption := GikoDataModule.CAPTION_NAME + ' - [' + DspTitle + ']';
     end;
 end;
@@ -8285,6 +8301,7 @@ begin
 
 
 end;}
+
 
 initialization
 				OleInitialize(nil);

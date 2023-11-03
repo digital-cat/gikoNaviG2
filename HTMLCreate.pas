@@ -1618,6 +1618,9 @@ var
     tripOrigin : string;
     NameWithTrip: string;
     DateTime: string;
+    Start: Integer;
+    Index: Integer;
+    Len: Integer;
 begin
 	Result := '<HTML><HEAD>'#13#10
 			+ '<META http-equiv="Content-Type" content="text/html; charset=Shift_JIS">'#13#10
@@ -1630,7 +1633,22 @@ begin
    	DateTime := FormatDateTime('yyyy/mm/dd(aaa) hh:nn', Now());
 
     NameWithTrip := Namae;
-    posTrip := AnsiPos( '#', Namae );
+//    posTrip := AnsiPos( '#', Namae );
+    // 数値文字参照とトリップの混同を避ける
+    posTrip := 0;
+    Start := 1;
+    Len := Length(Namae);
+    while Start < Len do begin
+      Index := PosEx('#', Namae, Start);
+      if Index < 1 then
+        Break;
+      if (Index = 1) or (Namae[Index - 1] <> '&') or (PosEx(';', Namae, Index) < 1) then begin
+        posTrip := Index;
+        Break;
+      end;
+      Start := Index + 1;
+    end;
+    //--
     if posTrip > 0 then begin
         tripOrigin := Copy( Namae, posTrip + 1, Length( Namae ) );
         NameWithTrip := Copy( Namae, 1, posTrip - 1 ) + '</B> ◆' +

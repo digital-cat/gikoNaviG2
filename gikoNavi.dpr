@@ -82,7 +82,7 @@ uses
   PopupMenuUtil in 'PopupMenuUtil.pas',
   PopupMenuSetting in 'PopupMenuSetting.pas' {PopupMenuSettingDialog},
   Belib in 'Belib.pas',
-  WideMemo in 'WideMemo.pas',
+  WideCtrls in 'WideCtrls.pas',
   ThreadSearch in 'ThreadSearch.pas' {ThreadSrch},
   uLkJSON in 'lkJSON\uLkJSON.pas',
   ThreadNGEdt in 'ThreadNGEdt.pas' {ThreadNGEdit},

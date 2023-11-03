@@ -18,8 +18,8 @@ uses
 	IdTCPConnection, IdTCPClient, IdHTTP, ActnList, StdActns, IdIntercept,
 	IdLogBase, IdLogDebug, IdException, DateUtils,  bmRegExp,
 	IdGlobal, IdStack, IdExceptionCore, IdGlobalProtocols, IndyModule,   // for Indy10
-	Gesture, AppEvnts, SambaTimer, IdCookieManager, WideMemo, SHDocVw, IdIOHandler,
-  IdIOHandlerSocket, IdIOHandlerStack, IdSSL, IdSSLOpenSSL, IdURI;
+	Gesture, AppEvnts, SambaTimer, IdCookieManager, WideCtrls, SHDocVw, IdIOHandler,
+	IdIOHandlerSocket, IdIOHandlerStack, IdSSL, IdSSLOpenSSL, IdURI;
 
 type
 //	TSetLayeredWindowAttributes = function(wnd: HWND; crKey: DWORD; bAlpha: BYTE; dwFlag: DWORD): Boolean; stdcall;
@@ -34,7 +34,7 @@ type
 		CloseMenu: TMenuItem;
 		N01: TMenuItem;
 		StatusBar: TStatusBar;
-	EditorPage: TPageControl;
+		EditorPage: TPageControl;
 		EditorTab: TTabSheet;
 		PreviewTab: TTabSheet;
 		Browser: TWebBrowser;
@@ -85,66 +85,66 @@ type
 		A1: TMenuItem;
 		KotehanCheckBox: TCheckBox;
 		TitlePanel: TPanel;
-		Label1: TLabel;
+		TitleLabel: TLabel;
 		TitleEdit: TEdit;
 		SelectAllAction: TAction;
 		N2: TMenuItem;
 		SelectAll1: TMenuItem;
-	QuotePasteAction: TAction;
-	QuotePasteMenuItem: TMenuItem;
-	C1: TMenuItem;
-	SpaceToNBSPAction: TAction;
-	AmpToCharRefAction: TAction;
-	SpaceTabnbsp1: TMenuItem;
-	amp1: TMenuItem;
-	BoardInformationTab: TTabSheet;
-				BoardtopTab: TTabSheet;
-	TitlePictureBrowser: TWebBrowser;
-	BoardTop: TMenuItem;
-	BoardInformationMemo: TMemo;
-	GetSETTINGTXTAction: TAction;
-	N3: TMenuItem;
-	SETTINGTXT2: TMenuItem;
-	GetTitlePictureAction: TAction;
-	OP1: TMenuItem;
-    GetHeadTXTAction: TAction;
-    HeadTXT1: TMenuItem;
-    RocalRuleTab: TTabSheet;
-    WebBrowser1: TWebBrowser;
-    CalcCapacityAction: TAction;
-    N4: TMenuItem;
-    N5: TMenuItem;
-    LocalRule: TMenuItem;
-    LocalEdit: TMemo;
-    N6: TMenuItem;
-    LocalRuleBrowse: TMenuItem;
-	ToolButton4: TToolButton;
-    ToolButton6: TToolButton;
-    SaveNameMailAction: TAction;
-    ToolButton7: TToolButton;
-    BeLogInOutEAction: TAction;
-    UpdateSambaAction: TAction;
-    Samba241: TMenuItem;
-    N7: TMenuItem;
-    InputAssistAction: TAction;
-    InputAssistPopupMenu: TPopupMenu;
-    ApplicationEvents1: TApplicationEvents;
-    ToolButton8: TToolButton;
-    ToolButton9: TToolButton;
-    ShowInputAssistForm: TAction;
-    ReleaseCookieAction: TAction;
-    Cookie1: TMenuItem;
-    ContinueModeAction: TAction;
-    ToolButton10: TToolButton;
-    ToolButton11: TToolButton;
-    OpenSendTargetAction: TAction;
-    ReloadTargetAction: TAction;
-    N8: TMenuItem;
-    N9: TMenuItem;
-    N10: TMenuItem;
-    UCInfoPanel: TPanel;
-    BodyEdit: TMemo;
-    IdSSLIOHandlerSocketOpenSSL: TIdSSLIOHandlerSocketOpenSSL;
+		QuotePasteAction: TAction;
+		QuotePasteMenuItem: TMenuItem;
+		C1: TMenuItem;
+		SpaceToNBSPAction: TAction;
+		AmpToCharRefAction: TAction;
+		SpaceTabnbsp1: TMenuItem;
+		amp1: TMenuItem;
+		BoardInformationTab: TTabSheet;
+		BoardtopTab: TTabSheet;
+		TitlePictureBrowser: TWebBrowser;
+		BoardTop: TMenuItem;
+		BoardInformationMemo: TMemo;
+		GetSETTINGTXTAction: TAction;
+		N3: TMenuItem;
+		SETTINGTXT2: TMenuItem;
+		GetTitlePictureAction: TAction;
+		OP1: TMenuItem;
+		GetHeadTXTAction: TAction;
+		HeadTXT1: TMenuItem;
+		RocalRuleTab: TTabSheet;
+		WebBrowser1: TWebBrowser;
+		CalcCapacityAction: TAction;
+		N4: TMenuItem;
+		N5: TMenuItem;
+		LocalRule: TMenuItem;
+		LocalEdit: TMemo;
+		N6: TMenuItem;
+		LocalRuleBrowse: TMenuItem;
+		ToolButton4: TToolButton;
+		ToolButton6: TToolButton;
+		SaveNameMailAction: TAction;
+		ToolButton7: TToolButton;
+		BeLogInOutEAction: TAction;
+		UpdateSambaAction: TAction;
+		Samba241: TMenuItem;
+		N7: TMenuItem;
+		InputAssistAction: TAction;
+		InputAssistPopupMenu: TPopupMenu;
+		ApplicationEvents1: TApplicationEvents;
+		ToolButton8: TToolButton;
+		ToolButton9: TToolButton;
+		ShowInputAssistForm: TAction;
+		ReleaseCookieAction: TAction;
+		Cookie1: TMenuItem;
+		ContinueModeAction: TAction;
+		ToolButton10: TToolButton;
+		ToolButton11: TToolButton;
+		OpenSendTargetAction: TAction;
+		ReloadTargetAction: TAction;
+		N8: TMenuItem;
+		N9: TMenuItem;
+		N10: TMenuItem;
+		UCInfoPanel: TPanel;
+		BodyEdit: TMemo;
+		IdSSLIOHandlerSocketOpenSSL: TIdSSLIOHandlerSocketOpenSSL;
 
 		procedure EditorPageChange(Sender: TObject);
 		procedure FormCreate(Sender: TObject);
@@ -174,41 +174,41 @@ type
 		procedure TransActionExecute(Sender: TObject);
 		procedure TransActionUpdate(Sender: TObject);
 		procedure SelectAllActionExecute(Sender: TObject);
-	procedure StatusBarResize(Sender: TObject);
-	procedure FormActivate(Sender: TObject);
-	procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+		procedure StatusBarResize(Sender: TObject);
+		procedure FormActivate(Sender: TObject);
+		procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
 		procedure QuotePasteActionExecute(Sender: TObject);
-	procedure SpaceToNBSPActionExecute(Sender: TObject);
-	procedure AmpToCharRefActionExecute(Sender: TObject);
-	procedure BoardTopClick(Sender: TObject);
-	procedure GetSETTINGTXTActionExecute(Sender: TObject);
-	procedure GetTitlePictureActionUpdate(Sender: TObject);
-	procedure GetTitlePictureActionExecute(Sender: TObject);
-    procedure GetHeadTXTActionExecute(Sender: TObject);
-	procedure CalcCapacityActionExecute(Sender: TObject);
-    procedure LocalRuleClick(Sender: TObject);
-    procedure FormDeactivate(Sender: TObject);
-    procedure LocalRuleBrowseClick(Sender: TObject);
-    procedure SaveNameMailActionExecute(Sender: TObject);
-    procedure BeLogInOutEActionExecute(Sender: TObject);
-    procedure BeLogInOutEActionUpdate(Sender: TObject);
-    procedure UpdateSambaActionUpdate(Sender: TObject);
-    procedure UpdateSambaActionExecute(Sender: TObject);
-    procedure InputAssistActionExecute(Sender: TObject);
-    procedure ApplicationEvents1Message(var Msg: tagMSG;
-      var Handled: Boolean);
-    procedure ShowInputAssistFormExecute(Sender: TObject);
-    procedure ReleaseCookieActionExecute(Sender: TObject);
-    procedure GetSETTINGTXTActionUpdate(Sender: TObject);
-    procedure GetHeadTXTActionUpdate(Sender: TObject);
-    procedure ContinueModeActionExecute(Sender: TObject);
-    procedure ContinueModeActionUpdate(Sender: TObject);
-    procedure OpenSendTargetActionExecute(Sender: TObject);
-    procedure ReloadTargetActionExecute(Sender: TObject);
-    procedure IdLogDebugReceive(ASender: TIdConnectionIntercept;
-      var ABuffer: TIdBytes);
-    procedure IdLogDebugSend(ASender: TIdConnectionIntercept;
-      var ABuffer: TIdBytes);
+		procedure SpaceToNBSPActionExecute(Sender: TObject);
+		procedure AmpToCharRefActionExecute(Sender: TObject);
+		procedure BoardTopClick(Sender: TObject);
+		procedure GetSETTINGTXTActionExecute(Sender: TObject);
+		procedure GetTitlePictureActionUpdate(Sender: TObject);
+		procedure GetTitlePictureActionExecute(Sender: TObject);
+		procedure GetHeadTXTActionExecute(Sender: TObject);
+		procedure CalcCapacityActionExecute(Sender: TObject);
+		procedure LocalRuleClick(Sender: TObject);
+		procedure FormDeactivate(Sender: TObject);
+		procedure LocalRuleBrowseClick(Sender: TObject);
+		procedure SaveNameMailActionExecute(Sender: TObject);
+		procedure BeLogInOutEActionExecute(Sender: TObject);
+		procedure BeLogInOutEActionUpdate(Sender: TObject);
+		procedure UpdateSambaActionUpdate(Sender: TObject);
+		procedure UpdateSambaActionExecute(Sender: TObject);
+		procedure InputAssistActionExecute(Sender: TObject);
+		procedure ApplicationEvents1Message(var Msg: tagMSG;
+			var Handled: Boolean);
+		procedure ShowInputAssistFormExecute(Sender: TObject);
+		procedure ReleaseCookieActionExecute(Sender: TObject);
+		procedure GetSETTINGTXTActionUpdate(Sender: TObject);
+		procedure GetHeadTXTActionUpdate(Sender: TObject);
+		procedure ContinueModeActionExecute(Sender: TObject);
+		procedure ContinueModeActionUpdate(Sender: TObject);
+		procedure OpenSendTargetActionExecute(Sender: TObject);
+		procedure ReloadTargetActionExecute(Sender: TObject);
+		procedure IdLogDebugReceive(ASender: TIdConnectionIntercept;
+			var ABuffer: TIdBytes);
+		procedure IdLogDebugSend(ASender: TIdConnectionIntercept;
+			var ABuffer: TIdBytes);
 	private
 		FThreadItem: TThreadItem;
 		FBoard: TBoard;
@@ -222,11 +222,14 @@ type
 		FNow: TDateTime;
 		FInputAssistKey: String;	///< 入力アシストのキー
 		FResistWords: TStringList;	///< 入力アシストの辞書からの検索結果
-        FSambaTimer: TSambaTimer;   ///< Samba対策のタイマー
-        FCookieDomain: string;        ///< 忍法帖ドメイン
-        FUseUC: Boolean;
-        BodyEditUC: TWideMemo;
-    FURI: TIdURI;
+		FSambaTimer: TSambaTimer;   ///< Samba対策のタイマー
+		FCookieDomain: string;        ///< 忍法帖ドメイン
+		FUseUC: Boolean;
+		BodyEditUC: TWideMemo;
+		TitleEditUC: TWideEdit;
+		NameComboBoxUC: TWideComboBox;
+		MailComboBoxUC: TWideComboBox;
+		FURI: TIdURI;
 		procedure Preview;
 		function Check: Boolean;
 		procedure SetNameList(sName, sMail: string);
@@ -238,60 +241,76 @@ type
 		function GetResultType(ResponseText: string): TGikoResultType;
 		/// 本文の取得
 		function GetBody : string;
+		function GetBodyUTF8: UTF8String;
 		procedure ShowBoardInformation(ABoard: TBoard; AMemo: TMemo);
 		function GetTitlePictureURL(body: TStringList; ABoard: TBoard): string;
 		procedure ShowTitlePicture();
-				function GetFusianaName(body: TStringList; ABoard: TBoard): String;
+		function GetFusianaName(body: TStringList; ABoard: TBoard): String;
 		//! マウスジェスチャー開始
 		procedure OnGestureStart(Sender: TObject);
 		//! マウスジェスチャー中
 		procedure OnGestureMove(Sender: TObject);
 		//! マウスジェスチャー終了
 		procedure OnGestureEnd(Sender: TObject);
-				//HEAD.TXT自動表示
-				procedure ShowBoardHead(ABoard: TBoard; AMemo: TMemo);
-				//LocalFusianaTrapAlart
-				function LFusianaGet(const s: String): Boolean;
+		//HEAD.TXT自動表示
+		procedure ShowBoardHead(ABoard: TBoard; AMemo: TMemo);
+		//LocalFusianaTrapAlart
+		function LFusianaGet(const s: String): Boolean;
 		// Cookieの取得
 		procedure GetCookie(CookieMng: TIdCookieManager; ABoard: TBoard);
-        // hiddenデータ取得
-        procedure GetHiddenParameter(Rawtext: String; ABoard: TBoard);
+		// hiddenデータ取得
+		procedure GetHiddenParameter(Rawtext: String; ABoard: TBoard);
 		//! 入力アシストのポップアップメニューのクリックイベント
 		procedure InputAssistMenuClick(Sender: TObject);
 		//! TMemoのカーソル位置に文字列挿入
 		procedure InsertText(Memo: TMemo; Text: String);
 		//! 送信中止
 		procedure CancelSend(ABoard: TBoard; ASysMenu: HMENU);
-        //! Sambaタイマーイベント
-        procedure SambaTimer(Sender: TObject);
-        //! ウィンドウの位置とサイズの設定
-        procedure SetWindowRect;
-        //! 拡張タブ設定
-        procedure SetExtraTab;
-        //! 板取得
-        function GetBoard : TBoard;
-        //! URLのデータをstreamに取り込む
-        procedure GetWebData(const URL: string; const RefURL: string;
-             Modified: TDateTime; stream: TStream);
-        //! GikoFormに新着メッセージを追加する
-        procedure AddFormMessageNew(icon: TGikoMessageIcon);
-        //! ローカルfusianaトラップ
-        function isLocalFusianaTrap: Boolean;
-        //! ローカルfusianaトラップ
-        function isRemoteFusianaTrap: Boolean;
-        //! Header文字列取得
-        function getHeaderStr(const ACOOKIE: string; const SPID : string;
-            const PON : string; const HAP : string; Board : TBoard) : string;
-        //! fusiana警告ダイアログ
-        function FusianaMsgBox: Integer;
-        //! sent.iniファイルの生成
-        function CreateSentIniFile: TMemIniFile;
-        //! 誤爆チェック
-        function isGobaku: Boolean;
-    //! UTF8でURLEncode
-    function URLEncodeUTF8(const src: String) : String;
-    //! 本文文字列取得
-    function GetBodyText(): String;
+		//! Sambaタイマーイベント
+		procedure SambaTimer(Sender: TObject);
+		//! ウィンドウの位置とサイズの設定
+		procedure SetWindowRect;
+		//! 拡張タブ設定
+		procedure SetExtraTab;
+		//! 板取得
+		function GetBoard : TBoard;
+		//! URLのデータをstreamに取り込む
+		procedure GetWebData(const URL: string; const RefURL: string;
+			Modified: TDateTime; stream: TStream);
+		//! GikoFormに新着メッセージを追加する
+		procedure AddFormMessageNew(icon: TGikoMessageIcon);
+		//! ローカルfusianaトラップ
+		function isLocalFusianaTrap: Boolean;
+		//! ローカルfusianaトラップ
+		function isRemoteFusianaTrap: Boolean;
+		//! Header文字列取得
+		function getHeaderStr(const ACOOKIE: string; const SPID : string;
+			const PON : string; const HAP : string; Board : TBoard) : string;
+		//! fusiana警告ダイアログ
+		function FusianaMsgBox: Integer;
+		//! sent.iniファイルの生成
+		function CreateSentIniFile: TMemIniFile;
+		//! 誤爆チェック
+		function isGobaku: Boolean;
+		//! 本文文字列取得
+		function GetBodyText(): String;
+		//! TWideEdit初期化
+		procedure InitWideEdit;
+		//! TWideComboBox初期化
+		procedure InitWideComboBox(WideCombo: TWideComboBox; AnsiCombo: TComboBox);
+		//! 名前文字列取得
+		function GetNameText: String;
+		function GetNameUTF8: UTF8String;
+		//! 名前文字列設定
+		procedure SetNameText(Value: String);
+		//! メール文字列取得
+		function GetMailText: String;
+		function GetMailUTF8: UTF8String;
+		//! メール文字列設定
+		procedure SetMailText(Value: String);
+		//! タイトル文字列取得
+		function GetTitleText: String;
+		function GetTitleUTF8: UTF8String;
 	protected
 		procedure CreateParams(var Params: TCreateParams); override;
 	public
@@ -299,18 +318,22 @@ type
 		procedure SetFont;
 		procedure SetThreadItem(Item: TThreadItem);
 		procedure SetBoard(Item: TBoard);
-        procedure UpdateSambaStatus;
-        procedure SetFocusEdit;
-        procedure SetTextEdit(TextSrc: String);
+		procedure UpdateSambaStatus;
+		procedure SetFocusEdit;
+		procedure SetTextEdit(TextSrc: String);
 		property BBSID: string read FBBSID write FBBSID;
 	end;
+
+//{$IFDEF DEBUG}
+//procedure DebugLog(msg: String);
+//{$ENDIF}
 
 implementation
 
 uses
 	Giko, ItemDownload, MojuUtils, GikoMessage,  Imm,
-  InputAssistDataModule, InputAssist, HTMLCreate, IdCookie, GikoDataModule,
-  Belib, DmSession5ch;
+	InputAssistDataModule, InputAssist, HTMLCreate, IdCookie, GikoDataModule,
+	Belib, DmSession5ch;
 const
 	CAPTION_NAME_NEW: string = 'ギコナビ スレ立てエディタ';
 	CAPTION_NAME_RES: string = 'ギコナビ レスエディタ';
@@ -366,47 +389,65 @@ end;}
 
 procedure TEditorForm.FormCreate(Sender: TObject);
 begin
-    FURI := TIdURI.Create;
-    FUseUC := GikoSys.Setting.UseUnicode;
+	FURI := TIdURI.Create;
+	FUseUC := GikoSys.Setting.UseUnicode;
 
-    BodyEditUC := TWideMemo.Create(Self);
-    BodyEditUC.Parent := EditorTab;
-    BodyEditUC.Align := alClient;
-    BodyEditUC.ScrollBars := ssBoth;
+	BodyEditUC := TWideMemo.Create(Self);
+	BodyEditUC.Parent := EditorTab;
+	BodyEditUC.Align := alClient;
+	BodyEditUC.ScrollBars := ssBoth;
 
-    if (FUseUC = True) then begin
-        BodyEditUC.Visible := True;
-        BodyEdit.Visible := False;
-        EditorTab.Caption := EditorTab.Caption + '(Unicodeモード)';
-    end else begin
-        BodyEditUC.Visible := False;
-        BodyEdit.Visible := True;
-        EditorTab.Caption := EditorTab.Caption + '(Shift-JISモード)';
-    end;
+	TitleEditUC := TWideEdit.Create(Self);
+	InitWideEdit;
+	NameComboBoxUC := TWideComboBox.Create(Self);
+	InitWideComboBox(NameComboBoxUC, NameComboBox);
+	MailComboBoxUC := TWideComboBox.Create(Self);
+	InitWideComboBox(MailComboBoxUC, MailComboBox);
+	MailComboBoxUC.OnChange := MailComboBoxChange;
+
+	BodyEditUC.Visible     := FUseUC;
+	NameComboBoxUC.Visible := FUseUC;
+	MailComboBoxUC.Visible := FUseUC;
+
+	BodyEdit.Visible     := not FUseUC;
+	NameComboBox.Visible := not FUseUC;
+	MailComboBox.Visible := not FUseUC;
 
 	FWork := False;
-    FSambaTimer := TSambaTimer.Create(Self);
-    FSambaTimer.Interval := 0;
+	FSambaTimer := TSambaTimer.Create(Self);
+	FSambaTimer.Interval := 0;
 	Browser.Navigate('about:blank');
 	TitlePictureBrowser.Navigate('about:blank');
-    WebBrowser1.Navigate('about:blank');
+	WebBrowser1.Navigate('about:blank');
 	FBoard := nil;
 	FThreadItem := nil;
 
-    if (Owner <> nil) and (Owner.ClassNameIs('TKeySettingForm') = False) then
-    	//ウィンドウの位置設定
-        SetWindowRect;
+	if (Owner <> nil) and (Owner.ClassNameIs('TKeySettingForm') = False) then
+		//ウィンドウの位置設定
+		SetWindowRect;
 
 	EditorPage.ActivePage := EditorTab;
-	FNameComboEdit := GetWindow(NameComboBox.Handle, GW_CHILD);
-	FMailComboEdit := GetWindow(MailComboBox.Handle, GW_CHILD);
-	NameComboBox.Items.Assign(GikoSys.Setting.NameList);
-	MailComboBox.Items.Assign(GikoSys.Setting.MailList);
+	if FUseUC then begin
+		EditorTab.Caption := EditorTab.Caption + '(Unicodeモード)';
+		FNameComboEdit := GetWindow(NameComboBoxUC.Handle, GW_CHILD);
+		FMailComboEdit := GetWindow(MailComboBoxUC.Handle, GW_CHILD);
+		NameComboBoxUC.Items_Assign(GikoSys.Setting.NameList);
+		MailComboBoxUC.Items_Assign(GikoSys.Setting.MailList);
+		TitleLabel.FocusControl := TitleEdit;
+		NameLabel.FocusControl  := NameComboBox;
+		MailLabel.FocusControl  := MailComboBox;
+	end else begin
+		EditorTab.Caption := EditorTab.Caption + '(Shift-JISモード)';
+		FNameComboEdit := GetWindow(NameComboBox.Handle, GW_CHILD);
+		FMailComboEdit := GetWindow(MailComboBox.Handle, GW_CHILD);
+		NameComboBox.Items.Assign(GikoSys.Setting.NameList);
+		MailComboBox.Items.Assign(GikoSys.Setting.MailList);
+	end;
 	SetFont;
-    // 半透明利用可能設定
-    TransAction.Enabled := GikoSys.CanUser32DLL;
+	// 半透明利用可能設定
+	TransAction.Enabled := GikoSys.CanUser32DLL;
 
-    // ウィンドウのステイ状態
+	// ウィンドウのステイ状態
 	if GikoSys.Setting.EditWindowStay then begin    // ステイ状態
 		SetWindowPos(Handle, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE + SWP_NOSIZE);
 		TopAction.Checked := true;
@@ -417,42 +458,65 @@ begin
 		TopToolButton.Down := false;
 	end;
 
-    // ウィンドウの半透明状態
+	// ウィンドウの半透明状態
 	if(GikoSys.Setting.EditWindowTranslucent) and (TransAction.Enabled) then begin // 半透明（トランスルーセント）状態
-        AlphaBlend := true;
-        TransAction.Checked := true;
-        TransToolButton.Down := true;
-    end else begin                                      // 不透明
-        AlphaBlend := false;
-        TransAction.Checked := false;
-        TransToolButton.Down := false;
-    end;
-        // 半透明状態の保存
+		AlphaBlend := true;
+		TransAction.Checked := true;
+		TransToolButton.Down := true;
+	end else begin                                      // 不透明
+		AlphaBlend := false;
+		TransAction.Checked := false;
+		TransToolButton.Down := false;
+	end;
+	// 半透明状態の保存
 	GikoSys.Setting.EditWindowTranslucent := TransAction.Checked;
 
 	SpaceToNBSPAction.Checked		:= GikoSys.Setting.SpaceToNBSP;
 	AmpToCharRefAction.Checked	:= GikoSys.Setting.AmpToCharRef;
-    // ローカルルール＋板トップ画像のタブの設定
-    SetExtraTab;
+	// ローカルルール＋板トップ画像のタブの設定
+	SetExtraTab;
 
 	// キー設定の読み込み
 	GikoSys.LoadKeySetting(ActionList, GikoSys.GetEditorKeyFileName);
 	SaveNameMailAction.Checked := True;
 end;
+
+procedure TEditorForm.InitWideEdit;
+begin
+	TitleEditUC.Parent  := TitleEdit.Parent;
+	TitleEditUC.Font    := TitleEdit.Font;
+	TitleEditUC.Left    := TitleEdit.Left;
+	TitleEditUC.Top     := TitleEdit.Top;
+	TitleEditUC.Width   := TitleEdit.Width;
+	TitleEditUC.Height  := TitleEdit.Height;
+end;
+
+procedure TEditorForm.InitWideComboBox(WideCombo: TWideComboBox; AnsiCombo: TComboBox);
+begin
+	WideCombo.Parent  := AnsiCombo.Parent;
+	WideCombo.Style   := AnsiCombo.Style;
+	WideCombo.Font    := AnsiCombo.Font;
+	WideCombo.Left    := AnsiCombo.Left;
+	WideCombo.Top     := AnsiCombo.Top;
+	WideCombo.Width   := AnsiCombo.Width;
+	WideCombo.Height  := AnsiCombo.Height;
+	WideCombo.DropDownCount := AnsiCombo.DropDownCount;
+end;
+
 procedure TEditorForm.SetBoard(Item: TBoard);
 begin
 	FBoard := Item;
 	Caption := CAPTION_NAME_NEW + ' - [' + Item.Title + ']';
-	NameComboBox.Text := FBoard.KotehanName;
-	MailComboBox.Text := FBoard.KotehanMail;
-	SageCheckBox.Checked := AnsiPos('sage', MailComboBox.Text) <> 0;
+	SetNameText(FBoard.KotehanName);
+	SetMailText(FBoard.KotehanMail);
+	SageCheckBox.Checked := AnsiPos('sage', GetMailText) <> 0;
 	TitlePanel.Visible := True;
 
-    if (FSambaTimer.SetBoard(FBoard) >= 0) then begin
-        UpdateSambaStatus;
-        FNow := Now();
-        FSambaTimer.OnTimer := SambaTimer;
-    end;
+	if (FSambaTimer.SetBoard(FBoard) >= 0) then begin
+		UpdateSambaStatus;
+		FNow := Now();
+		FSambaTimer.OnTimer := SambaTimer;
+	end;
 
 	ShowBoardInformation(FBoard, BoardInformationMemo);
 	ShowTitlePicture();
@@ -462,16 +526,16 @@ procedure TEditorForm.SetThreadItem(Item: TThreadItem);
 begin
 	FThreadItem := Item;
 	Caption := CAPTION_NAME_RES + ' - [' + FThreadItem.Title + ']';
-	NameComboBox.Text := FThreadItem.ParentBoard.KotehanName;
-	MailComboBox.Text := FThreadItem.ParentBoard.KotehanMail;
-	SageCheckBox.Checked := AnsiPos('sage', MailComboBox.Text) <> 0;
+	SetNameText(FThreadItem.ParentBoard.KotehanName);
+	SetMailText(FThreadItem.ParentBoard.KotehanMail);
+	SageCheckBox.Checked := AnsiPos('sage', GetMailText) <> 0;
 	TitlePanel.Visible := False;
 
-    if (FSambaTimer.SetBoard(FThreadItem.ParentBoard) >= 0) then begin
-        UpdateSambaStatus;
-        FNow := Now();
-        FSambaTimer.OnTimer := SambaTimer;
-    end;
+	if (FSambaTimer.SetBoard(FThreadItem.ParentBoard) >= 0) then begin
+		UpdateSambaStatus;
+		FNow := Now();
+		FSambaTimer.OnTimer := SambaTimer;
+	end;
 
 	ShowBoardInformation(FThreadItem.ParentBoard, BoardInformationMemo);
 	ShowTitlePicture();
@@ -486,11 +550,7 @@ const
 	TAB_LENGTH	= 4;
 begin
 
-//    if (FUseUC = True) then
-//	    body := BodyEditUC.EncodeText
-//    else
-//        body := BodyEdit.Text;
-  body := GetBodyText();
+	body := GetBodyText;
 
 	if AmpToCharRefAction.Checked then
 		// & の置換は一番最初にやること
@@ -561,19 +621,24 @@ begin
 
 end;
 
+function TEditorForm.GetBodyUTF8: UTF8String;
+begin
+	Result := UTF8Encode(GetBodyText);
+end;
+
 procedure TEditorForm.SetFont;
 begin
-    if (FUseUC = True) then begin
-        BodyEditUC.Font.Name := GikoSys.Setting.EditorFontName;
-        BodyEditUC.Font.Size := GikoSys.Setting.EditorFontSize;
-        BodyEditUC.Font.Color := GikoSys.Setting.EditorFontColor;
-        BodyEditUC.Color := GikoSys.Setting.EditorBackColor;
-    end else begin
-        BodyEdit.Font.Name := GikoSys.Setting.EditorFontName;
-        BodyEdit.Font.Size := GikoSys.Setting.EditorFontSize;
-        BodyEdit.Font.Color := GikoSys.Setting.EditorFontColor;
-        BodyEdit.Color := GikoSys.Setting.EditorBackColor;
-    end;
+	if (FUseUC = True) then begin
+		BodyEditUC.Font.Name := GikoSys.Setting.EditorFontName;
+		BodyEditUC.Font.Size := GikoSys.Setting.EditorFontSize;
+		BodyEditUC.Font.Color := GikoSys.Setting.EditorFontColor;
+		BodyEditUC.Color := GikoSys.Setting.EditorBackColor;
+	end else begin
+		BodyEdit.Font.Name := GikoSys.Setting.EditorFontName;
+		BodyEdit.Font.Size := GikoSys.Setting.EditorFontSize;
+		BodyEdit.Font.Color := GikoSys.Setting.EditorFontColor;
+		BodyEdit.Color := GikoSys.Setting.EditorBackColor;
+	end;
 end;
 
 procedure TEditorForm.Preview;
@@ -587,15 +652,15 @@ var
 begin
 	if FThreadItem = nil then begin
 		No := '1';
-		Title := THTMLCreate.RepHtml(TitleEdit.Text);
+		Title := THTMLCreate.RepHtml(GetTitleText);
 	end else begin
 		No := IntToStr(FThreadItem.Count + 1);
 		Title := THTMLCreate.RepHtml(FThreadItem.Title);
 	end;
 
 	Body := GetBody;
-	Namae := THTMLCreate.RepHtml(NameComboBox.Text);
-	Mail := THTMLCreate.RepHtml(MailComboBox.Text);
+	Namae := THTMLCreate.RepHtml(GetNameText);
+	Mail := THTMLCreate.RepHtml(GetMailText);
 	Body := THTMLCreate.RepHtml(Body);
 	Body := CustomStringReplace(Body, #13#10, '<br>', False);
 
@@ -603,29 +668,29 @@ begin
 	if Trim(Namae) = '' then
 		Namae := '名無しさん';
 
-    s := THTMLCreate.CreatePreviewHTML(Title, No, Mail, Namae, Body);
-    
+	s := THTMLCreate.CreatePreviewHTML(Title, No, Mail, Namae, Body);
+
 	SetContent(s, Browser);
 end;
 
 procedure TEditorForm.EditorPageChange(Sender: TObject);
 var
-        tmpBoard: TBoard;
+	tmpBoard: TBoard;
 begin
 
-    tmpBoard := GetBoard;
+	tmpBoard := GetBoard;
 
 	if tmpBoard = nil then Exit;
 
 	if EditorPage.ActivePage = PreviewTab then begin
 		Preview;
 	end else if EditorPage.ActivePage = RocalRuleTab then begin
-                if not FileExists(tmpBoard.GETHEADTXTFileName) then begin
-                        LocalEdit.Text := 'ローカルルール未取得';
-                        Exit;
-                end;
-                ShowBoardHead(tmpBoard, LocalEdit);
-        end else begin
+		if not FileExists(tmpBoard.GETHEADTXTFileName) then begin
+			LocalEdit.Text := 'ローカルルール未取得';
+			Exit;
+		end;
+		ShowBoardHead(tmpBoard, LocalEdit);
+	end else begin
 		Browser.Navigate('about:blank');
 	end;
 end;
@@ -648,17 +713,13 @@ var
 	Msg: string;
 	rc: Integer;
 	Board: TBoard;
-    BodyLen: Integer;
+	BodyLen: Integer;
 begin
 	Result := True;
 
-    Board := GetBoard;
+	Board := GetBoard;
 
-//    if (FUseUC = True) then
-//        BodyLen := Length(BodyEditUC.EncodeText)
-//    else
-//        BodyLen := Length(BodyEdit.Text);
-  BodyLen := Length(GetBodyText());
+	BodyLen := Length(GetBodyText());
 
 	if (not GikoSys.Setting.UseMachineTime) and
 		 ((Board.LastGetTime = 0) or
@@ -671,12 +732,12 @@ begin
 		Msg := '本文' + REQUIRED;
 		MsgBox(Handle, Msg, ERROR, MB_OK or MB_ICONSTOP);
 		Result := False;
-	end else if (FBoard <> nil) and (Trim(TitleEdit.Text) = '') then begin
+	end else if (FBoard <> nil) and (Trim(GetTitleText) = '') then begin
 		Msg := 'タイトル' + REQUIRED;
 		MsgBox(Handle, Msg, ERROR, MB_OK or MB_ICONSTOP);
 		Result := False;
 	end else begin
-		if (not Session5ch.Connected) and (AnsiPos('●', NameComboBox.Text) <> 0) then begin
+		if (not Session5ch.Connected) and (AnsiPos('●', GetNameText) <> 0) then begin
 			Msg := 'ログインしていないので●の機能は利用出来ません。'#13#10
 					 + 'このまま送信してもよろしいですか？';
 			rc := MsgBox(Handle, Msg, '確認', MB_YESNO or MB_ICONQUESTION);
@@ -694,24 +755,27 @@ procedure TEditorForm.FormDestroy(Sender: TObject);
 var
 	wp: TWindowPlacement;
 begin
-    FSambaTimer.Free;
+	FSambaTimer.Free;
 
-    if (Owner <> nil) and (Owner.ClassNameIs('TKeySettingForm') = False) then begin
-        //最大化・ウィンドウ位置保存
-        wp.length := sizeof(wp);
-        GetWindowPlacement(Handle, @wp);
+	if (Owner <> nil) and (Owner.ClassNameIs('TKeySettingForm') = False) then begin
+		//最大化・ウィンドウ位置保存
+		wp.length := sizeof(wp);
+		GetWindowPlacement(Handle, @wp);
 
-        GikoSys.Setting.EditWindowTop := wp.rcNormalPosition.Top;
-        GikoSys.Setting.EditWindowLeft := wp.rcNormalPosition.Left;
-        GikoSys.Setting.EditWindowHeight := wp.rcNormalPosition.Bottom - wp.rcNormalPosition.Top;
-        GikoSys.Setting.EditWindowWidth := wp.rcNormalPosition.Right - wp.rcNormalPosition.Left;
-        GikoSys.Setting.EditWindowMax := WindowState = wsMaximized;
-        //GikoSys.Setting.EditWindowStay := FormStyle = fsStayOnTop;      // ステイ状態の保存
-        GikoSys.Setting.EditWindowTranslucent := TransAction.Checked;   // 半透明状態の保存
-    end;
+		GikoSys.Setting.EditWindowTop := wp.rcNormalPosition.Top;
+		GikoSys.Setting.EditWindowLeft := wp.rcNormalPosition.Left;
+		GikoSys.Setting.EditWindowHeight := wp.rcNormalPosition.Bottom - wp.rcNormalPosition.Top;
+		GikoSys.Setting.EditWindowWidth := wp.rcNormalPosition.Right - wp.rcNormalPosition.Left;
+		GikoSys.Setting.EditWindowMax := WindowState = wsMaximized;
+		//GikoSys.Setting.EditWindowStay := FormStyle = fsStayOnTop;      // ステイ状態の保存
+		GikoSys.Setting.EditWindowTranslucent := TransAction.Checked;   // 半透明状態の保存
+	end;
 
-    BodyEditUC.Free;
-    FURI.Free;
+	BodyEditUC.Free;
+	TitleEditUC.Free;
+	NameComboBoxUC.Free;
+	MailComboBoxUC.Free;
+	FURI.Free;
 end;
 
 procedure TEditorForm.SetNameList(sName, sMail: string);
@@ -731,9 +795,9 @@ end;
 function TEditorForm.GetActiveControlHandle: THandle;
 begin
 	if EditorPage.ActivePage = EditorTab then begin
-		if ActiveControl = NameComboBox then
+		if (ActiveControl = NameComboBox) or (ActiveControl = NameComboBoxUC) then
 			Result := FNameComboEdit
-		else if ActiveControl = MailComboBox then
+		else if (ActiveControl = MailComboBox) or (ActiveControl = MailComboBoxUC) then
 			Result := FMailComboEdit
 		else if ActiveControl = BodyEditUC then
 			Result := BodyEditUC.Handle
@@ -741,6 +805,8 @@ begin
 			Result := BodyEdit.Handle
 		else if ActiveControl = TitleEdit then
 			Result := TitleEdit.Handle
+		else if ActiveControl = TitleEditUC then
+			Result := TitleEditUC.Handle
 		else
 			Result := 0;
 	end else if Editorpage.ActivePage = BoardInformationTab then begin
@@ -793,19 +859,22 @@ var
 	MsgResult: Integer;
 	Board: TBoard;
 	sysMenu	: HMENU;
-  ExpMsg: String;
-  {Protocol,Host, Path, Document, Port, Bookmark : String;}
-  is2ch: Boolean;   // for 5ch
-  referer: String;  // for 5ch
+	ExpMsg: String;
+	{Protocol,Host, Path, Document, Port, Bookmark : String;}
+	is2ch: Boolean;   // for 5ch
+	referer: String;  // for 5ch
+	isUTF8: Boolean;
+//{$IFDEF DEBUG}
+//  debug: String;
+//{$ENDIF}
 begin
 	FAbort := False;
 	State := gdsError;
-  Board := GetBoard;
+	Board := GetBoard;
 
-  TIndyMdl.InitHTTP(Indy, True);
-  Indy.Request.AcceptEncoding := '';
-  Indy.AllowCookies := True;
-
+	TIndyMdl.InitHTTP(Indy, True);
+	Indy.Request.AcceptEncoding := '';
+	Indy.AllowCookies := True;
 	if FThreadItem = nil then begin
 		URL := FBoard.GetSendURL;
 		Indy.Request.Referer := GikoSys.UrlToServer(FBoard.URL) + 'test/bbs.cgi';
@@ -813,15 +882,16 @@ begin
 		URL := FThreadItem.GetSendURL;
 		Indy.Request.Referer := FThreadItem.URL;
 	end;
-  // for 5ch
-  is2ch := GikoSys.Is2chURL(URL);
-  if is2ch then begin
-    GikoSys.Regulate2chURL(URL);
-    referer := Indy.Request.Referer;
-    GikoSys.Regulate2chURL(referer);
-    Indy.Request.Referer := referer;
-  end;
-  // for 5ch
+	// for 5ch
+	is2ch := GikoSys.Is2chURL(URL);
+	if is2ch then begin
+		GikoSys.Regulate2chURL(URL);
+		referer := Indy.Request.Referer;
+		GikoSys.Regulate2chURL(referer);
+		Indy.Request.Referer := referer;
+	end;
+	isUTF8 := is2ch and FUseUC;   // 5ch書き込みでUnicodeモードならUTF-8
+	// for 5ch
 	sysMenu := GetSystemMenu( Handle, false );
 	EnableMenuItem( sysMenu, SC_CLOSE, MF_GRAYED );
 {
@@ -832,9 +902,14 @@ begin
 //	Indy.Request.CacheControl := 'no-cache';
 	Indy.Request.CustomHeaders.Add('Pragma: no-cache');
 	Indy.Request.AcceptLanguage := 'ja';
-	Indy.Request.Accept := 'image/gif, image/x-xbitmap, image/jpeg, image/pjpeg, */*';
-	Indy.Request.ContentType := 'application/x-www-form-urlencoded';
+	//Indy.Request.Accept := 'image/gif, image/x-xbitmap, image/jpeg, image/pjpeg, */*';
+	if isUTF8 then begin
+		Indy.Request.ContentType := 'application/x-www-form-urlencoded; charset=UTF-8';
+		Indy.Request.AcceptCharSet := 'utf-8';
+	end else
+		Indy.Request.ContentType := 'application/x-www-form-urlencoded';
 	Indy.Request.CustomHeaders.Add(getHeaderStr(ACOOKIE, SPID, PON, GikoSys.GetBouken(URL, FCookieDomain), Board));
+
 	TextStream := TStringStream.Create('');
 	Source := TStringStream.Create('');
 	try
@@ -844,32 +919,38 @@ begin
 
 			if (FirstWriting) then begin
 				//フシアナトラップ警告(LocalMode) by 定期便
-                if (isLocalFusianaTrap) then begin
-                    CancelSend( Board, SysMenu );
-                    Exit;
-                end;
-                //フシアナトラップ警告(Remote)
-                if (isRemoteFusianaTrap) then begin
-                    CancelSend( Board, SysMenu );
-                    Exit;
-                end;
-                // 誤爆チェック
-                if (isGobaku) then begin
-                    CancelSend( Board, SysMenu );
-                    Exit;
-                end;
+				if (isLocalFusianaTrap) then begin
+					CancelSend( Board, SysMenu );
+					Exit;
+				end;
+				//フシアナトラップ警告(Remote)
+				if (isRemoteFusianaTrap) then begin
+					CancelSend( Board, SysMenu );
+					Exit;
+				end;
+				// 誤爆チェック
+				if (isGobaku) then begin
+					CancelSend( Board, SysMenu );
+					Exit;
+				end;
 			end;
 
-			//GetSendData(Source);
-			GetSendData(Source, False, (is2ch = False));  // for 5ch
+			GetSendData(Source, isUTF8, (is2ch = False));
 
-			//IdAntiFreeze.Active := True;
-      IndyMdl.StartAntiFreeze(100); // for Indy10
+//{$IFDEF DEBUG}
+//      debug := 'Send() FirstWriting:';
+//      if FirstWriting then debug := debug + 'True' else debug := debug + 'False';
+//      debug := debug + ' AcceptCharSet:' + Indy.Request.AcceptCharSet;
+//      DebugLog(debug);
+//      if MessageBox(Handle, PChar(debug), 'debug', MB_OKCANCEL) = IDCANCEL then
+//        Exit;
+//{$ENDIF}
+
+			IndyMdl.StartAntiFreeze(100);
 			try
 				Indy.Post(URL, Source, TextStream);
 			finally
-				//IdAntiFreeze.Active := False;
-        IndyMdl.EndAntiFreeze;    // for Indy10
+				IndyMdl.EndAntiFreeze;
 			end;
 			ResponseText := TextStream.DataString;
 
@@ -877,10 +958,10 @@ begin
 
 			if ResultType = grtOK then begin
 				if (GikoSys.Setting.UseSamba) and  (FSambaTimer.Enabled) then
-                begin
-                    FSambaTimer.WriteSambaTime(Now());
-                end;
-                GetCookie(Indy.CookieManager, Board);
+				begin
+					FSambaTimer.WriteSambaTime(Now());
+				end;
+				GetCookie(Indy.CookieManager, Board);
 				State := gdsComplete;
 			end else if ResultType = grtCookie then begin
 				//ループ防止
@@ -896,9 +977,9 @@ begin
 
 				if MsgResult = IDYES then begin
 					GetCookie(Indy.CookieManager, Board);
-                    if (Board.Is2ch) then begin
-                        GetHiddenParameter(ResponseText, Board);
-                    end;
+					if (Board.Is2ch) then begin
+						GetHiddenParameter(ResponseText, Board);
+					end;
 
 					if (Board.SPID = '') and (Board.PON = '') and (Board.Cookie = '') then
 						raise Exception.Create('');
@@ -926,9 +1007,9 @@ begin
 
 				if MsgResult = IDYES then begin
 					GetCookie(Indy.CookieManager, Board);
-                    if (Board.Is2ch) then begin
-                        GetHiddenParameter(ResponseText, Board);
-                    end;
+					if (Board.Is2ch) then begin
+						GetHiddenParameter(ResponseText, Board);
+					end;
 
 					if (Board.SPID = '') and (Board.PON = '') and (Board.Cookie = '') then
 						raise Exception.Create('');
@@ -946,48 +1027,48 @@ begin
 						, '確認',
 						MB_OK or MB_ICONINFORMATION);
 				if (GikoSys.Setting.UseSamba)  and  (FSambaTimer.Enabled) then
-                begin
+				begin
 					FSambaTimer.WriteSambaTime(Now());
-                end;
-                Board.PON  := '';
-                Board.SPID := '';
-                Board.Cookie := '';
-                GetCookie(Indy.CookieManager, Board);
+				end;
+				Board.PON  := '';
+				Board.SPID := '';
+				Board.Cookie := '';
+				GetCookie(Indy.CookieManager, Board);
 				Exit;
-            end else if ResultType = grtSuiton then begin
+			end else if ResultType = grtSuiton then begin
 				MsgBox( Handle,
 						'貴方の忍法帖は焼かれました。' + #13#10 +
                         '忍法帖を削除しました、再送信してください。'
 						, '確認',
 						MB_OK or MB_ICONINFORMATION);
-                // 忍法帖巻物を消す
-                GikoSys.DelBoukenCookie(FCookieDomain);
-                GikoSys.Setting.WriteBoukenSettingFile;
-                Board.PON  := '';
-                Board.SPID := '';
-                Board.Cookie := '';
-                Exit;
+				// 忍法帖巻物を消す
+				GikoSys.DelBoukenCookie(FCookieDomain);
+				GikoSys.Setting.WriteBoukenSettingFile;
+				Board.PON  := '';
+				Board.SPID := '';
+				Board.Cookie := '';
+				Exit;
 			end else begin
 				if (GikoSys.Setting.UseSamba)  and  (FSambaTimer.Enabled) then
-                begin
+				begin
 					FSambaTimer.WriteSambaTime(Now());
-                end;
-                // 忍法帖巻物エラーはCookieを更新する
-                if ResultType = grtNinpouErr then begin
-                    GetCookie(Indy.CookieManager, Board);
-                end;
+				end;
+				// 忍法帖巻物エラーはCookieを更新する
+				if ResultType = grtNinpouErr then begin
+					GetCookie(Indy.CookieManager, Board);
+				end;
 				State := gdsError;
 				raise Exception.Create('');
 			end;
 		except
-            on E: EIdSocketError do begin
+			on E: EIdSocketError do begin
 				State := gdsError;
 				ResponseText := '<html><body>'
 											+ '<div>接続が失敗しました<br>'
 											+ '回線の状態を調べてください<br></div>'
 											+ '<br><br><div>' + E.Message + '</div>'
 											+ '</body></html>';
-            end;
+			end;
 			on E: EIdConnectException do begin
 				State := gdsError;
 				ResponseText := '<html><body>'
@@ -1003,7 +1084,7 @@ begin
 				FDebugStrReceive := AnsiReplaceText(FDebugStrReceive, '>', '&gt;');
 				FDebugStrSend := AnsiReplaceText(FDebugStrSend, '<', '&lt;');
 				FDebugStrSend := AnsiReplaceText(FDebugStrSend, '>', '&gt;');
-                ExpMsg := AnsiReplaceText(E.Message, '<', '&lt;');
+				ExpMsg := AnsiReplaceText(E.Message, '<', '&lt;');
 				ExpMsg := AnsiReplaceText(ExpMsg,    '>', '&gt;');
 
 				ResponseText := '<html><body>' + TextStream.DataString;
@@ -1026,61 +1107,62 @@ begin
 	finally
 		Source.Free;
 		TextStream.Free;
-        if ( Indy.CookieManager <> nil ) then begin
-            Indy.CookieManager.CookieCollection.Clear;
-        end;
+		if ( Indy.CookieManager <> nil ) then begin
+			Indy.CookieManager.CookieCollection.Clear;
+		end;
 		//sysMenu := GetSystemMenu( Handle, true );
 		EnableMenuItem(SysMenu, SC_CLOSE, MF_BYCOMMAND or MF_ENABLED);
 		DrawMenuBar(Handle);
 	end;
 	FWork := false;
-    //非公式ギコナビ板などの2ch互換スクリプト用
-    //2ch以外でかつResponceCodeが302Foundで書き込み完了
-    //if (not Board.Is2ch) and (FStatusCode = 302) then begin
-    if FStatusCode = 302 then begin
-        GikoForm.PlaySound('ResEnd');
-        SaveSendFile;
-        AddFormMessageNew( gmiOK );
-        if (not ContinueModeAction.Enabled) or (not ContinueModeAction.Checked) then begin
-            Close;
-            Exit;
-        end;
-    end;
+	//非公式ギコナビ板などの2ch互換スクリプト用
+	//2ch以外でかつResponceCodeが302Foundで書き込み完了
+	//if (not Board.Is2ch) and (FStatusCode = 302) then begin
+	if FStatusCode = 302 then begin
+		GikoForm.PlaySound('ResEnd');
+		SaveSendFile;
+		AddFormMessageNew( gmiOK );
+		if (not ContinueModeAction.Enabled) or (not ContinueModeAction.Checked) then begin
+			Close;
+			Exit;
+		end;
+	end;
 	if State = gdsComplete then begin
 		GikoForm.PlaySound('ResEnd');
 		SaveSendFile;
-        AddFormMessageNew( gmiOK );
-        if (not ContinueModeAction.Enabled) or (not ContinueModeAction.Checked) then begin
-    		Close;
-        end;
+		AddFormMessageNew( gmiOK );
+		if (not ContinueModeAction.Enabled) or (not ContinueModeAction.Checked) then begin
+			Close;
+		end;
 	end else if State = gdsError then begin
-        AddFormMessageNew( gmiOK );
+		AddFormMessageNew( gmiOK );
 		EditorPage.ActivePage := PreviewTab;
 		SetContent(ResponseText, Browser);
 	end else if State = gdsAbort then begin
 		GikoForm.AddMessageList(FThreadItem.Title + ' ' + GikoSys.GetGikoMessage(gmAbort), nil, gmiSAD);
 	end;
 end;
+
 function TEditorForm.GetResultType(ResponseText: string): TGikoResultType;
 begin
 	if AnsiPos('書きこみが終わりました', ResponseText) <> 0 then
 		Result := grtOK
-    else if ( (AnsiPos('<b>ようこそ：貴方の忍法帖を作成します。２分後に再度書き込むか、お帰りください', ResponseText) > 0) or
-              (AnsiPos('ＥＲＲＯＲ：貴方の冒険の書を作成中です', ResponseText) > 0) )
-                and (AnsiPos(RES2CH_COOKIE, ResponseText) > 0) 	then
-        Result := grtNinpou
-    else if ( (AnsiPos('ＥＲＲＯＲ：修行が足りません', ResponseText) > 0) or   // エラー扱い
-              (AnsiPos('ＥＲＲＯＲ：Lvが足りなくてスレッド立て', ResponseText) > 0) ) // エラー扱い
-              and (AnsiPos(RES2CH_COOKIE, ResponseText) > 0) 	then
-        Result := grtNinpouErr
-    else if( AnsiPos('<b>やられたでござる：Lv=0 <br>さて自力で復活できるかな?', ResponseText) > 0) 
-              and (AnsiPos(RES2CH_COOKIE, ResponseText) > 0) 	then
-        Result := grtSuiton
+	else if ( (AnsiPos('<b>ようこそ：貴方の忍法帖を作成します。２分後に再度書き込むか、お帰りください', ResponseText) > 0) or
+				(AnsiPos('ＥＲＲＯＲ：貴方の冒険の書を作成中です', ResponseText) > 0) )
+				and (AnsiPos(RES2CH_COOKIE, ResponseText) > 0) 	then
+		Result := grtNinpou
+	else if ( (AnsiPos('ＥＲＲＯＲ：修行が足りません', ResponseText) > 0) or   // エラー扱い
+				(AnsiPos('ＥＲＲＯＲ：Lvが足りなくてスレッド立て', ResponseText) > 0) ) // エラー扱い
+				and (AnsiPos(RES2CH_COOKIE, ResponseText) > 0) 	then
+		Result := grtNinpouErr
+	else if( AnsiPos('<b>やられたでござる：Lv=0 <br>さて自力で復活できるかな?', ResponseText) > 0) 
+				and (AnsiPos(RES2CH_COOKIE, ResponseText) > 0) 	then
+		Result := grtSuiton
 	else if ( AnsiPos('クッキーがないか期限切れです', ResponseText) > 0) or
 					(AnsiPos('<title>クッキー確認！</title>', ResponseText) > 0)	or
 					(AnsiPos('<title>■クッキー確認！■</title>', ResponseText) > 0) or
-                    (AnsiPos('(cookieを設定するとこの画面はでなくなります。)', ResponseText) > 0) or
-                    (AnsiPos(RES2CH_COOKIE, ResponseText) > 0)	then
+					(AnsiPos('(cookieを設定するとこの画面はでなくなります。)', ResponseText) > 0) or
+					(AnsiPos(RES2CH_COOKIE, ResponseText) > 0)	then
 		Result := grtCookie
 	else if (AnsiPos('<font size=+2 color=#FF0000>書き込みチェック！ </font>', ResponseText) > 0)	or
 					(AnsiPos('<title>■ 書き込み確認します ■</title>', ResponseText) > 0)	or
@@ -1090,27 +1172,27 @@ begin
 					(AnsiPos(RES2CH_FALSE, ResponseText) > 0)	then
 		Result := grtCheck
 	else if (AnsiPos('・投稿者は、掲示板運営者に対して、著作者人格権を一切行使しないことを承諾します。<br>', ResponseText) > 0) or
-                                        (AnsiPos('（著作権法第21条ないし第28条に規定される権利も含む）その他の権利につき、', ResponseText) > 0) then
-                Result := grtCookie
-    else
-        Result := grtError;
+					(AnsiPos('（著作権法第21条ないし第28条に規定される権利も含む）その他の権利につき、', ResponseText) > 0) then
+		Result := grtCookie
+	else
+		Result := grtError;
 end;
 
 
 procedure TEditorForm.GetSendData(Source: TStringStream; EncUTF8: Boolean; AddCRLF: Boolean);
 var
-	SessionID: string;
-	s: string;
-	SendTime: Integer;
-	Adjust: Integer;
-	Board: TBoard;
-	body		: string;
-  submit: String;
-  from: String;
-  mail: String;
-  subject: String;
+	SessionID: String;
+	s:         String;
+	SendTime:  Integer;
+	Adjust:    Integer;
+	Board:     TBoard;
+	body:      String;
+	submit:    String;
+	from:      String;
+	mail:      String;
+	subject:   String;
 begin
-    Board := GetBoard;
+	Board := GetBoard;
 
 	if GikoSys.Setting.UseMachineTime then begin
 		if GikoSys.Setting.TimeAdjust then
@@ -1125,133 +1207,126 @@ begin
 			SendTime := GikoSys.DateTimeToInt(Board.LastGetTime);
 	end;
 
-	body := GetBody;
-
-  // for UTF8
 	if FThreadItem = nil then
-    submit := '全責任を負うことを承諾して書き込む'
-  else
-    submit := '書き込む';
-  if EncUTF8 then begin
-    if FThreadItem = nil then
-      subject := URLEncodeUTF8(TitleEdit.Text);
-    from := URLEncodeUTF8(NameComboBox.Text);
-    mail := URLEncodeUTF8(MailComboBox.Text);
-    body := URLEncodeUTF8(body);
-    submit := URLEncodeUTF8(submit);
-  end else begin
-    if FThreadItem = nil then
-      subject := HttpEncode(TitleEdit.Text);
-    from := HttpEncode(NameComboBox.Text);
-    mail := HttpEncode(MailComboBox.Text);
-    body := HttpEncode(body);
-    submit := HttpEncode(submit);
-  end;
-  // for UTF8
+		submit := '全責任を負うことを承諾して書き込む'
+	else
+		submit := '書き込む';
+
+	if EncUTF8 then begin
+		if FThreadItem = nil then
+			subject := HttpEncode(GetTitleUTF8);
+		from   := HttpEncode(GetNameUTF8);
+		mail   := HttpEncode(GetMailUTF8);
+		body   := HttpEncode(GetBodyUTF8);
+		submit := HttpEncode(AnsiToUtf8(submit));
+	end else begin
+		if FThreadItem = nil then
+			subject := HttpEncode(GetTitleText);
+		from   := HttpEncode(GetNameText);
+		mail   := HttpEncode(GetMailText);
+		body   := HttpEncode(GetBody);
+		submit := HttpEncode(submit);
+	end;
 
 	SessionID := Session5ch.SessionID;
 	if SessionID <> '' then
 		s := 'sid=' + HttpEncode(SessionID) + '&'
 	else
 		s := '';
-        s := s + 'subject=&'
-               //+ 'FROM=' + HttpEncode(NameComboBox.Text) + '&'
-               //+ 'mail=' + HttpEncode(MailComboBox.Text) + '&'
-               //+ 'MESSAGE=' + HttpEncode(body) + '&'
-               + 'FROM=' + from + '&'     // for UTF8
-               + 'mail=' + mail + '&'     // for UTF8
-               + 'MESSAGE=' + body + '&'  // for UTF8
-               + 'bbs=' + Board.BBSID + '&'
-			   + 'time=' + IntToStr(SendTime) + '&';
+	s := s //+ 'subject=&'
+			+ 'FROM=' + from + '&'
+			+ 'mail=' + mail + '&'
+			+ 'MESSAGE=' + body + '&'
+			+ 'bbs=' + Board.BBSID + '&'
+			+ 'time=' + IntToStr(SendTime) + '&';
 
-	if FThreadItem = nil then begin
-		//s := s + 'subject=' + HttpEncode(TitleEdit.Text) + '&';
-		s := s + 'subject=' + subject + '&';
-		//s := s + 'submit=' + HttpEncode('全責任を負うことを承諾して書き込む') + #13#10;
-	end else begin
+	if FThreadItem = nil then
+//		s := s + 'subject=' + subject + '&'
+		s := 'subject=' + subject + '&' + s
+	else
 		s := s + 'key=' + ChangeFileExt(FThreadItem.FileName, '') + '&';
-		//s := s + 'submit=' + HttpEncode('書き込む') + #13#10;
-	end;
-  s := s + 'submit=' + submit;      // for UTF8
-  if AddCRLF then s := s + #13#10;  // for CRLF
+	s := s + 'submit=' + submit;
+	if AddCRLF then s := s + #13#10;
 
 	Source.WriteString(s);
+//{$IFDEF DEBUG}
+//    DebugLog(s);
+//    MessageBox(Handle, PChar(s), 'debug', MB_OK);
+//{$ENDIF}
 end;
 
 procedure TEditorForm.SaveSendFile;
 var
-	sDate: string;
-	ini: TMemIniFile;
-    Body: String;
+	sDate: String;
+	ini:   TMemIniFile;
+	Body:  String;
 begin
 	ini := CreateSentIniFile;
-    if (ini <> nil) then begin
-        try
-            sDate := IntToStr(GikoSys.DateTimeToInt(Now));
-//            if (FUseUC = True) then
-//                Body := BodyEditUC.EncodeText
-//            else
-//                Body := BodyEdit.Text;
-            Body := GetBodyText();
+	if (ini <> nil) then begin
+		try
+			sDate := IntToStr(GikoSys.DateTimeToInt(Now));
+			Body := GetBodyText();
 
-            ini.WriteString(sDate, 'Name', NameComboBox.Text);
-            ini.WriteString(sDate, 'EMail', MailComboBox.Text);
-            ini.WriteString(sDate, 'Body', HttpEncode(Body));
-            ini.WriteInteger(sDate, 'Status', FStatusCode);
-            ini.WriteDateTime(sDate, 'Date', Now);
-            if FThreadItem = nil then begin
-                ini.WriteString(sDate, 'Title', MojuUtils.Sanitize(TitleEdit.Text));
-                //ini.WriteString(sDate, 'BBS', FBoard.BBSID);
-                ini.WriteString(sDate, 'URL', FBoard.URL);
-                ini.WriteInteger(sDate, 'NewThread', 1);
-            end else begin
-                ini.WriteString(sDate, 'Title', FThreadItem.Title);
-                //ini.WriteString(sDate, 'BBS', FThreadItem.ParentBoard.BBSID);
-                ini.WriteString(sDate, 'URL', FThreadItem.URL);
-                ini.WriteString(sDate, 'Key', ChangeFileExt(FThreadItem.FileName, ''));
-            end;
+			ini.WriteString(sDate, 'Name', GetNameText);
+			ini.WriteString(sDate, 'EMail', GetMailText);
+			ini.WriteString(sDate, 'Body', HttpEncode(Body));
+			ini.WriteInteger(sDate, 'Status', FStatusCode);
+			ini.WriteDateTime(sDate, 'Date', Now);
+			if FThreadItem = nil then begin
+				ini.WriteString(sDate, 'Title', MojuUtils.Sanitize(GetTitleText));
+				//ini.WriteString(sDate, 'BBS', FBoard.BBSID);
+				ini.WriteString(sDate, 'URL', FBoard.URL);
+				ini.WriteInteger(sDate, 'NewThread', 1);
+			end else begin
+				ini.WriteString(sDate, 'Title', FThreadItem.Title);
+				//ini.WriteString(sDate, 'BBS', FThreadItem.ParentBoard.BBSID);
+				ini.WriteString(sDate, 'URL', FThreadItem.URL);
+				ini.WriteString(sDate, 'Key', ChangeFileExt(FThreadItem.FileName, ''));
+			end;
 
-            ini.UpdateFile;
-        finally
-            ini.Free;
-        end;
-    end;
+			ini.UpdateFile;
+		finally
+			ini.Free;
+		end;
+	end;
 end;
+
 function TEditorForm.CreateSentIniFile: TMemIniFile;
 var
-    maxSize, fileSize, i: Integer;
-    newName: String;
+  maxSize, fileSize, i: Integer;
+  newName: String;
 begin
-    Result := nil;
-    // MB -> bytes
-    maxSize := GikoSys.Setting.SentIniFileSize * 1024 * 1024;
-    // ファイルサイズが0の場合は、sent.iniに書き込まないのでnilを返す
-    if (maxSize > 0) then begin
-        fileSize := GikoSys.GetFileSize(GikoSys.Setting.GetSentFileName);
-        // 最大サイズを超えていた場合はリネームする
-        if (fileSize >= maxSize) then begin
-            i := 0;
-            // 今の時刻をファイル名の後ろにつける
-            repeat
-                // 10回以上失敗したらあきらめる
-                if (i > 10) then break;
-                DateTimeToString(newName, 'yyhhnnsszzz', Now());
-                Inc(i);
-            until RenameFile(GikoSys.Setting.GetSentFileName,
-                GikoSys.Setting.GetSentFileName + '.' + newName);
-        end;
-        Result := TMemIniFile.Create(GikoSys.Setting.GetSentFileName);
+  Result := nil;
+  // MB -> bytes
+  maxSize := GikoSys.Setting.SentIniFileSize * 1024 * 1024;
+  // ファイルサイズが0の場合は、sent.iniに書き込まないのでnilを返す
+  if (maxSize > 0) then begin
+    fileSize := GikoSys.GetFileSize(GikoSys.Setting.GetSentFileName);
+    // 最大サイズを超えていた場合はリネームする
+    if (fileSize >= maxSize) then begin
+      i := 0;
+      // 今の時刻をファイル名の後ろにつける
+      repeat
+        // 10回以上失敗したらあきらめる
+        if (i > 10) then break;
+        DateTimeToString(newName, 'yyhhnnsszzz', Now());
+        Inc(i);
+      until RenameFile(GikoSys.Setting.GetSentFileName,
+        GikoSys.Setting.GetSentFileName + '.' + newName);
     end;
+    Result := TMemIniFile.Create(GikoSys.Setting.GetSentFileName);
+  end;
 end;
+
 procedure TEditorForm.SendActionExecute(Sender: TObject);
 const
 	TITLE_SAMBA : string = 'Samba24警告';
 var
 	Board: TBoard;
-	rc: Integer;
-        rc2: Integer;
-	state : TGikoDownloadState;
-	body		: string;
+	rc:    Integer;
+	rc2:   Integer;
+	state: TGikoDownloadState;
+	body:  string;
 begin
 	if FWork then
 		Exit;
@@ -1261,7 +1336,7 @@ begin
 		Application.ProcessMessages;
 		if not Check then Exit;
 
-        Board := GetBoard;
+		Board := GetBoard;
 
 		if FThreadItem = nil then begin
 			rc := GikoUtil.MsgBox(Handle,
@@ -1275,10 +1350,10 @@ begin
 				Exit;
 		end;
 
-		SetNameList(NameComboBox.Text, MailComboBox.Text);
+		SetNameList(GetNameText, GetMailText);
 		if (KotehanCheckBox.Enabled) and (KotehanCheckBox.Checked) then begin
-			Board.KotehanName := NameComboBox.Text;
-			Board.KotehanMail := MailComboBox.Text;
+			Board.KotehanName := GetNameText;
+			Board.KotehanMail := GetMailText;
 		end;
 
 		if Board.IsBoardPlugInAvailable then begin
@@ -1287,15 +1362,15 @@ begin
 			if FThreadItem = nil then begin
 				// スレ立て
 				state := TGikoDownloadState( Board.BoardPlugIn.CreateThread(
-					DWORD( Board ), TitleEdit.Text, NameComboBox.Text, MailComboBox.Text, body ) );
+                                    DWORD( Board ), GetTitleText, GetNameText, GetMailText, body ) );
 
 				if state = gdsComplete then begin
 					GikoForm.PlaySound('ResEnd');
 					SaveSendFile;
 					GikoForm.AddMessageList(FBoard.Title + ' ' + GikoSys.GetGikoMessage(gmNewSure), nil, gmiOK);
 					FWork := False;
-                    if (not ContinueModeAction.Enabled) or (not ContinueModeAction.Checked) then
-			    		Close;
+					if (not ContinueModeAction.Enabled) or (not ContinueModeAction.Checked) then
+						Close;
 				end else if State = gdsError then begin
 					GikoForm.AddMessageList(FBoard.Title + ' ' + GikoSys.GetGikoMessage(gmSureError), nil, gmiNG);
 				end else if State = gdsAbort then begin
@@ -1304,19 +1379,19 @@ begin
 			end else begin
 				// レス
 				state := TGikoDownloadState( FThreadItem.ParentBoard.BoardPlugIn.WriteThread(
-					DWORD( FThreadItem ), NameComboBox.Text, MailComboBox.Text, body ) );
+                                    DWORD( FThreadItem ), GetNameText, GetMailText, body ) );
 
 				if state = gdsComplete then begin
 					GikoForm.PlaySound('ResEnd');
 					SaveSendFile;
 					GikoForm.AddMessageList(FThreadItem.Title + ' ' + GikoSys.GetGikoMessage(gmNewRes), nil, gmiOK);
 					FWork := False;
-                    if (not ContinueModeAction.Enabled) or (not ContinueModeAction.Checked) then
-			    		Close;
+					if (not ContinueModeAction.Enabled) or (not ContinueModeAction.Checked) then
+						Close;
 				end else if State = gdsError then begin
 					GikoForm.AddMessageList(FThreadItem.Title + ' ' + GikoSys.GetGikoMessage(gmResError), nil, gmiOK);
 				end else if State = gdsAbort then begin
-                    GikoForm.AddMessageList(FThreadItem.Title + ' ' + GikoSys.GetGikoMessage(gmAbort), nil, gmiOK);
+					GikoForm.AddMessageList(FThreadItem.Title + ' ' + GikoSys.GetGikoMessage(gmAbort), nil, gmiOK);
 				end;
 			end;
 		end else begin
@@ -1326,10 +1401,10 @@ begin
 					Board.SPID      := '';
 					Board.PON		:= '';
 				end;
-                // 冒険の書レベル戻る問題対応
-                if (Board.Is2ch) and (AnsiPos('HAP=', Board.Cookie)>0) then begin
-                    Board.Cookie := '';
-                end;
+				// 冒険の書レベル戻る問題対応
+				if (Board.Is2ch) and (AnsiPos('HAP=', Board.Cookie)>0) then begin
+					Board.Cookie := '';
+				end;
 				Send(Board.Cookie, Board.SPID, Board.PON, True);
 			end else begin
 				if not FSambaTimer.CheckSambaTime(Now()) then begin
@@ -1342,26 +1417,26 @@ begin
 						FWork := false;
 						Exit;
 					end;
-                                        if rc = IDNO then begin
-                                                rc2 := GikoUtil.MsgBox(Handle,
-                                                                       '本当に送信しますか？',
-                                                                       TITLE_SAMBA,
-                                                                       MB_YESNO or MB_ICONQUESTION);
-                                                if rc2 = IDNO then begin
-                                                        FWork := False;
-                                                        Exit;
-                                                end;
-                                        end;
+					if rc = IDNO then begin
+						rc2 := GikoUtil.MsgBox(Handle,
+											'本当に送信しますか？',
+											TITLE_SAMBA,
+											MB_YESNO or MB_ICONQUESTION);
+						if rc2 = IDNO then begin
+							FWork := False;
+							Exit;
+						end;
+					end;
 				end;
 				if CompareDateTime(Board.Expires ,Now) <= 0 then begin
 					Board.Cookie	:= '';
 					Board.SPID      := '';
 					Board.PON		:= '';
 				end;
-                // 冒険の書レベル戻る問題対応
-                if (Board.Is2ch) and (AnsiPos('HAP=', Board.Cookie)>0) then begin
-                    Board.Cookie := '';
-                end;
+				// 冒険の書レベル戻る問題対応
+				if (Board.Is2ch) and (AnsiPos('HAP=', Board.Cookie)>0) then begin
+					Board.Cookie := '';
+				end;
 				Send(Board.Cookie, Board.SPID, Board.PON, True);
 			end;
 		end;
@@ -1369,7 +1444,7 @@ begin
 		FWork := False;
 		if FSambaTimer.Enabled then begin
 			FNow := FSambaTimer.Update;
-        end;
+		end;
 	end;
 end;
 
@@ -1489,17 +1564,17 @@ end;
 procedure TEditorForm.SageCheckBoxClick(Sender: TObject);
 begin
 	if SageCheckBox.Checked then begin
-		if AnsiPos('sage', MailComboBox.Text) = 0 then
-			MailComboBox.Text := 'sage' + MailComboBox.Text;
+		if AnsiPos('sage', GetMailText) = 0 then
+			SetMailText('sage' + GetMailText);
 	end else begin
-		if AnsiPos('sage', MailComboBox.Text) <> 0 then
-			MailComboBox.Text := StringReplace(MailComboBox.Text, 'sage', '', [rfReplaceAll]);
+		if AnsiPos('sage', GetMailText) <> 0 then
+			SetMailText(StringReplace(GetMailText, 'sage', '', [rfReplaceAll]));
 	end;
 end;
 
 procedure TEditorForm.MailComboBoxChange(Sender: TObject);
 begin
-	if AnsiPos('sage', MailComboBox.Text) = 0 then
+	if AnsiPos('sage', GetMailText) = 0 then
 		SageCheckBox.Checked := False
 	else
 		SageCheckBox.Checked := True;
@@ -1510,6 +1585,9 @@ procedure TEditorForm.IdLogDebugReceive(ASender: TIdConnectionIntercept;
 begin
 	try
 		FDebugStrReceive := FDebugStrReceive + BytesToString(ABuffer);
+//{$IFDEF DEBUG}
+//    DebugLog(BytesToString(ABuffer));
+//{$ENDIF}
 	finally
 	end;
 end;
@@ -1519,6 +1597,9 @@ procedure TEditorForm.IdLogDebugSend(ASender: TIdConnectionIntercept;
 begin
 	try
 		FDebugStrSend := FDebugStrSend + BytesToString(ABuffer);
+//{$IFDEF DEBUG}
+//    DebugLog(BytesToString(ABuffer));
+//{$ENDIF}
 	finally
 	end;
 end;
@@ -1575,21 +1656,21 @@ begin
 
 	quote	:= GikoSys.GetOEIndentChar;
 
-    if (FUseUC = True) then begin
-        BodyEditUC.QuotePaste(quote);
-    end else begin
-        s			:= TStringList.Create;
-        try
-            s.Text	:= Clipboard.AsText;
+	if (FUseUC = True) then begin
+		BodyEditUC.QuotePaste(quote);
+	end else begin
+		s			:= TStringList.Create;
+		try
+			s.Text	:= Clipboard.AsText;
 
-            for i := s.Count - 1 downto 0 do
-                s[ i ]	:= quote + s[ i ];
+			for i := s.Count - 1 downto 0 do
+				s[ i ]	:= quote + s[ i ];
 
-            BodyEdit.SelText    := s.Text;
-        finally
-            s.Free;
-        end;
-    end;
+			BodyEdit.SelText    := s.Text;
+		finally
+			s.Free;
+		end;
+	end;
 end;
 
 procedure TEditorForm.SpaceToNBSPActionExecute(Sender: TObject);
@@ -1614,7 +1695,7 @@ begin
 	try
 		BoardtopTab.TabVisible := BoardTop.Checked;
 		ini.WriteBool('EditorForm', 'BoardTopTab', BoardtopTab.TabVisible);
-        ini.UpdateFile;
+		ini.UpdateFile;
 	finally
 		ini.Free;
 	end;
@@ -1629,61 +1710,61 @@ var
 	tmpBoard: TBoard;
 begin
 	if not FWork then begin
-    	FWork := True;
+		FWork := True;
 
-        tmpBoard := GetBoard;
-        if tmpBoard <> nil then begin
+		tmpBoard := GetBoard;
+		if tmpBoard <> nil then begin
 
-            RefURL	:= tmpBoard.URL;
-            if RefURL[Length(RefURL)] <> '/' then
-                URL	:= RefURL + '/' + 'SETTING.TXT'
-            else
-                URL	:= RefURL + 'SETTING.TXT';
-            Screen.Cursor := crHourGlass;
-            memStream := TMemoryStream.Create;
-            try
-                try
-                    StatusBar.Panels[0].Text := 'SETTING.TXTダウンロード中';
-                    GetWebData(URL, RefURL, tmpBoard.SETTINGTXTTime, memStream);
-                    if( Indy.ResponseCode = 200 ) then begin
-                        settingBody := TStringList.Create;
-                        try
-                            memStream.Seek(0, soFromBeginning);
-                            settingBody.LoadFromStream(memStream);
-                            settingBody.SaveToFile(tmpBoard.GetSETTINGTXTFileName);
-                            tmpBoard.SETTINGTXTTime := Indy.Response.LastModified;
-                            tmpBoard.IsSETTINGTXT := true;
-                            tmpBoard.TitlePictureURL := GetTitlePictureURL(settingBody, tmpBoard);
-                            tmpBoard.Modified := true;
-                        finally
-                            settingBody.Free;
-                        end;
-                        StatusBar.Panels[0].Text := 'SETTING.TXT取得完了(' + IntToStr(Indy.ResponseCode) + ')';
-                    end;
-                except
-                    on E: EIdException do begin
-                        if( AnsiPos('304', E.Message) > 0 ) then
-                            StatusBar.Panels[0].Text := 'SETTING.TXT更新無し(' + IntToStr(Indy.ResponseCode) + ')'
-                        else
-                            StatusBar.Panels[0].Text := 'SETTING.TXT取得エラー(' + IntToStr(Indy.ResponseCode) + ')';
-                    end;
-                end;
-            finally
-                memStream.Free;
-                Screen.Cursor := crDefault;
-            end;
-            ShowBoardInformation(tmpBoard, BoardInformationMemo);
-        end;
-        FWork := False;
-    end;
+			RefURL	:= tmpBoard.URL;
+			if RefURL[Length(RefURL)] <> '/' then
+				URL	:= RefURL + '/' + 'SETTING.TXT'
+			else
+				URL	:= RefURL + 'SETTING.TXT';
+			Screen.Cursor := crHourGlass;
+			memStream := TMemoryStream.Create;
+			try
+				try
+					StatusBar.Panels[0].Text := 'SETTING.TXTダウンロード中';
+					GetWebData(URL, RefURL, tmpBoard.SETTINGTXTTime, memStream);
+					if( Indy.ResponseCode = 200 ) then begin
+						settingBody := TStringList.Create;
+						try
+							memStream.Seek(0, soFromBeginning);
+							settingBody.LoadFromStream(memStream);
+							settingBody.SaveToFile(tmpBoard.GetSETTINGTXTFileName);
+							tmpBoard.SETTINGTXTTime := Indy.Response.LastModified;
+							tmpBoard.IsSETTINGTXT := true;
+							tmpBoard.TitlePictureURL := GetTitlePictureURL(settingBody, tmpBoard);
+							tmpBoard.Modified := true;
+						finally
+							settingBody.Free;
+						end;
+						StatusBar.Panels[0].Text := 'SETTING.TXT取得完了(' + IntToStr(Indy.ResponseCode) + ')';
+					end;
+				except
+					on E: EIdException do begin
+						if( AnsiPos('304', E.Message) > 0 ) then
+							StatusBar.Panels[0].Text := 'SETTING.TXT更新無し(' + IntToStr(Indy.ResponseCode) + ')'
+						else
+							StatusBar.Panels[0].Text := 'SETTING.TXT取得エラー(' + IntToStr(Indy.ResponseCode) + ')';
+					end;
+				end;
+			finally
+				memStream.Free;
+				Screen.Cursor := crDefault;
+			end;
+			ShowBoardInformation(tmpBoard, BoardInformationMemo);
+		end;
+		FWork := False;
+	end;
 end;
 
 procedure TEditorForm.ShowBoardInformation(ABoard: TBoard; AMemo: TMemo);
 var
 	body: TStringList;
-    UCType: Integer;    // 0:不明、1:対応、-1:非対応
+	UCType: Integer;    // 0:不明、1:対応、-1:非対応
 begin
-    UCType := 0;
+	UCType := 0;
 	AMemo.Clear;
 	AMemo.Lines.Add('[SETTING.TXT]');
 	if ABoard.IsSETTINGTXT then begin
@@ -1696,10 +1777,10 @@ begin
 			finally
 				body.Free;
 			end;
-            if (Pos('BBS_UNICODE=pass', AMemo.Text) > 0) then
-                UCType := 1
-            else if (Pos('BBS_UNICODE=', AMemo.Text) > 0) then
-                UCType := -1;
+			if (Pos('BBS_UNICODE=pass', AMemo.Text) > 0) then
+				UCType := 1
+			else if (Pos('BBS_UNICODE=', AMemo.Text) > 0) then
+				UCType := -1;
 		end else begin
 			ABoard.IsSETTINGTXT := false;
 			ABoard.SETTINGTXTTime := ZERO_DATE;
@@ -1711,23 +1792,23 @@ begin
 		AMemo.Lines.Add('メニューより取得してください。');
 	end;
 
-    case UCType of
-        -1: begin
-            UCInfoPanel.Caption := 'Unicode非対応板';
-            UCInfoPanel.Color := clRed;
-            UCInfoPanel.Hint := 'この板はUnicodeでのレスに対応していません。';
-        end;
-        0: begin
-            UCInfoPanel.Caption := 'Unicode対応不明';
-            UCInfoPanel.Color := clBtnFace;
-            UCInfoPanel.Hint := '板情報を取得してください。';
-        end;
-        1: begin
-            UCInfoPanel.Caption := 'Unicode対応板';
-            UCInfoPanel.Color := clLime;
-            UCInfoPanel.Hint := 'この板はUnicodeでのレスに対応しています。';
-        end;
-    end;
+	case UCType of
+		-1: begin
+			UCInfoPanel.Caption := 'Unicode非対応板';
+			UCInfoPanel.Color := clRed;
+			UCInfoPanel.Hint := 'この板はUnicodeでのレスに対応していません。';
+		end;
+		0: begin
+			UCInfoPanel.Caption := 'Unicode対応不明';
+			UCInfoPanel.Color := clBtnFace;
+			UCInfoPanel.Hint := '板情報を取得してください。';
+		end;
+		1: begin
+			UCInfoPanel.Caption := 'Unicode対応板';
+			UCInfoPanel.Color := clLime;
+			UCInfoPanel.Hint := 'この板はUnicodeでのレスに対応しています。';
+		end;
+	end;
 end;
 function TEditorForm.GetTitlePictureURL(body: TStringList; ABoard: TBoard): string;
 //BBS_TITLE_PICTURE=
@@ -1781,21 +1862,21 @@ begin
 			StatusBar.Panels[0].Text := '板トップ画像ダウンロード中';
 			Screen.Cursor := crHourGlass;
 			try
-                // URLを指定してメモリに読み込む
-                GetWebData(tmpBoard.TitlePictureURL, tmpBoard.URL,
-                    ZERO_DATE, memStream);
+				// URLを指定してメモリに読み込む
+				GetWebData(tmpBoard.TitlePictureURL, tmpBoard.URL,
+								ZERO_DATE, memStream);
 				if Indy.ResponseCode = 200 then begin
 					memStream.SaveToFile(tmpBoard.GetTitlePictureFileName);
 					ShowTitlePicture();
 					tmpBoard.Modified := true;
 				end;
-                StatusBar.Panels[0].Text := '板トップ画像 (' + IntToStr(Indy.ResponseCode) + ')';
+				StatusBar.Panels[0].Text := '板トップ画像 (' + IntToStr(Indy.ResponseCode) + ')';
 			except
 			end;
 		end;
 	finally
 		memStream.Free;
-        FWork := False;
+		FWork := False;
 		Screen.Cursor := crDefault;
 	end;
 end;
@@ -1807,21 +1888,21 @@ end;
 \param  stream  読み込んだデータの保存先
 }
 procedure TEditorForm.GetWebData(const URL: string; const RefURL: string;
-             Modified: TDateTime; stream: TStream);
+			Modified: TDateTime; stream: TStream);
 begin
-    TIndyMdl.InitHTTP(Indy);
-    Indy.Request.AcceptEncoding := '';
-    Indy.Request.Referer := RefURL;
-    Indy.Request.LastModified := Modified;
-    
-    //IdAntiFreeze.Active := True;
-    IndyMdl.StartAntiFreeze(100); // for Indy10
-    try
-        Indy.Get(URL, stream);
-    finally
-        //IdAntiFreeze.Active := False;
-        IndyMdl.EndAntiFreeze;    // for Indy10
-    end;
+	TIndyMdl.InitHTTP(Indy);
+	Indy.Request.AcceptEncoding := '';
+	Indy.Request.Referer := RefURL;
+	Indy.Request.LastModified := Modified;
+
+	//IdAntiFreeze.Active := True;
+	IndyMdl.StartAntiFreeze(100); // for Indy10
+	try
+		Indy.Get(URL, stream);
+	finally
+		//IdAntiFreeze.Active := False;
+		IndyMdl.EndAntiFreeze;    // for Indy10
+	end;
 
 end;
 procedure TEditorForm.ShowTitlePicture();
@@ -1925,8 +2006,8 @@ var
 	body: String;
 begin
 	body := GetBody;
-    //どうも、改行分ずれてたっぽいけど、本当かよく分からない。
-    Board := GetBoard;
+	//どうも、改行分ずれてたっぽいけど、本当かよく分からない。
+	Board := GetBoard;
 
 	if Board.BoardPlugIn <> nil then
 		body := CustomStringReplace(body, #13#10, '<br>')
@@ -1937,13 +2018,13 @@ end;
 
 procedure TEditorForm.LocalRuleClick(Sender: TObject);
 var
-  ini: TMemIniFile;
+	ini: TMemIniFile;
 begin
 	ini := TMemIniFile.Create(GikoSys.Setting.GetFileName);
 	try
 		RocalRuleTab.TabVisible := LocalRule.Checked;
 		ini.WriteBool('EditorForm', 'LocalRuleTab', RocalRuleTab.TabVisible);
-        ini.UpdateFile;
+		ini.UpdateFile;
 	finally
 		ini.Free;
 	end;
@@ -1951,9 +2032,9 @@ end;
 
 procedure TEditorForm.FormDeactivate(Sender: TObject);
 begin
-    if GikoSys.Setting.GestureEnabled then begin
-        GikoSys.Setting.Gestures.ClearGesture;
-        MouseGesture.UnHook;
+	if GikoSys.Setting.GestureEnabled then begin
+		GikoSys.Setting.Gestures.ClearGesture;
+		MouseGesture.UnHook;
 		MouseGesture.OnGestureStart := nil;
 		MouseGesture.OnGestureMove := nil;
 		MouseGesture.OnGestureEnd := nil;
@@ -1986,7 +2067,7 @@ var
 	Action: TAction;
 begin
 	s := MouseGesture.GetGestureStr;
-    MouseGesture.Clear;
+	MouseGesture.Clear;
 	Action := GikoSys.Setting.Gestures.GetGestureAction(s);
 	if Action <> nil then
 		Action.Execute;
@@ -1995,7 +2076,7 @@ end;
 
 procedure TEditorForm.ShowBoardHead(ABoard: TBoard; AMemo: TMemo);
 var
-    range: OleVariant;
+	range: OleVariant;
 begin
 	//参考元
 	//http://www.campus.ne.jp/~ishigami/CREATION/TECHNIC/WEBAP-2.htm
@@ -2008,26 +2089,26 @@ begin
 		Application.ProcessMessages;
 	end;
 
-    try
-    ;
-    	range := OleVariant(WebBrowser1.Document).body.createTextRange;
-	    LocalEdit.Text := range.text;
-    except
-    end;
+	try
+	;
+		range := OleVariant(WebBrowser1.Document).body.createTextRange;
+		LocalEdit.Text := range.text;
+	except
+	end;
 end;
 
 procedure TEditorForm.LocalRuleBrowseClick(Sender: TObject);
 var
-    URL: String;
-    ABoard: TBoard;
+	URL: String;
+	ABoard: TBoard;
 begin
-    ABoard := GetBoard;
+	ABoard := GetBoard;
 
 	if ABoard = nil
-        then Exit;
+		then Exit;
 
-    URL := ABoard.GETHEADTXTFileName;
-    GikoSys.OpenBrowser(URL, gbtAuto);
+	URL := ABoard.GETHEADTXTFileName;
+	GikoSys.OpenBrowser(URL, gbtAuto);
 end;
 
 procedure TEditorForm.SaveNameMailActionExecute(Sender: TObject);
@@ -2038,82 +2119,82 @@ end;
 
 function TEditorForm.LFusianaGet(const s: String): Boolean;
 const
-    FUSIANA = 'fusianasan';
+	FUSIANA = 'fusianasan';
 var
 	i: Integer;
 begin
-    i := AnsiPos(FUSIANA, s);
-    Result := (i > 0);
+	i := AnsiPos(FUSIANA, s);
+	Result := (i > 0);
 end;
 
 procedure TEditorForm.BeLogInOutEActionExecute(Sender: TObject);
 begin
-    GikoDM.BeLogInOutAction.Execute;
+	GikoDM.BeLogInOutAction.Execute;
 end;
 
 procedure TEditorForm.BeLogInOutEActionUpdate(Sender: TObject);
 begin
-    BeLogInOutEAction.Checked := GikoDM.BeLogInOutAction.Checked;
-    BeLogInOutEAction.Enabled := GikoDM.BeLogInOutAction.Enabled;
+	BeLogInOutEAction.Checked := GikoDM.BeLogInOutAction.Checked;
+	BeLogInOutEAction.Enabled := GikoDM.BeLogInOutAction.Enabled;
 end;
 // Cookieの取得
 procedure TEditorForm.GetCookie(CookieMng: TIdCookieManager; ABoard: TBoard);
 const
 	VAL_SPID	= 'SPID';
 	VAL_PON		= 'PON';
-    VAL_HAP     = 'HAP';
+	VAL_HAP     = 'HAP';
 var
 	i : Integer;
-    //Cookie : TIdCookieRFC2109;
-    Cookie : TIdCookie;     // for Indy10
-    curCookies : TStringList;
+	//Cookie : TIdCookieRFC2109;
+	Cookie : TIdCookie;     // for Indy10
+	curCookies : TStringList;
 begin
-    // 2008.12.14 無条件クリアしてはいけない by もじゅ
-    curCookies := TStringList.Create;
-    curCookies.Delimiter := ';';
-    curCookies.DelimitedText := ABoard.Cookie;
-    curCookies.Sort;
-    curCookies.Duplicates := dupIgnore;
+	// 2008.12.14 無条件クリアしてはいけない by もじゅ
+	curCookies := TStringList.Create;
+	curCookies.Delimiter := ';';
+	curCookies.DelimitedText := ABoard.Cookie;
+	curCookies.Sort;
+	curCookies.Duplicates := dupIgnore;
 	ABoard.Cookie := '';
-    try
-        for i := 0 to CookieMng.CookieCollection.Count - 1 do begin
-            Cookie := TIdCookie(CookieMng.CookieCollection.Items[i]);
-            if ( Cookie.CookieName = VAL_PON ) then begin
-                ABoard.PON := Cookie.Value;
-                //ABoard.Expires := GMTToLocalDateTime(Cookie.Expires);
-                ABoard.Expires := Cookie.Expires;   // for Indy10
-            end else if ( Cookie.CookieName = VAL_SPID ) then begin
-                ABoard.SPID := Cookie.Value;
-                //ABoard.Expires := GMTToLocalDateTime(Cookie.Expires);
-                ABoard.Expires := Cookie.Expires;   // for Infy10
-            end else if ( Cookie.CookieName = VAL_HAP ) then begin
-                // HAP削除用のCookieが配布されるので、有効期限をチェックする
-                //if CompareDateTime(GMTToLocalDateTime(Cookie.Expires) ,Now) > 0 then begin
-                if CompareDateTime(Cookie.Expires ,Now) > 0 then begin  // for Indy10
-                    GikoSys.SetBoukenCookie(Cookie.Value, Cookie.Domain);
-                    // 冒険の書の保存
-                    GikoSys.Setting.WriteBoukenSettingFile;
-                end;
-            end else begin
-                if Length( curCookies.Values[ Cookie.CookieName ] ) > 0 then begin
-                    // 既存値の付け替え
-                    curCookies[curCookies.IndexOfName(Cookie.CookieName)] :=
-                        Cookie.ClientCookie;
-                end else begin
-                    // 追加
-                    curCookies.Add(Cookie.ClientCookie);
-                end;
-            end;
-        end;
-        for i := 0 to curCookies.Count - 1 do begin
-            if (curCookies[i] <> '') then begin
-                ABoard.Cookie := ABoard.Cookie + curCookies[i] + '; ';
-            end;
-        end;
-    finally
-        CookieMng.CookieCollection.Clear;
-        curCookies.Free;
-    end;
+	try
+		for i := 0 to CookieMng.CookieCollection.Count - 1 do begin
+			Cookie := TIdCookie(CookieMng.CookieCollection.Items[i]);
+			if ( Cookie.CookieName = VAL_PON ) then begin
+				ABoard.PON := Cookie.Value;
+				//ABoard.Expires := GMTToLocalDateTime(Cookie.Expires);
+				ABoard.Expires := Cookie.Expires;   // for Indy10
+			end else if ( Cookie.CookieName = VAL_SPID ) then begin
+				ABoard.SPID := Cookie.Value;
+				//ABoard.Expires := GMTToLocalDateTime(Cookie.Expires);
+				ABoard.Expires := Cookie.Expires;   // for Infy10
+			end else if ( Cookie.CookieName = VAL_HAP ) then begin
+				// HAP削除用のCookieが配布されるので、有効期限をチェックする
+				//if CompareDateTime(GMTToLocalDateTime(Cookie.Expires) ,Now) > 0 then begin
+				if CompareDateTime(Cookie.Expires ,Now) > 0 then begin  // for Indy10
+					GikoSys.SetBoukenCookie(Cookie.Value, Cookie.Domain);
+					// 冒険の書の保存
+					GikoSys.Setting.WriteBoukenSettingFile;
+				end;
+			end else begin
+				if Length( curCookies.Values[ Cookie.CookieName ] ) > 0 then begin
+					// 既存値の付け替え
+					curCookies[curCookies.IndexOfName(Cookie.CookieName)] :=
+								Cookie.ClientCookie;
+				end else begin
+					// 追加
+					curCookies.Add(Cookie.ClientCookie);
+				end;
+			end;
+		end;
+		for i := 0 to curCookies.Count - 1 do begin
+			if (curCookies[i] <> '') then begin
+				ABoard.Cookie := ABoard.Cookie + curCookies[i] + '; ';
+			end;
+		end;
+	finally
+		CookieMng.CookieCollection.Clear;
+		curCookies.Free;
+	end;
 end;
 //! hiddenデータ取得
 procedure TEditorForm.GetHiddenParameter(Rawtext: String; ABoard: TBoard);
@@ -2130,7 +2211,7 @@ begin
     tmp := AnsiLowerCase(Rawtext);
     pos := AnsiPos(INPUT_MARK, tmp);
     while  (pos > 0 ) do begin
-		tmp := Copy(Rawtext, pos + Length(INPUT_MARK), Length(tmp));
+        tmp := Copy(Rawtext, pos + Length(INPUT_MARK), Length(tmp));
         Delete(Rawtext, 1, pos+ Length(INPUT_MARK) - 1);
         pose := AnsiPos('>', tmp);
         // name=xxx value=yyy が切り出される
@@ -2194,7 +2275,7 @@ begin
             ABoard.Cookie := ABoard.Cookie + name + '=' + value + '; '; 
 
         end;
-		Delete(tmp, 1, Length(line));
+        Delete(tmp, 1, Length(line));
         Delete(Rawtext, 1, Length(line));
         pos := AnsiPos(INPUT_MARK, tmp);
     end;
@@ -2213,16 +2294,16 @@ var
 	i : Integer;
 begin
 	if InputQuery('Samba24設定値更新', '新しい設定値を入力してください', input) then begin
-        input := ZenToHan(input);
+		input := ZenToHan(input);
 		if GikoSys.IsNumeric(input) then begin
-            FSambaTimer.UpdateSambaSetting(StrToInt(input));
-            UpdateSambaStatus;
+			FSambaTimer.UpdateSambaSetting(StrToInt(input));
+			UpdateSambaStatus;
 			//全てのフォームから、Sambaタイマーを更新する
 			for i := 0 to Screen.FormCount - 1 do begin
 				if Screen.Forms[i] is TEditorForm then begin
-                    TEditorForm(Screen.Forms[i]).FSambaTimer.Update;
-                    TEditorForm(Screen.Forms[i]).UpdateSambaStatus;
-                end;
+					TEditorForm(Screen.Forms[i]).FSambaTimer.Update;
+					TEditorForm(Screen.Forms[i]).UpdateSambaStatus;
+				end;
 			end;
 		end else begin
 			ShowMessage('数値を入力してください');
@@ -2233,10 +2314,10 @@ end;
 
 procedure TEditorForm.UpdateSambaStatus;
 begin
-    if (FSambaTimer.Enabled) then begin
-        StatusBar.Panels[2].Text
-            := 'Samba24規定値' + IntToStr(FSambaTimer.SambaInterval);
-    end;
+	if (FSambaTimer.Enabled) then begin
+		StatusBar.Panels[2].Text
+					:= 'Samba24規定値' + IntToStr(FSambaTimer.SambaInterval);
+	end;
 end;
 
 procedure TEditorForm.InputAssistActionExecute(Sender: TObject);
@@ -2270,10 +2351,10 @@ begin
 	end;
 	Bitmap := TBitmap.Create;
 	try
-        if (FUseUC = True) then
-		    Bitmap.Canvas.Font.Assign(BodyEditUC.Font)
-        else
-		    Bitmap.Canvas.Font.Assign(BodyEdit.Font);
+		if (FUseUC = True) then
+			Bitmap.Canvas.Font.Assign(BodyEditUC.Font)
+		else
+			Bitmap.Canvas.Font.Assign(BodyEdit.Font);
 		// マージン5px
 		TextWidth := Bitmap.Canvas.TextWidth(FInputAssistKey) + 5;
 		ItemWidth := 0;
@@ -2295,13 +2376,13 @@ begin
 	end;
 
 	if (count > 0) then begin
-        if (FUseUC = True) then begin
-            EditW := BodyEditUC.Width;
-            EditT := BodyEditUC.Top;
-        end else begin
-            EditW := BodyEdit.Width;
-            EditT := BodyEdit.Top;
-        end;
+		if (FUseUC = True) then begin
+			EditW := BodyEditUC.Width;
+			EditT := BodyEditUC.Top;
+		end else begin
+			EditW := BodyEdit.Width;
+			EditT := BodyEdit.Top;
+		end;
 		GetCaretpos(point);
 		point.X := point.X + Self.Left + (Self.Width - EditW) div 2;
 		point.Y := point.Y + Self.Top + (Self.Height - Self.ClientHeight);
@@ -2323,15 +2404,15 @@ procedure TEditorForm.InputAssistMenuClick(Sender: TObject);
 var
 	text : String;
 	IMC: HIMC;
-    EditHandle: HWND;
+	EditHandle: HWND;
 begin
 	if not (Sender is TMenuItem) then Exit;
 
 	if (FResistWords <> nil) then begin
-        if (FUseUC = True) then
-            EditHandle := BodyEditUC.Handle
-        else
-            EditHandle := BodyEdit.Handle;
+		if (FUseUC = True) then
+			EditHandle := BodyEditUC.Handle
+		else
+			EditHandle := BodyEdit.Handle;
 		try
 			text :=
 				TResistWord(FResistWords.Objects[TMenuItem(Sender).Tag]).GetText;
@@ -2348,10 +2429,10 @@ begin
 		FResistWords.Clear;
 		FInputAssistKey := '';
 	end;
-    if (FUseUC = True) then
-        BodyEditUC.InsertText(text)
-    else
-        InsertText(BodyEdit, text);
+	if (FUseUC = True) then
+		BodyEditUC.InsertText(text)
+	else
+		InsertText(BodyEdit, text);
 end;
 
 //! TMemoのカーソル位置に文字列挿入
@@ -2380,13 +2461,13 @@ begin
 end;
 
 procedure TEditorForm.ApplicationEvents1Message(var Msg: tagMSG;
-  var Handled: Boolean);
+	var Handled: Boolean);
 var
 	wmMsg: TWMKey;
 	IMC: HIMC;
 	Len: integer;
 	Str: string;
-    EditHandle: HWND;
+	EditHandle: HWND;
 begin
 	if (Self.Active) then begin
 		case Msg.message of
@@ -2400,10 +2481,10 @@ begin
 					wmMsg.CharCode := Word(Msg.wParam);
 					wmMsg.KeyData := Msg.lParam;
 					if (wmMsg.CharCode = 229) and (wmMsg.KeyData = 3735553) then begin
-                        if (FUseUC = True) then
-                            EditHandle := BodyEditUC.Handle
-                        else
-                            EditHandle := BodyEdit.Handle;
+						if (FUseUC = True) then
+							EditHandle := BodyEditUC.Handle
+						else
+							EditHandle := BodyEdit.Handle;
 						IMC := ImmGetContext(EditHandle); //コンテキスト取得
 						Len := ImmGetCompositionString(IMC, GCS_COMPSTR, nil, 0); //まず長さを取得
 						if (Len > 0) then begin
@@ -2431,12 +2512,12 @@ begin
 	try
 		if TopAction.Checked then begin // ステイ状態に設定
 			SetWindowPos(form.Handle, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE + SWP_NOSIZE);
-        end;
+		end;
 		form.SetUpFromEditor;
 		if (form.ShowModal = mrOk) then begin
-            if (FUseUC = True) then
+			if (FUseUC = True) then
 			    BodyEditUC.InsertText(form.GetInsertText)
-            else
+			else
 			    InsertText(BodyEdit, form.GetInsertText);
 		end;
 	finally
@@ -2449,7 +2530,7 @@ var
 	Board : TBoard;
 begin
 	// スレッドが無い　スレ立てのときはFBoardを直接使う
-    Board := GetBoard;
+	Board := GetBoard;
 
 	// クッキーの情報を捨てる
 	Board.Cookie := '';
@@ -2480,7 +2561,7 @@ begin
 	else begin
 		FNow := IncMilliSecond(FNow, 500);
 		StatusBar.Panels[1].Text :=
-            Format('%8.0f秒経過', [SecondSpan(FNow, FSambaTimer.WriteDeta)]);
+					Format('%8.0f秒経過', [SecondSpan(FNow, FSambaTimer.WriteDeta)]);
 	end;
 end;
 {
@@ -2488,13 +2569,13 @@ end;
 }
 procedure TEditorForm.SetWindowRect;
 var
-    wp: TWindowPlacement;
-    MonCnt: Integer;
-    MonOk: Boolean;
-    MonR: Integer;
-    MonB: Integer;
-    Right: Integer;
-    Bottom: Integer;
+	wp: TWindowPlacement;
+	MonCnt: Integer;
+	MonOk: Boolean;
+	MonR: Integer;
+	MonB: Integer;
+	Right: Integer;
+	Bottom: Integer;
 begin
 	//ウィンドウの位置設定
 	wp.length := sizeof(wp);
@@ -2508,43 +2589,43 @@ begin
 
 	if GikoSys.Setting.EditWindowMax then begin
 		WindowState := wsMaximized;
-    end;
+	end;
 
 	//ウィンドウが画面外なら画面内に移動する
-    Right := Left + Width;
-    Bottom := Top + Height;
-    MonOk := False;
-    MonCnt := 0;
-    while (MonCnt < Screen.MonitorCount) do begin
-        MonR := Screen.Monitors[MonCnt].Left + Screen.Monitors[MonCnt].Width;
-        MonB := Screen.Monitors[MonCnt].Top  + Screen.Monitors[MonCnt].Height;
+	Right := Left + Width;
+	Bottom := Top + Height;
+	MonOk := False;
+	MonCnt := 0;
+	while (MonCnt < Screen.MonitorCount) do begin
+		MonR := Screen.Monitors[MonCnt].Left + Screen.Monitors[MonCnt].Width;
+		MonB := Screen.Monitors[MonCnt].Top  + Screen.Monitors[MonCnt].Height;
 
-        if ((Left  >= Screen.Monitors[MonCnt].Left) and (Left   <  MonR) and
-            (Top   >= Screen.Monitors[MonCnt].Top)  and (Top    <  MonB) and
-            (Right  > Screen.Monitors[MonCnt].Left) and (Right  <= MonR) and
-            (Bottom > Screen.Monitors[MonCnt].Top)  and (Bottom <= MonB)) then begin
-            MonOk := True;
-            Break;
-        end;
+		if ((Left  >= Screen.Monitors[MonCnt].Left) and (Left   <  MonR) and
+			(Top   >= Screen.Monitors[MonCnt].Top)  and (Top    <  MonB) and
+			(Right  > Screen.Monitors[MonCnt].Left) and (Right  <= MonR) and
+			(Bottom > Screen.Monitors[MonCnt].Top)  and (Bottom <= MonB)) then begin
+			MonOk := True;
+			Break;
+		end;
 
-        MonCnt := MonCnt + 1;
-    end;
+		MonCnt := MonCnt + 1;
+	end;
 
-    if (MonOk = False) then begin
-        Left := 0;
-        Top := 0;
-    end;
+	if (MonOk = False) then begin
+		Left := 0;
+		Top := 0;
+	end;
 
-    //現在のウィンドウの位置を保存
-    GikoSys.Setting.EditWindowTop := Top  + WINDOWMOVE_V;   // 次に開くウィンドウは
-    GikoSys.Setting.EditWindowLeft := Left + WINDOWMOVE_H;  // 　　　右斜め下にずらす
-    //ウィンドウの幅と高さが小さすぎいれば元に戻す
+	//現在のウィンドウの位置を保存
+	GikoSys.Setting.EditWindowTop := Top  + WINDOWMOVE_V;   // 次に開くウィンドウは
+	GikoSys.Setting.EditWindowLeft := Left + WINDOWMOVE_H;  // 　　　右斜め下にずらす
+	//ウィンドウの幅と高さが小さすぎいれば元に戻す
 	if GikoSys.Setting.EditWindowHeight < 144 then begin
 		Height := 400;
     end;
 	if GikoSys.Setting.EditWindowWidth < 144 then begin
 		Width := 640;
-    end;
+	end;
 end;
 {
 \brief 拡張タブ設定
@@ -2601,7 +2682,7 @@ var
 begin
     Result := False;
     if GikoSys.Setting.LocalTrapAtt then begin
-        Namae := THTMLCreate.RepHtml(NameComboBox.Text);
+        Namae := THTMLCreate.RepHtml(GetNameText);
         if (LFusianaGet(Namae)) or (Namae = '山崎渉') then begin
             if FusianaMsgBox = IDNO  then begin
                 Result := True;
@@ -2621,7 +2702,7 @@ var
     body : TStringList;
 begin
     Result := False;
-    Namae := THTMLCreate.RepHtml(NameComboBox.Text);
+    Namae := THTMLCreate.RepHtml(GetNameText);
     if (GikoSys.Setting.RemoteTrapAtt) and (Length(Namae) = 0) then begin
         Board := GetBoard;
 
@@ -2664,9 +2745,9 @@ end;
 \return Header文字列
 }
 function TEditorForm.getHeaderStr(const ACOOKIE: string; const SPID : string;
-    const PON : string; const HAP : string; Board : TBoard) : string;
+				const PON : string; const HAP : string; Board : TBoard) : string;
 begin
-    Result := ACOOKIE;
+	Result := ACOOKIE;
 
 	if SPID <> '' then
 		Result := Result + 'SPID=' + SPID + '; ';
@@ -2682,18 +2763,18 @@ begin
 			// ホストが2chの場合，固定のクッキーを食わせる
 			Result := Result + GikoSys.Setting.FixedCookie + '; ';
 		end;
-        if (GikoSys.Belib.Connected) then begin
+		if (GikoSys.Belib.Connected) then begin
 			Result := Result + 'MDMD=' + GikoSys.Belib.MDMD + '; '
-                             + 'DMDM=' + GikoSys.Belib.DMDM + '; ';
+											+ 'DMDM=' + GikoSys.Belib.DMDM + '; ';
 		end;
-    end;
+	end;
 
 	//Result := 'Cookie: ' + Result + 'NAME=' + NameComboBox.Text + '; MAIL=' + MailComboBox.Text;
 	Result := 'Cookie: ' + Result;
-  if Board.Is2ch = False then   // ↓５ちゃんでは不要になったらしい
-    Result := Result + 'NAME=' + NameComboBox.Text + '; MAIL=' + MailComboBox.Text;
+	if Board.Is2ch = False then   // ↓５ちゃんでは不要になったらしい
+		Result := Result + 'NAME=' + GetNameText + '; MAIL=' + GetMailText;
 
-    if HAP <> '' then
+	if HAP <> '' then
     	Result := Result + '; HAP=' + HAP + '; ';
 
 end;
@@ -2708,8 +2789,8 @@ const
 		'もしも間違ってこの方法でホストが表示されたとしても、自己責任なので削除依頼には応じません。' +
 		#13#10#13#10'責任を負うことを承諾して書き込みますか？';
 begin
-    Result := MsgBox(Handle, MSG_FUSIANA, '情報',
-                MB_YESNO or MB_ICONQUESTION);
+	Result := MsgBox(Handle, MSG_FUSIANA, '情報',
+							MB_YESNO or MB_ICONQUESTION);
 end;
 {
 \brief 連投モードON/OFF切り替え
@@ -2723,8 +2804,8 @@ end;
 }
 procedure TEditorForm.ContinueModeActionUpdate(Sender: TObject);
 begin
-    // スレたてのときは無効
-    ContinueModeAction.Enabled := FThreadItem <> nil;
+	// スレたてのときは無効
+	ContinueModeAction.Enabled := FThreadItem <> nil;
 end;
 {
 \brief 書き込む板/スレッドを表示する
@@ -2780,11 +2861,11 @@ end;
 function TEditorForm.isGobaku: Boolean;
 const
 	MSG_GOBAKU : string =
-        '表示している%sと投稿先の%sが異なります。'#13#10 +
+		'表示している%sと投稿先の%sが異なります。'#13#10 +
 		'このまま書き込みますか？';
 var
-    ThreadItem : TThreadItem;
-    msg : String;
+	ThreadItem : TThreadItem;
+	msg : String;
 
 begin
     Result := False;
@@ -2840,23 +2921,18 @@ end;
 
 procedure TEditorForm.SetFocusEdit;
 begin
-    if (FUseUC = True) then
-    	BodyEditUC.SetFocus
-    else
-    	BodyEdit.SetFocus;
+	if (FUseUC = True) then
+		BodyEditUC.SetFocus
+	else
+		BodyEdit.SetFocus;
 end;
 
 procedure TEditorForm.SetTextEdit(TextSrc: String);
 begin
-    if (FUseUC = True) then
-    	BodyEditUC.Text := TextSrc
-    else
-    	BodyEdit.Text := TextSrc;
-end;
-
-function TEditorForm.URLEncodeUTF8(const src: String) : String;
-begin
-  Result := FURI.ParamsEncode(src, IndyUTF8Encoding());
+	if (FUseUC = True) then
+		BodyEditUC.Text := TextSrc
+	else
+		BodyEdit.Text := TextSrc;
 end;
 
 //! 本文文字列取得
@@ -2897,5 +2973,95 @@ begin
     encLines.Free;
   end;
 end;
+
+//! 名前文字列取得
+function TEditorForm.GetNameText: String;
+begin
+  if FUseUC then
+    Result := NameComboBoxUC.EncodeText
+  else
+    Result := NameComboBox.Text;
+end;
+
+function TEditorForm.GetNameUTF8: UTF8String;
+begin
+  Result := UTF8Encode(GetNameText);
+end;
+
+//! 名前文字列設定
+procedure TEditorForm.SetNameText(Value: String);
+begin
+  if FUseUC then
+    NameComboBoxUC.EncodeText := Value
+  else
+    NameComboBox.Text := Value;
+end;
+
+//! メール文字列取得
+function TEditorForm.GetMailText: String;
+begin
+  if FUseUC then
+    Result := MailComboBoxUC.EncodeText
+  else
+    Result := MailComboBox.Text;
+end;
+
+function TEditorForm.GetMailUTF8: UTF8String;
+begin
+  Result := UTF8Encode(GetMailText);
+end;
+
+//! メール文字列設定
+procedure TEditorForm.SetMailText(Value: String);
+begin
+  if FUseUC then
+    MailComboBoxUC.EncodeText := Value
+  else
+    MailComboBox.Text := Value;
+end;
+
+//! タイトル文字列取得
+function TEditorForm.GetTitleText: String;
+begin
+  if FUseUC then
+    Result := TitleEditUC.EncodeText
+  else
+    Result := TitleEdit.Text;
+end;
+
+function TEditorForm.GetTitleUTF8: UTF8String;
+begin
+  Result := UTF8Encode(GetTitleText);
+end;
+
+
+
+
+//{$IFDEF DEBUG}
+//procedure DebugLog(msg: String);
+//const
+//  RET_CODE: String = #13#10;
+//var
+//  path: String;
+//  dest: TFileStream;
+//  dt: String;
+//begin
+//  path := ChangeFileExt(Application.ExeName, '.log');
+//  if FileExists(path) then begin
+//    dest := TFileStream.Create(path, fmOpenReadWrite);
+//    dest.Seek(0, soFromEnd);
+//  end else
+//    dest := TFileStream.Create(path, fmCreate);
+//
+//  try
+//    DateTimeToString(dt, 'yyyy/mm/dd hh:nn:ss.ZZZ ', Now);
+//    dest.Write(PChar(dt)^, Length(dt));
+//    dest.Write(PChar(msg)^, Length(msg));
+//    dest.Write(PChar(RET_CODE)^, Length(RET_CODE));
+//  finally
+//    dest.Free;
+//  end;
+//end;
+//{$ENDIF}
 
 end.
