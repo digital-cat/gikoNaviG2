@@ -1233,7 +1233,7 @@ begin
 		s := 'sid=' + HttpEncode(SessionID) + '&'
 	else
 		s := '';
-	s := s //+ 'subject=&'
+	s := s + 'subject=&'
 			+ 'FROM=' + from + '&'
 			+ 'mail=' + mail + '&'
 			+ 'MESSAGE=' + body + '&'
@@ -1241,8 +1241,7 @@ begin
 			+ 'time=' + IntToStr(SendTime) + '&';
 
 	if FThreadItem = nil then
-//		s := s + 'subject=' + subject + '&'
-		s := 'subject=' + subject + '&' + s
+		s := s + 'subject=' + subject + '&'
 	else
 		s := s + 'key=' + ChangeFileExt(FThreadItem.FileName, '') + '&';
 	s := s + 'submit=' + submit;
