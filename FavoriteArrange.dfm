@@ -1,12 +1,12 @@
 object FavoriteArrangeDialog: TFavoriteArrangeDialog
   Left = 305
   Top = 172
-  Width = 537
-  Height = 335
   HorzScrollBar.Visible = False
   VertScrollBar.Visible = False
   BorderIcons = [biSystemMenu]
   Caption = #12362#27671#12395#20837#12426#12398#25972#29702
+  ClientHeight = 296
+  ClientWidth = 521
   Color = clBtnFace
   Font.Charset = SHIFTJIS_CHARSET
   Font.Color = clWindowText
@@ -23,7 +23,7 @@ object FavoriteArrangeDialog: TFavoriteArrangeDialog
     Left = 0
     Top = 0
     Width = 257
-    Height = 267
+    Height = 266
     Align = alLeft
     BevelOuter = bvNone
     TabOrder = 0
@@ -70,7 +70,7 @@ object FavoriteArrangeDialog: TFavoriteArrangeDialog
     Left = 257
     Top = 0
     Width = 264
-    Height = 267
+    Height = 266
     Align = alClient
     BevelOuter = bvNone
     BorderWidth = 10
@@ -79,7 +79,7 @@ object FavoriteArrangeDialog: TFavoriteArrangeDialog
       Left = 10
       Top = 10
       Width = 244
-      Height = 247
+      Height = 246
       Align = alClient
       DragCursor = crDefault
       DragMode = dmAutomatic
@@ -97,7 +97,7 @@ object FavoriteArrangeDialog: TFavoriteArrangeDialog
   end
   object Panel3: TPanel
     Left = 0
-    Top = 267
+    Top = 266
     Width = 521
     Height = 30
     Align = alBottom

@@ -4,22 +4,22 @@ interface
 
 uses
 	Windows, Messages, SysUtils, Classes, Graphics, Controls,
-    BoardGroup, Favorite, ComCtrls, GikoXMLDoc;
+    BoardGroup, Favorite, ComCtrls, GikoXMLDoc, TntComCtrls;
 
 type
 	TGikoTreeType = (gttNone, gtt2ch, gttHistory, gttFavorite);
 
 	THistoryList = class(TList)
     public
-        function AddHistory( favItem : TFavoriteThreadItem; TreeView : TTreeView;
+        function AddHistory( favItem : TFavoriteThreadItem; TreeView : TTntTreeView;
             TreeType: TGikoTreeType): Boolean;
-        procedure DeleteHistory( threadItem: TThreadItem; TreeView : TTreeView;
+        procedure DeleteHistory( threadItem: TThreadItem; TreeView : TTntTreeView;
             TreeType: TGikoTreeType );
         procedure Clear; override;
         procedure SaveToFile(const FileName: String);
         procedure LoadFromFile(const FileName: String;
-            TreeView : TTreeView; TreeType: TGikoTreeType);
-        procedure SetTreeNode( TreeView : TTreeView );
+            TreeView : TTntTreeView; TreeType: TGikoTreeType);
+        procedure SetTreeNode( TreeView : TTntTreeView );
 
     end;
 
@@ -35,12 +35,12 @@ const
 
 
 function THistoryList.AddHistory(
-    favItem : TFavoriteThreadItem; TreeView : TTreeView;
+    favItem : TFavoriteThreadItem; TreeView : TTntTreeView;
     TreeType: TGikoTreeType ): Boolean;
 var
 	i: Integer;
 	Item: TFavoriteThreadItem;
-	Node: TTreeNode;
+	Node: TTntTreeNode;
 begin
 	Result := True;
 	if TreeType = gttHistory then
@@ -97,10 +97,10 @@ begin
 end;
 
 procedure THistoryList.DeleteHistory( threadItem: TThreadItem;
-    TreeView : TTreeView; TreeType: TGikoTreeType );
+    TreeView : TTntTreeView; TreeType: TGikoTreeType );
 var
 	i: Integer;
-	node: TTreeNode;
+	node: TTntTreeNode;
 begin
 	// キャビネットに履歴が表示されていたら、
 	// キャビネット内のアイテムも削除する。
@@ -173,7 +173,7 @@ begin
 end;
 
 procedure THistoryList.LoadFromFile(const FileName: String;
-    TreeView : TTreeView; TreeType: TGikoTreeType);
+    TreeView : TTntTreeView; TreeType: TGikoTreeType);
 var
 	i, bound		: Integer;
 	XMLDoc			: IXMLDocument;
@@ -226,10 +226,10 @@ begin
 
 end;
 procedure THistoryList.SetTreeNode(
-    TreeView : TTreeView );
+    TreeView : TTntTreeView );
 var
 	i: Integer;
-	Node: TTreeNode;
+	Node: TTntTreeNode;
 	Item: TFavoriteThreadItem;
 begin
 	TreeView.Items.BeginUpdate;

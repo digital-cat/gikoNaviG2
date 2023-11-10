@@ -5,7 +5,7 @@ interface
 uses
 	Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
 	Dialogs, ComCtrls, StdCtrls, ExtCtrls, Favorite, ImgList, NewFavoriteFolder,
-	GikoSystem, GikoUtil, Menus;
+	GikoSystem, GikoUtil, Menus, TntComCtrls, WideCtrls;
 
 type
   TFavoriteArrangeDialog = class(TForm)
@@ -50,7 +50,10 @@ type
 	private
 		{ Private 宣言 }
 		FDeleteList: TList;
-		procedure SetDeleteItemList(Node: TTreeNode);
+    FolderTreeViewUC: TTntTreeView;
+		procedure SetDeleteItemList(Node: TTntTreeNode);
+    procedure FolderTreeViewUCEdited(Sender: TObject; Node: TTntTreeNode;
+      var S: WideString);
 	public
 		{ Public 宣言 }
 	end;
@@ -58,7 +61,7 @@ type
 var
 	FavoriteArrangeDialog: TFavoriteArrangeDialog;
 
-function SortProc(Node1, Node2: TTreeNode; Data: Longint): Integer; stdcall;
+function SortProc(Node1, Node2: TTntTreeNode; Data: Longint): Integer; stdcall;
 
 implementation
 
@@ -80,23 +83,46 @@ end;
 
 procedure TFavoriteArrangeDialog.FormCreate(Sender: TObject);
 var
-    CenterForm: TCustomForm;
+	CenterForm: TCustomForm;
 begin
-    CenterForm := TCustomForm(Owner);
-    if Assigned(CenterForm) then begin
-        Left := ((CenterForm.Width - Width) div 2) + CenterForm.Left;
-        Top := ((CenterForm.Height - Height) div 2) + CenterForm.Top;
-    end else begin
-        Left := (Screen.Width - Width) div 2;
-        Top := (Screen.Height - Height) div 2;
-    end;
+  CenterForm := TCustomForm(Owner);
+  if Assigned(CenterForm) then begin
+    Left := ((CenterForm.Width - Width) div 2) + CenterForm.Left;
+    Top := ((CenterForm.Height - Height) div 2) + CenterForm.Top;
+  end else begin
+    Left := (Screen.Width - Width) div 2;
+    Top := (Screen.Height - Height) div 2;
+  end;
+
+	// Unicode版に差し替え
+	FolderTreeViewUC := TTntTreeView.Create(Self);
+  FolderTreeViewUC.Parent        := FolderTreeView.Parent;
+  FolderTreeViewUC.Align         := FolderTreeView.Align;
+  FolderTreeViewUC.Left          := FolderTreeView.Left;
+  FolderTreeViewUC.Top           := FolderTreeView.Top;
+  FolderTreeViewUC.Width         := FolderTreeView.Width;
+  FolderTreeViewUC.Height        := FolderTreeView.Height;
+  FolderTreeViewUC.DragCursor    := FolderTreeView.DragCursor;
+  FolderTreeViewUC.DragMode      := FolderTreeView.DragMode;
+  FolderTreeViewUC.HideSelection := FolderTreeView.HideSelection;
+  FolderTreeViewUC.Images        := FolderTreeView.Images;
+  FolderTreeViewUC.Indent        := FolderTreeView.Indent;
+  FolderTreeViewUC.PopupMenu     := FolderTreeView.PopupMenu;
+  FolderTreeViewUC.ReadOnly      := FolderTreeView.ReadOnly;
+  FolderTreeViewUC.ShowRoot      := FolderTreeView.ShowRoot;
+  FolderTreeViewUC.TabOrder      := FolderTreeView.TabOrder;
+  FolderTreeViewUC.OnDragDrop    := FolderTreeView.OnDragDrop;
+  FolderTreeViewUC.OnDragOver    := FolderTreeView.OnDragOver;
+  FolderTreeViewUC.OnEdited      := FolderTreeViewUCEdited;
+  FolderTreeView.Visible         := False;
+	//--------
 
 	FDeleteList := TList.Create;
-	FolderTreeView.Items := FavoriteDM.TreeView.Items;
+	FolderTreeViewUC.Items := FavoriteDM.TreeView.Items;
 
-	if FolderTreeView.Items.GetFirstNode <> nil then begin
-		FolderTreeView.Items.GetFirstNode.Expanded := True;
-		FolderTreeView.Items.GetFirstNode.Selected := True;
+	if FolderTreeViewUC.Items.GetFirstNode <> nil then begin
+		FolderTreeViewUC.Items.GetFirstNode.Expanded := True;
+		FolderTreeViewUC.Items.GetFirstNode.Selected := True;
 	end;
 end;
 
@@ -104,9 +130,9 @@ procedure TFavoriteArrangeDialog.NewFolderButtonClick(Sender: TObject);
 var
 	Dlg: TNewFavoriteFolderDialog;
 	NewFavFolder: TFavoriteFolder;
-	Node: TTreeNode;
+	Node: TTntTreeNode;
 begin
-	if FolderTreeView.Selected = nil then
+	if FolderTreeViewUC.Selected = nil then
 		Exit;
 	Dlg := TNewFavoriteFolderDialog.Create(Self);
 	try
@@ -114,15 +140,15 @@ begin
 		if Dlg.ModalResult = mrOK then begin
 			if Length(Dlg.FolderEdit.Text) = 0 then
 				Exit;
-			if not (TObject(FolderTreeView.Selected.Data) is TFavoriteFolder) then
-				FolderTreeView.Selected := FolderTreeView.Selected.Parent;
+			if not (TObject(FolderTreeViewUC.Selected.Data) is TFavoriteFolder) then
+				FolderTreeViewUC.Selected := FolderTreeViewUC.Selected.Parent;
 
 			NewFavFolder := TFavoriteFolder.Create;
-			Node := FolderTreeView.Items.AddChildObject(FolderTreeView.Selected, Dlg.FolderEdit.Text, NewFavFolder);
+			Node := FolderTreeViewUC.Items.AddChildObject(FolderTreeViewUC.Selected, Dlg.FolderEdit.Text, NewFavFolder);
 			Node.ImageIndex := 14;
 			Node.SelectedIndex := 14;
 //			FolderTreeView.Selected.Expanded := True;
-			FolderTreeView.Selected := Node;
+			FolderTreeViewUC.Selected := Node;
 		end;
 	finally
 		Dlg.Release;
@@ -131,14 +157,14 @@ end;
 
 procedure TFavoriteArrangeDialog.RenameButtonClick(Sender: TObject);
 begin
-	if FolderTreeView.Selected = nil then
+	if FolderTreeViewUC.Selected = nil then
 		Exit;
-	if FolderTreeView.Selected.IsFirstNode then
+	if FolderTreeViewUC.Selected.IsFirstNode then
 		Exit;
-	if FolderTreeView.Selected.Text = Favorite.FAVORITE_LINK_NAME then
+	if FolderTreeViewUC.Selected.Text = Favorite.FAVORITE_LINK_NAME then
 		Exit;
-	FolderTreeView.ReadOnly := False;
-	FolderTreeView.Selected.EditText;
+	FolderTreeViewUC.ReadOnly := False;
+	FolderTreeViewUC.Selected.EditText;
 end;
 
 procedure TFavoriteArrangeDialog.DeleteButtonClick(Sender: TObject);
@@ -146,25 +172,32 @@ const
 	DEL_LINK_MSG = '“リンク”はリンクバー用フォルダです。削除してよろしいですか？';
 	DEL_MSG = '“^0”を削除します。よろしいですか？';
 	DEL_TITLE = '削除確認';
+var
+  Text: WideString;
+  Idx: Integer;
 begin
-	if FolderTreeView.Selected = nil then
+	if FolderTreeViewUC.Selected = nil then
 		Exit;
-	if FolderTreeView.Selected.IsFirstNode then
+	if FolderTreeViewUC.Selected.IsFirstNode then
 		Exit;
 	if (GetKeyState( VK_SHIFT ) and $80000000) = 0 then begin
-		if FolderTreeView.Selected.Text = Favorite.FAVORITE_LINK_NAME then begin
+		if FolderTreeViewUC.Selected.Text = Favorite.FAVORITE_LINK_NAME then begin
 			if MsgBox(Handle, DEL_LINK_MSG, DEL_TITLE, MB_YESNO or MB_ICONWARNING or MB_DEFBUTTON2) <> ID_YES then
 				Exit;
 		end else begin
-			if MsgBox(Handle, StringReplace( DEL_MSG, '^0', FolderTreeView.Selected.Text, [rfReplaceAll] ) , DEL_TITLE, MB_YESNO or MB_ICONWARNING or MB_DEFBUTTON2) <> ID_YES then
+    	Text := DEL_MSG;
+      Idx := Pos('^0', Text);
+      Delete(Text, Idx, 2);
+      Insert(FolderTreeViewUC.Selected.Text, Text, Idx);
+			if MsgBox(Handle, Text, DEL_TITLE, MB_YESNO or MB_ICONWARNING or MB_DEFBUTTON2) <> ID_YES then
 				Exit;
 		end;
 	end;
 
-	FDeleteList.Add(FolderTreeView.Selected.Data);
-	SetDeleteItemList(FolderTreeView.Selected);
+	FDeleteList.Add(FolderTreeViewUC.Selected.Data);
+	SetDeleteItemList(FolderTreeViewUC.Selected);
 
-	FolderTreeView.Selected.Delete;
+	FolderTreeViewUC.Selected.Delete;
 end;
 
 procedure TFavoriteArrangeDialog.FolderTreeViewEdited(Sender: TObject;
@@ -173,11 +206,17 @@ begin
 	FolderTreeView.ReadOnly := True;
 end;
 
+procedure TFavoriteArrangeDialog.FolderTreeViewUCEdited(Sender: TObject;
+	Node: TTntTreeNode; var S: WideString);
+begin
+	FolderTreeViewUC.ReadOnly := True;
+end;
+
 procedure TFavoriteArrangeDialog.FolderTreeViewDragOver(Sender,
 	Source: TObject; X, Y: Integer; State: TDragState; var Accept: Boolean);
 begin
-	if Source = FolderTreeView then begin
-		if FolderTreeView.Selected = FolderTreeView.Items.GetFirstNode then begin
+	if Source = FolderTreeViewUC then begin
+		if FolderTreeViewUC.Selected = FolderTreeViewUC.Items.GetFirstNode then begin
 			Accept := False;
 			Exit;
 		end;
@@ -189,26 +228,26 @@ end;
 procedure TFavoriteArrangeDialog.FolderTreeViewDragDrop(Sender,
 	Source: TObject; X, Y: Integer);
 begin
-	if FolderTreeView.GetNodeAt(X, Y) = nil then
+	if FolderTreeViewUC.GetNodeAt(X, Y) = nil then
 		Exit;
-	if Source <> FolderTreeView then
+	if Source <> FolderTreeViewUC then
 		Exit;
-	if FolderTreeView.Selected = FolderTreeView.GetNodeAt(X, Y) then
+	if FolderTreeViewUC.Selected = FolderTreeViewUC.GetNodeAt(X, Y) then
 		Exit;
 
-	if TObject(FolderTreeView.GetNodeAt(X, Y).Data) is TFavoriteFolder then
-		FolderTreeView.Selected.MoveTo(FolderTreeView.GetNodeAt(X, Y), naAddChild)
-	else if TObject(FolderTreeView.GetNodeAt(X, Y).Data) is TFavoriteBoardItem then
-		FolderTreeView.Selected.MoveTo(FolderTreeView.GetNodeAt(X, Y), naInsert)
-	else if TObject(FolderTreeView.GetNodeAt(X, Y).Data) is TFavoriteThreadItem then
-		FolderTreeView.Selected.MoveTo(FolderTreeView.GetNodeAt(X, Y), naInsert);
+	if TObject(FolderTreeViewUC.GetNodeAt(X, Y).Data) is TFavoriteFolder then
+		FolderTreeViewUC.Selected.MoveTo(FolderTreeViewUC.GetNodeAt(X, Y), naAddChild)
+	else if TObject(FolderTreeViewUC.GetNodeAt(X, Y).Data) is TFavoriteBoardItem then
+		FolderTreeViewUC.Selected.MoveTo(FolderTreeViewUC.GetNodeAt(X, Y), naInsert)
+	else if TObject(FolderTreeViewUC.GetNodeAt(X, Y).Data) is TFavoriteThreadItem then
+		FolderTreeViewUC.Selected.MoveTo(FolderTreeViewUC.GetNodeAt(X, Y), naInsert);
 end;
 
 procedure TFavoriteArrangeDialog.FormDestroy(Sender: TObject);
 var
 	i: Integer;
 begin
-	FavoriteDM.TreeView.Items := FolderTreeView.Items;
+	FavoriteDM.TreeView.Items := FolderTreeViewUC.Items;
 
 	for i := FDeleteList.Count - 1 downto 0 do
 		TObject(FDeleteList[i]).Free;
@@ -216,7 +255,7 @@ begin
 	FavoriteDM.WriteFavorite;
 end;
 
-procedure TFavoriteArrangeDialog.SetDeleteItemList(Node: TTreeNode);
+procedure TFavoriteArrangeDialog.SetDeleteItemList(Node: TTntTreeNode);
 var
 	i: Integer;
 begin
@@ -233,7 +272,7 @@ end;
 \param  Data    ソートオプション
 \return Node1(>0) Node1=Node2(=0)  Node2(<0)
 }
-function SortProc(Node1, Node2: TTreeNode; Data: Longint): Integer;
+function SortProc(Node1, Node2: TTntTreeNode; Data: Longint): Integer;
 stdcall;
 var
     folder1, folder2 : TFavoriteFolder;
@@ -262,11 +301,11 @@ begin
     end else begin
         Result := 0;
         if (folder1 <> nil) and (folder2 <> nil) then begin
-            Result := CompareStr(Node1.Text, Node2.Text);
+            Result := WideCompareStr(Node1.Text, Node2.Text);
         end else
         if (folder1 = nil) and (folder2 = nil) then begin
             if ((Data and SORT_NAME) > 0) then begin
-                Result := CompareStr(Node1.Text, Node2.Text);
+                Result := WideCompareStr(Node1.Text, Node2.Text);
             end else
             if ((Data and SORT_URL) > 0) then begin
                 Result := CompareStr(item1.URL, item2.URL);
@@ -286,9 +325,9 @@ end;
 }
 procedure TFavoriteArrangeDialog.SortDscNameClick(Sender: TObject);
 begin
-	if (FolderTreeView.Selected <> nil) and
-        (TObject(FolderTreeView.Selected.Data) is TFavoriteFolder) then begin
-        FolderTreeView.Selected
+	if (FolderTreeViewUC.Selected <> nil) and
+        (TObject(FolderTreeViewUC.Selected.Data) is TFavoriteFolder) then begin
+        FolderTreeViewUC.Selected
             .CustomSort(@SortProc, SORT_NAME or SORT_DSC, False);
     end;
 end;
@@ -298,9 +337,9 @@ end;
 }
 procedure TFavoriteArrangeDialog.SortAscNameClick(Sender: TObject);
 begin
-	if (FolderTreeView.Selected <> nil) and
-        (TObject(FolderTreeView.Selected.Data) is TFavoriteFolder) then begin
-        FolderTreeView.Selected
+	if (FolderTreeViewUC.Selected <> nil) and
+        (TObject(FolderTreeViewUC.Selected.Data) is TFavoriteFolder) then begin
+        FolderTreeViewUC.Selected
             .CustomSort(@SortProc, SORT_NAME or SORT_ASC, False);
     end;
 end;
@@ -309,9 +348,9 @@ end;
 }
 procedure TFavoriteArrangeDialog.SortDscURLClick(Sender: TObject);
 begin
-	if (FolderTreeView.Selected <> nil) and
-        (TObject(FolderTreeView.Selected.Data) is TFavoriteFolder) then begin
-        FolderTreeView.Selected
+	if (FolderTreeViewUC.Selected <> nil) and
+        (TObject(FolderTreeViewUC.Selected.Data) is TFavoriteFolder) then begin
+        FolderTreeViewUC.Selected
             .CustomSort(@SortProc, SORT_URL or SORT_DSC, False);
     end;
 end;
@@ -320,9 +359,9 @@ end;
 }
 procedure TFavoriteArrangeDialog.SortAscURLClick(Sender: TObject);
 begin
-	if (FolderTreeView.Selected <> nil) and
-        (TObject(FolderTreeView.Selected.Data) is TFavoriteFolder) then begin
-        FolderTreeView.Selected
+	if (FolderTreeViewUC.Selected <> nil) and
+        (TObject(FolderTreeViewUC.Selected.Data) is TFavoriteFolder) then begin
+        FolderTreeViewUC.Selected
             .CustomSort(@SortProc, SORT_URL or SORT_ASC, False);
     end;
 end;
@@ -331,9 +370,9 @@ end;
 }
 procedure TFavoriteArrangeDialog.SortDscTitleClick(Sender: TObject);
 begin
-	if (FolderTreeView.Selected <> nil) and
-        (TObject(FolderTreeView.Selected.Data) is TFavoriteFolder) then begin
-        FolderTreeView.Selected
+	if (FolderTreeViewUC.Selected <> nil) and
+        (TObject(FolderTreeViewUC.Selected.Data) is TFavoriteFolder) then begin
+        FolderTreeViewUC.Selected
             .CustomSort(@SortProc, SORT_TITLE or SORT_DSC, False);
     end;
 end;
@@ -342,9 +381,9 @@ end;
 }
 procedure TFavoriteArrangeDialog.SortAscTitleClick(Sender: TObject);
 begin
-	if (FolderTreeView.Selected <> nil) and
-        (TObject(FolderTreeView.Selected.Data) is TFavoriteFolder) then begin
-        FolderTreeView.Selected
+	if (FolderTreeViewUC.Selected <> nil) and
+        (TObject(FolderTreeViewUC.Selected.Data) is TFavoriteFolder) then begin
+        FolderTreeViewUC.Selected
             .CustomSort(@SortProc, SORT_TITLE or SORT_ASC, False);
     end;
 end;

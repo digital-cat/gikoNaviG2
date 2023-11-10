@@ -141,6 +141,14 @@ type
 		FListFontColor: TColor;
 		FListBackColor: TColor;
 
+		//メッセージリスト
+		FMessageFontName: string;
+		FMessageFontSize: Integer;
+		FMessageFontBold: Boolean;
+		FMessageFontItalic: Boolean;
+		FMessageFontColor: TColor;
+		FMessageBackColor: TColor;
+
 		//ブラウザ
 		FBrowserFontName: string;			// ''...default
 		FBrowserFontSize: Integer;		// 0...default
@@ -618,6 +626,13 @@ type
 		property ListFontItalic: Boolean read FListFontItalic write FListFontItalic;
 		property ListFontColor: TColor read FListFontColor write FListFontColor;
 		property ListBackColor: TColor read FListBackColor write FListBackColor;
+
+		property MessageFontName: string read FMessageFontName write FMessageFontName;
+		property MessageFontSize: Integer read FMessageFontSize write FMessageFontSize;
+		property MessageFontBold: Boolean read FMessageFontBold write FMessageFontBold;
+		property MessageFontItalic: Boolean read FMessageFontItalic write FMessageFontItalic;
+		property MessageFontColor: TColor read FMessageFontColor write FMessageFontColor;
+		property MessageBackColor: TColor read FMessageBackColor write FMessageBackColor;
 
 		property BrowserFontName: string read FBrowserFontName write FBrowserFontName;
 		property BrowserFontSize: Integer read FBrowserFontSize write FBrowserFontSize;
@@ -1545,6 +1560,13 @@ begin
 		ini.WriteString('Window', 'OddColor',ColorToString(FOddColor));
 		ini.WriteBool('Window','UnFocusedBold', FUnFocusedBold);
 
+		ini.WriteString('Window', 'MessageFontName', FMessageFontName);
+		ini.WriteInteger('Window', 'MessageFontSize', FMessageFontSize);
+		ini.WriteString('Window', 'MessageFontColor', ColorToString(FMessageFontColor));
+		ini.WriteString('Window', 'MessageBackColor', ColorToString(FMessageBackColor));
+		ini.WriteBool('Window', 'MessageFontBold', FMessageFontBold);
+		ini.WriteBool('Window', 'MessageFontItalic', FMessageFontItalic);
+
 		ini.WriteString('Window', 'EditorFontName', FEditorFontName);
 		ini.WriteInteger('Window', 'EditorFontSize', FEditorFontSize);
 		ini.WriteString('Window', 'EditorFontColor', ColorToString(FEditorFontColor));
@@ -2447,6 +2469,13 @@ begin
 		FUseOddColorOddResNum := memIni.ReadBool(WINDOW_SECTION,'UseOddColor', False);
 		FOddColor := StringToColor(memIni.ReadString(WINDOW_SECTION, 'OddColor', DEFAULT_WINDOW_COLOR));
 		FUnFocusedBold := memIni.ReadBool(WINDOW_SECTION,'UnFocusedBold', False);
+
+		FMessageFontName := memIni.ReadString(WINDOW_SECTION, 'MessageFontName', DEFAULT_FONT_NAME);
+		FMessageFontSize := memIni.ReadInteger(WINDOW_SECTION, 'MessageFontSize', DEFAULT_FONT_SIZE);
+		FMessageFontBold := memIni.ReadBool(WINDOW_SECTION, 'MessageFontBold', False);
+		FMessageFontItalic := memIni.ReadBool(WINDOW_SECTION, 'MessageFontItalic', False);
+		FMessageFontColor := StringToColor(memIni.ReadString(WINDOW_SECTION, 'MessageFontColor', DEFAULT_FONT_COLOR));
+		FMessageBackColor := StringToColor(memIni.ReadString(WINDOW_SECTION, 'MessageBackColor', DEFAULT_WINDOW_COLOR));
 
 		FEditorFontName := memIni.ReadString(WINDOW_SECTION, 'EditorFontName', DEFAULT_FONT_NAME);
 		FEditorFontSize := memIni.ReadInteger(WINDOW_SECTION, 'EditorFontSize', DEFAULT_FONT_SIZE);

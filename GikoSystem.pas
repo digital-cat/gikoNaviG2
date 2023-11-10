@@ -189,6 +189,7 @@ type
 		function GetTokenIndex(s: string; delimiter: string; index: Integer): string;
 
 		function GetShortName(const LongName: string; ALength: integer): string;
+		function GetShortNameW(const LongName: WideString; ALength: integer): WideString;
 		function TrimThreadTitle(const SrcTitle: string): string;
 		function BoolToInt(b: Boolean): Integer;
 		function IntToBool(i: Integer): Boolean;
@@ -297,7 +298,7 @@ implementation
 
 uses
 	Giko, RoundData, Favorite, Registry, HTMLCreate, MojuUtils, Sort, YofUtils,
-	IniFiles, DateUtils, SkinFiles;
+	IniFiles, DateUtils, SkinFiles, WideCtrls;
 
 const
 	FOLDER_INDEX_VERSION					= '1.01';
@@ -1516,6 +1517,64 @@ begin
         Result := SrcTitle;
     end;
 end;
+
+function TGikoSys.GetShortNameW(const LongName: WideString; ALength: integer): WideString;
+const
+	ERASECHAR : array [1..39] of WideString =
+		('Åô','Åö','Å°','Å†','Åü','Åû','ÅQ','Åî','Å£','Å•',
+		 'Å¢','Å§','Åú','Åõ','Åù','Åy','Åz','ÅÙ','Ås','Åt',
+		 'Åg','Åh','Åk','Ål','Åe','Åf','ÅÉ','ÅÑ','Å·','Å‚',
+		 'Åo','Åp','Åq','År','Åw','Åx','Å¨','Åc', 'Å@');
+  DIS = $FEE0;
+var
+	s : UTF8String;
+  w : WideString;
+  tmp1: WideString;
+  tmp2: WideString;
+	i : integer;
+  idx: Integer;
+  len: Integer;
+  code: Integer;
+  size: Integer;
+begin
+	s := LongName;
+	if (Length(s) <= ALength) then begin
+		Result := LongName;
+	end else begin
+  	w := LongName;
+		for i := Low(ERASECHAR)	to	High(ERASECHAR) do	begin
+    	while True do begin
+        idx := Pos(ERASECHAR[i], w);
+        if idx < 1 then
+        	Break;
+        Delete(w, idx, 1);
+      end;
+		end;
+    s := w;
+		if (Length(s) <= ALength) then begin
+			Result := w;
+		end else begin
+    	len := Length(w);
+      for i := 1 to len do begin
+        code := Ord(w[i]);
+        if (code >= $FF10) and (code <= $FF5A) then
+	        w[i] := WideChar(code - DIS)
+				else if (code >= $30A1) and (code <= $30FA) then begin
+        	tmp1 := w[i];
+					size := LCMapStringW(LOCALE_SYSTEM_DEFAULT, LCMAP_HALFWIDTH,
+          										PWideChar(tmp1), Length(tmp1), nil, 0);
+					SetLength(tmp2, size);
+					LCMapStringW(LOCALE_SYSTEM_DEFAULT, LCMAP_HALFWIDTH,
+                          PWideChar(tmp1), Length(tmp1), PWideChar(tmp2), size);
+          w[i] := tmp2[1];
+        end;
+      end;
+      Result := WideTrimLength(w, ALength);
+		end;
+	end;
+end;
+
+
 
 {!
 \brief Boolean Ç Integer Ç…ïœä∑

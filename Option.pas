@@ -1242,17 +1242,17 @@ procedure TOptionDialog.SettingApply;
 var
 	i: Integer;
 begin
-	GikoForm.TreeView.Items.BeginUpdate;
-	GikoForm.FavoriteTreeView.Items.BeginUpdate;
+	GikoForm.TreeViewUC.Items.BeginUpdate;
+	GikoForm.FavoriteTreeViewUC.Items.BeginUpdate;
 	GikoForm.ListView.Items.BeginUpdate;
 	try
-		GikoForm.TreeView.Font.Name := GikoSys.Setting.CabinetFontName;
-		GikoForm.TreeView.Font.Size := GikoSys.Setting.CabinetFontSize;
-		GikoForm.TreeView.Font.Color := GikoSys.Setting.CabinetFontColor;
-		GikoForm.TreeView.Color := GikoSys.Setting.CabinetBackColor;
+		GikoForm.TreeViewUC.Font.Name := GikoSys.Setting.CabinetFontName;
+		GikoForm.TreeViewUC.Font.Size := GikoSys.Setting.CabinetFontSize;
+		GikoForm.TreeViewUC.Font.Color := GikoSys.Setting.CabinetFontColor;
+		GikoForm.TreeViewUC.Color := GikoSys.Setting.CabinetBackColor;
 
-		GikoForm.FavoriteTreeView.Font.Assign(GikoForm.TreeView.Font);
-		GikoForm.FavoriteTreeView.Color := GikoSys.Setting.CabinetBackColor;
+		GikoForm.FavoriteTreeViewUC.Font.Assign(GikoForm.TreeViewUC.Font);
+		GikoForm.FavoriteTreeViewUC.Color := GikoSys.Setting.CabinetBackColor;
 
 		GikoForm.ListView.Font.Name := GikoSys.Setting.ListFontName;
 		GikoForm.ListView.Font.Size := GikoSys.Setting.ListFontSize;
@@ -1270,15 +1270,15 @@ begin
 		GikoSys.Setting.UnFocusedBold := (UnFocusedBoldCheckBox.Enabled) and
 											(UnFocusedBoldCheckBox.Checked);
 
-		GikoForm.BrowserTab.Font.Name := GikoSys.Setting.BrowserTabFontName;
-		GikoForm.BrowserTab.Font.Size := GikoSys.Setting.BrowserTabFontSize;
-		GikoForm.BrowserTab.Font.Style := [];
+		GikoForm.BrowserTabUC.Font.Name := GikoSys.Setting.BrowserTabFontName;
+		GikoForm.BrowserTabUC.Font.Size := GikoSys.Setting.BrowserTabFontSize;
+		GikoForm.BrowserTabUC.Font.Style := [];
 		if GikoSys.Setting.BrowserTabFontBold then
-			GikoForm.BrowserTab.Font.Style := [fsBold];
+			GikoForm.BrowserTabUC.Font.Style := [fsBold];
 		if GikoSys.Setting.BrowserTabFontItalic then
-			GikoForm.BrowserTab.Font.Style := GikoForm.BrowserTab.Font.Style + [fsItalic];
-//		GikoForm.BrowserTab.Height := (GikoSys.Setting.BrowserTabFontSize * 2) + 1;
-//		GikoForm.BrowserBottomPanel.Height := GikoForm.BrowserTab.Height;
+			GikoForm.BrowserTabUC.Font.Style := GikoForm.BrowserTabUC.Font.Style + [fsItalic];
+//		GikoForm.BrowserTabUC.Height := (GikoSys.Setting.BrowserTabFontSize * 2) + 1;
+//		GikoForm.BrowserBottomPanel.Height := GikoForm.BrowserTabUC.Height;
 
 		for i := 0 to Screen.CustomFormCount - 1 do begin
 			if TObject(Screen.CustomForms[i]) is TEditorForm then begin
@@ -1287,8 +1287,8 @@ begin
 		end;
 
 	finally
-		GikoForm.TreeView.Items.EndUpdate;
-		GikoForm.FavoriteTreeView.Items.EndUpdate;
+		GikoForm.TreeViewUC.Items.EndUpdate;
+		GikoForm.FavoriteTreeViewUC.Items.EndUpdate;
 		GikoForm.ListView.Items.EndUpdate;
 	end;
 
@@ -1308,10 +1308,10 @@ begin
 
 	// スレッドのリフレッシュ
 	if FRepaintThread then begin
-		for i := GikoForm.BrowserTab.Tabs.Count - 1 downto 0 do begin
-			TBrowserRecord(GikoForm.BrowserTab.Tabs.Objects[i]).Repaint := true;
+		for i := GikoForm.BrowserTabUC.Tabs.Count - 1 downto 0 do begin
+			TBrowserRecord(GikoForm.BrowserTabUC.Tabs.Objects[i]).Repaint := true;
 		end;
-		GikoForm.BrowserTab.OnChange(nil);
+		GikoForm.BrowserTabUC.OnChange(nil);
 	end;
 
     // タブのスレタイ更新

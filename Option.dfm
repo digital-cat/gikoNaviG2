@@ -60,7 +60,7 @@ object OptionDialog: TOptionDialog
     Top = 4
     Width = 509
     Height = 389
-    ActivePage = UserIDSheet
+    ActivePage = Font1Sheet
     MultiLine = True
     TabOrder = 3
     OnChange = OptionTabChange
@@ -1276,10 +1276,6 @@ object OptionDialog: TOptionDialog
     object TabSheet4: TTabSheet
       Caption = #12381#12398#20182#21205#20316#65298
       ImageIndex = 11
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object GroupBox13: TGroupBox
         Left = 12
         Top = 8
@@ -1389,6 +1385,7 @@ object OptionDialog: TOptionDialog
           Width = 238
           Height = 12
           Caption = #8251#38480#23450#30340#12394#27231#33021#12391#12356#12367#12388#12363#12398#21046#32004#12364#12354#12426#12414#12377#65281
+          Visible = False
         end
         object UseUnicodeCB: TCheckBox
           Left = 11

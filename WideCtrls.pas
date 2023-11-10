@@ -7,7 +7,8 @@ unit WideCtrls;
 interface
 
 uses
-  Messages, Windows, Controls, StdCtrls, Classes, SysUtils, StrUtils, TntStdCtrls;
+  Messages, Windows, Controls, StdCtrls, Classes, SysUtils, StrUtils,
+  TntStdCtrls, TntMenus, TntComCtrls;
 
 { TWideMemo }
 type
@@ -49,10 +50,11 @@ type
   TWideEdit = class(TTntEdit)
 private
   function GetEncodeText: AnsiString;
+  procedure SetEncodeText(AText: AnsiString);
 public
   constructor Create(AOwner: TComponent); override;
   procedure Free;
-  property EncodeText: AnsiString read GetEncodeText;
+  property EncodeText: AnsiString read GetEncodeText write SetEncodeText;
 end;
 
 
@@ -72,6 +74,41 @@ public
 end;
 
 
+{ TWideMenuItem }
+type
+	TWideMenuItem = class;
+
+  TWideMenuItem = class(TTntMenuItem)
+private
+  FAccessKey: Boolean;
+  procedure SetEncodeCaption(ACaption: AnsiString);
+public
+  constructor Create(AOwner: TComponent); override;
+  procedure Free;
+
+  property EncodeCaption: AnsiString write SetEncodeCaption;
+  property AccessKey: Boolean read FAccessKey write FAccessKey;
+end;
+
+
+{ TWideToolButton }
+type
+  TWideToolButton = class;
+
+  TWideToolButton = class(TTntToolButton)
+private
+  FAccessKey: Boolean;
+  procedure SetEncodeCaption(ACaption: AnsiString);
+public
+  constructor Create(AOwner: TComponent); override;
+  procedure Free;
+
+  property EncodeCaption: AnsiString write SetEncodeCaption;
+  property AccessKey: Boolean read FAccessKey write FAccessKey;
+end;
+
+
+
 
 
 { UTF-16文字列をShift-JIS文字列へ変換 Shift-JISに存在しない文字は数値文字参照 }
@@ -82,6 +119,18 @@ function EncAnsiToWideString(ASrc: AnsiString): WideString;
 
 { サロゲートペア文字かどうか確認 }
 function IsSurrogatePair(AStr: PWideChar; AIdx: Integer; AMax: Integer): Boolean;
+
+{ UTF-16文字列半角1文字・全角2文字として長さを切り詰める }
+function WideTrimLength(ASrc: WideString; ALen: Integer): WideString;
+
+{ '&'を'&&'に置換する }
+function ReplaceAmp(ASrc: WideString): WideString;
+
+{ クリップボードにUTF-16文字列をコピー }
+function SetClipboard(SrcText: WideString): Boolean;
+
+{ クリップボードにShift-JIS文字列(数値文字参照を含む)をUTF-16文字列としてコピー }
+function SetClipboardFromEncAnsi(SrcText: AnsiString): Boolean;
 
 implementation
 
@@ -244,6 +293,15 @@ begin
   end;
 end;
 
+{ テキスト設定 }
+procedure TWideEdit.SetEncodeText(AText: AnsiString);
+begin
+  try
+    Text := EncAnsiToWideString(AText);
+  except
+  end;
+end;
+
 
 
 { TWideLabel }
@@ -256,9 +314,7 @@ end;
 
 
 { デストラクタ }
-
 procedure TWideLabel.Free;
-
 begin
 
   inherited Free;
@@ -281,6 +337,78 @@ begin
   except
   end;
 end;
+
+
+
+{ TWideMenuItem }
+
+{ コンストラクタ }
+constructor TWideMenuItem.Create(AOwner: TComponent);
+begin
+  inherited Create(AOwner);
+  FAccessKey := True;
+end;
+
+
+{ デストラクタ }
+procedure TWideMenuItem.Free;
+begin
+
+  inherited Free;
+end;
+
+{ 表示キャプション設定 }
+procedure TWideMenuItem.SetEncodeCaption(ACaption: AnsiString);
+var
+	wideCaption: WideString;
+begin
+  try
+  	wideCaption := EncAnsiToWideString(ACaption);
+
+    if not FAccessKey then
+    	wideCaption := ReplaceAmp(wideCaption);
+
+    Caption := wideCaption;
+  except
+  end;
+end;
+
+
+
+{ TWideToolButton }
+
+{ コンストラクタ }
+constructor TWideToolButton.Create(AOwner: TComponent);
+begin
+  inherited Create(AOwner);
+  FAccessKey := True;
+end;
+
+
+{ デストラクタ }
+procedure TWideToolButton.Free;
+begin
+
+  inherited Free;
+end;
+
+{ 表示キャプション設定 }
+procedure TWideToolButton.SetEncodeCaption(ACaption: AnsiString);
+var
+	wideCaption: WideString;
+begin
+  try
+  	wideCaption := EncAnsiToWideString(ACaption);
+
+    if not FAccessKey then
+    	wideCaption := ReplaceAmp(wideCaption);
+
+    Caption := wideCaption;
+  except
+  end;
+end;
+
+
 
 
 
@@ -451,6 +579,107 @@ begin
               (CodeL >= SG_LOW_START)  and (CodeL <= SG_LOW_END);
   end else
     Result := False;
+end;
+
+
+
+{ UTF-16文字列半角1文字・全角2文字として長さを切り詰める }
+function WideTrimLength(ASrc: WideString; ALen: Integer): WideString;
+var
+  Len:        Integer;
+  BufUC:      PWideChar;
+  Cnt:        Integer;
+  Code:       Integer;
+  CopyLen:		Integer;
+  DestLen:		Integer;
+  Skip:       Boolean;
+begin
+  DestLen := 0;		// 半角全角で計算した長さ
+	CopyLen := 0;		// 実際にコピーする文字数
+  Skip := False;
+  BufUC := PWideChar(ASrc);
+  Len := Length(ASrc);
+
+  for Cnt := 0 to Len - 1 do begin
+  	if DestLen >= ALen then
+    	Break;
+
+    if Skip then
+    	Skip := False
+    else begin
+      Code := Ord(BufUC[Cnt]);
+      if Code < $100 then begin
+        Inc(CopyLen);
+        Inc(DestLen);
+      end else if DestLen + 2 <= ALen then begin
+        Inc(DestLen, 2);
+        if IsSurrogatePair(BufUC, Cnt, Len - 1) then begin
+          Inc(CopyLen, 2);
+          Skip := True;
+        end else
+          Inc(CopyLen);
+      end;
+    end;
+  end;
+
+	Result := Copy(ASrc, 1, CopyLen);
+end;
+
+
+{ '&'を'&&'に置換する }
+function ReplaceAmp(ASrc: WideString): WideString;
+var
+  Idx: Integer;
+  Start: Integer;
+	Dest: WideString;
+begin
+	Dest := ASrc;
+  Start := 1;
+
+  while True do begin
+    Idx := PosEx('&', Dest, Start);
+    if Idx < Start then
+	    Break;
+    System.Insert('&', Dest, Idx);
+    Start := Idx + 2;
+  end;
+
+	Result := Dest;
+end;
+
+{ クリップボードにUTF-16文字列をコピー }
+function SetClipboard(SrcText: WideString): Boolean;
+var
+  LenUC: Integer;
+  BufUC: PWideChar;
+  BufUCSize: Integer;
+  MemHandle: HGLOBAL;
+  CopySize: Integer;
+begin
+  LenUC := Length(SrcText);
+  CopySize := LenUC * SizeOf(WideChar);
+  BufUCSize := (LenUC + 1) * SizeOf(WideChar);
+  MemHandle := GlobalAlloc(GMEM_DDESHARE or GMEM_MOVEABLE, BufUCSize);
+  BufUC := GlobalLock(MemHandle);
+  ZeroMemory(BufUC, BufUCSize);
+  CopyMemory(BufUC, PWideChar(SrcText), CopySize);
+  GlobalUnlock(MemHandle);
+
+  if OpenClipboard(0) then begin
+    EmptyClipboard;
+    SetClipboardData(CF_UNICODETEXT, MemHandle);
+    CloseClipboard;
+    Result := True;
+  end else begin
+    GlobalFree(MemHandle);
+    Result := False;
+  end;
+end;
+
+{ クリップボードにShift-JIS文字列(数値文字参照を含む)をUTF-16文字列としてコピー }
+function SetClipboardFromEncAnsi(SrcText: AnsiString): Boolean;
+begin
+	Result := SetClipboard(EncAnsiToWideString(SrcText));
 end;
 
 end.

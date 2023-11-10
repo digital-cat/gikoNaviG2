@@ -6,6 +6,7 @@ uses
 	Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms;
 
 function MsgBox(const hWnd: HWND; const Text, Caption: string; Flags: Longint = MB_OK): Integer;
+function MsgBoxW(const hWnd: HWND; const Text, Caption: WideString; Flags: Longint = MB_OK): Integer;
 function MsgMoveProc(nCode: Integer; wParam: WPARAM; lParam: LPARAM): LRESULT; stdcall;
 
 implementation
@@ -16,6 +17,14 @@ function MsgBox(const hWnd: HWND; const Text, Caption: string; Flags: Longint = 
 begin
 	hhk := SetWindowsHookEx(WH_CBT, @MsgMoveProc, 0, GetCurrentThreadId());
 	Result := Windows.MessageBox(hwnd, PChar(Text), PChar(Caption), Flags);
+	if hhk <> 0 then
+		UnhookWindowsHookEx(hhk);
+end;
+
+function MsgBoxW(const hWnd: HWND; const Text, Caption: WideString; Flags: Longint = MB_OK): Integer;
+begin
+	hhk := SetWindowsHookEx(WH_CBT, @MsgMoveProc, 0, GetCurrentThreadId());
+	Result := MessageBoxW(hwnd, PWideChar(Text), PWideChar(Caption), Flags);
 	if hhk <> 0 then
 		UnhookWindowsHookEx(hhk);
 end;

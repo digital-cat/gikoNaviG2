@@ -14,6 +14,7 @@ object FavoriteAddDialog: TFavoriteAddDialog
   FormStyle = fsStayOnTop
   OldCreateOrder = False
   OnCreate = FormCreate
+  OnDestroy = FormDestroy
   PixelsPerInch = 96
   TextHeight = 12
   object TitleLabel: TLabel

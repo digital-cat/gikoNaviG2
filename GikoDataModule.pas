@@ -12,7 +12,7 @@ uses
 	MSHTML_TLB,
 {$IFEND}
   ComCtrls, BrowserRecord, Graphics, Messages, Setting, Dialogs,
-  ActiveX, GikoSystem, MoveHistoryItem, HistoryList;
+  ActiveX, GikoSystem, MoveHistoryItem, HistoryList, TntComCtrls, WideCtrls;
 
 const
 	CAPTION_NAME: string = 'ギコナビ';
@@ -684,7 +684,7 @@ procedure TGikoDM.FavoriteTreeViewCollapseActionExecute(Sender: TObject);
 var
 	node	: TTreeNode;
 begin
-	node := GikoForm.FavoriteTreeView.Items.GetFirstNode;
+	node := GikoForm.FavoriteTreeViewUC.Items.GetFirstNode;
 	try
 		//ノードが続く限り　ノードを縮小させる
 		while node <> nil do begin
@@ -709,7 +709,7 @@ begin
 		Exit;
 	if GikoForm.ClickNode.Text = Favorite.FAVORITE_LINK_NAME then
 		Exit;
-	GikoForm.FavoriteTreeView.ReadOnly := False;
+	GikoForm.FavoriteTreeViewUC.ReadOnly := False;
 	if (GikoForm.TreeType = gttFavorite) and (GikoForm.CabinetPanel.Visible) then begin
 		node := GikoForm.ClickNode.Parent;
 		while node <> nil do begin
@@ -730,7 +730,7 @@ end;
 procedure TGikoDM.FavoriteTreeViewNewFolderActionExecute(Sender: TObject);
 var
 	NewFavFolder: TFavoriteFolder;
-	Node: TTreeNode;
+	Node: TTntTreeNode;
 begin
 
 	if GikoForm.ClickNode = nil then
@@ -738,16 +738,16 @@ begin
 
 	try
 		if not (TObject(GikoForm.ClickNode.Data) is TFavoriteFolder) then begin
-			GikoForm.FavoriteTreeView.Selected := GikoForm.ClickNode.Parent;
+			TTreeView(GikoForm.FavoriteTreeViewUC).Selected := GikoForm.ClickNode.Parent;
 			GikoForm.ClickNode := GikoForm.ClickNode.Parent;
 		end;
 
 		NewFavFolder := TFavoriteFolder.Create;
-		Node := GikoForm.FavoriteTreeView.Items.AddChildObject(GikoForm.ClickNode, '新しいフォルダ', NewFavFolder);
+		Node := GikoForm.FavoriteTreeViewUC.Items.AddChildObject(GikoForm.ClickNode, '新しいフォルダ', NewFavFolder);
 		Node.ImageIndex := 14;
 		Node.SelectedIndex := 14;
 	//			FClickNode.Selected.Expanded := True;
-		GikoForm.FavoriteTreeView.Selected := Node;
+		GikoForm.FavoriteTreeViewUC.Selected := Node;
 		GikoForm.ClickNode := Node;
 		//更新したことを教える
 		FavoriteDM.Modified := true;
@@ -839,12 +839,11 @@ begin
 	if GikoForm.ClickNode = nil then Exit;
 
 	if (TObject(GikoForm.ClickNode.Data) is TFavoriteItem) then begin
-		Clipboard.AsText :=
-			TFavoriteItem(GikoForm.ClickNode.Data).GetItemTitle + #13#10;
+		SetClipboardFromEncAnsi(
+			TFavoriteItem(GikoForm.ClickNode.Data).GetItemTitle + #13#10);
 	end else begin
-		Clipboard.AsText :=
-			GikoForm.ClickNode.Text + #13#10;
-
+		SetClipboardFromEncAnsi(
+			GikoForm.ClickNode.Text + #13#10);
 	end;
 end;
 // *************************************************************************
@@ -860,8 +859,8 @@ begin
 
 	if (TObject(GikoForm.ClickNode.Data) is TFavoriteItem) then begin
 		favItem := TFavoriteItem(GikoForm.ClickNode.Data);
-		Clipboard.AsText := favItem.GetItemTitle  + #13#10 +
-							favItem.URL + #13#10;
+		SetClipboardFromEncAnsi(favItem.GetItemTitle  + #13#10 +
+														favItem.URL + #13#10);
 	end;
 
 end;
@@ -1215,7 +1214,7 @@ begin
 	else if TObject(GikoForm.GetActiveContent) is TThreadItem then
 		s := s + TThreadItem(GikoForm.GetActiveContent).Title + #13#10;
 	if s <> '' then
-		Clipboard.AsText := s;
+		SetClipboardFromEncAnsi(s);
 end;
 // *************************************************************************
 //! 現在表示しているスレッド名とURLをコピーする
@@ -1230,7 +1229,7 @@ begin
 	else if TObject(GikoForm.GetActiveContent) is TThreadItem then
 		s := s + TThreadItem(GikoForm.GetActiveContent).Title + #13#10 + TThreadItem(GikoForm.GetActiveContent).URL + #13#10;
 	if s <> '' then
-		Clipboard.AsText := s;
+		SetClipboardFromEncAnsi(s);
 end;
 // *************************************************************************
 //! 表示されているスレッドをダウンロードする
@@ -1252,10 +1251,10 @@ procedure TGikoDM.BrowserTabCloseActionExecute(Sender: TObject);
 var
 	idx: Integer;
 begin
-	idx := GikoForm.BrowserTab.TabIndex;
+	idx := GikoForm.BrowserTabUC.TabIndex;
 	if idx <> -1 then begin
-		if GikoForm.BrowserTab.Tabs.Objects[idx] <> nil then begin
-			GikoForm.DeleteTab(TBrowserRecord(GikoForm.BrowserTab.Tabs.Objects[idx]));
+		if GikoForm.BrowserTabUC.Tabs.Objects[idx] <> nil then begin
+			GikoForm.DeleteTab(TBrowserRecord(GikoForm.BrowserTabUC.Tabs.Objects[idx]));
 		end;
 	end;
 end;
@@ -1264,7 +1263,7 @@ end;
 // *************************************************************************
 procedure TGikoDM.BrowserTabCloseActionUpdate(Sender: TObject);
 begin
-	TAction(Sender).Enabled := (GikoForm.BrowserTab.Tabs.Count > 0);
+	TAction(Sender).Enabled := (GikoForm.BrowserTabUC.Tabs.Count > 0);
 end;
 // *************************************************************************
 //! 現在開いているタブ以外を閉じる
@@ -1274,27 +1273,27 @@ var
 	i: Integer;
 	idx: Integer;
 begin
-	idx := GikoForm.BrowserTab.TabIndex;
+	idx := GikoForm.BrowserTabUC.TabIndex;
 	if idx = -1 then Exit;
-	GikoForm.BrowserTab.Tabs.BeginUpdate;
-	for i := GikoForm.BrowserTab.Tabs.Count - 1 downto GikoForm.BrowserTab.TabIndex + 1 do begin
-		TBrowserRecord(GikoForm.BrowserTab.Tabs.Objects[i]).Free;
-		GikoForm.BrowserTab.Tabs.Delete(i);
+	GikoForm.BrowserTabUC.Tabs.BeginUpdate;
+	for i := GikoForm.BrowserTabUC.Tabs.Count - 1 downto GikoForm.BrowserTabUC.TabIndex + 1 do begin
+		TBrowserRecord(GikoForm.BrowserTabUC.Tabs.Objects[i]).Free;
+		GikoForm.BrowserTabUC.Tabs.Delete(i);
 	end;
 	if idx > 0 then begin
-		for i := GikoForm.BrowserTab.TabIndex - 1 downto 0 do begin
-			TBrowserRecord(GikoForm.BrowserTab.Tabs.Objects[i]).Free;
-			GikoForm.BrowserTab.Tabs.Delete(i);
+		for i := GikoForm.BrowserTabUC.TabIndex - 1 downto 0 do begin
+			TBrowserRecord(GikoForm.BrowserTabUC.Tabs.Objects[i]).Free;
+			GikoForm.BrowserTabUC.Tabs.Delete(i);
 		end;
 	end;
-	GikoForm.BrowserTab.Tabs.EndUpdate;
+	GikoForm.BrowserTabUC.Tabs.EndUpdate;
 end;
 // *************************************************************************
 //! タブが２つ以上あれが有効にするUpdateイベント
 // *************************************************************************
 procedure TGikoDM.NotSelectTabCloseActionUpdate(Sender: TObject);
 begin
-	TAction(Sender).Enabled := (GikoForm.BrowserTab.Tabs.Count > 1);
+	TAction(Sender).Enabled := (GikoForm.BrowserTabUC.Tabs.Count > 1);
 end;
 // *************************************************************************
 //! 全てのタブを閉じる
@@ -1309,14 +1308,14 @@ begin
 
 	GikoForm.ActiveContent := nil;
 	GikoForm.BrowserNullTab.Thread := nil;
-	GikoForm.BrowserTab.OnChange := nil;
-	GikoForm.BrowserTab.Tabs.BeginUpdate;
-	for i := GikoForm.BrowserTab.Tabs.Count - 1 downto 0 do begin
-		TBrowserRecord(GikoForm.BrowserTab.Tabs.Objects[i]).Free;
+	GikoForm.BrowserTabUC.OnChange := nil;
+	GikoForm.BrowserTabUC.Tabs.BeginUpdate;
+	for i := GikoForm.BrowserTabUC.Tabs.Count - 1 downto 0 do begin
+		TBrowserRecord(GikoForm.BrowserTabUC.Tabs.Objects[i]).Free;
 	end;
-	GikoForm.BrowserTab.Tabs.Clear;
-	GikoForm.BrowserTab.Tabs.EndUpdate;
-	GikoForm.BrowserTab.OnChange := GikoForm.BrowserTabChange;
+	GikoForm.BrowserTabUC.Tabs.Clear;
+	GikoForm.BrowserTabUC.Tabs.EndUpdate;
+	GikoForm.BrowserTabUC.OnChange := GikoForm.BrowserTabChange;
 	GikoForm.SetContent(GikoForm.BrowserNullTab);
 	GikoForm.Caption := CAPTION_NAME ;
 end;
@@ -1331,15 +1330,15 @@ var
 	idx: Integer;
 	ThreadItem: TThreadItem;
 begin
-	idx := GikoForm.BrowserTab.TabIndex;
+	idx := GikoForm.BrowserTabUC.TabIndex;
 	if idx <> -1 then begin
-		if GikoForm.BrowserTab.Tabs.Objects[idx] <> nil then begin
-			ThreadItem := TBrowserRecord(GikoForm.BrowserTab.Tabs.Objects[idx]).Thread;
+		if GikoForm.BrowserTabUC.Tabs.Objects[idx] <> nil then begin
+			ThreadItem := TBrowserRecord(GikoForm.BrowserTabUC.Tabs.Objects[idx]).Thread;
 			if GikoSys.Setting.DeleteMsg then
 				if (GetKeyState( VK_SHIFT ) and $80000000) = 0 then
 					if MsgBox(GikoForm.Handle, StringReplace( DEL_MSG, '^0', ThreadItem.Title, [rfReplaceAll] ) , DEL_TITLE, MB_YESNO or MB_ICONWARNING or MB_DEFBUTTON2) <> ID_YES then
 						Exit;
-			GikoForm.DeleteTab(TBrowserRecord(GikoForm.BrowserTab.Tabs.Objects[idx]));
+			GikoForm.DeleteTab(TBrowserRecord(GikoForm.BrowserTabUC.Tabs.Objects[idx]));
             GikoForm.DeleteHistory(ThreadItem);
 			ThreadItem.DeleteLogFile;
 			if ThreadItem.ParentBoard = GikoForm.ActiveList then
@@ -1352,9 +1351,9 @@ end;
 // *************************************************************************
 procedure TGikoDM.LeftmostTabSelectActionExecute(Sender: TObject);
 begin
-	if GikoForm.BrowserTab.Tabs.Count > 0 then begin
-		GikoForm.BrowserTab.TabIndex := 0;
-		GikoForm.BrowserTab.OnChange(nil);
+	if GikoForm.BrowserTabUC.Tabs.Count > 0 then begin
+		GikoForm.BrowserTabUC.TabIndex := 0;
+		GikoForm.BrowserTabUC.OnChange(nil);
 	end;
 end;
 // *************************************************************************
@@ -1365,7 +1364,7 @@ begin
     if ( not GikoSys.Setting.LoopBrowserTabs ) then begin
         LeftmostTabSelectActionUpdate(Sender);
     end else begin
-        TAction(Sender).Enabled := (GikoForm.BrowserTab.Tabs.Count > 1);
+        TAction(Sender).Enabled := (GikoForm.BrowserTabUC.Tabs.Count > 1);
     end;
 end;
 
@@ -1374,26 +1373,26 @@ end;
 // *************************************************************************
 procedure TGikoDM.LeftmostTabSelectActionUpdate(Sender: TObject);
 begin
-	TAction(Sender).Enabled := (GikoForm.BrowserTab.Tabs.Count > 0)
-								and (GikoForm.BrowserTab.TabIndex <> 0);
+	TAction(Sender).Enabled := (GikoForm.BrowserTabUC.Tabs.Count > 0)
+								and (GikoForm.BrowserTabUC.TabIndex <> 0);
 end;
 // *************************************************************************
 //! 左のタブを選択する
 // *************************************************************************
 procedure TGikoDM.LeftTabSelectActionExecute(Sender: TObject);
 begin
-	if GikoForm.BrowserTab.Tabs.Count > 0 then begin
-		if GikoForm.BrowserTab.TabIndex = -1 then begin
-			GikoForm.BrowserTab.TabIndex := 0;
-			GikoForm.BrowserTab.OnChange(nil);
-		end else if GikoForm.BrowserTab.TabIndex > 0 then begin
-			GikoForm.BrowserTab.TabIndex := GikoForm.BrowserTab.TabIndex - 1;
-			GikoForm.BrowserTab.OnChange(nil);
+	if GikoForm.BrowserTabUC.Tabs.Count > 0 then begin
+		if GikoForm.BrowserTabUC.TabIndex = -1 then begin
+			GikoForm.BrowserTabUC.TabIndex := 0;
+			GikoForm.BrowserTabUC.OnChange(nil);
+		end else if GikoForm.BrowserTabUC.TabIndex > 0 then begin
+			GikoForm.BrowserTabUC.TabIndex := GikoForm.BrowserTabUC.TabIndex - 1;
+			GikoForm.BrowserTabUC.OnChange(nil);
 		end else begin
             if (GikoSys.Setting.LoopBrowserTabs) and
-                (GikoForm.BrowserTab.TabIndex = 0) then begin
-    			GikoForm.BrowserTab.TabIndex := GikoForm.BrowserTab.Tabs.Count - 1;
-	    		GikoForm.BrowserTab.OnChange(nil);
+                (GikoForm.BrowserTabUC.TabIndex = 0) then begin
+    			GikoForm.BrowserTabUC.TabIndex := GikoForm.BrowserTabUC.Tabs.Count - 1;
+	    		GikoForm.BrowserTabUC.OnChange(nil);
             end;
         end;
 	end;
@@ -1403,18 +1402,18 @@ end;
 // *************************************************************************
 procedure TGikoDM.RightTabSelectActionExecute(Sender: TObject);
 begin
-	if GikoForm.BrowserTab.Tabs.Count > 0 then begin
-		if GikoForm.BrowserTab.TabIndex = -1 then begin
-			GikoForm.BrowserTab.TabIndex := GikoForm.BrowserTab.Tabs.Count - 1;
-			GikoForm.BrowserTab.OnChange(nil);
-		end else if GikoForm.BrowserTab.TabIndex < (GikoForm.BrowserTab.Tabs.Count - 1) then begin
-			GikoForm.BrowserTab.TabIndex := GikoForm.BrowserTab.TabIndex + 1;
-			GikoForm.BrowserTab.OnChange(nil);
+	if GikoForm.BrowserTabUC.Tabs.Count > 0 then begin
+		if GikoForm.BrowserTabUC.TabIndex = -1 then begin
+			GikoForm.BrowserTabUC.TabIndex := GikoForm.BrowserTabUC.Tabs.Count - 1;
+			GikoForm.BrowserTabUC.OnChange(nil);
+		end else if GikoForm.BrowserTabUC.TabIndex < (GikoForm.BrowserTabUC.Tabs.Count - 1) then begin
+			GikoForm.BrowserTabUC.TabIndex := GikoForm.BrowserTabUC.TabIndex + 1;
+			GikoForm.BrowserTabUC.OnChange(nil);
 		end else begin
             if (GikoSys.Setting.LoopBrowserTabs) and
-                (GikoForm.BrowserTab.TabIndex = (GikoForm.BrowserTab.Tabs.Count - 1)) then begin
-    			GikoForm.BrowserTab.TabIndex := 0;
-	    		GikoForm.BrowserTab.OnChange(nil);
+                (GikoForm.BrowserTabUC.TabIndex = (GikoForm.BrowserTabUC.Tabs.Count - 1)) then begin
+    			GikoForm.BrowserTabUC.TabIndex := 0;
+	    		GikoForm.BrowserTabUC.OnChange(nil);
             end;
         end;
 	end;
@@ -1427,7 +1426,7 @@ begin
     if ( not GikoSys.Setting.LoopBrowserTabs ) then begin
         RightmostTabSelectActionUpdate(Sender);
     end else begin
-        TAction(Sender).Enabled := (GikoForm.BrowserTab.Tabs.Count > 1);
+        TAction(Sender).Enabled := (GikoForm.BrowserTabUC.Tabs.Count > 1);
     end;
 end;
 
@@ -1436,9 +1435,9 @@ end;
 // *************************************************************************
 procedure TGikoDM.RightmostTabSelectActionExecute(Sender: TObject);
 begin
-	if GikoForm.BrowserTab.Tabs.Count > 0 then begin
-		GikoForm.BrowserTab.TabIndex := GikoForm.BrowserTab.Tabs.Count - 1;
-		GikoForm.BrowserTab.OnChange(nil);
+	if GikoForm.BrowserTabUC.Tabs.Count > 0 then begin
+		GikoForm.BrowserTabUC.TabIndex := GikoForm.BrowserTabUC.Tabs.Count - 1;
+		GikoForm.BrowserTabUC.OnChange(nil);
 	end;
 end;
 // *************************************************************************
@@ -1446,8 +1445,8 @@ end;
 // *************************************************************************
 procedure TGikoDM.RightmostTabSelectActionUpdate(Sender: TObject);
 begin
-	TAction(Sender).Enabled := (GikoForm.BrowserTab.Tabs.Count > 0)
-								and (GikoForm.BrowserTab.TabIndex <> GikoForm.BrowserTab.Tabs.Count - 1);
+	TAction(Sender).Enabled := (GikoForm.BrowserTabUC.Tabs.Count > 0)
+								and (GikoForm.BrowserTabUC.TabIndex <> GikoForm.BrowserTabUC.Tabs.Count - 1);
 
 end;
 // *************************************************************************
@@ -1592,21 +1591,21 @@ var
 	i: Integer;
 	idx: Integer;
 begin
-	idx := GikoForm.BrowserTab.TabIndex;
+	idx := GikoForm.BrowserTabUC.TabIndex;
 	if idx = -1 then Exit;
-	GikoForm.BrowserTab.Tabs.BeginUpdate;
-	for i := GikoForm.BrowserTab.Tabs.Count - 1 downto idx + 1 do begin
-		TBrowserRecord(GikoForm.BrowserTab.Tabs.Objects[i]).Free;
-		GikoForm.BrowserTab.Tabs.Delete(i);
+	GikoForm.BrowserTabUC.Tabs.BeginUpdate;
+	for i := GikoForm.BrowserTabUC.Tabs.Count - 1 downto idx + 1 do begin
+		TBrowserRecord(GikoForm.BrowserTabUC.Tabs.Objects[i]).Free;
+		GikoForm.BrowserTabUC.Tabs.Delete(i);
 	end;
-	GikoForm.BrowserTab.Tabs.EndUpdate;
+	GikoForm.BrowserTabUC.Tabs.EndUpdate;
 end;
 // *************************************************************************
 //! タブの数が２以上で有効なUpdateイベント
 // *************************************************************************
 procedure TGikoDM.RightTabCloseActionUpdate(Sender: TObject);
 begin
-	TAction(Sender).Enabled := (GikoForm.BrowserTab.Tabs.Count > 1);
+	TAction(Sender).Enabled := (GikoForm.BrowserTabUC.Tabs.Count > 1);
 end;
 // *************************************************************************
 //! アクティブなタブより左を閉じる
@@ -1616,16 +1615,16 @@ var
 	i: Integer;
 	idx: Integer;
 begin
-	idx := GikoForm.BrowserTab.TabIndex;
+	idx := GikoForm.BrowserTabUC.TabIndex;
 	if idx = -1 then Exit;
-	GikoForm.BrowserTab.Tabs.BeginUpdate;
+	GikoForm.BrowserTabUC.Tabs.BeginUpdate;
 	if idx > 0 then begin
 		for i := idx - 1 downto 0 do begin
-			TBrowserRecord(GikoForm.BrowserTab.Tabs.Objects[i]).Free;
-			GikoForm.BrowserTab.Tabs.Delete(i);
+			TBrowserRecord(GikoForm.BrowserTabUC.Tabs.Objects[i]).Free;
+			GikoForm.BrowserTabUC.Tabs.Delete(i);
 		end;
 	end;
-	GikoForm.BrowserTab.Tabs.EndUpdate;
+	GikoForm.BrowserTabUC.Tabs.EndUpdate;
 end;
 ////////////////////////////////スレッドまでおしまい/////////////////////
 procedure TGikoDM.DataModuleCreate(Sender: TObject);
@@ -1799,7 +1798,7 @@ var
 	TmpTreeNode: TTreeNode;
 begin
 	TmpTreeNode := GikoForm.ClickNode;
-	GikoForm.TreeView.Selected := GikoForm.ClickNode;
+	GikoForm.TreeViewUC.Selected := GikoForm.ClickNode;
 	Board := nil;
 
 	if TObject(TmpTreeNode.Data) is TBoard then
@@ -1819,7 +1818,7 @@ var
 	TmpTreeNode: TTreeNode;
 begin
 	TmpTreeNode := GikoForm.ClickNode;
-	GikoForm.TreeView.Selected := GikoForm.ClickNode;
+	GikoForm.TreeViewUC.Selected := GikoForm.ClickNode;
 	ThreadItem := nil;
 
 	if TObject(TmpTreeNode.Data) is TThreadItem then
@@ -1839,7 +1838,7 @@ var
 	s: string;
 begin
 	TmpTreeNode := GikoForm.ClickNode;
-	GikoForm.TreeView.Selected := GikoForm.ClickNode;
+	GikoForm.TreeViewUC.Selected := GikoForm.ClickNode;
 	if TObject(TmpTreeNode.Data) is TBoard then begin
 		s := TBoard(TmpTreeNode.Data).URL + #13#10;
 	end else if TObject(TmpTreeNode.Data) is TFavoriteBoardItem then begin
@@ -1860,7 +1859,7 @@ var
 	s: string;
 begin
 	TmpTreeNode := GikoForm.ClickNode;
-	GikoForm.TreeView.Selected := GikoForm.ClickNode;
+	GikoForm.TreeViewUC.Selected := GikoForm.ClickNode;
 	if TObject(TmpTreeNode.Data) is TBoard then begin
 		s := TBoard(TmpTreeNode.Data).Title + #13#10 + TBoard(TmpTreeNode.Data).URL + #13#10;
 	end else if TObject(TmpTreeNode.Data) is TFavoriteBoardItem then begin
@@ -1870,7 +1869,7 @@ begin
 	end else if TObject(TmpTreeNode.Data) is TFavoriteThreadItem then begin
 		s := TFavoriteThreadItem(TmpTreeNode.Data).Item.Title + #13#10 + TFavoriteThreadItem(TmpTreeNode.Data).URL + #13#10;
 	end;
-	Clipboard.AsText := s;
+	SetClipboardFromEncAnsi(s);
 end;
 // *************************************************************************
 //! お気に入りに追加する
@@ -1892,12 +1891,12 @@ begin
 	if InputQuery('板名検索','板名の入力',s) then begin
 		next := true;
 		while next do begin
-			if GikoForm.TreeView.Selected = nil then
-				CurItem := GikoForm.TreeView.Items.GetFirstNode
+			if GikoForm.TreeViewUC.Selected = nil then
+				CurItem := GikoForm.TreeViewUC.Items.GetFirstNode
 			else begin
-				CurItem := GikoForm.TreeView.Selected.GetNext;
+				CurItem := GikoForm.TreeViewUC.Selected.GetNext;
 				if CurItem = nil then
-					CurItem := GikoForm.TreeView.Items.GetFirstNode;
+					CurItem := GikoForm.TreeViewUC.Items.GetFirstNode;
 			end;
 			while CurItem <> nil do begin
 				if (CurItem.ImageIndex <> 2) and (VaguePos(s,CurItem.Text) <> 0) then begin
@@ -1909,15 +1908,15 @@ begin
 				if CurItem = nil then begin
 					msg := '先頭に戻りますか？';
 					if MsgBox(GikoForm.Handle, msg, '', MB_YESNO or MB_ICONEXCLAMATION) = mrYes	then begin
-						CurItem := GikoForm.TreeView.Items.GetFirstNode;
+						CurItem := GikoForm.TreeViewUC.Items.GetFirstNode;
 					end else begin
 						Exit;
 					end;
-					GikoForm.TreeView.Select(CurItem);
-					GikoForm.TreeView.SetFocus;
+					GikoForm.TreeViewUC.Select(CurItem);
+					GikoForm.TreeViewUC.SetFocus;
 				end else begin
-					GikoForm.TreeView.Select(CurItem);
-					GikoForm.TreeView.SetFocus;
+					GikoForm.TreeViewUC.Select(CurItem);
+					GikoForm.TreeViewUC.SetFocus;
 					msg := '次に行きますか？';
 					if MsgBox(GikoForm.Handle, msg, '', MB_YESNO or MB_ICONEXCLAMATION) = mrYes	then begin
 						next := true;
@@ -1939,9 +1938,9 @@ procedure TGikoDM.TreeSelectNameCopyExecute(Sender: TObject);
 var
 	s: string;
 begin
-	GikoForm.TreeView.Selected := GikoForm.ClickNode;
+	GikoForm.TreeViewUC.Selected := GikoForm.ClickNode;
 	s := GikoForm.ClickNode.Text;
-	Clipboard.AsText := s;
+	SetClipboardFromEncAnsi(s);
 end;
 ////////////////////////////////ツリーポップアップまでおしまい/////////////////////
 // *************************************************************************
@@ -2045,7 +2044,7 @@ begin
 			GikoForm.DeleteTab(ThreadItem);
 			ThreadItem.DeleteLogFile;
 		end;
-        GikoForm.TreeView.Refresh;	// UnRead の表示を更新
+        GikoForm.TreeViewUC.Refresh;	// UnRead の表示を更新
 		GikoForm.ListView.Refresh;
 	finally
 		List.Free;
@@ -2235,9 +2234,9 @@ var
   rec : TBrowserRecord;
   i : Integer;
 begin
-    for i := 0 to GikoForm.BrowserTab.Tabs.Count -1 do begin
+    for i := 0 to GikoForm.BrowserTabUC.Tabs.Count -1 do begin
         try
-            rec := TBrowserRecord( GikoForm.BrowserTab.Tabs.Objects[ i ] );
+            rec := TBrowserRecord( GikoForm.BrowserTabUC.Tabs.Objects[ i ] );
             if( rec <> nil) and (rec.Thread <> nil) then
                 AStringList.Add( rec.Thread.URL );
         except
@@ -2266,9 +2265,9 @@ begin
                 end;
                 //最初の１枚に設定
                 if (GikoSys.Setting.URLDisplay) and
-                    (GikoForm.BrowserTab.Tabs.Count > 0) then begin
+                    (GikoForm.BrowserTabUC.Tabs.Count > 0) then begin
 					GikoForm.AddressComboBox.Text :=
-                        TBrowserRecord(GikoForm.BrowserTab.Tabs.Objects[0]).Thread.URL;
+                        TBrowserRecord(GikoForm.BrowserTabUC.Tabs.Objects[0]).Thread.URL;
                 end;
             end;
         finally
@@ -2306,7 +2305,7 @@ begin
         URLs.Free;
 	end;
 
-    if (GikoForm.BrowserTab.Tabs.Count = 0) and
+    if (GikoForm.BrowserTabUC.Tabs.Count = 0) and
         (TabsOpenAction.Tag <> 1) then  begin
         ShowMessage('表示するタブがありません。');
     end;
@@ -2966,7 +2965,7 @@ begin
 				s := s + TThreadItem(List[i]).Title + #13#10;
 		end;
 		if s <> '' then
-			Clipboard.AsText := s;
+			SetClipboardFromEncAnsi(s);
 	finally
 		List.Free;
 	end;
@@ -3003,7 +3002,7 @@ begin
 				s := s + TThreadItem(List[i]).Title + #13#10 + TThreadItem(List[i]).URL + #13#10;
 		end;
 		if s <> '' then
-			Clipboard.AsText := s;
+			SetClipboardFromEncAnsi(s);
 	finally
 		List.Free;
 	end;
@@ -3407,7 +3406,7 @@ procedure TGikoDM.LinkBarVisibleActionExecute(Sender: TObject);
 var
 	CoolBand: TCoolBand;
 begin
-	CoolBand := GikoForm.GetCoolBand(GikoForm.MainCoolBar, GikoForm.LinkToolBar);
+	CoolBand := GikoForm.GetCoolBand(GikoForm.MainCoolBar, GikoForm.LinkToolBarUC);
 	if CoolBand = nil then
 		Exit;
 	GikoSys.Setting.LinkBarVisible := LinkBarVisibleAction.Checked;
@@ -3562,8 +3561,8 @@ begin
 	// キャビネットツールバー及びキャビネットの表示切替
 	GikoForm.HistoryToolBar.Hide;
 	GikoForm.FavoriteToolBar.Show;
-	GikoForm.TreeView.Visible := False;
-	GikoForm.FavoriteTreeView.Visible := True;
+	GikoForm.TreeViewUC.Visible := False;
+	GikoForm.FavoriteTreeViewUC.Visible := True;
 
 	GikoForm.CabinetSelectToolButton.Caption := 'お気に入り';
 	GikoForm.TreeType := gttFavorite;
@@ -3573,7 +3572,7 @@ begin
 	CabinetHistoryAction.Checked := False;
 
 	// お気に入りのツリーを展開
-	GikoForm.FavoriteTreeView.Items.GetFirstNode.Expanded := True;
+	GikoForm.FavoriteTreeViewUC.Items.GetFirstNode.Expanded := True;
 
 end;
 // *************************************************************************
@@ -3843,14 +3842,14 @@ procedure TGikoDM.SetFocusForCabinetActionExecute(Sender: TObject);
 begin
 	if GikoForm.ActiveContent <> nil then
 		GikoForm.WebBrowserClick(GikoForm.ActiveContent.Browser); //一回Browserに当てないと動かないときがある
-	if GikoForm.TreeView.Visible then begin
-		GikoForm.TreeView.SetFocus;
-		if(GikoForm.TreeView.Items.Count > 0) and ( GikoForm.TreeView.Selected = nil ) then
-			GikoForm.TreeView.Items.Item[0].Selected := true;
-	end else if GikoForm.FavoriteTreeView.Visible then begin
-		GikoForm.FavoriteTreeView.SetFocus;
-		if(GikoForm.FavoriteTreeView.Items.Count > 0) and (GikoForm.FavoriteTreeView.Selected = nil) then
-			GikoForm.FavoriteTreeView.Items.Item[0].Selected := true;
+	if GikoForm.TreeViewUC.Visible then begin
+		GikoForm.TreeViewUC.SetFocus;
+		if(GikoForm.TreeViewUC.Items.Count > 0) and ( GikoForm.TreeViewUC.Selected = nil ) then
+			GikoForm.TreeViewUC.Items.Item[0].Selected := true;
+	end else if GikoForm.FavoriteTreeViewUC.Visible then begin
+		GikoForm.FavoriteTreeViewUC.SetFocus;
+		if(GikoForm.FavoriteTreeViewUC.Items.Count > 0) and (GikoForm.FavoriteTreeViewUC.Selected = nil) then
+			GikoForm.FavoriteTreeViewUC.Items.Item[0].Selected := true;
 	end;
 end;
 // *************************************************************************
@@ -3919,8 +3918,8 @@ begin
 				end;
 			end;
 		end;
-		if GikoForm.TreeView.Visible then
-			GikoForm.TreeView.Refresh;
+		if GikoForm.TreeViewUC.Visible then
+			GikoForm.TreeViewUC.Refresh;
 		if GikoForm.ListView.Visible then
 			GikoForm.ListView.Refresh;
 	finally
@@ -4045,7 +4044,7 @@ end;
 procedure TGikoDM.OpenFindDialogActionExecute(Sender: TObject);
 begin
 	if( GikoForm.ActiveContent <> nil) and (GikoForm.ActiveContent.Browser <> nil) then begin
-        GikoForm.ActiveContent.OpenFindDialog;
+		GikoForm.ActiveContent.OpenFindDialog;
 	end;
 end;
 
@@ -4057,8 +4056,7 @@ procedure TGikoDM.FavoriteTreeViewItemNameCopyActionExecute(
 begin
 	if GikoForm.ClickNode = nil then Exit;
 
-	Clipboard.AsText :=
-			GikoForm.ClickNode.Text + #13#10;
+	WideCtrls.SetClipboard(GikoForm.ClickNode.Text + #13#10);
 end;
 
 // *************************************************************************
@@ -4066,16 +4064,16 @@ end;
 // *************************************************************************
 procedure TGikoDM.CloseAllEditorActionExecute(Sender: TObject);
 var
-    i : Integer;
+	i : Integer;
 begin
-    if ( EditorFormExists ) then begin
-    	//スクリーン上の全てのフォームから、EditorFormを閉じる
-	    for i := Screen.CustomFormCount - 1 downto 0 do begin
-    		if TObject(Screen.CustomForms[i]) is TEditorForm then begin
-                TEditorForm(Screen.CustomForms[i]).Close;
-    		end;
-	    end;
-    end;
+	if ( EditorFormExists ) then begin
+		//スクリーン上の全てのフォームから、EditorFormを閉じる
+		for i := Screen.CustomFormCount - 1 downto 0 do begin
+			if TObject(Screen.CustomForms[i]) is TEditorForm then begin
+				TEditorForm(Screen.CustomForms[i]).Close;
+			end;
+		end;
+	end;
 end;
 // *************************************************************************
 //! スクリーン上にレスエディタがいた場合，有効になる
@@ -4142,10 +4140,10 @@ end;
 // *************************************************************************
 procedure TGikoDM.PrevMoveHistoryExecute(Sender: TObject);
 begin
-    if ( GikoForm.BrowserTab.TabIndex >= 0 ) then begin
+    if ( GikoForm.BrowserTabUC.TabIndex >= 0 ) then begin
         BackToHistory(MoveHisotryManager.getPrevItem
-            (TBrowserRecord(GikoForm.BrowserTab.Tabs
-                    .Objects[GikoForm.BrowserTab.TabIndex])));
+            (TBrowserRecord(GikoForm.BrowserTabUC.Tabs
+                    .Objects[GikoForm.BrowserTabUC.TabIndex])));
     end else begin
         BackToHistory(MoveHisotryManager.getPrevItem( nil ) );
     end;
@@ -4158,8 +4156,8 @@ var
 begin
     if ( item <> nil ) then begin
         if ( GikoForm.GetActiveContent = item.ThreadItem ) then begin
-            browser := TBrowserRecord(GikoForm.BrowserTab.Tabs
-                .Objects[GikoForm.BrowserTab.TabIndex]).Browser;
+            browser := TBrowserRecord(GikoForm.BrowserTabUC.Tabs
+                .Objects[GikoForm.BrowserTabUC.TabIndex]).Browser;
             if (browser <> nil) then begin
                 try
                     doc := browser.ControlInterface.Document as IHTMLDocument2;
@@ -4216,10 +4214,10 @@ var
     doc : IHTMLDocument2;
 begin
     if (GikoForm.GetActiveContent <> nil) then begin
-        if (GikoForm.BrowserTab.Tabs.Count > 0) and
-            (GikoForm.BrowserTab.TabIndex >= 0) then begin
-            browser := TBrowserRecord(GikoForm.BrowserTab.Tabs
-                .Objects[GikoForm.BrowserTab.TabIndex]).Browser;
+        if (GikoForm.BrowserTabUC.Tabs.Count > 0) and
+            (GikoForm.BrowserTabUC.TabIndex >= 0) then begin
+            browser := TBrowserRecord(GikoForm.BrowserTabUC.Tabs
+                .Objects[GikoForm.BrowserTabUC.TabIndex]).Browser;
             if (browser <> nil) then begin
                 try
                     doc := browser.ControlInterface.Document as IHTMLDocument2;
@@ -4393,10 +4391,10 @@ var
 begin
     Result := nil;
     if (GikoForm.GetActiveContent <> nil) then begin
-        if (GikoForm.BrowserTab.Tabs.Count > 0) and
-            (GikoForm.BrowserTab.TabIndex >= 0) then begin
-            browser := TBrowserRecord(GikoForm.BrowserTab.Tabs
-                .Objects[GikoForm.BrowserTab.TabIndex]).Browser;
+        if (GikoForm.BrowserTabUC.Tabs.Count > 0) and
+            (GikoForm.BrowserTabUC.TabIndex >= 0) then begin
+            browser := TBrowserRecord(GikoForm.BrowserTabUC.Tabs
+                .Objects[GikoForm.BrowserTabUC.TabIndex]).Browser;
             if (browser <> nil) then begin
                 try
                     doc := browser.ControlInterface.Document as IHTMLDocument2;
@@ -4522,9 +4520,9 @@ begin
     GikoForm.ListView.Items.BeginUpdate;
     GikoForm.ListView.Items.Clear;
     BoardGroup.SpecialBoard.Clear;
-	for i := GikoForm.BrowserTab.Tabs.Count - 1 downto 0 do begin
+	for i := GikoForm.BrowserTabUC.Tabs.Count - 1 downto 0 do begin
         BoardGroup.SpecialBoard.Add(
-    		TBrowserRecord(GikoForm.BrowserTab.Tabs.Objects[i]).Thread);
+    		TBrowserRecord(GikoForm.BrowserTabUC.Tabs.Objects[i]).Thread);
 	end;
     GikoForm.ListView.Items.EndUpdate;
     GikoForm.SetActiveList(BoardGroup.SpecialBoard);
