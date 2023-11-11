@@ -96,6 +96,13 @@ BODY {
   background-color: #202020;
   margin-bottom : 30px;
   /* white-space: nowrap; */
+  scrollbar-arrow-color:808080;
+  scrollbar-face-color:#606060;
+  scrollbar-3dlight-color:#404040;
+  scrollbar-darkshadow-color:#404040;
+  scrollbar-highlight-color:#404040;
+  scrollbar-shadow-color:#404040;
+  scrollbar-track-color:#404040;
 }
 
 /* ***** ƒŠƒ“ƒN ***** */
