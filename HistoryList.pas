@@ -4,7 +4,7 @@ interface
 
 uses
 	Windows, Messages, SysUtils, Classes, Graphics, Controls,
-    BoardGroup, Favorite, ComCtrls, GikoXMLDoc, TntComCtrls;
+    BoardGroup, Favorite, ComCtrls, GikoXMLDoc, TntComCtrls, WideCtrls;
 
 type
 	TGikoTreeType = (gttNone, gtt2ch, gttHistory, gttFavorite);
@@ -237,7 +237,7 @@ begin
 		TreeView.Items.Clear;
 		for i := 0 to Self.Count - 1 do begin
 			Item := TFavoriteThreadItem(Self[i]);
-			Node := TreeView.Items.Add(nil, Item.Title);
+			Node := TreeView.Items.Add(nil, EncAnsiToWideString(Item.Title));
 			{
 			if Item.Item.NewArrival then begin
 				Node.ImageIndex := ITEM_ICON_THREADNEW1;

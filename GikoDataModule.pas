@@ -52,7 +52,7 @@ const
 	//URL_GoWiki: string = 'sourceforge.jp/projects/gikonavigoeson/wiki/FAQ';
 	URL_GoWiki: string = 'ja.osdn.net/projects/gikonavigoeson/wiki/FAQ';
 
-	SELECTCOMBOBOX_NAME: string = ''; // 'スレッド絞込検索';
+	SELECTCOMBOBOX_NAME: WideString = ''; // 'スレッド絞込検索';
 	SELECTCOMBOBOX_COLOR: TColor = clWindow;
 
 
@@ -1476,32 +1476,32 @@ var
 begin
 	Dlg := TListSelectDialog.Create(GikoForm);
 	try
-		Dlg.SelectComboBox.Items.Assign(GikoSys.Setting.SelectTextList);
-		Dlg.SelectComboBox.Text := GikoForm.SelectResWord;
+		Dlg.SelectComboBoxUC.Items_Assign(GikoSys.Setting.SelectTextList);
+		Dlg.SelectComboBoxUC.Text := GikoForm.SelectResWord;
 		Dlg.ShowModal;
 		if Dlg.ModalResult = mrOK then begin
 			SelectResAction.Checked := True;
-			if Length( Dlg.SelectComboBox.Text ) = 0 then begin
+			if Length( Dlg.SelectComboBoxUC.Text ) = 0 then begin
 				// 空入力で OK は絞り込み解除と同意義
 				ResRangeAction.Execute;
 			end else begin
 				GikoSys.ResRange := Ord( grrSelect );
 
 				// 最後に設定したものを覚えておく
-				GikoForm.SelectResWord := Dlg.SelectComboBox.Text;
+				GikoForm.SelectResWord := Dlg.SelectComboBoxUC.Text;
 
 				// 検索履歴の更新
-				idx := GikoSys.Setting.SelectTextList.IndexOf(Dlg.SelectComboBox.Text);
+				idx := GikoSys.Setting.SelectTextList.IndexOf(Dlg.SelectComboBoxUC.EncodeText);
 				if idx <> -1 then
 					GikoSys.Setting.SelectTextList.Delete(idx);
-				GikoSys.Setting.SelectTextList.Insert(0, Dlg.SelectComboBox.Text);
-				while Dlg.SelectComboBox.Items.Count > 100 do begin
-					Dlg.SelectComboBox.Items.Delete(Dlg.SelectComboBox.Items.Count - 1);
+				GikoSys.Setting.SelectTextList.Insert(0, Dlg.SelectComboBoxUC.EncodeText);
+				while Dlg.SelectComboBoxUC.Items.Count > 100 do begin
+					Dlg.SelectComboBoxUC.Items.Delete(Dlg.SelectComboBoxUC.Items.Count - 1);
 				end;
 
 				try
 					if GikoForm.SelectComboBoxPanel.Visible then
-						GikoForm.SelectComboBox.Items.Assign( GikoSys.Setting.SelectTextList );
+						GikoForm.SelectComboBoxUC.Items_Assign( GikoSys.Setting.SelectTextList );
 				except
 				end;
 
@@ -1510,7 +1510,7 @@ begin
 				try
 					GikoSys.FSelectResFilter.Reverse := True;
 					FilterList.Delimiter := ' '; //区切り子を半角スペースに設定
-					FilterList.DelimitedText := Dlg.SelectComboBox.Text;
+					FilterList.DelimitedText := Dlg.SelectComboBoxUC.EncodeText;
 
 					GikoSys.FSelectResFilter.LoadFromStringList( FilterList );
 				finally
@@ -2070,8 +2070,8 @@ begin
 		if MsgBox(GikoForm.Handle, DEL_MSG, DEL_TITLE, MB_YESNO or MB_ICONWARNING or MB_DEFBUTTON2) <> ID_YES then
 			Exit;
 	GikoSys.Setting.SelectTextList.Clear;
-	GikoForm.SelectComboBox.Items.Clear;
-	GikoForm.SelectComboBox.Text := '';
+	GikoForm.SelectComboBoxUC.Items.Clear;
+	GikoForm.SelectComboBoxUC.Text := '';
 	GikoForm.SetListViewType( gvtAll );
 end;
 // *************************************************************************
@@ -2704,8 +2704,8 @@ end;
 procedure TGikoDM.ClearSelectComboBox;
 begin
 	if GikoForm.SelectComboBoxPanel.Visible then begin
-		GikoForm.SelectComboBox.Text := SELECTCOMBOBOX_NAME;
-		GikoForm.SelectComboBox.Color := SELECTCOMBOBOX_COLOR;
+		GikoForm.SelectComboBoxUC.Text := SELECTCOMBOBOX_NAME;
+		GikoForm.SelectComboBoxUC.Color := SELECTCOMBOBOX_COLOR;
 		GikoForm.ListView.SetFocus;
 	end;
 end;
@@ -2828,16 +2828,16 @@ begin
 					if GikoSys.Setting.ListHeightState = glsMax then
 						BrowserMinAction.Execute;
 				end;
-				GikoForm.SelectComboBox.SetFocus;
+				GikoForm.SelectComboBoxUC.SetFocus;
 				exit;
 			end;
 		end;
 	except
 	end;
 
-	if GikoForm.SelectComboBox.Text = SELECTCOMBOBOX_NAME then begin
-		GikoForm.SelectComboBox.Text := '';
-		GikoForm.SelectComboBox.Color := clWindow;
+	if GikoForm.SelectComboBoxUC.Text = SELECTCOMBOBOX_NAME then begin
+		GikoForm.SelectComboBoxUC.Text := '';
+		GikoForm.SelectComboBoxUC.Color := clWindow;
 	end;
 
 	AllItemAction.Checked := False;
@@ -2847,35 +2847,35 @@ begin
 	GikoForm.ModifySelectList;
 	Dlg := TListSelectDialog.Create(GikoForm);
 	try
-		Dlg.SelectComboBox.Items.Assign(GikoSys.Setting.SelectTextList);
-		Dlg.SelectComboBox.Text := GikoForm.SelectComboBox.Text;
+		Dlg.SelectComboBoxUC.Items_Assign(GikoSys.Setting.SelectTextList);
+		Dlg.SelectComboBoxUC.Text := GikoForm.SelectComboBoxUC.Text;
 		Dlg.ShowModal;
 		if Dlg.ModalResult = mrCancel then begin
-			if Length( GikoForm.SelectComboBox.Text ) = 0 then begin
+			if Length( GikoForm.SelectComboBoxUC.Text ) = 0 then begin
 				AllItemAction.Checked := True;
-				GikoForm.SelectComboBox.Text := SELECTCOMBOBOX_NAME;
-				GikoForm.SelectComboBox.Color := SELECTCOMBOBOX_COLOR;
+				GikoForm.SelectComboBoxUC.Text := SELECTCOMBOBOX_NAME;
+				GikoForm.SelectComboBoxUC.Color := SELECTCOMBOBOX_COLOR;
 			end;
 
 			if GikoForm.GetActiveList is TBoard then
 				GikoForm.SetListViewType(gvtUser, TBoard(GikoForm.GetActiveList).ParentCategory.ParenTBBS.SelectText , Dlg.KubetsuCheckBox.Checked);
 		end else begin
-			idx := GikoSys.Setting.SelectTextList.IndexOf(Dlg.SelectComboBox.Text);
+			idx := GikoSys.Setting.SelectTextList.IndexOf(Dlg.SelectComboBoxUC.EncodeText);
 			if idx <> -1 then
 				GikoSys.Setting.SelectTextList.Delete(idx);
-			GikoSys.Setting.SelectTextList.Insert(0, Dlg.SelectComboBox.Text);
-			while Dlg.SelectComboBox.Items.Count > 100 do begin
-				Dlg.SelectComboBox.Items.Delete(Dlg.SelectComboBox.Items.Count - 1);
+			GikoSys.Setting.SelectTextList.Insert(0, Dlg.SelectComboBoxUC.EncodeText);
+			while Dlg.SelectComboBoxUC.Items.Count > 100 do begin
+				Dlg.SelectComboBoxUC.Items.Delete(Dlg.SelectComboBoxUC.Items.Count - 1);
 			end;
 
-			if Length( Dlg.SelectComboBox.Text ) = 0 then begin
-				GikoForm.SelectComboBox.Text := SELECTCOMBOBOX_NAME;
-				GikoForm.SelectComboBox.Color := SELECTCOMBOBOX_COLOR;
+			if Length( Dlg.SelectComboBoxUC.Text ) = 0 then begin
+				GikoForm.SelectComboBoxUC.Text := SELECTCOMBOBOX_NAME;
+				GikoForm.SelectComboBoxUC.Color := SELECTCOMBOBOX_COLOR;
 			end else begin
-				GikoForm.SelectComboBox.Text := Dlg.SelectComboBox.Text;
-				GikoForm.SelectComboBox.Color := clWindow;
+				GikoForm.SelectComboBoxUC.Text := Dlg.SelectComboBoxUC.Text;
+				GikoForm.SelectComboBoxUC.Color := clWindow;
 			end;
-			GikoForm.SetListViewType(gvtUser, Dlg.SelectComboBox.Text, Dlg.KubetsuCheckBox.Checked);
+			GikoForm.SetListViewType(gvtUser, Dlg.SelectComboBoxUC.EncodeText, Dlg.KubetsuCheckBox.Checked);
 		end;
 	finally
 		Dlg.Release;

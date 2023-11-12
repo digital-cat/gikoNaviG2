@@ -605,7 +605,7 @@ type
 		FListViewBackGroundColor : TColor;	///< ListViewのBackGroundColor
 		FUseOddResOddColor : Boolean; 			///< 取得レス数とスレッドのレス数が違ったときに他の色で表示
 		FOddColor : TColor;					 				///< その色
-		FSelectResWord	: string;						///< レス絞込ワード
+		FSelectResWord	: WideString;				///< レス絞込ワード
 		FIsIgnoreResize	: TResizeType;			///< リサイズイベントを無視するかどうか
 		FIsMinimize			: TMinimizeType;		///< 最小化している最中か
 		FOldFormWidth		: Integer;					///< 直前のウィンドウの幅
@@ -736,6 +736,7 @@ type
 		FavoriteTreeViewUC: TTntTreeView;
 		BrowserTabUC: TTntTabControl;
 		TreeViewUC: TTntTreeView;
+		SelectComboBoxUC: TWideComboBox;
 		procedure MoveToURL(const inURL: string; KeyMask: Boolean = False);
 		function InsertBrowserTab(ThreadItem: TThreadItem; ActiveTab: Boolean = True) : TBrowserRecord;
 		procedure ReloadBBS;
@@ -752,7 +753,7 @@ type
 		property TreeType: TGikoTreeType read FTreeType write FTreeType;
 		property ActiveContent: TBrowserRecord read FActiveContent write FActiveContent;
 		property ResRangeMenuSelect: Longint read FResRangeMenuSelect write FResRangeMenuSelect;
-		property SelectResWord	: string read FSelectResWord write FSelectResWord;
+		property SelectResWord	: WideString read FSelectResWord write FSelectResWord;
 		property BrowserSizeWidth: Integer read FBrowserSizeWidth write FBrowserSizeWidth;
 		property BrowserSizeHeight: Integer read FBrowserSizeHeight write FBrowserSizeHeight;
 		property SearchDialog: TSearchDialog read FSearchDialog write FSearchDialog;
@@ -1110,6 +1111,24 @@ begin
 		msgCol.Width      := MessageListView.Column[i].Width;
 	end;
 	MessageListView.Visible := False;
+	// フレッド絞り込みコンボボックスをUnicode対応版に差し替え
+	SelectComboBoxUC := TWideComboBox.Create(Self);
+	SelectComboBoxUC.Parent           := SelectComboBox.Parent;
+	SelectComboBoxUC.Left             := SelectComboBox.Left;
+	SelectComboBoxUC.Top              := SelectComboBox.Top;
+	SelectComboBoxUC.Width            := SelectComboBox.Width;
+	SelectComboBoxUC.Height           := SelectComboBox.Height;
+	SelectComboBoxUC.Font             := SelectComboBox.Font;
+	SelectComboBoxUC.Style            := SelectComboBox.Style;
+	SelectComboBoxUC.Hint             := SelectComboBox.Hint;
+	SelectComboBoxUC.ItemHeight       := SelectComboBox.ItemHeight;
+	SelectComboBoxUC.TabOrder         := SelectComboBox.TabOrder;
+	SelectComboBoxUC.Tag              := SelectComboBox.Tag;
+	SelectComboBoxUC.OnChange         := SelectComboBox.OnChange;
+	SelectComboBoxUC.OnEnter          := SelectComboBox.OnEnter;
+	SelectComboBoxUC.OnExit           := SelectComboBox.OnExit;
+	SelectComboBoxUC.OnKeyDown        := SelectComboBox.OnKeyDown;
+  SelectComboBox.Visible := False;
 	//-------------------
 
 	//メニューフォント
@@ -1205,7 +1224,7 @@ begin
 		end;
 	Ord( grrSelect ):
 		begin
-			SelectComboBox.Text := SelectComboBox.Items[ 1 ];
+			SelectComboBoxUC.Text := SelectComboBoxUC.Items[ 1 ];
 			GikoDM.SelectResAction.Checked := True;
 		end;
 	else
@@ -1536,7 +1555,7 @@ begin
 
 	// ツールバーの初期化の影響？でコンボボックスが初期化される(？)ため上からここへ移動 for D2007
 	// 絞込検索履歴
-	SelectComboBox.Items.Assign( GikoSys.Setting.SelectTextList );
+	SelectComboBoxUC.Items_Assign( GikoSys.Setting.SelectTextList );
 
 	// 初期化に失敗したモジュールチェック
 	if (FavoriteDM.AbEnd) then begin
@@ -2028,6 +2047,7 @@ begin
     FavoriteTreeViewUC.Free;
     BrowserTabUC.Free;
     TreeViewUC.Free;
+    SelectComboBoxUC.Free;
   except
   end;
 
@@ -4406,7 +4426,7 @@ begin
 					AddressComboBox.Text := GetActiveContent.URL;
 
 				if ((TreeViewUC.Visible) and (TreeViewUC.Focused)) or ((FavoriteTreeViewUC.Visible) and (FavoriteTreeViewUC.Focused)) or
-					(ListView.Focused) or (SelectComboBox.Focused) or (AddressComboBox.Focused)
+					(ListView.Focused) or (SelectComboBoxUC.Focused) or (AddressComboBox.Focused)
 				then
 				else
 					GikoDM.SetFocusForBrowserAction.Execute;
@@ -5248,7 +5268,7 @@ begin
 				SendMessage(handle, WM_KEYDOWN, Msg.CharCode, Msg.KeyData);
 			Handled := True;
 		end;
-	end	else if (AddressComboBox.Focused) or (SelectComboBox.Focused) then begin
+	end	else if (AddressComboBox.Focused) or (SelectComboBoxUC.Focused) then begin
 		if Msg.CharCode in [VK_BACK] then begin
 			//BSが２回送られる不具合回避
 			if Msg.KeyData > 0 then begin
@@ -6071,7 +6091,7 @@ end;
 procedure TGikoForm.SelectComboBoxChange(Sender: TObject);
 begin
 
-	SetSelectWord( SelectComboBox.Text );
+	SetSelectWord( SelectComboBoxUC.EncodeText );
 
 end;
 
@@ -6080,8 +6100,9 @@ procedure TGikoForm.SelectComboBoxKeyDown(Sender: TObject; var Key: Word;
 var
   IMC: HIMC;
   Len, idx: integer;
-  Str: string;
-  tmp: string;
+  StrA: AnsiString;
+  Str: WideString;
+  tmp: WideString;
 begin
 
 	if Key = VK_Return then
@@ -6089,37 +6110,38 @@ begin
 		ModifySelectList;
 	end else if Key = 229 then begin
 		if GikoSys.Setting.UseUndecided then begin
-			IMC := ImmGetContext(SelectComboBox.Handle); //コンテキスト取得
-			Len := ImmGetCompositionString(IMC, GCS_COMPSTR, nil, 0); //まず長さを取得
+			IMC := ImmGetContext(SelectComboBoxUC.Handle); //コンテキスト取得
+			Len := ImmGetCompositionStringW(IMC, GCS_COMPSTR, nil, 0); //まず長さを取得
 			SetLength(Str, Len + 1); //Bufferのメモリを設定
-			ImmGetCompositionString(IMC, GCS_COMPSTR, PChar(Str), Len + 1); //まず長さを取得
-			ImmReleaseContext(SelectComboBox.Handle, IMC);  //コンテキスト解放
+			ImmGetCompositionStringW(IMC, GCS_COMPSTR, PWideChar(Str), Len + 1); //まず長さを取得
+			ImmReleaseContext(SelectComboBoxUC.Handle, IMC);  //コンテキスト解放
 			SetLength(Str, Len);
-			if SelectComboBox.SelLength > 0 then begin //選択中の文字列があるか
-				tmp := Copy(SelectComboBox.Text, 1, SelectComboBox.SelStart);
-				Str := tmp + Str + Copy(SelectComboBox.Text, SelectComboBox.SelStart + SelectComboBox.SelLength + 1, Length(SelectComboBox.Text));
+			if SelectComboBoxUC.SelLength > 0 then begin //選択中の文字列があるか
+				tmp := Copy(SelectComboBoxUC.Text, 1, SelectComboBoxUC.SelStart);
+				Str := tmp + Str + Copy(SelectComboBoxUC.Text, SelectComboBoxUC.SelStart + SelectComboBoxUC.SelLength + 1, Length(SelectComboBoxUC.Text));
 			end else
-				Str := SelectComboBox.Text + Str;
+				Str := SelectComboBoxUC.Text + Str;
 
 			if (Length(Str) > 0) then begin
-				SetSelectWord(Str);
+				SetSelectWord(WideToEncAnsiString(Str));
 			end;
 		end;
-    end else if (Key = Windows.VK_DELETE) and (ssCtrl in Shift) then begin
-        // Ctrl + DEL で削除する
-        Str := SelectComboBox.Text;
-        idx := GikoSys.Setting.SelectTextList.IndexOf( Str );
-        if idx <> -1 then begin
-            GikoSys.Setting.SelectTextList.Delete( idx );
-        end;
-        idx := SelectComboBox.Items.IndexOf( Str );
-		if idx <> -1 then begin
-            SelectComboBox.Items.Delete( idx );
-        end;
-        SelectComboBox.Text := '';
-        // 絞込みを解除するために変更イベントを呼び出す
-        SelectComboBox.OnChange(Sender);
-	end else if Length( SelectComboBox.Text ) = 0 then
+	end else if (Key = Windows.VK_DELETE) and (ssCtrl in Shift) then begin
+		// Ctrl + DEL で削除する
+    Str  := SelectComboBoxUC.Text;
+    StrA := SelectComboBoxUC.EncodeText;
+    idx := GikoSys.Setting.SelectTextList.IndexOf( StrA );
+    if idx <> -1 then begin
+	    GikoSys.Setting.SelectTextList.Delete( idx );
+    end;
+    idx := SelectComboBoxUC.Items.IndexOf( Str );
+    if idx <> -1 then begin
+	    SelectComboBoxUC.Items.Delete( idx );
+    end;
+    SelectComboBoxUC.Text := '';
+    // 絞込みを解除するために変更イベントを呼び出す
+    SelectComboBoxUC.OnChange(Sender);
+	end else if Length( SelectComboBoxUC.Text ) = 0 then
 	begin
 		{* SelectComboBox.Textが空でも、入力途中でEscしたとか
 		 * 空のときにDelキーを押したとかなので、スレの絞込みを維持する。
@@ -6153,10 +6175,10 @@ begin
 
 	ModifySelectList;
 
-	if Length( SelectComboBox.Text ) = 0 then
+	if Length( SelectComboBoxUC.Text ) = 0 then
 	begin
-		SelectComboBox.Text := GikoDataModule.SELECTCOMBOBOX_NAME;
-		SelectComboBox.Color := GikoDataModule.SELECTCOMBOBOX_COLOR;
+		SelectComboBoxUC.Text := GikoDataModule.SELECTCOMBOBOX_NAME;
+		SelectComboBoxUC.Color := GikoDataModule.SELECTCOMBOBOX_COLOR;
 	end;
 
 end;
@@ -6166,24 +6188,26 @@ procedure TGikoForm.ModifySelectList;
 var
 	idx : Integer;
 	oldText : string;
+	oldTextW : WideString;
 begin
 
 	try
 		if not SelectComboBoxPanel.Visible then
 			exit;
 
-		if Length( SelectComboBox.Text ) > 0 then
+		if Length( SelectComboBoxUC.Text ) > 0 then
 		begin
-			oldText := SelectComboBox.Text;
+			oldTextW := SelectComboBoxUC.Text;
+			oldText  := SelectComboBoxUC.EncodeText;
 			idx := GikoSys.Setting.SelectTextList.IndexOf( oldText );
 			if idx <> -1 then
 				GikoSys.Setting.SelectTextList.Delete( idx );
-			idx := SelectComboBox.Items.IndexOf( oldText );
+			idx := SelectComboBoxUC.Items.IndexOf( oldTextW );
 			if idx <> -1 then
-				SelectComboBox.Items.Delete( idx );
+				SelectComboBoxUC.Items.Delete( idx );
 			GikoSys.Setting.SelectTextList.Insert( 0, oldText );
-			SelectComboBox.Items.Insert( 0, oldText );
-			SelectComboBox.Text := oldText;
+			SelectComboBoxUC.Items.Insert( 0, oldTextW );
+			SelectComboBoxUC.Text := oldTextW;
 		end;
 	except
 	end;
@@ -6217,7 +6241,7 @@ begin
 		//If SelectComboBox.Width <> w Then Begin
 		If SelectComboBoxPanel.Width <> w Then Begin
 			SelectComboBoxPanel.Width := w;
-			SelectComboBox.Width := SelectComboBoxPanel.Width - SelectComboBoxSplitter.Width;
+			SelectComboBoxUC.Width := SelectComboBoxPanel.Width - SelectComboBoxSplitter.Width;
 			GikoSys.Setting.SelectComboBoxWidth := w;
 			DraggingSelectComboBoxPosition := pos;
 
@@ -6257,11 +6281,11 @@ end;
 procedure TGikoForm.SelectComboBoxEnter(Sender: TObject);
 begin
 
-	if (Length( SelectComboBox.Text ) = 0) or
-		(SelectComboBox.Text = GikoDataModule.SELECTCOMBOBOX_NAME) then
+	if (Length( SelectComboBoxUC.Text ) = 0) or
+		(SelectComboBoxUC.Text = GikoDataModule.SELECTCOMBOBOX_NAME) then
 	begin
-		SelectComboBox.Text := '';
-		SelectComboBox.Color := clWindow;
+		SelectComboBoxUC.Text := '';
+		SelectComboBoxUC.Color := clWindow;
 	end;
 
 end;
@@ -8073,10 +8097,10 @@ begin
 				SelectComboBoxPanel.Parent := ListToolBar;
 				SelectComboBoxPanel.Visible := True;
 
-				SelectComboBox.Left := 0;
-				SelectComboBox.Top  := 0;
-				SelectComboBox.Height := SelectComboBoxPanel.ClientHeight;
-				SelectComboBox.Width := SelectComboBoxPanel.Width -
+				SelectComboBoxUC.Left := 0;
+				SelectComboBoxUC.Top  := 0;
+				SelectComboBoxUC.Height := SelectComboBoxPanel.ClientHeight;
+				SelectComboBoxUC.Width := SelectComboBoxPanel.Width -
 										SelectComboBoxSplitter.Width;
 
 				//一つ見えないボタンを突っ込む
