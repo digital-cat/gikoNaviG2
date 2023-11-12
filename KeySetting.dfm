@@ -217,6 +217,10 @@ object KeySettingForm: TKeySettingForm
       object TabSheet2: TTabSheet
         Caption = #12456#12487#12451#12479
         ImageIndex = 1
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object ListView1: TListView
           Left = 0
           Top = 0
