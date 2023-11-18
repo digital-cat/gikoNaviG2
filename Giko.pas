@@ -863,6 +863,8 @@ type
 		procedure ShowSameIDAncher(const AID: String);
 		//! スレタイ表示更新
 		procedure UpdateThreadTitle;
+		//! フォームキャプション設定
+    procedure SetFormCaption(AThreadTitle: String);
 	published
 		property EnabledCloseButton: Boolean read FEnabledCloseButton write SetEnabledCloseButton;
 	end;
@@ -3291,7 +3293,7 @@ begin
 		FActiveContent := Thread;
 
 		if not ThreadIsLog then begin
-			Self.Caption := GikoDataModule.CAPTION_NAME ;
+			SetFormCaption('');
 			//ステータスバーに表示しているスレの容量を消去
 			StatusBar.Panels[THREADSIZE_PANEL].Text := '';
 			try
@@ -3306,7 +3308,7 @@ begin
 				
 			end;
 		end else begin
-			Self.Caption := GikoDataModule.CAPTION_NAME + ' - [' + GikoSys.TrimThreadTitle(ThreadTitle) + ']';
+			SetFormCaption(GikoSys.TrimThreadTitle(ThreadTitle));
 			//ステータスバーに表示しているスレの容量を表示
 			StatusBar.Panels[THREADSIZE_PANEL].Text := Format('%6.2f kB', [ThreadItem.Size / 1024]);
 			StatusBar.Panels[THREADSIZE_PANEL].Width :=
@@ -3369,18 +3371,18 @@ begin
 		if (FActiveContent <> nil) and (FActiveContent.Thread <> nil)
 			and (FActiveContent.Thread.IsLogFile) then begin
 			try
-				Self.Caption := GikoDataModule.CAPTION_NAME + ' - [' + GikoSys.TrimThreadTitle(FActiveContent.Thread.Title) + ']'
+      	SetFormCaption(GikoSys.TrimThreadTitle(FActiveContent.Thread.Title))
 			except
 				on E: Exception do begin
 					//スレ一覧DL後などにFActiveContentの持つThreadが
 					//削除されている場合があるのでここて処理する
 					ReleaseBrowser(FActiveContent);
 					FActiveContent.Thread := nil;
-					Self.Caption := GikoDataModule.CAPTION_NAME;
+					SetFormCaption('');
 				end;
 			end;
 		end else
-			Self.Caption := GikoDataModule.CAPTION_NAME;
+			SetFormCaption('');
 		//Application.Title := CAPTION_NAME;
 
 //		ActiveListColumnSave;
@@ -8482,21 +8484,37 @@ end;
 procedure TGikoForm.UpdateThreadTitle;
 var
 	i: Integer;
-    DspTitle: String;
+	DspTitle: String;
+  WideTitle: WideString;
 begin
-    BrowserTabUC.Tabs.BeginUpdate;
-    for i := 0 to BrowserTabUC.Tabs.Count - 1 do begin
-        BrowserTabUC.Tabs.Strings[i] :=
-            GikoSys.GetShortName(TBrowserRecord(BrowserTabUC.Tabs.Objects[i]).Thread.Title, 20);
+	BrowserTabUC.Tabs.BeginUpdate;
+	for i := 0 to BrowserTabUC.Tabs.Count - 1 do begin
+  	DspTitle := TBrowserRecord(BrowserTabUC.Tabs.Objects[i]).Thread.Title;
+  	if Pos('&#', DspTitle) < 1 then
+			BrowserTabUC.Tabs.Strings[i] := GikoSys.GetShortName(DspTitle, 20)
+    else begin
+    	WideTitle := EncAnsiToWideString(GikoSys.TrimThreadTitle(DspTitle));
+			BrowserTabUC.Tabs.Strings[i] := GikoSys.GetShortNameW(WideTitle, 20);
     end;
-    BrowserTabUC.Tabs.EndUpdate;
+  end;
+	BrowserTabUC.Tabs.EndUpdate;
 
-    if (FActiveContent <> nil) and (FActiveContent.Thread <> nil) then begin
-        DspTitle := GikoSys.TrimThreadTitle(FActiveContent.Thread.Title);
-        BrowserNameLabelUC.EncodeCaption := DspTitle;
-        Self.Caption := GikoDataModule.CAPTION_NAME + ' - [' + DspTitle + ']';
-    end;
+	if (FActiveContent <> nil) and (FActiveContent.Thread <> nil) then begin
+		DspTitle := GikoSys.TrimThreadTitle(FActiveContent.Thread.Title);
+		BrowserNameLabelUC.Caption := EncAnsiToWideString(DspTitle);
+		SetFormCaption(DspTitle);
+	end;
 end;
+
+//! フォームキャプション設定
+procedure TGikoForm.SetFormCaption(AThreadTitle: String);
+begin
+	if AThreadTitle = '' then
+		Caption := GikoDataModule.CAPTION_NAME
+	else
+		Caption := GikoDataModule.CAPTION_NAME + ' - [' + AThreadTitle + ']';	// TTntFormに置き換えていないためここだけはUnicode化困難！
+end;
+
 
 //! ポップアップメニュー読み込み
 {procedure TGikoForm.LoadPopupMenu();

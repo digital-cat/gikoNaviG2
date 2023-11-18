@@ -1317,7 +1317,7 @@ begin
 	GikoForm.BrowserTabUC.Tabs.EndUpdate;
 	GikoForm.BrowserTabUC.OnChange := GikoForm.BrowserTabChange;
 	GikoForm.SetContent(GikoForm.BrowserNullTab);
-	GikoForm.Caption := CAPTION_NAME ;
+	GikoForm.SetFormCaption('');
 end;
 // *************************************************************************
 //! 現在開いているタブのスレッドを削除する
