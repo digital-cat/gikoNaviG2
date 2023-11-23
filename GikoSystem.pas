@@ -3653,6 +3653,7 @@ var
   dir: String;
   dirList: TStringList;
   param: String;
+  termSlash: Boolean;
 begin
   if not Is2chURL(url) then
     Exit;
@@ -3691,21 +3692,29 @@ begin
 
   dirList := TStringList.Create;
   try
+  	termSlash := True;	// パスの終端がスラッシュか
     start := 2;   // ルート'/'の次から
     len := Length(path);
     while start < len do begin
       idx1 := PosEx('/', path, start);
-      if idx1 < 1 then
-        Break;
-      dir := Copy(path, start, idx1 - start);
-      start := idx1 + 1;
+      if idx1 < 1 then begin
+	      dir := Copy(path, start, len - start + 1);
+        start := len + 1;
+      	termSlash := False;		// スラッシュで終わってない
+      end else begin
+      	dir := Copy(path, start, idx1 - start);
+      	start := idx1 + 1;
+      end;
       dirList.Add(dir);
     end;
 
-    if dirList.Count >= 5 then begin
-      url := Format('https://%s.%s/test/read.cgi/%s/%s/', [dirList[0], domain, dirList[3], dirList[4]]);
-      if dirList.Count > 5 then
-        url := url + dirList[5];
+    if dirList.Count >= 1 then begin
+      url := Format('https://%s.%s', [dirList[0], domain]);
+	    if dirList.Count > 1 then
+  	  	for idx1 := 1 to dirList.Count - 1 do
+    	    url := url + '/' + dirList[idx1];
+    	if termSlash then
+      	url := url + '/';
       if param <> '' then
         url := url + param;
     end;
