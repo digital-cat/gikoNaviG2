@@ -19,14 +19,14 @@ uses
 	IdLogBase, IdLogDebug, IdException, DateUtils,  bmRegExp,
 	IdGlobal, IdStack, IdExceptionCore, IdGlobalProtocols, IndyModule,   // for Indy10
 	Gesture, AppEvnts, SambaTimer, IdCookieManager, WideCtrls, SHDocVw, IdIOHandler,
-	IdIOHandlerSocket, IdIOHandlerStack, IdSSL, IdSSLOpenSSL, IdURI;
+	IdIOHandlerSocket, IdIOHandlerStack, IdSSL, IdSSLOpenSSL, IdURI, TntForms;
 
 type
 //	TSetLayeredWindowAttributes = function(wnd: HWND; crKey: DWORD; bAlpha: BYTE; dwFlag: DWORD): Boolean; stdcall;
 	//書き込み戻り値タイプ
 	TGikoResultType = (grtOK, grtCookie, grtCheck, grtError, grtNinpou, grtNinpouErr, grtSuiton);
 
-	TEditorForm = class(TForm)
+	TEditorForm = class(TTntForm)
 		MainMenu: TMainMenu;
 		FileMenu: TMenuItem;
 		PostMessage: TMenuItem;
@@ -506,7 +506,7 @@ end;
 procedure TEditorForm.SetBoard(Item: TBoard);
 begin
 	FBoard := Item;
-	Caption := CAPTION_NAME_NEW + ' - [' + Item.Title + ']';
+	Caption := EncAnsiToWideString(CAPTION_NAME_NEW + ' - [' + Item.Title + ']');
 	SetNameText(FBoard.KotehanName);
 	SetMailText(FBoard.KotehanMail);
 	SageCheckBox.Checked := AnsiPos('sage', GetMailText) <> 0;
@@ -525,7 +525,7 @@ end;
 procedure TEditorForm.SetThreadItem(Item: TThreadItem);
 begin
 	FThreadItem := Item;
-	Caption := CAPTION_NAME_RES + ' - [' + FThreadItem.Title + ']';
+	Caption := EncAnsiToWideString(CAPTION_NAME_RES + ' - [' + FThreadItem.Title + ']');
 	SetNameText(FThreadItem.ParentBoard.KotehanName);
 	SetMailText(FThreadItem.ParentBoard.KotehanMail);
 	SageCheckBox.Checked := AnsiPos('sage', GetMailText) <> 0;

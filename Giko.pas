@@ -20,7 +20,7 @@ uses
 	ExternalBoardPlugInMain, StdActns, Variants, ExtActns,IdTCPConnection,
 	IdBaseComponent, IdTCPClient, AppEvnts, BrowserRecord, MoveHistoryItem,
 	ShellAPI,Preview, HistoryList, ResPopupBrowser, ExtPreviewDatamodule,
-	SHDocVw, WideCtrls, TntComCtrls;
+	SHDocVw, WideCtrls, TntComCtrls, TntForms;
 
 const
 	NGWORDNAME_PANEL = 3;
@@ -34,7 +34,7 @@ type
 
 //	TBrowserRecord = class;
 
-	TGikoForm = class(TForm)
+	TGikoForm = class(TTntForm)
 		StatusBar: TStatusBar;
 		MainPanel: TPanel;
 		ClientPanel: TPanel;
@@ -8512,7 +8512,7 @@ begin
 	if AThreadTitle = '' then
 		Caption := GikoDataModule.CAPTION_NAME
 	else
-		Caption := GikoDataModule.CAPTION_NAME + ' - [' + AThreadTitle + ']';	// TTntFormÇ…íuÇ´ä∑Ç¶ÇƒÇ¢Ç»Ç¢ÇΩÇﬂÇ±Ç±ÇæÇØÇÕUnicodeâªç¢ìÔÅI
+		Caption := EncAnsiToWideString(GikoDataModule.CAPTION_NAME + ' - [' + AThreadTitle + ']');
 end;
 
 
