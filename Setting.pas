@@ -233,8 +233,8 @@ type
 		FEditWindowHeight: Integer;
 		FEditWindowWidth: Integer;
 		FEditWindowMax: Boolean;
-                FEditWindowStay: Boolean;
-                FEditWindowTranslucent: Boolean;
+    FEditWindowStay: Boolean;
+    FEditWindowTranslucent: Boolean;
 
 		//リスト番号表示
 		FListViewNo: Boolean;
@@ -256,10 +256,10 @@ type
 		FUnActivePopup: Boolean;
 		//レスポップアップヘッダーボールド
 		FResPopupHeaderBold: Boolean;
-        // BEアイコン・Emoticon画像表示
-        FIconImageDisplay: Boolean;
-        // スレタイ特定文字列除去
-        FThreadTitleTrim: Boolean;
+    // BEアイコン・Emoticon画像表示
+    FIconImageDisplay: Boolean;
+    // スレタイ特定文字列除去
+    FThreadTitleTrim: Boolean;
 
 		//ログフォルダ
 		FLogFolder: string;
@@ -302,7 +302,7 @@ type
 		FUserID: string;
 		FPassword: string;
 		FAutoLogin: Boolean;
-                FForcedLogin: Boolean;
+		FForcedLogin: Boolean;
 //		FDolibURL: string;
 
 		//URLクリック時起動アプリ
@@ -344,9 +344,9 @@ type
 		//スレッド一覧更新アイコン表示
 		FListIconVisible: Boolean;
 
-                //スレッド一覧でLogのあるスレッドのみスレ作成日を表示するか
-                FCreationTimeLogs: Boolean;
-                //スレッド一覧のスレ生成日で未来のスレの生成日を表示しない
+		//スレッド一覧でLogのあるスレッドのみスレ作成日を表示するか
+		FCreationTimeLogs: Boolean;
+		//スレッド一覧のスレ生成日で未来のスレの生成日を表示しない
 		FFutureThread: Boolean;
 
 		//書き込み時マシン時間使用設定
@@ -363,8 +363,8 @@ type
 		FDeleteSyria : Boolean;	//シリア語ブラクラ対策
 		FIgnoreKana	: Boolean;	//全半角ひらカナの違いを無視するか
 
-        //NGワード編集
-        FNGTextEditor: Boolean; //編集にテキストエディタを使用するか
+		//NGワード編集
+		FNGTextEditor: Boolean; //編集にテキストエディタを使用するか
 		FNGWindowTop: Integer;
 		FNGWindowLeft: Integer;
 		FNGWindowHeight: Integer;
@@ -389,6 +389,8 @@ type
 		FOddColor: TColor;
 		//レス数増減強調時に、選択アイテムにフォーカスが無いときに太字にするか
 		FUnFocusedBold : Boolean;
+		//エディタテキストのフォント設定を板情報表示にも使用するか
+		FSetBoardInfoStyle: Boolean;
 
 		//Samba24対策機能を使うか
 		FUseSamba: Boolean;
@@ -396,12 +398,12 @@ type
 		//レスアンカーをクリックしてジャンプするか
 		FResAnchorJamp: Boolean;
 
-                //Tab自動保存
-                FTabAutoLoadSave : Boolean;
-                //最後に開いていたスレッドのURL
-                FLastCloseTabURL: String;
-                //にちゃん語案内サポート機能
-                F2chSupport : Boolean;
+    //Tab自動保存
+    FTabAutoLoadSave : Boolean;
+    //最後に開いていたスレッドのURL
+    FLastCloseTabURL: String;
+    //にちゃん語案内サポート機能
+    F2chSupport : Boolean;
 
 		// エディタ
 		FSpaceToNBSP	: Boolean;	///< 半角スペース、Tab を &nbsp; に置換
@@ -417,8 +419,8 @@ type
 		FGestures	: TGestureModel;
 		//! マウスジェスチャーを使用するかどうか
 		FGestureEnabled : Boolean;
-        //! マウスジェスチャーをコンテキスト等の上で無効
-        FGestureIgnoreContext : Boolean;
+		//! マウスジェスチャーをコンテキスト等の上で無効
+		FGestureIgnoreContext : Boolean;
 		//フシアナトラップ設定
 		FLocalTrapAtt : Boolean;
 		FRemoteTrapAtt : Boolean;
@@ -452,44 +454,46 @@ type
 
 		//! Cookieに付加する固定コード
 		FFixedCookie: String;
-        //! リンク移動履歴の保持数
-        FMoveHistorySize : Integer;
-        //! 最小化したときにタスクトレイに格納するか
-        FStoredTaskTray : Boolean;
-        //! タブの移動でループを許可する
-        FLoopBrowserTabs : Boolean;
-        //! 100レス表示の先頭表示レス数
-        FHeadResCount : Integer;
-        //! 100レス表示数（拡張用）
-        FResRangeExCount: Integer;
-        //! 関連キーワード追加フラグ
-        FAddKeywordLink: Boolean;
-        //! dat置換を有効にする
-        FReplaceDat: Boolean;
-        //! sent.iniファイルのサイズ（単位MB）
-        FSentIniFileSize: Integer;
-        //! リンクURL取得の対象拡張子
-        FExtList: String;
-        //! Skin関連
-        FSkinFiles: TSkinFiles;
-        //! indexファイルを読み時にdatを検索する
-        FCheckDatFile: Boolean;
-        //! 同IDレスアンカー表示
-        FLimitResCountMessage: Boolean;
-        //! レスポップアップ表示位置deltaX
-        FRespopupDeltaX: Integer;
-        //! レスポップアップ表示位置deltaY
-        FRespopupDeltaY: Integer;
-        //! レスポップアップタイマー
-        FRespopupWait: Integer;
-        //! メール欄レスポップアップ
-        FRespopupMailTo: Boolean;
-        //! 誤爆チェック
-        FUseGobakuCheck: Boolean;
-        //! Unicode版エディタ
-        FUseUnicode: Boolean;
-        //! 削除要請板を特別扱い
-        FSakuBoard: Boolean;
+    //! リンク移動履歴の保持数
+    FMoveHistorySize : Integer;
+    //! 最小化したときにタスクトレイに格納するか
+    FStoredTaskTray : Boolean;
+    //! タブの移動でループを許可する
+    FLoopBrowserTabs : Boolean;
+    //! 100レス表示の先頭表示レス数
+    FHeadResCount : Integer;
+    //! 100レス表示数（拡張用）
+    FResRangeExCount: Integer;
+    //! 関連キーワード追加フラグ
+    FAddKeywordLink: Boolean;
+    //! dat置換を有効にする
+    FReplaceDat: Boolean;
+    //! sent.iniファイルのサイズ（単位MB）
+    FSentIniFileSize: Integer;
+    //! リンクURL取得の対象拡張子
+    FExtList: String;
+    //! Skin関連
+    FSkinFiles: TSkinFiles;
+    //! indexファイルを読み時にdatを検索する
+    FCheckDatFile: Boolean;
+    //! 同IDレスアンカー表示
+    FLimitResCountMessage: Boolean;
+    //! レスポップアップ表示位置deltaX
+    FRespopupDeltaX: Integer;
+    //! レスポップアップ表示位置deltaY
+    FRespopupDeltaY: Integer;
+    //! レスポップアップタイマー
+    FRespopupWait: Integer;
+    //! メール欄レスポップアップ
+    FRespopupMailTo: Boolean;
+    //! 誤爆チェック
+    FUseGobakuCheck: Boolean;
+    //! Unicode版エディタ
+    FUseUnicode: Boolean;
+    //! プレビュー表示にCSSまたはスキンを適用する
+    FPreviewStyle: Boolean;
+    //! 削除要請板を特別扱い
+    FSakuBoard: Boolean;
 
 		//! スレタイ検索ウィンドウ
 		FThrdSrchTop: Integer;
@@ -497,15 +501,15 @@ type
 		FThrdSrchWidth: Integer;
 		FThrdSrchHeight: Integer;
 		FThrdSrchMax: Boolean;
-        FThrdSrchStay: Boolean;
-        FThrdSrchCol1W: Integer;
-        FThrdSrchCol2W: Integer;
-        FThrdSrchCol3W: Integer;
-        FThrdSrchCol4W: Integer;
-        FThrdSrchHistory: TStringList;
+    FThrdSrchStay: Boolean;
+    FThrdSrchCol1W: Integer;
+    FThrdSrchCol2W: Integer;
+    FThrdSrchCol3W: Integer;
+    FThrdSrchCol4W: Integer;
+    FThrdSrchHistory: TStringList;
 
-        //! 冒険の書用Cookie
-        FBoukenCookieList: TStringList;
+    //! 冒険の書用Cookie
+    FBoukenCookieList: TStringList;
 
 		function GetMainCoolSet(Index: Integer): TCoolSet;
 		function GetBoardCoolSet(Index: Integer): TCoolSet;
@@ -532,17 +536,17 @@ type
 
 		procedure SetUseCSS( value: Boolean );
 		procedure SetCSSFileName( fileName: string );
-        function GetCSSFileName: string;
-        //! プロキシ設定読み込み
-        procedure ReadProxySettings(memIni: TMemIniFile);
-        //! 各種ウィンドウ設定読み込み
-        procedure ReadWindowSettings(memIni: TMemIniFile);
-        //! 入力履歴読み込み（検索＋メール欄＋名前）
-        procedure ReadInputHisotrys(memIni: TMemIniFile);
-        //! リストカラム幅読み込み
-        procedure ReadListColumnWidth(memIni: TMemIniFile);
-        //! カテゴリリストカラム順序読み込み
-        procedure ReadOrdColumn(memIni: TMemIniFile);
+    function GetCSSFileName: string;
+    //! プロキシ設定読み込み
+    procedure ReadProxySettings(memIni: TMemIniFile);
+    //! 各種ウィンドウ設定読み込み
+    procedure ReadWindowSettings(memIni: TMemIniFile);
+    //! 入力履歴読み込み（検索＋メール欄＋名前）
+    procedure ReadInputHisotrys(memIni: TMemIniFile);
+    //! リストカラム幅読み込み
+    procedure ReadListColumnWidth(memIni: TMemIniFile);
+    //! カテゴリリストカラム順序読み込み
+    procedure ReadOrdColumn(memIni: TMemIniFile);
 	protected
 
 	public
@@ -584,16 +588,16 @@ type
 		function GetEditorKeyFileName: String;
 		procedure WriteLogFolder(AVal : String);
 		function GetInputAssistFileName : String;
-        function GetReplaceFileName: String;
-        function GetExtprevieFileName: String;
-        function GetBoukenCookie(AHostName: String): String;
-        procedure SetBoukenCookie(ACookieValue, AHostName: String);
-        procedure GetBouken(AHostName: String; var Domain:String; var Cookie:String);
-        {
-        \brief  リンク履歴の保持サイズのsetter
-        \param  AVal    設定するサイズ( >0)
-        }
-        procedure SetMoveHistorySize(AVal : Integer);
+    function GetReplaceFileName: String;
+    function GetExtprevieFileName: String;
+    function GetBoukenCookie(AHostName: String): String;
+    procedure SetBoukenCookie(ACookieValue, AHostName: String);
+    procedure GetBouken(AHostName: String; var Domain:String; var Cookie:String);
+    {
+    \brief  リンク履歴の保持サイズのsetter
+    \param  AVal    設定するサイズ( >0)
+    }
+    procedure SetMoveHistorySize(AVal : Integer);
 		//受信バッファサイズ   ※Indy10で使わなくなった
 		property RecvBufferSize: Integer read FRecvBufferSize write FRecvBufferSize;
 		//HTTP1.1使用
@@ -720,11 +724,11 @@ type
 		property ThreadRange	: TGikoThreadRange read FThreadRange write FThreadRange;
 		property UnActivePopup: Boolean read FUnActivePopup write FUnActivePopup;
 		property ResPopupHeaderBold: Boolean read FResPopupHeaderBold write FResPopupHeaderBold;
-        property IconImageDisplay: Boolean read FIconImageDisplay write FIconImageDisplay;
-        property ThreadTitleTrim: Boolean read FThreadTitleTrim write FThreadTitleTrim;
+		property IconImageDisplay: Boolean read FIconImageDisplay write FIconImageDisplay;
+		property ThreadTitleTrim: Boolean read FThreadTitleTrim write FThreadTitleTrim;
 
 		property LogFolder: string read FLogFolder write WriteLogFolder;
-        property LogFolderP: string read FLogFolderP;
+		property LogFolderP: string read FLogFolderP;
 		property NewLogFolder: string read FNewLogFolder write FNewLogFolder;
 
 		property BBSColumnWidth[index: Integer]: Integer read GetBBSColumnWidth write SetBBSColumnWidth;
@@ -801,8 +805,8 @@ type
 		property DeleteSyria : Boolean read FDeleteSyria write FDeleteSyria;
 		property IgnoreKana : Boolean read FIgnoreKana write FIgnoreKana;
 
-        //NGワード編集
-        property NGTextEditor: Boolean read FNGTextEditor write FNGTextEditor;
+		//NGワード編集
+		property NGTextEditor: Boolean read FNGTextEditor write FNGTextEditor;
 		property NGWindowTop: Integer read FNGWindowTop write FNGWindowTop;
 		property NGWindowLeft: Integer read FNGWindowLeft write FNGWindowLeft;
 		property NGWindowHeight: Integer read FNGWindowHeight write FNGWindowHeight;
@@ -825,8 +829,10 @@ type
 		property UseOddColorOddResNum: Boolean read FUseOddColorOddResNum write FUseOddColorOddResNum;
 		property OddColor: TColor read FOddColor write FOddColor;
 		property UnFocusedBold : Boolean read FUnFocusedBold write FUnFocusedBold;
+		//エディタテキストのフォント設定を板情報表示にも使用するか
+		property SetBoardInfoStyle: Boolean read FSetBoardInfoStyle write FSetBoardInfoStyle;
 		property UseSamba: Boolean read FUseSamba write FUseSamba;
-				property ResAnchorJamp: Boolean read FResAnchorJamp write FResAnchorJamp;
+		property ResAnchorJamp: Boolean read FResAnchorJamp write FResAnchorJamp;
 
 		// エディタ
 		property SpaceToNBSP	: Boolean	read FSpaceToNBSP		write FSpaceToNBSP;
@@ -835,10 +841,10 @@ type
 		property SelectInterval	: Integer	read FSelectInterval	write FSelectInterval;
 		//Tab保存
 		property TabAutoLoadSave: Boolean           read FTabAutoLoadSave      write FTabAutoLoadSave;
-        //タブの復元とか用
-        property LastCloseTabURL: String read FLastCloseTabURL write FLastCloseTabURL;
-				//property Gengo: TStringList read F2chLanguage write F2chLanguage;
-				property GengoSupport : Boolean read F2chSupport write F2chSupport;
+    //タブの復元とか用
+    property LastCloseTabURL: String read FLastCloseTabURL write FLastCloseTabURL;
+    //property Gengo: TStringList read F2chLanguage write F2chLanguage;
+    property GengoSupport : Boolean read F2chSupport write F2chSupport;
 		property KuroutSettingTabIndex: Integer read FKuroutSettingTabIndex write FKuroutSettingTabIndex;
 		//! マウスジェスチャー
 		property Gestures : TGestureModel read FGestures write FGestures;
@@ -870,42 +876,44 @@ type
 		property InputAssistFormHeight: Integer read FInputAssistFormHeight write FInputAssistFormHeight;
 		//! Cookieに付加する固定コード
 		property FixedCookie: String read FFixedCookie write FFixedCookie;
-        //! リンク移動履歴の保持数
-        property MoveHistorySize : Integer read FMoveHistorySize write SetMoveHistorySize;
-        //! 最小化時にタスクトレイに格納するか
-        property StoredTaskTray : Boolean read FStoredTaskTray write FStoredTaskTray;
-        //! ブラウザタブのループを許可する
-        property LoopBrowserTabs : Boolean read FLoopBrowserTabs write FLoopBrowserTabs;
-        //! 100レス表示の先頭表示レス数
-        property HeadResCount : Integer read FHeadResCount write FHeadResCount;
-        //! 100レス表示数（拡張用）
-        property ResRangeExCount: Integer read FResRangeExCount write FResRangeExCount;
-        //! 関連キーワード追加フラグ
-        property AddKeywordLink: Boolean read FAddKeywordLink write FAddKeywordLink;
-        //! datの置換を有効にするか
-        property ReplaceDat: Boolean read FReplaceDat write FReplaceDat;
-        //! sent.iniファイルのサイズ（単位MB）
-        property SentIniFileSize: Integer read FSentIniFileSize write FSentIniFileSize;
-        //! リンクURL取得の対象拡張子
-        property ExtList: String read FExtList write FExtList;
-        //! Skinファイル管理
-        property SkinFiles: TSkinFiles read FSkinFiles;
-        //! インデックス読み込み時datファイルチェック
-        property CheckDatFile: Boolean read FCheckDatFile write FCheckDatFile;
-        property LimitResCountMessage: Boolean read FLimitResCountMessage write FLimitResCountMessage;
-        //! レスポップアップ表示位置deltaX
-        property  RespopupDeltaX: Integer read FRespopupDeltaX write FRespopupDeltaX;
-        //! レスポップアップ表示位置deltaY
-        property RespopupDeltaY: Integer read FRespopupDeltaY write FRespopupDeltaY;
-        //! レスポップアップタイマー
-        property RespopupWait: Integer read FRespopupWait write FRespopupWait;
-        property RespopupMailTo: Boolean read FRespopupMailTo write FRespopupMailTo;
-        //! 誤爆チェック
-        property UseGobakuCheck: Boolean read FUseGobakuCheck write FUseGobakuCheck;
-        //! Unicode版エディタ
-        property UseUnicode: Boolean read FUseUnicode write FUseUnicode;
-        //! 削除要請板を特別扱い
-        property SakuBoard: Boolean read FSakuBoard write FSakuBoard;
+    //! リンク移動履歴の保持数
+    property MoveHistorySize : Integer read FMoveHistorySize write SetMoveHistorySize;
+    //! 最小化時にタスクトレイに格納するか
+    property StoredTaskTray : Boolean read FStoredTaskTray write FStoredTaskTray;
+    //! ブラウザタブのループを許可する
+    property LoopBrowserTabs : Boolean read FLoopBrowserTabs write FLoopBrowserTabs;
+    //! 100レス表示の先頭表示レス数
+    property HeadResCount : Integer read FHeadResCount write FHeadResCount;
+    //! 100レス表示数（拡張用）
+    property ResRangeExCount: Integer read FResRangeExCount write FResRangeExCount;
+    //! 関連キーワード追加フラグ
+    property AddKeywordLink: Boolean read FAddKeywordLink write FAddKeywordLink;
+    //! datの置換を有効にするか
+    property ReplaceDat: Boolean read FReplaceDat write FReplaceDat;
+    //! sent.iniファイルのサイズ（単位MB）
+    property SentIniFileSize: Integer read FSentIniFileSize write FSentIniFileSize;
+    //! リンクURL取得の対象拡張子
+    property ExtList: String read FExtList write FExtList;
+    //! Skinファイル管理
+    property SkinFiles: TSkinFiles read FSkinFiles;
+    //! インデックス読み込み時datファイルチェック
+    property CheckDatFile: Boolean read FCheckDatFile write FCheckDatFile;
+    property LimitResCountMessage: Boolean read FLimitResCountMessage write FLimitResCountMessage;
+    //! レスポップアップ表示位置deltaX
+    property  RespopupDeltaX: Integer read FRespopupDeltaX write FRespopupDeltaX;
+    //! レスポップアップ表示位置deltaY
+    property RespopupDeltaY: Integer read FRespopupDeltaY write FRespopupDeltaY;
+    //! レスポップアップタイマー
+    property RespopupWait: Integer read FRespopupWait write FRespopupWait;
+    property RespopupMailTo: Boolean read FRespopupMailTo write FRespopupMailTo;
+    //! 誤爆チェック
+    property UseGobakuCheck: Boolean read FUseGobakuCheck write FUseGobakuCheck;
+    //! Unicode版エディタ
+    property UseUnicode: Boolean read FUseUnicode write FUseUnicode;
+    //! プレビュー表示にCSSまたはスキンを適用する
+    property PreviewStyle: Boolean read FPreviewStyle write FPreviewStyle;
+    //! 削除要請板を特別扱い
+    property SakuBoard: Boolean read FSakuBoard write FSakuBoard;
 		//! スレタイ検索ウィンドウ
 		//! スレタイ検索ウィンドウ
 		property ThrdSrchTop: Integer read FThrdSrchTop write FThrdSrchTop;
@@ -913,15 +921,15 @@ type
 		property ThrdSrchWidth: Integer read FThrdSrchWidth write FThrdSrchWidth;
 		property ThrdSrchHeight: Integer read FThrdSrchHeight write FThrdSrchHeight;
 		property ThrdSrchMax: Boolean read FThrdSrchMax write FThrdSrchMax;
-        property ThrdSrchStay: Boolean read FThrdSrchStay write FThrdSrchStay;
-        property ThrdSrchCol1W: Integer read FThrdSrchCol1W write FThrdSrchCol1W;
-        property ThrdSrchCol2W: Integer read FThrdSrchCol2W write FThrdSrchCol2W;
-        property ThrdSrchCol3W: Integer read FThrdSrchCol3W write FThrdSrchCol3W;
-        property ThrdSrchCol4W: Integer read FThrdSrchCol4W write FThrdSrchCol4W;
-        property ThrdSrchHistory: TStringList read FThrdSrchHistory write FThrdSrchHistory;
-        //! 冒険の書
-        property BoukenCookieList: TStringList read FBoukenCookieList write FBoukenCookieList; 
-end;
+    property ThrdSrchStay: Boolean read FThrdSrchStay write FThrdSrchStay;
+    property ThrdSrchCol1W: Integer read FThrdSrchCol1W write FThrdSrchCol1W;
+    property ThrdSrchCol2W: Integer read FThrdSrchCol2W write FThrdSrchCol2W;
+    property ThrdSrchCol3W: Integer read FThrdSrchCol3W write FThrdSrchCol3W;
+    property ThrdSrchCol4W: Integer read FThrdSrchCol4W write FThrdSrchCol4W;
+    property ThrdSrchHistory: TStringList read FThrdSrchHistory write FThrdSrchHistory;
+    //! 冒険の書
+    property BoukenCookieList: TStringList read FBoukenCookieList write FBoukenCookieList;
+	end;
 
 
 const
@@ -937,23 +945,23 @@ const
 	TEMP_FOLDER									 	= 'Temp';
 	OUTBOX_FILE_NAME							= 'outbox.ini';
 	SENT_FILE_NAME								= 'sent.ini';
-	DEFFILES_FILE_NAME							= 'defaultFiles.ini';
+	DEFFILES_FILE_NAME						= 'defaultFiles.ini';
 	CONFIG_DIR_NAME							 	= 'config';
 	CSS_DIR_NAME									= 'css';
 	SKIN_DIR_NAME							 		= 'skin';
-	NGWORDs_DIR_NAME : String 		= 'NGwords';
+	NGWORDs_DIR_NAME:      String = 'NGwords';
 	BOARD_PLUGIN_DIR_NAME					= 'BoardPlugin';
-	SAMBATIME_FILE_NAME : String	= 'Samba.ini';
-	IGNORE_FILE_NAME : String		= 'Ignore.txt';
+	SAMBATIME_FILE_NAME:   String = 'Samba.ini';
+	IGNORE_FILE_NAME:      String = 'Ignore.txt';
 //	DOLIB_LOGIN_URL     = '/~tora3n2c/futen.cgi';
-	MAX_POPUP_RES : Integer = 10;
+	MAX_POPUP_RES:        Integer = 10;
 	GESTURE_FILE_NAME							= 'Gestures.ini';
 	SPAMFILTER_FILE_NAME					= 'SpamFilter.ini';
-		LANGUAGE_FILE_NAME    = 'language.ini';
-	INPUTASSIST_FILE_NAME	= 'InputAssist.ini';
-    FIXED_COOKIE =           '';
-    REPLACE_FILE_NAME = 'replace.ini';
-    EXT_PREVIEW_FILE_NAME = 'extpreview.ini';
+	LANGUAGE_FILE_NAME            = 'language.ini';
+	INPUTASSIST_FILE_NAME         = 'InputAssist.ini';
+  FIXED_COOKIE                  = '';
+  REPLACE_FILE_NAME             = 'replace.ini';
+  EXT_PREVIEW_FILE_NAME         = 'extpreview.ini';
 
 implementation
 
@@ -968,16 +976,16 @@ type
 	end;
 
 const
-	INI_FILE_NAME: string				 = 'gikoNavi.ini';
+	INI_FILE_NAME:           string = 'gikoNavi.ini';
 	BOARD_URL_INI_FILE_NAME: string = 'url.ini';
-	DEFAULT_FONT_NAME: string		 = 'ＭＳ Ｐゴシック';
-	DEFAULT_FONT_SIZE: Integer		= 9;
-	DEFAULT_FONT_COLOR: string		= 'clWindowText';
-	DEFAULT_WINDOW_COLOR: string	= 'clWindow';
-	DEFAULT_TAB_FONT_NAME: string		 = 'ＭＳ Ｐゴシック';
-	DEFAULT_TAB_FONT_SIZE: Integer		= 9;
-	DEFAULT_2CH_BOARD_URL1: string = 'https://menu.5ch.net/bbsmenu.html';
-	GIKO_ENCRYPT_TEXT: string		 = 'gikoNaviEncryptText';
+	DEFAULT_FONT_NAME:       string = 'ＭＳ Ｐゴシック';
+	DEFAULT_FONT_SIZE:      Integer = 9;
+	DEFAULT_FONT_COLOR:      string = 'clWindowText';
+	DEFAULT_WINDOW_COLOR:    string = 'clWindow';
+	DEFAULT_TAB_FONT_NAME:   string = 'ＭＳ Ｐゴシック';
+	DEFAULT_TAB_FONT_SIZE:  Integer = 9;
+	DEFAULT_2CH_BOARD_URL1:  string = 'https://menu.5ch.net/bbsmenu.html';
+	GIKO_ENCRYPT_TEXT:       string = 'gikoNaviEncryptText';
 
 var
 	SOUND_NAME: array[0..4] of TSoundName = (
@@ -1378,8 +1386,9 @@ begin
 		// エディタ
 		FSpaceToNBSP	:= ini.ReadBool( 'Editor', 'SpaceToNBSP', False );
 		FAmpToCharRef	:= ini.ReadBool( 'Editor', 'AmpToCharRef', False );
-        FUseGobakuCheck := ini.ReadBool( 'Editor', 'UseGobakuCheck', True );
-        FUseUnicode     := ini.ReadBool( 'Editor', 'UseUnicode', False );
+		FUseGobakuCheck := ini.ReadBool( 'Editor', 'UseGobakuCheck', True );
+		FUseUnicode     := ini.ReadBool( 'Editor', 'UseUnicode', False );
+    FPreviewStyle   := ini.ReadBool( 'Editor', 'PreviewStyle', False );
 
 		//Tab自動保存、読み込み
 		FTabAutoLoadSave    := ini.ReadBool('TabAuto', 'TabAutoLoadSave', False);
@@ -1559,6 +1568,7 @@ begin
 		ini.WriteBool('Window','UseOddColor',FUseOddColorOddResNum);
 		ini.WriteString('Window', 'OddColor',ColorToString(FOddColor));
 		ini.WriteBool('Window','UnFocusedBold', FUnFocusedBold);
+		ini.WriteBool('Window','SetBoardInfoStyle', FSetBoardInfoStyle);
 
 		ini.WriteString('Window', 'MessageFontName', FMessageFontName);
 		ini.WriteInteger('Window', 'MessageFontSize', FMessageFontSize);
@@ -1836,8 +1846,8 @@ begin
 		ini.WriteBool('Abon','DeleteSyria',FDeleteSyria);
 		ini.WriteBool('Abon','IgnoreKana', FIgnoreKana);
 
-        //NGワード編集
-        ini.WriteBool('NGWordEditor', 'NGTextEditor', FNGTextEditor);
+		//NGワード編集
+		ini.WriteBool('NGWordEditor', 'NGTextEditor', FNGTextEditor);
 		ini.WriteInteger('NGWordEditor', 'NGWindowTop', FNGWindowTop);
 		ini.WriteInteger('NGWordEditor', 'NGWindowLeft', FNGWindowLeft);
 		ini.WriteInteger('NGWordEditor', 'NGWindowHeight', FNGWindowHeight);
@@ -1845,26 +1855,27 @@ begin
 		ini.WriteBool('NGWordEditor', 'NGWindowMax', FNGWindowMax);
 
 		// エディタ
-		ini.WriteBool( 'Editor', 'SpaceToNBSP', FSpaceToNBSP );
-		ini.WriteBool( 'Editor', 'AmpToCharRef', FAmpToCharRef );
-        ini.WriteBool( 'Editor', 'UseGobakuCheck', FUseGobakuCheck );
-        ini.WriteBool( 'Editor', 'UseUnicode', FUseUnicode );
+		ini.WriteBool( 'Editor', 'SpaceToNBSP',    FSpaceToNBSP );
+		ini.WriteBool( 'Editor', 'AmpToCharRef',   FAmpToCharRef );
+		ini.WriteBool( 'Editor', 'UseGobakuCheck', FUseGobakuCheck );
+		ini.WriteBool( 'Editor', 'UseUnicode',     FUseUnicode );
+    ini.WriteBool( 'Editor', 'PreviewStyle',   FPreviewStyle );
 
-        //! 削除要請板を特別扱い
-        ini.WriteBool('NewBoard', 'SakuSpecial', FSakuBoard);
+    //! 削除要請板を特別扱い
+    ini.WriteBool('NewBoard', 'SakuSpecial', FSakuBoard);
 
-                //タブ自動保存
+		//タブ自動保存
 		ini.WriteBool('TabAuto', 'TabAutoLoadSave', FTabAutoLoadSave);
-        ini.WriteString('Thread', 'LastCloseTabURL', FLastCloseTabURL);
+		ini.WriteString('Thread', 'LastCloseTabURL', FLastCloseTabURL);
                 //詳細設定
 		ini.WriteInteger('OptionDialog', 'KuroutTabIndex', FKuroutSettingTabIndex);
 
-                //にちゃん語案内機能
-                ini.WriteBool('2chSupport', 'Support', F2chSupport);
+		//にちゃん語案内機能
+		ini.WriteBool('2chSupport', 'Support', F2chSupport);
 
 		// マウスジェスチャーを使用するかどうか
 		ini.WriteBool( 'Guesture', 'Enabled', FGestureEnabled );
-        ini.WriteBool( 'Guesture', 'IgnoreContext', FGestureIgnoreContext );
+		ini.WriteBool( 'Guesture', 'IgnoreContext', FGestureIgnoreContext );
 		//FusianaTrap
 		ini.WriteBool('Trap', 'LocalTrap', FLocalTrapAtt);
 		ini.WriteBool('Trap', 'RemoteTrap', FRemoteTrapAtt);
@@ -1872,8 +1883,8 @@ begin
 
 		// 使用するスパムフィルタ
 		ini.WriteInteger( 'Abon', 'SpamFilterAlgorithm', Ord( FSpamFilterAlgorithm ) );
-                ini.WriteBool('Function', 'Mute', FMute);
-                ini.WriteBool('ThreadList', 'UseUndecided', FUseUndecided);
+		ini.WriteBool('Function', 'Mute', FMute);
+		ini.WriteBool('ThreadList', 'UseUndecided', FUseUndecided);
 
 		//認証用ユーザID・パスワード
 		ini.WriteString('Be', 'UserID', FBeUserID);
@@ -1883,19 +1894,19 @@ begin
 		//履歴の最大保存件数
 		ini.WriteInteger('Recode', 'Max', FMaxRecordCount);
 		// 固定のCookie文字列
-        ini.WriteString('Cookie', 'fixedString', FFixedCookie);
+    ini.WriteString('Cookie', 'fixedString', FFixedCookie);
 
-        // リンク移動履歴の最大保持数
-        ini.WriteInteger('MoveHisotry', 'Max', FMoveHistorySize);
+    // リンク移動履歴の最大保持数
+    ini.WriteInteger('MoveHisotry', 'Max', FMoveHistorySize);
 
-        ini.WriteBool('Function', 'StroedTaskTray', FStoredTaskTray);
-        ini.WriteBool('Function', 'LoopBrowserTabs', FLoopBrowserTabs);
-        ini.WriteBool('Thread', 'AddKeywordLink', FAddKeywordLink);
-        ini.WriteBool('Thread', 'ReplaceDat', FReplaceDat);
-        ini.WriteInteger('Function', 'SentIniFileSize', FSentIniFileSize);
-        ini.WriteString('Function', 'ExtList', FExtList);
-        ini.WriteBool('ThreadList', 'CheckDatFile', FCheckDatFile);
-        ini.WriteBool('Thread', 'LimitResCountMessage', FLimitResCountMessage);
+    ini.WriteBool('Function', 'StroedTaskTray', FStoredTaskTray);
+    ini.WriteBool('Function', 'LoopBrowserTabs', FLoopBrowserTabs);
+    ini.WriteBool('Thread', 'AddKeywordLink', FAddKeywordLink);
+    ini.WriteBool('Thread', 'ReplaceDat', FReplaceDat);
+    ini.WriteInteger('Function', 'SentIniFileSize', FSentIniFileSize);
+    ini.WriteString('Function', 'ExtList', FExtList);
+    ini.WriteBool('ThreadList', 'CheckDatFile', FCheckDatFile);
+    ini.WriteBool('Thread', 'LimitResCountMessage', FLimitResCountMessage);
 
 		//! スレタイ検索ウィンドウ
 		ini.WriteInteger('ThreadSearch', 'Top',    FThrdSrchTop);
@@ -1903,17 +1914,17 @@ begin
 		ini.WriteInteger('ThreadSearch', 'Width',  FThrdSrchWidth);
 		ini.WriteInteger('ThreadSearch', 'Height', FThrdSrchHeight);
 		ini.WriteBool(   'ThreadSearch', 'Max',    FThrdSrchMax);
-        ini.WriteBool(   'ThreadSearch', 'Stay',   FThrdSrchStay);
-        ini.WriteInteger('ThreadSearch', 'Col1W',  FThrdSrchCol1W);
-        ini.WriteInteger('ThreadSearch', 'Col2W',  FThrdSrchCol2W);
-        ini.WriteInteger('ThreadSearch', 'Col3W',  FThrdSrchCol3W);
-        ini.WriteInteger('ThreadSearch', 'Col4W',  FThrdSrchCol4W);
-        ini.WriteInteger('ThreadSearch', 'HistoryCount', FThrdSrchHistory.Count);
-        if (FThrdSrchHistory.Count > 0) then begin
-            for i := 1 to FThrdSrchHistory.Count do begin
-                ini.WriteString('ThreadSearch', 'History' + IntToStr(i), FThrdSrchHistory.Strings[i-1]);
-            end;
-        end;
+    ini.WriteBool(   'ThreadSearch', 'Stay',   FThrdSrchStay);
+    ini.WriteInteger('ThreadSearch', 'Col1W',  FThrdSrchCol1W);
+    ini.WriteInteger('ThreadSearch', 'Col2W',  FThrdSrchCol2W);
+    ini.WriteInteger('ThreadSearch', 'Col3W',  FThrdSrchCol3W);
+    ini.WriteInteger('ThreadSearch', 'Col4W',  FThrdSrchCol4W);
+    ini.WriteInteger('ThreadSearch', 'HistoryCount', FThrdSrchHistory.Count);
+    if (FThrdSrchHistory.Count > 0) then begin
+			for i := 1 to FThrdSrchHistory.Count do begin
+				ini.WriteString('ThreadSearch', 'History' + IntToStr(i), FThrdSrchHistory.Strings[i-1]);
+			end;
+    end;
 
 
 		ini.UpdateFile;
@@ -2469,6 +2480,7 @@ begin
 		FUseOddColorOddResNum := memIni.ReadBool(WINDOW_SECTION,'UseOddColor', False);
 		FOddColor := StringToColor(memIni.ReadString(WINDOW_SECTION, 'OddColor', DEFAULT_WINDOW_COLOR));
 		FUnFocusedBold := memIni.ReadBool(WINDOW_SECTION,'UnFocusedBold', False);
+		FSetBoardInfoStyle := memIni.ReadBool(WINDOW_SECTION,'SetBoardInfoStyle', False);
 
 		FMessageFontName := memIni.ReadString(WINDOW_SECTION, 'MessageFontName', DEFAULT_FONT_NAME);
 		FMessageFontSize := memIni.ReadInteger(WINDOW_SECTION, 'MessageFontSize', DEFAULT_FONT_SIZE);

@@ -231,6 +231,7 @@ type
 		MailComboBoxUC: TWideComboBox;
 		FURI: TIdURI;
 		procedure Preview;
+		procedure Preview2;
 		function Check: Boolean;
 		procedure SetNameList(sName, sMail: string);
 		procedure Send(const ACOOKIE: string; const SPID: string; const PON: string; FirstWriting: Boolean);
@@ -639,6 +640,12 @@ begin
 		BodyEdit.Font.Color := GikoSys.Setting.EditorFontColor;
 		BodyEdit.Color := GikoSys.Setting.EditorBackColor;
 	end;
+  if GikoSys.Setting.SetBoardInfoStyle then begin
+		BoardInformationMemo.Font.Name  := GikoSys.Setting.EditorFontName;
+		BoardInformationMemo.Font.Size  := GikoSys.Setting.EditorFontSize;
+		BoardInformationMemo.Font.Color := GikoSys.Setting.EditorFontColor;
+		BoardInformationMemo.Color      := GikoSys.Setting.EditorBackColor;
+  end;
 end;
 
 procedure TEditorForm.Preview;
@@ -673,6 +680,184 @@ begin
 	SetContent(s, Browser);
 end;
 
+//　スタイルシート／スキンを適用したプレビュー表示
+procedure TEditorForm.Preview2;
+const
+  TYPE_DEF  = 0;	// デフォルト
+  TYPE_SKIN = 1;	// スキン使用
+  TYPE_CSS  = 2;	// CSS使用
+	// CSS用レスフォーマット（メールなし）
+	FORMAT_NOMAIL  = '<a name="%s"></a><div class="header"><span class="no"><a href="javascript:void(0);">%s</a></span>'
+					+ '<span class="name_label"> 名前： </span> <span class="name"><b>%s</b></span>'
+					+ '<span class="date_label"> 投稿日：</span> <span class="date">%s</span></div>'
+					+ '<div class="mes">%s</div>';
+	// CSS用レスフォーマット（メールあり・表示）
+	FORMAT_SHOWMAIL = '<a name="%s"></a><div class="header"><span class="no"><a href="javascript:void(0);">%s</a></span>'
+					+ '<span class="name_label"> 名前： </span><a class="name_mail" href="javascript:void(0);">'
+					+ '<b>%s</b></a><span class="mail"> [%s]</span><span class="date_label"> 投稿日：</span>'
+					+ '<span class="date"> %s</span></div><div class="mes">%s</div>';
+	// CSS用レスフォーマット（メールあり・非表示）
+	FORMAT_NOSHOW = '<a name="%s"></a><div class="header"><span class="no"><a href="javascript:void(0);">%s</a></span>'
+					+ '<span class="name_label"> 名前： </span><a class="name_mail" href="javascript:void(0);">'
+					+ '<b>%s</b></a><span class="date_label"> 投稿日：</span><span class="date"> %s</span></div>'
+					+ '<div class="mes">%s</div>';
+	// リンク置換用 開始キーワード
+  HREF_HDR = 'href="';
+	// リンク置換用 終了キーワード
+  HREF_FTR = '"';
+	// リンク置換用 置換文字列
+  HREF_RPL = 'javascript:void(0);';
+	// リンク置換用 削除文字列
+  HREF_TGT = 'target="_blank"';
+	// リンク置換用 キーワード文字列長
+  HREF_HDR_LEN = Length(HREF_HDR);
+  HREF_FTR_LEN = Length(HREF_FTR);
+  HREF_TGT_LEN = Length(HREF_TGT);
+var
+	Title: string;
+	No: string;
+	Board: TBoard;
+	Thread: TThreadItem;
+	html: string;
+	Res: TResRec;
+  ResLink :TResLinkRec;
+  pviewType: Integer;
+	cssPath: string;
+  userStyle: string;
+  idx1: Integer;
+  idx2: Integer;
+  start: Integer;
+begin
+
+	// "プレビュー表示にCSSまたはスキンを適用する"がOFF
+  if not Gikosys.Setting.PreviewStyle then begin
+    Preview;	// 以前のプレビュー表示
+    Exit;
+  end;
+
+	pviewType := TYPE_DEF;
+
+	if GikoSys.Setting.UseSkin then
+  	pviewType := TYPE_SKIN
+	else begin
+		if GikoSys.Setting.UseCSS and (GikoSys.Setting.CSSFileName <> '') then begin
+			cssPath := GikoSys.GetStyleSheetDir + GikoSys.Setting.CSSFileName;
+			if FileExists(cssPath) then
+      	pviewType := TYPE_CSS;
+    end;
+  end;
+  if pviewType = TYPE_DEF then begin
+    Preview;	// 以前のプレビュー表示
+    Exit;
+  end;
+
+	Board := GetBoard;
+  Thread := nil;
+	ResLink.FBbs := Board.BBSID;
+
+	try
+    if FThreadItem = nil then begin
+      // スレ立て
+      No := '1';
+      Title := THTMLCreate.RepHtml(GetTitleText);
+      ResLink.FKey := '9999999999';
+      // ダミーのスレッド作成
+      Thread := TThreadItem.Create( nil, Board, 'about://sample/test/read.cgi/sample/' );
+      Thread.ParentBoard := Board;
+      Thread.AllResCount := 1;
+      Thread.NewResCount := 1;
+      Thread.NewReceive  := 1;
+      Thread.Title := Title;
+    end else begin
+      // レス書き込み
+      No := IntToStr(FThreadItem.Count + 1);
+      Title := THTMLCreate.RepHtml(FThreadItem.Title);
+			ResLink.FKey := ChangeFileExt(FThreadItem.FileName, '');
+      Thread := FThreadItem;
+    end;
+
+    Res.FBody := GetBody;
+    Res.FBody := THTMLCreate.RepHtml(Res.FBody);
+    Res.FBody := CustomStringReplace(Res.FBody, #13#10, '<br>', False);
+    Res.FDateTime := FormatDateTime('yyyy/mm/dd(aaa) hh:nn:ss', Now());
+    Res.FMailTo := THTMLCreate.RepHtml(GetMailText);
+    Res.FName := THTMLCreate.RepHtml(GetNameText);
+    if Trim(Res.FName) = '' then
+      Res.FName := '名無しさん';
+
+		HTMLCreater.AddAnchorTag(@Res);
+    HTMLCreater.ConvRes(@Res, @ResLink);
+
+    // リンククリックで遷移しないようにリンク先を置換
+    start := 1;
+    while True do begin
+    	idx1 := PosEx(HREF_HDR, Res.FBody, start);
+      if idx1 < 1 then
+      	Break;
+    	start := idx1 + HREF_HDR_LEN;
+    	idx2 := PosEx(HREF_FTR, Res.FBody, start);
+      if idx2 < 1 then
+      	Break;
+    	Delete(Res.FBody, start, idx2 - start);
+      Insert(HREF_RPL, Res.FBody, start);
+      start := idx2 + HREF_FTR_LEN;
+    end;
+    // ターゲット名を削除
+    while True do begin
+    	idx1 := Pos(HREF_TGT, Res.FBody);
+      if idx1 < 1 then
+      	Break;
+      Delete(Res.FBody, idx1, HREF_TGT_LEN);
+    end;
+
+    // CSS/スキンの他にフォントや色が設定されている場合
+    userStyle := GikoSys.SetUserOptionalStyle;
+    if userStyle <> '' then
+      userStyle := '<style type="text/css">body {' + userStyle + '}</style>';
+
+		case pviewType of
+	    TYPE_SKIN: begin // skin
+        html :=
+          HTMLCreater.LoadFromSkin( GikoSys.GetSkinHeaderFileName, Thread, 0 ) +
+          '<a name="top"></a>' +
+          HTMLCreater.SkinedRes( HTMLCreater.LoadFromSkin( GikoSys.GetSkinResFileName, Thread, 0 ), @Res, No ) +
+          '<a name="bottom"></a>' +
+          HTMLCreater.LoadFromSkin( GikoSys.GetSkinFooterFileName, Thread, 0 );
+
+        if userStyle <> '' then
+          html := StringReplace( html, '</head>', userStyle + '</head>', [rfReplaceAll] );
+      end;
+			TYPE_CSS: begin	// css
+        html := '<html><head>' +
+                '<meta http-equiv="Content-type" content="text/html; charset=Shift_JIS">' +
+                '<title>' + Title + '</title>' +
+                '<link rel="stylesheet" href="' + cssPath + '" type="text/css">' +
+                userStyle + '</head>' +
+                '<body><div class="title">' + Title + '</div>';
+
+        if Res.FMailTo = '' then
+          html := html + Format(FORMAT_NOMAIL, [No, No, Res.FName, Res.FDateTime, Res.FBody])
+        else if GikoSys.Setting.ShowMail then
+          html := html + Format(FORMAT_SHOWMAIL, [No, No, Res.FName, Res.FMailTo, Res.FDateTime, Res.FBody])
+        else
+          html := html + Format(FORMAT_NOSHOW, [No, No, Res.FName, Res.FDateTime, Res.FBody]);
+
+        html := html + '</body></html>';
+      end;
+		end;
+
+		try
+			SetContent(html, Browser);
+		except
+		end;
+
+	finally
+		if (FThreadItem = nil) and (Thread <> nil) then
+			Thread.Free;
+	end;
+
+end;
+
 procedure TEditorForm.EditorPageChange(Sender: TObject);
 var
 	tmpBoard: TBoard;
@@ -683,7 +868,7 @@ begin
 	if tmpBoard = nil then Exit;
 
 	if EditorPage.ActivePage = PreviewTab then begin
-		Preview;
+		Preview2;
 	end else if EditorPage.ActivePage = RocalRuleTab then begin
 		if not FileExists(tmpBoard.GETHEADTXTFileName) then begin
 			LocalEdit.Text := 'ローカルルール未取得';
@@ -1676,14 +1861,14 @@ procedure TEditorForm.SpaceToNBSPActionExecute(Sender: TObject);
 begin
 	GikoSys.Setting.SpaceToNBSP := SpaceToNBSPAction.Checked;
 	if EditorPage.ActivePage = PreviewTab then
-		Preview;
+		Preview2;
 end;
 
 procedure TEditorForm.AmpToCharRefActionExecute(Sender: TObject);
 begin
 	GikoSys.Setting.AmpToCharRef := AmpToCharRefAction.Checked;
 	if EditorPage.ActivePage = PreviewTab then
-		Preview;
+		Preview2;
 end;
 
 procedure TEditorForm.BoardTopClick(Sender: TObject);

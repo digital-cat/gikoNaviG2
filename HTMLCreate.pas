@@ -63,15 +63,15 @@ type
 		procedure separateNumber(var st: String; var et: String; const Text, Separator: String);
 		function checkComma(const s : String; var j : Integer) : boolean;
 		function addResAnchor(PAddRes: PResRec; PResLink : PResLinkRec; dat : boolean;
-		 var s : String; j : Integer; const No: String) : string;
-        function appendResAnchor(PAddRes: PResRec; PResLink : PResLinkRec;
+						var s : String; j : Integer; const No: String) : string;
+		function appendResAnchor(PAddRes: PResRec; PResLink : PResLinkRec;
              dat : boolean;	var s : String) : string;
-        function getNumberString(const str: String;var index :Integer; var dbCharlen: Boolean;
+		function getNumberString(const str: String;var index :Integer; var dbCharlen: Boolean;
              sLen :Integer): String;
-        function isOutsideRange(item: TThreadItem; index: Integer ): Boolean;
-        function getKeywordLink(item: TThreadItem): String;
-        function GetResString(index: Integer; const Line: String; PResLink : PResLinkRec): String;
-        function IsImageExp(const Url: String): Boolean;
+    function isOutsideRange(item: TThreadItem; index: Integer ): Boolean;
+    function getKeywordLink(item: TThreadItem): String;
+    function GetResString(index: Integer; const Line: String; PResLink : PResLinkRec): String;
+    function IsImageExp(const Url: String): Boolean;
 	public
 		{ Public 宣言 }
 		procedure AddAnchorTag(PRes: PResRec);
@@ -90,11 +90,11 @@ type
 		class procedure DivideStrLine(Line: string; PRes: PResRec);
         //HTMLからリンクタグを削除する
 		class function DeleteLink(const s: string): string;
-        //HTMLのボディに許される文字列に置換する
-        class function RepHtml(const s: string): string;
-        //レスエディタのプレビュー用HTMLを作成する
-        class function CreatePreviewHTML(const Title: string; const No: string;
-        	const Mail: string; const Namae: string; const Body: string ) : string;
+		//HTMLのボディに許される文字列に置換する
+		class function RepHtml(const s: string): string;
+		//レスエディタのプレビュー用HTMLを作成する
+		class function CreatePreviewHTML(const Title: string; const No: string;
+							const Mail: string; const Namae: string; const Body: string ) : string;
 	end;
 
 var
@@ -1622,13 +1622,13 @@ var
     Index: Integer;
     Len: Integer;
 begin
-	Result := '<HTML><HEAD>'#13#10
-			+ '<META http-equiv="Content-Type" content="text/html; charset=Shift_JIS">'#13#10
-			+ '<TITLE>' + title + '</TITLE>'#13#10
-			+ '</HEAD>'#13#10
-			+ '<BODY text="#000000" bgcolor="#EFEFEF" link="#0000FF" alink="#FF0000" vlink="#660099">'#13#10
-			+ '<FONT COLOR="#FF0000">' + title + '</FONT>'#13#10
-			+ '<DL>'#13#10;
+	Result := '<html><head>'#13#10
+			+ '<meta http-equiv="Content-Type" content="text/html; charset=Shift_JIS">'#13#10
+			+ '<title>' + title + '</title>'#13#10
+			+ '</head>'#13#10
+			+ '<body text="#000000" bgcolor="#EFEFEF" link="#0000FF" alink="#FF0000" vlink="#660099">'#13#10
+			+ '<font color="#FF0000">' + title + '</font>'#13#10
+			+ '<dl>'#13#10;
 
    	DateTime := FormatDateTime('yyyy/mm/dd(aaa) hh:nn', Now());
 
@@ -1651,17 +1651,17 @@ begin
     //--
     if posTrip > 0 then begin
         tripOrigin := Copy( Namae, posTrip + 1, Length( Namae ) );
-        NameWithTrip := Copy( Namae, 1, posTrip - 1 ) + '</B> ◆' +
-                    get_2ch_trip( PChar( tripOrigin ) ) + '<B>';
+        NameWithTrip := Copy( Namae, 1, posTrip - 1 ) + '</b> ◆' +
+                    get_2ch_trip( PChar( tripOrigin ) ) + '<b>';
     end;
     if Mail = '' then begin
-        Result := Result + '<DT>' + No + ' ： <FONT color="forestgreen"><B>' + NameWithTrip
-                 + '</B></FONT> ： ' + DateTime+ '<BR><DD>' + Body + '<BR><BR><BR>' + #13#10
+        Result := Result + '<dt>' + No + ' ： <font color="forestgreen"><b>' + NameWithTrip
+                 + '</b></font> ： ' + DateTime+ '<br><dd>' + Body + '<br><br><br>' + #13#10
     end else begin
-		Result := Result + '<DT>' + No + ' ： <A href="mailto:' + Mail + '"><B>' + NameWithTrip
-                 + '</B></A> [' + Mail + ']： ' + DateTime+ '<BR><DD>' + Body + '<BR><BR><BR>' + #13#10;
+		Result := Result + '<dt>' + No + ' ： <a href="mailto:' + Mail + '"><b>' + NameWithTrip
+                 + '</b></a> [' + Mail + ']： ' + DateTime+ '<br><dd>' + Body + '<br><br><br>' + #13#10;
     end;
-	Result := Result + '</BODY></HTML>';
+	Result := Result + '</body></html>';
 
 end;
 {

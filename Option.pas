@@ -22,176 +22,176 @@ type
 		FontDialog: TFontDialog;
 		ColorDialog: TColorDialog;
 		OpenDialog: TOpenDialog;
-                Label26: TLabel;
-                CroutOption: TButton;
-                OptionTab: TPageControl;
-                ConnectSheet: TTabSheet;
-                ReadProxyGroupBox: TGroupBox;
-                ReadAddressLabel: TLabel;
-                ReadPortLabel: TLabel;
-                ReadUserIDLabel: TLabel;
-                ReadPasswordLabel: TLabel;
-                ReadProxyCheck: TCheckBox;
-                ReadProxyAddressEdit: TEdit;
-                ReadPortEdit: TEdit;
-                ReadProxyUserIDEdit: TEdit;
-                ReadProxyPasswordEdit: TEdit;
-                WriteProxyGroupBox: TGroupBox;
-                WriteAddressLabel: TLabel;
-                WritePortLabel: TLabel;
-                WriteUserIDLabel: TLabel;
-                WritePasswordLabel: TLabel;
-                WriteProxyCheck: TCheckBox;
-                WriteProxyAddressEdit: TEdit;
-                WritePortEdit: TEdit;
-				WriteProxyUserIDEdit: TEdit;
-				WriteProxyPasswordEdit: TEdit;
-                Font1Sheet: TTabSheet;
-                Bevel1: TBevel;
-                Bevel2: TBevel;
-                Label19: TLabel;
-				Bevel5: TBevel;
-                Label20: TLabel;
-                Label21: TLabel;
-                Label22: TLabel;
-                Label23: TLabel;
-                lblSFont: TLabel;
-                CabinetFontBotton: TButton;
-                CabinetColorBotton: TButton;
-                CabinetDefaultButton: TButton;
-                CabinetMemo: TMemo;
-                ListMemo: TMemo;
-                ListFontBotton: TButton;
-                ListColorBotton: TButton;
-                ListDefaultBotton: TButton;
-                HintFontButton: TButton;
-                HintBackButton: TButton;
-                HintDefaultButton: TButton;
-                HintMemo: TMemo;
-                EditorMemo: TMemo;
-                EditorFontBotton: TButton;
-                EditorColorBotton: TButton;
-                EditorDefaultBotton: TButton;
-                BrowserTabMemo: TMemo;
-                BruwserTabFontButton: TButton;
-                BrowserTabDefaultButton: TButton;
-                OddResNumCheckBox: TCheckBox;
-                OddResNumColorBox: TColorBox;
-                CSSTabSheet: TTabSheet;
-                GroupBox12: TGroupBox;
-                CSSListLabel: TLabel;
-                CSSCheckBox: TCheckBox;
-                CSSListView: TListView;
-                CSSBrowser: TWebBrowser;
-                CSSFontCheckBox: TCheckBox;
-                CSSBackColorCheckBox: TCheckBox;
-                CSSFontButton: TButton;
-                CSSBackColorButton: TButton;
-                TabSheet3: TTabSheet;
-                GroupBox9: TGroupBox;
-                ThreadListIconCheckBox: TCheckBox;
-                GroupBox16: TGroupBox;
-                CreationTimeLogsCheckBox: TCheckBox;
-                FutureThreadCheckBox: TCheckBox;
-                GroupBox5: TGroupBox;
-                BrowserMaxLabel: TLabel;
-                BrowserMaxCombo: TComboBox;
-                GroupBox17: TGroupBox;
-                SelectIntervalLabel: TLabel;
-                Label4: TLabel;
-                Label6: TLabel;
-                SelectIntervalEdit: TEdit;
-                GroupBox18: TGroupBox;
-                DatOchiSortCombo: TComboBox;
-                ThreadSheet: TTabSheet;
-                GroupBox1: TGroupBox;
-                ShowMailCheckBox: TCheckBox;
-                ResRangeHoldCheckBox: TCheckBox;
-                ResRangeHoldComboBox: TComboBox;
-                GroupBox2: TGroupBox;
-                AppFolderLabel: TLabel;
-                URLAppCheckBox: TCheckBox;
-                AppFolderEdit: TEdit;
-                AppFolderButton: TButton;
-                OpenMailerCheckBox: TCheckBox;
-                GroupBox6: TGroupBox;
-                LogDeleteMessageCheckBox: TCheckBox;
-                TabSheet1: TTabSheet;
-	        TabAddRadioGroup: TRadioGroup;
-                GroupBox8: TGroupBox;
-                Label14: TLabel;
-                Label15: TLabel;
-                Label16: TLabel;
-                PreviewVisibleCheckBox: TCheckBox;
-                PreviewSizeComboBox: TComboBox;
-                PreviewWaitEdit: TEdit;
-                GroupBox10: TGroupBox;
-                UnActivePopupCheckBox: TCheckBox;
-                ResPopupBoldCheckBox: TCheckBox;
-                TabSheet2: TTabSheet;
-                GroupBox7: TGroupBox;
-                Label3: TLabel;
-                Label11: TLabel;
-                URLDisplayCheckBox: TCheckBox;
-                AddressHistoryCountEdit: TEdit;
-                TabStopAddressBarCheckBox: TCheckBox;
-                LinkAddCheckBox: TCheckBox;
-                GroupBox15: TGroupBox;
-                ShowDialogForEndCheckBox: TCheckBox;
-                AllTabCloseCheckBox: TCheckBox;
-                SambaGroupBox: TGroupBox;
-                UseSambaCheckBox: TCheckBox;
-                TabAutoSaveLoad: TGroupBox;
-                TabLoadSave: TCheckBox;
-                SoundSheet: TTabSheet;
-                SoundEventGroupBox: TGroupBox;
-                SoundListView: TListView;
-                SoundReferButton: TButton;
-                SoundFileEdit: TEdit;
-                SoundPlayButton: TBitBtn;
-                FolderSheet: TTabSheet;
-                FolderGroupBox: TGroupBox;
-                Label1: TLabel;
-                Label2: TLabel;
-                Label5: TLabel;
-                LogFolderEdit: TEdit;
-                LogFolderButton: TButton;
-                NGwordSheet: TTabSheet;
-                GroupBox14: TGroupBox;
-                RloCheckBox: TCheckBox;
-                ReplaceulCheckBox: TCheckBox;
-                PopUpAbonCheckBox: TCheckBox;
-                ShowNGLineCheckBox: TCheckBox;
-                AddResAnchorCheckBox: TCheckBox;
-                DeleteSyriaCheckBox: TCheckBox;
-                UserIDSheet: TTabSheet;
-                GroupBox3: TGroupBox;
-                Label9: TLabel;
-                Label10: TLabel;
-                ForcedLoginLabel: TLabel;
-                UserIDEdit: TEdit;
-                PasswordEdit: TEdit;
-                AutoLoginCheckBox: TCheckBox;
-                ForcedLoginCheckBox: TCheckBox;
-                GroupBox4: TGroupBox;
-                Label13: TLabel;
-                BoardURLComboBox: TComboBox;
-                AddURLButton: TButton;
-                RemoveURLButton: TButton;
-                OkBotton: TButton;
-                SpamFilterGroupBox: TGroupBox;
-                SpamFilterAlgorithmComboBox: TComboBox;
-                TabSheet4: TTabSheet;
-                GroupBox13: TGroupBox;
-                UseUndecidedCheckBox: TCheckBox;
-                Tora3URLLabel: TLabel;
-                Label12: TLabel;
-                GroupBox11: TGroupBox;
-                Label7: TLabel;
-                BeUserIDEdit: TEdit;
-                Label8: TLabel;
+    Label26: TLabel;
+    CroutOption: TButton;
+    OptionTab: TPageControl;
+    ConnectSheet: TTabSheet;
+    ReadProxyGroupBox: TGroupBox;
+    ReadAddressLabel: TLabel;
+    ReadPortLabel: TLabel;
+    ReadUserIDLabel: TLabel;
+    ReadPasswordLabel: TLabel;
+    ReadProxyCheck: TCheckBox;
+    ReadProxyAddressEdit: TEdit;
+    ReadPortEdit: TEdit;
+    ReadProxyUserIDEdit: TEdit;
+    ReadProxyPasswordEdit: TEdit;
+    WriteProxyGroupBox: TGroupBox;
+    WriteAddressLabel: TLabel;
+    WritePortLabel: TLabel;
+    WriteUserIDLabel: TLabel;
+    WritePasswordLabel: TLabel;
+    WriteProxyCheck: TCheckBox;
+    WriteProxyAddressEdit: TEdit;
+    WritePortEdit: TEdit;
+    WriteProxyUserIDEdit: TEdit;
+    WriteProxyPasswordEdit: TEdit;
+    Font1Sheet: TTabSheet;
+    Bevel1: TBevel;
+    Bevel2: TBevel;
+    Label19: TLabel;
+    Bevel5: TBevel;
+    Label20: TLabel;
+    Label21: TLabel;
+    Label22: TLabel;
+    Label23: TLabel;
+    lblSFont: TLabel;
+    CabinetFontBotton: TButton;
+    CabinetColorBotton: TButton;
+    CabinetDefaultButton: TButton;
+    CabinetMemo: TMemo;
+    ListMemo: TMemo;
+    ListFontBotton: TButton;
+    ListColorBotton: TButton;
+    ListDefaultBotton: TButton;
+    HintFontButton: TButton;
+    HintBackButton: TButton;
+    HintDefaultButton: TButton;
+    HintMemo: TMemo;
+    EditorMemo: TMemo;
+    EditorFontBotton: TButton;
+    EditorColorBotton: TButton;
+    EditorDefaultBotton: TButton;
+    BrowserTabMemo: TMemo;
+    BruwserTabFontButton: TButton;
+    BrowserTabDefaultButton: TButton;
+    OddResNumCheckBox: TCheckBox;
+    OddResNumColorBox: TColorBox;
+    CSSTabSheet: TTabSheet;
+    GroupBox12: TGroupBox;
+    CSSListLabel: TLabel;
+    CSSCheckBox: TCheckBox;
+    CSSListView: TListView;
+    CSSBrowser: TWebBrowser;
+    CSSFontCheckBox: TCheckBox;
+    CSSBackColorCheckBox: TCheckBox;
+    CSSFontButton: TButton;
+    CSSBackColorButton: TButton;
+    TabSheet3: TTabSheet;
+    GroupBox9: TGroupBox;
+    ThreadListIconCheckBox: TCheckBox;
+    GroupBox16: TGroupBox;
+    CreationTimeLogsCheckBox: TCheckBox;
+    FutureThreadCheckBox: TCheckBox;
+    GroupBox5: TGroupBox;
+    BrowserMaxLabel: TLabel;
+    BrowserMaxCombo: TComboBox;
+    GroupBox17: TGroupBox;
+    SelectIntervalLabel: TLabel;
+    Label4: TLabel;
+    Label6: TLabel;
+    SelectIntervalEdit: TEdit;
+    GroupBox18: TGroupBox;
+    DatOchiSortCombo: TComboBox;
+    ThreadSheet: TTabSheet;
+    GroupBox1: TGroupBox;
+    ShowMailCheckBox: TCheckBox;
+    ResRangeHoldCheckBox: TCheckBox;
+    ResRangeHoldComboBox: TComboBox;
+    GroupBox2: TGroupBox;
+    AppFolderLabel: TLabel;
+    URLAppCheckBox: TCheckBox;
+    AppFolderEdit: TEdit;
+    AppFolderButton: TButton;
+    OpenMailerCheckBox: TCheckBox;
+    GroupBox6: TGroupBox;
+    LogDeleteMessageCheckBox: TCheckBox;
+    TabSheet1: TTabSheet;
+    TabAddRadioGroup: TRadioGroup;
+    GroupBox8: TGroupBox;
+    Label14: TLabel;
+    Label15: TLabel;
+    Label16: TLabel;
+    PreviewVisibleCheckBox: TCheckBox;
+    PreviewSizeComboBox: TComboBox;
+    PreviewWaitEdit: TEdit;
+    GroupBox10: TGroupBox;
+    UnActivePopupCheckBox: TCheckBox;
+    ResPopupBoldCheckBox: TCheckBox;
+    TabSheet2: TTabSheet;
+    GroupBox7: TGroupBox;
+    Label3: TLabel;
+    Label11: TLabel;
+    URLDisplayCheckBox: TCheckBox;
+    AddressHistoryCountEdit: TEdit;
+    TabStopAddressBarCheckBox: TCheckBox;
+    LinkAddCheckBox: TCheckBox;
+    GroupBox15: TGroupBox;
+    ShowDialogForEndCheckBox: TCheckBox;
+    AllTabCloseCheckBox: TCheckBox;
+    SambaGroupBox: TGroupBox;
+    UseSambaCheckBox: TCheckBox;
+    TabAutoSaveLoad: TGroupBox;
+    TabLoadSave: TCheckBox;
+    SoundSheet: TTabSheet;
+    SoundEventGroupBox: TGroupBox;
+    SoundListView: TListView;
+    SoundReferButton: TButton;
+    SoundFileEdit: TEdit;
+    SoundPlayButton: TBitBtn;
+    FolderSheet: TTabSheet;
+    FolderGroupBox: TGroupBox;
+    Label1: TLabel;
+    Label2: TLabel;
+    Label5: TLabel;
+    LogFolderEdit: TEdit;
+    LogFolderButton: TButton;
+    NGwordSheet: TTabSheet;
+    GroupBox14: TGroupBox;
+    RloCheckBox: TCheckBox;
+    ReplaceulCheckBox: TCheckBox;
+    PopUpAbonCheckBox: TCheckBox;
+    ShowNGLineCheckBox: TCheckBox;
+    AddResAnchorCheckBox: TCheckBox;
+    DeleteSyriaCheckBox: TCheckBox;
+    UserIDSheet: TTabSheet;
+    GroupBox3: TGroupBox;
+    Label9: TLabel;
+    Label10: TLabel;
+    ForcedLoginLabel: TLabel;
+    UserIDEdit: TEdit;
+    PasswordEdit: TEdit;
+    AutoLoginCheckBox: TCheckBox;
+    ForcedLoginCheckBox: TCheckBox;
+    GroupBox4: TGroupBox;
+    Label13: TLabel;
+    BoardURLComboBox: TComboBox;
+    AddURLButton: TButton;
+    RemoveURLButton: TButton;
+    OkBotton: TButton;
+    SpamFilterGroupBox: TGroupBox;
+    SpamFilterAlgorithmComboBox: TComboBox;
+    TabSheet4: TTabSheet;
+    GroupBox13: TGroupBox;
+    UseUndecidedCheckBox: TCheckBox;
+    Tora3URLLabel: TLabel;
+    Label12: TLabel;
+    GroupBox11: TGroupBox;
+    Label7: TLabel;
+    BeUserIDEdit: TEdit;
+    Label8: TLabel;
     BeCodeEdit: TEdit;
-                BeAutoLoginCheckBox: TCheckBox;
+    BeAutoLoginCheckBox: TCheckBox;
     GroupBox19: TGroupBox;
     Label17: TLabel;
     MaxRecordCountEdit: TEdit;
@@ -227,12 +227,13 @@ type
     BoukenEdit: TEdit;
     GroupBox26: TGroupBox;
     UseUnicodeCB: TCheckBox;
-    Label27: TLabel;
     DispImageCheckBox: TCheckBox;
     GroupBox27: TGroupBox;
     ThreadTitleTrimCheckBox: TCheckBox;
     GroupBox28: TGroupBox;
     NGTextEditCheckBox: TCheckBox;
+    BoardInfCheckBox: TCheckBox;
+    PreviewStyleCheckBox: TCheckBox;
 		procedure FormCreate(Sender: TObject);
 		procedure FormDestroy(Sender: TObject);
 		procedure ApplyButtonClick(Sender: TObject);
@@ -278,9 +279,9 @@ type
 			Change: TItemChange);
 		procedure AddURLButtonClick(Sender: TObject);
 		procedure RemoveURLButtonClick(Sender: TObject);
-                procedure OddResNumCheckBoxClick(Sender: TObject);
-                procedure ResRangeHoldCheckBoxClick(Sender: TObject);
-                procedure CroutOptionClick(Sender: TObject);
+    procedure OddResNumCheckBoxClick(Sender: TObject);
+    procedure ResRangeHoldCheckBoxClick(Sender: TObject);
+    procedure CroutOptionClick(Sender: TObject);
     procedure MaxRecordCountEditExit(Sender: TObject);
     procedure BoukenDelButtonClick(Sender: TObject);
     procedure BoukenComboBoxChange(Sender: TObject);
@@ -366,9 +367,9 @@ begin
 										+ 'スレッド表示エリアのフォント変更は、'#13#10
 										+ '「CSS とスキン」タブで設定出来ます';
 
-        ForcedLoginLabel.Caption := '- チェックを入れるのはセキュリティ上好ましくありません。' + #13#10
+	ForcedLoginLabel.Caption := '- チェックを入れるのはセキュリティ上好ましくありません。' + #13#10
     								        + '　やむを得ない時だけにしてください。';
-        CSSCheckBoxClick(Sender);
+	CSSCheckBoxClick(Sender);
 	BrowserMaxLabel.Caption :=
 		'ブラウザが最小化されているときに以下の操作でブラウザを最大化します。'#13#10 +
 		'また、ホイールクリックにより最大化をキャンセルすることが出来ます。';
@@ -397,14 +398,14 @@ begin
 	ReadPortEditExit(Sender);
 	WritePortEditExit(Sender);
 	AddressHistoryCountEditExit(Sender);
-    MaxRecordCountEditExit(Sender);
+	MaxRecordCountEditExit(Sender);
 	PreviewWaitEditExit(Sender);
 
 	if not CheckFolder then begin
 		FClose := False;
 		Exit;
 	end;
-		SetAbonpropertys;
+	SetAbonpropertys;
 	SaveSetting;
 	SettingApply;
 
@@ -422,7 +423,7 @@ begin
 		FClose := False;
 		Exit;
 	end;
-        SetAbonpropertys;
+	SetAbonpropertys;
 	SaveSetting;
 	SettingApply;
 	FClose := False;
@@ -602,7 +603,7 @@ var
 //	s: string;
 	idx: Integer;
 	FileList : TStringList;
-    DomainList : TStringList;
+	DomainList : TStringList;
 begin
 
 	//読み込み用プロキシ
@@ -666,6 +667,7 @@ begin
 	EditorMemo.Font.Size := GikoSys.Setting.EditorFontSize;
 	EditorMemo.Font.Color := GikoSys.Setting.EditorFontColor;
 	EditorMemo.Color := GikoSys.Setting.EditorBackColor;
+  BoardInfCheckBox.Checked := GikoSys.Setting.SetBoardInfoStyle;
 	//CSS表示
 	CSSCheckBox.Checked := GikoSys.Setting.UseCSS;
 	//かちゅスキン使用
@@ -908,10 +910,12 @@ begin
 	TabLoadSave.Checked := Gikosys.Setting.TabAutoLoadSave;
 	UseUndecidedCheckBox.Checked := GikoSys.Setting.UseUndecided;
 
-    // レスエディタUnicode入力
-    UseUnicodeCB.Checked := Gikosys.Setting.UseUnicode;
-    // スレタイ特定文字列除去
-    ThreadTitleTrimCheckBox.Checked := GikoSys.Setting.ThreadTitleTrim;
+  // レスエディタUnicode入力
+  UseUnicodeCB.Checked := Gikosys.Setting.UseUnicode;
+	// プレビュー表示にCSSまたはスキンを適用する
+  PreviewStyleCheckBox.Checked := Gikosys.Setting.PreviewStyle;
+  // スレタイ特定文字列除去
+  ThreadTitleTrimCheckBox.Checked := GikoSys.Setting.ThreadTitleTrim;
 
 	//Be2ch認証
 	BeUserIDEdit.Text := GikoSys.Setting.BeUserID;
@@ -990,6 +994,7 @@ begin
 	GikoSys.Setting.EditorFontSize := EditorMemo.Font.Size;
 	GikoSys.Setting.EditorFontColor := EditorMemo.Font.Color;
 	GikoSys.Setting.EditorBackColor := EditorMemo.Color;
+  GikoSys.Setting.SetBoardInfoStyle := BoardInfCheckBox.Checked;
 	{FRepaintThread : 表示済みスレッドの再描画が必要かどうか
 	設定が変わっていた場合、trueにして既に表示している全ての
 	スレッドのRepaintをtrueにする
@@ -1207,8 +1212,8 @@ begin
 	GikoSys.Setting.DeleteSyria := DeleteSyriaCheckBox.Checked;
 	GikoSys.Setting.IgnoreKana := IgnoreKanaCheckBox.Checked;
 	GikoSys.FAbon.IgnoreKana := GikoSys.Setting.IgnoreKana;
-    //NGワード編集
-    GikoSys.Setting.NGTextEditor := NGTextEditCheckBox.Checked;
+  //NGワード編集
+  GikoSys.Setting.NGTextEditor := NGTextEditCheckBox.Checked;
 	// 使用するスパムフィルタ
 	if GikoSys.Setting.SpamFilterAlgorithm <> TGikoSpamFilterAlgorithm(
 		SpamFilterAlgorithmComboBox.ItemIndex ) then begin
@@ -1220,21 +1225,23 @@ begin
 	//Tab自動保存
 	GikoSys.Setting.TabAutoLoadSave := TabLoadSave.Checked;
 	GikoSys.Setting.UseUndecided := UseUndecidedCheckBox.Checked;
-        //Be2ch
-        GikoSys.Setting.BeUserID := BeUserIDEdit.Text;
-        GikoSys.Setting.BePassword := BeCodeEdit.Text;
-		GikoSys.Setting.BeAutoLogin := BeAutoLoginCheckBox.Checked;
+  //Be2ch
+  GikoSys.Setting.BeUserID := BeUserIDEdit.Text;
+  GikoSys.Setting.BePassword := BeCodeEdit.Text;
+  GikoSys.Setting.BeAutoLogin := BeAutoLoginCheckBox.Checked;
 	//履歴の最大保存数
 	GikoSys.Setting.MaxRecordCount := Max(StrToInt64Def(MaxRecordCountEdit.Text,100),1);
-    GikoSys.Setting.StoredTaskTray := StoredTaskTrayCB.Checked;
-    GikoSys.Setting.LoopBrowserTabs := LoopBrowserTabsCB.Checked;
+  GikoSys.Setting.StoredTaskTray := StoredTaskTrayCB.Checked;
+  GikoSys.Setting.LoopBrowserTabs := LoopBrowserTabsCB.Checked;
 
-    GikoSys.Setting.GestureIgnoreContext := IgnoreContextCheckBox.Checked;
+  GikoSys.Setting.GestureIgnoreContext := IgnoreContextCheckBox.Checked;
 
-    // レスエディタUnicode入力
-    Gikosys.Setting.UseUnicode := UseUnicodeCB.Checked;
-    // スレタイ特定文字列除去
-    GikoSys.Setting.ThreadTitleTrim := ThreadTitleTrimCheckBox.Checked;
+  // レスエディタUnicode入力
+  Gikosys.Setting.UseUnicode := UseUnicodeCB.Checked;
+	// プレビュー表示にCSSまたはスキンを適用する
+  Gikosys.Setting.PreviewStyle := PreviewStyleCheckBox.Checked;
+	// スレタイ特定文字列除去
+	GikoSys.Setting.ThreadTitleTrim := ThreadTitleTrimCheckBox.Checked;
 
 end;
 
@@ -1600,7 +1607,7 @@ begin
 					GikoSys.Setting.CSSFileName := string( CSSListView.Items[CSSListView.ItemIndex].data )
 				else
 					GikoSys.Setting.CSSFileName := CSSListView.Items[CSSListView.ItemIndex].Caption + '.css';
-						end;
+			end;
 		except
 		end;
 	end;
