@@ -3654,6 +3654,8 @@ var
   dirList: TStringList;
   param: String;
   termSlash: Boolean;
+  board: TBoard;
+  server: String;
 begin
   if not Is2chURL(url) then
     Exit;
@@ -3665,8 +3667,9 @@ begin
   if idx1 > 0 then
     url[idx1 + 1] := '5'; // 2ch.net -> 5ch.net
 
-  { スマホURL -> PCURL
+  { スマホURL -> PC-URL
   https://itest.5ch.net/egg/test/read.cgi/software/1689155355
+  https://itest.5ch.net/test/read.cgi/software/1689155355				鯖名がない形式
     ↓
   https://egg.5ch.net/test/read.cgi/software/1689155355
   }
@@ -3709,9 +3712,33 @@ begin
     end;
 
     if dirList.Count >= 1 then begin
-      url := Format('https://%s.%s', [dirList[0], domain]);
-	    if dirList.Count > 1 then
-  	  	for idx1 := 1 to dirList.Count - 1 do
+      // 鯖名がないパターン
+      if dirList[0] = 'test' then begin
+		    if dirList.Count < 3 then
+          Exit;		// 板名がないから変換不可
+        board := BBSs[0].FindBBSID(dirList[2]);
+        if board = nil then
+          Exit;		// 板名から板情報を取得できなかった
+        if board.URL = '' then
+          Exit;		// 板のURLを取得できなかった
+      	idx1 := Pos('://', board.URL);
+        if idx1 < 1 then
+          Exit;		// 板のURLが変
+        idx1 := idx1 + 3;	// 鯖名の開始位置
+        idx2 := PosEx('.', board.URL, idx1);
+        if idx2 < 1 then
+          Exit;		// 板のURLが変
+				server := Copy(board.URL, idx1, idx2 - idx1);	// 鯖名取得
+        start := 0;
+      end else begin
+			// 鯖名があるパターン
+        server := dirList[0];
+        start := 1;
+      end;
+
+      url := Format('https://%s.%s', [server, domain]);
+	    if dirList.Count > start then
+  	  	for idx1 := start to dirList.Count - 1 do
     	    url := url + '/' + dirList[idx1];
     	if termSlash then
       	url := url + '/';
