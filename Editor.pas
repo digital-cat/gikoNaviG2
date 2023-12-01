@@ -408,10 +408,12 @@ begin
 	InitWideComboBox(MailComboBoxUC, MailComboBox);
 	MailComboBoxUC.OnChange := MailComboBoxChange;
 
+	TitleEditUC.Visible    := FUseUC;
 	BodyEditUC.Visible     := FUseUC;
 	NameComboBoxUC.Visible := FUseUC;
 	MailComboBoxUC.Visible := FUseUC;
 
+	TitleEdit.Visible    := not FUseUC;
 	BodyEdit.Visible     := not FUseUC;
 	NameComboBox.Visible := not FUseUC;
 	MailComboBox.Visible := not FUseUC;
@@ -436,9 +438,9 @@ begin
 		FMailComboEdit := GetWindow(MailComboBoxUC.Handle, GW_CHILD);
 		NameComboBoxUC.Items_Assign(GikoSys.Setting.NameList);
 		MailComboBoxUC.Items_Assign(GikoSys.Setting.MailList);
-		TitleLabel.FocusControl := TitleEdit;
-		NameLabel.FocusControl  := NameComboBox;
-		MailLabel.FocusControl  := MailComboBox;
+		TitleLabel.FocusControl := TitleEditUC;
+		NameLabel.FocusControl  := NameComboBoxUC;
+		MailLabel.FocusControl  := MailComboBoxUC;
 	end else begin
 		EditorTab.Caption := EditorTab.Caption + '(Shift-JISÉÇÅ[Éh)';
 		FNameComboEdit := GetWindow(NameComboBox.Handle, GW_CHILD);
@@ -1500,7 +1502,7 @@ begin
 		s := 'sid=' + HttpEncode(SessionID) + '&'
 	else
 		s := '';
-	s := s + 'subject=&'
+	s := s //+ 'subject=&'
 			+ 'FROM=' + from + '&'
 			+ 'mail=' + mail + '&'
 			+ 'MESSAGE=' + body + '&'
