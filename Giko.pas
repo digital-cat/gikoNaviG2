@@ -737,6 +737,7 @@ type
 		BrowserTabUC: TTntTabControl;
 		TreeViewUC: TTntTreeView;
 		SelectComboBoxUC: TWideComboBox;
+		ListViewUC: TWideGikoListView;
 		procedure MoveToURL(const inURL: string; KeyMask: Boolean = False);
 		function InsertBrowserTab(ThreadItem: TThreadItem; ActiveTab: Boolean = True) : TBrowserRecord;
 		procedure ReloadBBS;
@@ -1131,6 +1132,36 @@ begin
 	SelectComboBoxUC.OnExit           := SelectComboBox.OnExit;
 	SelectComboBoxUC.OnKeyDown        := SelectComboBox.OnKeyDown;
   SelectComboBox.Visible := False;
+	// スレ一覧リストビューをUnicode対応版に差し替え
+	ListViewUC := TWideGikoListView.Create(Self);
+	ListViewUC.Parent             := ListView.Parent;
+	ListViewUC.Left               := ListView.Left;
+	ListViewUC.Top                := ListView.Top;
+	ListViewUC.Width              := ListView.Width;
+	ListViewUC.Height             := ListView.Height;
+	ListViewUC.Align              := ListView.Align;
+	ListViewUC.AllocBy            := ListView.AllocBy;
+  ListViewUC.Font               := ListView.Font;
+  ListViewUC.ViewStyle          := ListView.ViewStyle;
+  ListViewUC.DragMode           := ListView.DragMode;
+  ListViewUC.HideSelection      := ListView.HideSelection;
+  ListViewUC.LargeImages        := ListView.LargeImages;
+  ListViewUC.MultiSelect        := ListView.MultiSelect;
+  ListViewUC.OwnerData          := ListView.OwnerData;
+  ListViewUC.ReadOnly           := ListView.ReadOnly;
+  ListViewUC.RowSelect          := ListView.RowSelect;
+  ListViewUC.SmallImages        := ListView.SmallImages;
+  ListViewUC.StateImages        := ListView.StateImages;
+  ListViewUC.TabOrder           := ListView.TabOrder;
+  ListViewUC.OnColumnClick      := ListView.OnColumnClick;
+  ListViewUC.OnColumnInfo       := ListView.OnColumnInfo;
+  ListViewUC.OnColumnRightClick := ListView.OnColumnRightClick;
+  ListViewUC.OnCustomDraw       := ListView.OnCustomDraw;
+  ListViewUC.OnCustomDrawItem   := ListView.OnCustomDrawItem;
+  ListViewUC.OnKeyDown          := ListView.OnKeyDown;
+  ListViewUC.OnKeyUp            := ListView.OnKeyUp;
+  ListViewUC.OnMouseDown        := ListView.OnMouseDown;
+	ListView.Visible := False;
 	//-------------------
 
 	//メニューフォント
@@ -1148,7 +1179,7 @@ begin
 	EnabledCloseButton := True;
 
 	//リストスタイル
-	ListView.ViewStyle := GikoSys.Setting.ListStyle;
+	ListViewUC.ViewStyle := GikoSys.Setting.ListStyle;
 
 	//アニメパネル位置
 	AnimePanel.Top := 0;
@@ -1171,7 +1202,7 @@ begin
 	//フォント・色設定
 	TreeViewUC.Items.BeginUpdate;
 	FavoriteTreeViewUC.Items.BeginUpdate;
-	ListView.Items.BeginUpdate;
+	ListViewUC.Items.BeginUpdate;
 	MessageListViewUC.Items.BeginUpdate;
 	try
 		TreeViewUC.Font.Name := GikoSys.Setting.CabinetFontName;
@@ -1181,14 +1212,14 @@ begin
 		FavoriteTreeViewUC.Font.Assign(TreeViewUC.Font);
 		FavoriteTreeViewUC.Color := GikoSys.Setting.CabinetBackColor;
 
-		ListView.Font.Name := GikoSys.Setting.ListFontName;
-		ListView.Font.Size := GikoSys.Setting.ListFontSize;
-		ListView.Font.Color := GikoSys.Setting.ListFontColor;
-		ListView.Font.Style := [];
+		ListViewUC.Font.Name := GikoSys.Setting.ListFontName;
+		ListViewUC.Font.Size := GikoSys.Setting.ListFontSize;
+		ListViewUC.Font.Color := GikoSys.Setting.ListFontColor;
+		ListViewUC.Font.Style := [];
 		if GikoSys.Setting.ListFontBold then
-			ListView.Font.Style := [fsbold];
+			ListViewUC.Font.Style := [fsbold];
 		if GikoSys.Setting.ListFontItalic then
-			ListView.Font.Style := ListView.Font.Style + [fsitalic];
+			ListViewUC.Font.Style := ListViewUC.Font.Style + [fsitalic];
 
 		ListViewBackGroundColor := clWhite;												// デフォルトに設定したのち
 		ListViewBackGroundColor := GikoSys.Setting.ListBackColor;	// ユーザ定義に変更
@@ -1208,7 +1239,7 @@ begin
 	finally
 		TreeViewUC.Items.EndUpdate;
 		FavoriteTreeViewUC.Items.EndUpdate;
-		ListView.Items.EndUpdate;
+		ListViewUC.Items.EndUpdate;
 		MessageListViewUC.Items.EndUpdate;
 	end;
 	//ViewNoButton.Down := GikoSys.Setting.ListViewNo;
@@ -1487,7 +1518,7 @@ begin
 	//最終巡回時間
 //	FLastRoundTime := 0;
 
-	ListView.OnData := TListViewUtils.ListViewData;
+	ListViewUC.OnData := TListViewUtils.ListViewData;
 
 	// 最後に選択されたキャビネットの復元
 	CabinetVisible( False );
@@ -1553,7 +1584,7 @@ begin
 	ResPopupClearTimer.Interval := GikoSys.Setting.RespopupWait;
 
 	// D&Dを受け取る
-	DragAcceptFiles(ListView.Handle, True);
+	DragAcceptFiles(ListViewUC.Handle, True);
 
 	// ツールバーの初期化の影響？でコンボボックスが初期化される(？)ため上からここへ移動 for D2007
 	// 絞込検索履歴
@@ -1864,7 +1895,7 @@ begin
 		GikoSys.Setting.WindowWidth := wp.rcNormalPosition.Right - wp.rcNormalPosition.Left;
 		GikoSys.Setting.WindowMax := (WindowState = wsMaximized) or
                                         (WindowPlacement.flags = WPF_RESTORETOMAXIMIZED);
-		GikoSys.Setting.ListStyle := ListView.ViewStyle;
+		GikoSys.Setting.ListStyle := ListViewUC.ViewStyle;
 		GikoSys.Setting.CabinetVisible := GikoDM.CabinetVisibleAction.Checked;
 		GikoSys.Setting.CabinetWidth := CabinetPanel.Width;
 		GikoSys.Setting.ListHeight := FBrowserSizeHeight;
@@ -2050,6 +2081,7 @@ begin
     BrowserTabUC.Free;
     TreeViewUC.Free;
     SelectComboBoxUC.Free;
+    ListViewUC.Free;
   except
   end;
 
@@ -2533,14 +2565,14 @@ begin
 		VK_RETURN:		ListClick;
 		VK_APPS:
 			begin
-				if ListView.Selected <> nil then begin
-					pos.X := ListView.Column[ 0 ].Width;
-					pos.Y := ListView.Selected.Top;
+				if ListViewUC.Selected <> nil then begin
+					pos.X := ListViewUC.Column[ 0 ].Width;
+					pos.Y := ListViewUC.Selected.Top;
 				end else begin
-					pos.X := ListView.Left;
-					pos.Y := ListView.Top;
+					pos.X := ListViewUC.Left;
+					pos.Y := ListViewUC.Top;
 				end;
-				Windows.ClientToScreen( ListView.Handle, pos );
+				Windows.ClientToScreen( ListViewUC.Handle, pos );
 				ListPopupMenu.Popup( pos.X, pos.Y );
 			end;
 		end;
@@ -2551,14 +2583,14 @@ begin
 		VK_RETURN:		ListDoubleClick(Shift);
 		VK_APPS:
 			begin
-				if ListView.Selected <> nil then begin
-					pos.X := ListView.Column[ 0 ].Width;
-					pos.Y := ListView.Selected.Top;
+				if ListViewUC.Selected <> nil then begin
+					pos.X := ListViewUC.Column[ 0 ].Width;
+					pos.Y := ListViewUC.Selected.Top;
 				end else begin
-					pos.X := ListView.Left;
-					pos.Y := ListView.Top;
+					pos.X := ListViewUC.Left;
+					pos.Y := ListViewUC.Top;
 				end;
-				Windows.ClientToScreen( ListView.Handle, pos );
+				Windows.ClientToScreen( ListViewUC.Handle, pos );
 				ListPopupMenu.Popup( pos.X, pos.Y );
 			end;
 		end;
@@ -2603,7 +2635,7 @@ begin
 		vSortOrder := id = 0;
 	end;
 
-	TListViewUtils.ListViewSort(Sender, ListView, ListView.Column[Column.Index], GikoDM.ListNumberVisibleAction.Checked, vSortOrder);
+	TListViewUtils.ListViewSort(Sender, ListViewUC, ListViewUC.Column[Column.Index], GikoDM.ListNumberVisibleAction.Checked, vSortOrder);
 end;
 
 procedure TGikoForm.MenuToolBarCustomDrawButton(Sender: TToolBar;
@@ -2823,8 +2855,8 @@ end;
 
 procedure TGikoForm.ListViewAllSelect;
 begin
-	ListView.SetFocus;
-	ListView.SelectAll;
+	ListViewUC.SetFocus;
+	ListViewUC.SelectAll;
 end;
 procedure TGikoForm.DownloadMsg(Sender: TObject; Item: TDownloadItem; Msg: string; Icon: TGikoMessageIcon);
 begin
@@ -2872,7 +2904,7 @@ begin
 				Item.Board.Modified := True;
 				Item.Board.IsThreadDatRead := True;
 				PlaySound('New');
-				ListView.Refresh;
+				ListViewUC.Refresh;
 			end else if Item.DownType = gdtThread then begin
 				//スレ
 				Item.SaveItemFile;
@@ -2897,41 +2929,41 @@ begin
 				if GikoSys.Setting.BrowserTabVisible then begin
 					if GetActiveContent = Item.ThreadItem then
 						InsertBrowserTab(Item.ThreadItem)
-					else if (ListView.Selected <> nil ) and ( TObject(ListView.Selected.Data) is TThreadItem ) and ( Item.ThreadItem = TThreadItem(ListView.Selected.Data)) then
+					else if (ListViewUC.Selected <> nil ) and ( TObject(ListViewUC.Selected.Data) is TThreadItem ) and ( Item.ThreadItem = TThreadItem(ListViewUC.Selected.Data)) then
 						InsertBrowserTab(Item.ThreadItem, True)
 					else
 						InsertBrowserTab(Item.ThreadItem, False);
 
 				end else begin
 					if (GetActiveContent = Item.ThreadItem) or (FActiveContent = nil) or(FActiveContent.Browser = BrowserNullTab.Browser) then
-												InsertBrowserTab(Item.ThreadItem);
+						InsertBrowserTab(Item.ThreadItem);
 				end;
 
-								Application.ProcessMessages;
+				Application.ProcessMessages;
 
 				if Item.State = gdsComplete then begin
 					PlaySound('New');
-										AddMessageList(ATitle + ' ' + GikoSys.GetGikoMessage(gmSureSyutoku), nil, gmiOK);
-										//Add by Genyakun
-										DiffComp := True;
+					AddMessageList(ATitle + ' ' + GikoSys.GetGikoMessage(gmSureSyutoku), nil, gmiOK);
+					//Add by Genyakun
+					DiffComp := True;
 				end else begin
 					PlaySound('NewDiff');
-										AddMessageList(ATitle + ' ' + GikoSys.GetGikoMessage(gmSureDiff), nil, gmiOK);
-										//Add by Genyakun
-										DiffComp := True;
+					AddMessageList(ATitle + ' ' + GikoSys.GetGikoMessage(gmSureDiff), nil, gmiOK);
+					//Add by Genyakun
+					DiffComp := True;
 				end;
 
 				//巡回ありの場合＆１０００超は巡回削除
 				if (Item.ThreadItem.Round) and (Item.ThreadItem.Count > 1000) then begin
-                    // 2ch以外は、1000が最高か不明なので、2ch限定にする
-                    if (Item.ThreadItem.ParentBoard.Is2ch) then begin
-    					Item.ThreadItem.Round := False;
-	    				AddMessageList('★1000発言を超えたので巡回を削除しました - [' + Item.ThreadItem.Title + ']', nil, gmiOK);
-                    end;
+					// 2ch以外は、1000が最高か不明なので、2ch限定にする
+					if (Item.ThreadItem.ParentBoard.Is2ch) then begin
+						Item.ThreadItem.Round := False;
+						AddMessageList('★1000発言を超えたので巡回を削除しました - [' + Item.ThreadItem.Title + ']', nil, gmiOK);
+					end;
 				end;
 				TreeViewUC.Refresh;
 				//ListViewでこのスレが含まれる板を表示しているときの更新処理
-                UpdateListView();
+				UpdateListView();
 				RefreshListView(Item.ThreadItem);
 			end;
 
@@ -2946,7 +2978,7 @@ begin
 			Screen.Cursor := crDefault;
 		end else if Item.State = gdsAbort then begin
 			//中断
-						AddMessageList(ATitle + ' ' + GikoSys.GetGikoMessage(gmAbort), nil, gmiOK);
+			AddMessageList(ATitle + ' ' + GikoSys.GetGikoMessage(gmAbort), nil, gmiOK);
 		end else if Item.State = gdsError then begin
 			//エラー
 			s := Item.ErrText;
@@ -3249,7 +3281,7 @@ begin
 	BBSID := ThreadItem.ParentBoard.BBSID;
 	FileName := ThreadItem.FileName;
 
-	if GetCapture = ListView.Handle then
+	if GetCapture = ListViewUC.Handle then
 		ReleaseCapture;
 
 	Screen.Cursor := crHourGlass;
@@ -3357,16 +3389,16 @@ begin
 //	if FActiveList <> Obj then begin
 		FActiveList := Obj;
         try
-			if ListView.Selected <> nil then
-				idx := ListView.Selected.Index
+			if ListViewUC.Selected <> nil then
+				idx := ListViewUC.Selected.Index
 			else
 				idx := -1;
         except
         	idx := -1;
         end;
-		ListView.Items.Count := 0;
-		ListView.Items.Clear;
-		ListView.Selected := nil;
+		ListViewUC.Items.Count := 0;
+		ListViewUC.Items.Clear;
+		ListViewUC.Selected := nil;
 //	ListView.Columns.Clear;
 		if (FActiveContent <> nil) and (FActiveContent.Thread <> nil)
 			and (FActiveContent.Thread.IsLogFile) then begin
@@ -3390,21 +3422,21 @@ begin
 		Screen.Cursor := crHourGlass;
 		try
 			if Obj is TBBS then begin
-				TListViewUtils.SetCategoryListItem(TBBS(obj), ListView, GikoDM.ListNumberVisibleAction.Checked);
+				TListViewUtils.SetCategoryListItem(TBBS(obj), ListViewUC, GikoDM.ListNumberVisibleAction.Checked);
 			end else if Obj is TCategory then begin
-				TListViewUtils.SetBoardListItem(TCategory(Obj), ListView, GikoDM.ListNumberVisibleAction.Checked);
+				TListViewUtils.SetBoardListItem(TCategory(Obj), ListViewUC, GikoDM.ListNumberVisibleAction.Checked);
 			end else if Obj is TBoard then begin
-				TListViewUtils.SetThreadListItem(TBoard(Obj), ListView,  GikoDM.ListNumberVisibleAction.Checked);
+				TListViewUtils.SetThreadListItem(TBoard(Obj), ListViewUC,  GikoDM.ListNumberVisibleAction.Checked);
 			end;
 		finally
 			Screen.Cursor := crDefault;
 		end;
 
 		if idx >= 0  then begin
-			if idx >= ListView.Items.Count then
-				idx := ListView.Items.Count - 1;
-			ListView.ItemIndex := idx;
-			ListView.ItemFocused := ListView.Items.Item[ idx ];
+			if idx >= ListViewUC.Items.Count then
+				idx := ListViewUC.Items.Count - 1;
+			ListViewUC.ItemIndex := idx;
+			ListViewUC.ItemFocused := ListViewUC.Items.Item[ idx ];
 		end;
 //	end;
 end;
@@ -3458,34 +3490,34 @@ var
 	p: TPoint;
 //	Board: TBoard;
 begin
-	if ListView.Items.Count = 0 then begin
+	if ListViewUC.Items.Count = 0 then begin
 		DefaultDraw := true;
-		ListView.Canvas.Brush.Color := ListView.Color;
-		ListView.Canvas.FillRect(ARect);
+		ListViewUC.Canvas.Brush.Color := ListViewUC.Color;
+		ListViewUC.Canvas.FillRect(ARect);
 
 		case ViewType of
 			gvtAll: begin
-				ListView.Canvas.Font.Color := clWindowText;
+				ListViewUC.Canvas.Font.Color := clWindowText;
 				s := 'このビューにはアイテムがありません。';
 			end;
 			gvtLog: begin
-				ListView.Canvas.Font.Color := clBlue;
+				ListViewUC.Canvas.Font.Color := clBlue;
 				s := 'このビューにはログ有りアイテムがありません。';
 			end;
 			gvtNew: begin
-				ListView.Canvas.Font.Color := clGreen;
+				ListViewUC.Canvas.Font.Color := clGreen;
 				s := 'このビューには新着アイテムがありません。';
 			end;
 			gvtArch: begin
-				ListView.Canvas.Font.Color := clFuchsia;
+				ListViewUC.Canvas.Font.Color := clFuchsia;
 				s := 'このビューにはDAT落ちアイテムがありません。';
 			end;
 			gvtLive: begin
-				ListView.Canvas.Font.Color := clMaroon;
+				ListViewUC.Canvas.Font.Color := clMaroon;
 				s := 'このビューには生存アイテムがありません。';
 			end;
 			gvtUser: begin
-				ListView.Canvas.Font.Color := clNavy;
+				ListViewUC.Canvas.Font.Color := clNavy;
 				s := 'このビューにはタイトルが「%s」を含むアイテムがありません。';
 				if GetActiveList is TBoard then
 					s := Format(s, [TBoard(GetActiveList).ParentCategory.ParenTBBS.SelectText]);
@@ -3496,9 +3528,9 @@ begin
 			end;
 		end;
 
-		p := Point((ListView.ClientWidth div 2) - (ListView.Canvas.TextWidth(s) div 2),
-							 (ListView.ClientHeight div 2) - (ListView.Canvas.TextHeight(s) div 2));
-		ListView.Canvas.TextOut(p.X, p.Y, s);
+		p := Point((ListViewUC.ClientWidth div 2) - (ListViewUC.Canvas.TextWidth(s) div 2),
+							 (ListViewUC.ClientHeight div 2) - (ListViewUC.Canvas.TextHeight(s) div 2));
+		ListViewUC.Canvas.TextOut(p.X, p.Y, s);
 	end else begin
 		DefaultDraw := True;
 	end;
@@ -3788,7 +3820,7 @@ begin
 		if Item <> FActiveList then begin
 			ActiveListColumnSave;
 			if (Item is TBBS) or (Item is TCategory) then begin
-				ListView.Columns.Clear;
+				ListViewUC.Columns.Clear;
 				SetActiveList( Item );
 			end else if Item is TBoard then begin
 				if not TBoard( Item ).IsThreadDatRead then begin
@@ -3811,13 +3843,13 @@ begin
 			if GikoSys.Setting.ListWidthState = glsMax then begin
 				GikoDM.BrowserMinAction.Execute;
 				if GikoForm.Visible then
-					ListView.SetFocus;
+					ListViewUC.SetFocus;
 			end;
 		end else begin
 			if GikoSys.Setting.ListHeightState = glsMax then begin
 				GikoDM.BrowserMinAction.Execute;
 				if GikoForm.Visible then
-					ListView.SetFocus;
+					ListViewUC.SetFocus;
 			end;
 		end;
 	end;
@@ -3835,14 +3867,14 @@ begin
 	mbMiddle:
 		begin
 			if not (GetActiveList is TBoard) then Exit;
-			listItem := ListView.GetItemAt( X, Y );
+			listItem := ListViewUC.GetItemAt( X, Y );
 			if listItem = nil then Exit;
 			if not (TObject(listItem.Data) is TThreadItem) then Exit;
 
 			threadItem := TThreadItem(ListItem.Data);
 			InsertBrowserTab(threadItem, False);
 			if threadItem.IsLogFile then
-				ListView.UpdateItems(listItem.Index, listItem.Index);
+				ListViewUC.UpdateItems(listItem.Index, listItem.Index);
 		end;
 	mbLeft:
 		begin
@@ -3856,7 +3888,7 @@ begin
 		begin
 			pos.X := X;
 			pos.Y := Y;
-			Windows.ClientToScreen( ListView.Handle, pos );
+			Windows.ClientToScreen( ListViewUC.Handle, pos );
 			ListPopupMenu.Popup( pos.X, pos.Y );
 		end;
 	end;
@@ -3868,15 +3900,15 @@ var
 	ListItem: TListItem;
 	ThreadItem: TThreadItem;
 begin
-	if ListView.SelCount <> 1 then Exit;
-	ListItem := ListView.Selected;
+	if ListViewUC.SelCount <> 1 then Exit;
+	ListItem := ListViewUC.Selected;
 	if ListItem = nil then Exit;
 	if not (TObject(ListItem.Data) is TThreadItem) then Exit;
 
 	ThreadItem := TThreadItem(ListItem.Data);
 	if ThreadItem.IsLogFile then begin
 		InsertBrowserTab(ThreadItem);
-		ListView.UpdateItems(ListItem.Index, ListItem.Index);
+		ListViewUC.UpdateItems(ListItem.Index, ListItem.Index);
 	end else begin
 		InsertBrowserTab(ThreadItem);
 	end;
@@ -3901,15 +3933,15 @@ var
 begin
 	shiftDown := (ssShift in Shift);
 
-	if ListView.Selected = nil then Exit;
+	if ListViewUC.Selected = nil then Exit;
 
-	if TObject(ListView.Selected.Data) is TCategory then begin
-		SelectTreeNode(ListView.Selected.Data, True);
-	end else if TObject(ListView.Selected.Data) is TBoard then begin
-		SelectTreeNode(ListView.Selected.Data, True)
-	end else if TObject(ListView.Selected.Data) is TThreadItem then begin
+	if TObject(ListViewUC.Selected.Data) is TCategory then begin
+		SelectTreeNode(ListViewUC.Selected.Data, True);
+	end else if TObject(ListViewUC.Selected.Data) is TBoard then begin
+		SelectTreeNode(ListViewUC.Selected.Data, True)
+	end else if TObject(ListViewUC.Selected.Data) is TThreadItem then begin
 		Application.ProcessMessages;
-		ThreadItem := TThreadItem(ListView.Selected.Data);
+		ThreadItem := TThreadItem(ListViewUC.Selected.Data);
 		DownloadContent(ThreadItem, shiftDown);
 
 		if GikoSys.Setting.BrowserAutoMaximize = gbmDoubleClick then begin
@@ -3975,10 +4007,10 @@ var
 begin
 	List.Clear;
 	List.Capacity := 0;
-	TmpListItem := ListView.Selected;
+	TmpListItem := ListViewUC.Selected;
 	while TmpListItem <> nil do begin
 		List.Add(TmpListItem.Data);
-		TmpListItem := ListView.GetNextItem(TmpListItem, sdAll, [isSelected]);
+		TmpListItem := ListViewUC.GetNextItem(TmpListItem, sdAll, [isSelected]);
 	end;
 
 end;
@@ -4428,7 +4460,7 @@ begin
 					AddressComboBox.Text := GetActiveContent.URL;
 
 				if ((TreeViewUC.Visible) and (TreeViewUC.Focused)) or ((FavoriteTreeViewUC.Visible) and (FavoriteTreeViewUC.Focused)) or
-					(ListView.Focused) or (SelectComboBoxUC.Focused) or (AddressComboBox.Focused)
+					(ListViewUC.Focused) or (SelectComboBoxUC.Focused) or (AddressComboBox.Focused)
 				then
 				else
 					GikoDM.SetFocusForBrowserAction.Execute;
@@ -4728,7 +4760,7 @@ begin
 	if Sender is TMenuItem then begin
 		MenuItem := TMenuItem(Sender);
 		SetSelectItemRound(True, StripHotKey(MenuItem.Caption), TMenuItem(Sender).Parent.Name);
-		ListView.Refresh;
+		ListViewUC.Refresh;
 	end;
 end;
 
@@ -5068,7 +5100,7 @@ begin
 								Board.Insert( 0, ThreadItem );
 								if ActiveList is TBoard then begin
 									if TBoard(ActiveList) = Board then
-										ListView.Items.Count := ListView.Items.Count + 1;
+										ListViewUC.Items.Count := ListViewUC.Items.Count + 1;
 								end;
 							end else begin
 								tmpThread.Free;
@@ -5133,7 +5165,7 @@ begin
 				Board.Insert(0, ThreadItem);
 				if ActiveList is TBoard then begin
 					if TBoard(ActiveList) = Board then
-						ListView.Items.Count := ListView.Items.Count + 1;
+						ListViewUC.Items.Count := ListViewUC.Items.Count + 1;
 				end;
 			end;
 			// ログなしスレッドのときは、ホスト名のチェックをする
@@ -5533,7 +5565,7 @@ begin
 		Accept := True;
 	end else if Source = BrowserTabUC then
 		Accept := True
-	else if Source = ListView then
+	else if Source = ListViewUC then
 		Accept := True
 	else if Source is TLinkToolButton then
 		Accept := True
@@ -6066,7 +6098,7 @@ begin
 		end else begin
 			FIsHandledWheel := True;
 			if (Wnd = TreeViewUC.Handle) or  (Wnd = FavoriteTreeViewUC.Handle)
-			or (Wnd = ListView.Handle) or (Wnd = MessageListViewUC.Handle)
+			or (Wnd = ListViewUC.Handle) or (Wnd = MessageListViewUC.Handle)
 			then
 				SendMessage( Wnd, WM_MOUSEWHEEL, WheelDelta shl 16, (Mouse.CursorPos.X shl 16) or Mouse.CursorPos.Y )
 			else
@@ -6390,8 +6422,8 @@ begin
 	end else if Source = BrowserTabUC then begin
 		idx := BrowserTabUC.TabIndex;
 		FavoriteAddTo( SenderNode, BrowserTabUC.Tabs.Objects[idx] );
-	end else if Source = ListView then begin
-		FavoriteAddTo( SenderNode, ListView.Selected.Data );
+	end else if Source = ListViewUC then begin
+		FavoriteAddTo( SenderNode, ListViewUC.Selected.Data );
 	end else if Source = TreeViewUC then begin
 		FavoriteAddTo( SenderNode, TreeViewUC.Selected.Data );
 	end;
@@ -6702,7 +6734,7 @@ procedure TGikoForm.SetListViewBackGroundColor(value: TColor);
 begin
 	if FListViewBackGroundColor <> value then begin
 		FListViewBackGroundColor := value;
-		ListView.Color := FListViewBackGroundColor;
+		ListViewUC.Color := FListViewBackGroundColor;
 	end;
 end;
 procedure TGikoForm.FavoriteTreeBrowseBoardPopupMenuClick(Sender: TObject);
@@ -7039,13 +7071,13 @@ begin
 			if GikoSys.Setting.ListWidthState = glsMax then begin
 				GikoDM.BrowserMinAction.Execute;
 				if GikoForm.Visible then
-					ListView.SetFocus;
+					ListViewUC.SetFocus;
 			end;
 		end else begin
 			if GikoSys.Setting.ListHeightState = glsMax then begin
 				GikoDM.BrowserMinAction.Execute;
 				if GikoForm.Visible then
-					ListView.SetFocus;
+					ListViewUC.SetFocus;
 			end;
 		end;
 	end;
@@ -7250,9 +7282,9 @@ end;
 procedure TGikoForm.SelectTimerTimer(Sender: TObject);
 begin
 	SelectTimer.Interval := 0;
-	if not (ListView.Selected = nil) then
+	if not (ListViewUC.Selected = nil) then
 		if( FActiveContent = nil) or
-				(GetActiveContent <> TThreadItem(ListView.Selected.Data) ) then begin
+				(GetActiveContent <> TThreadItem(ListViewUC.Selected.Data) ) then begin
 			ListClick;
 		end;
 end;
@@ -7272,15 +7304,15 @@ begin
 		//===== カテゴリリスト =====
 		BBSOrder := TGikoBBSColumnList.Create;
 		try
-			for i := 0 to ListView.Columns.Count - 1 do begin
+			for i := 0 to ListViewUC.Columns.Count - 1 do begin
 				// 順序の取得
-				idx := ListView.Column[ i ].Tag;
+				idx := ListViewUC.Column[ i ].Tag;
 				id := Ord( GikoSys.Setting.BBSColumnOrder[ idx ] );
 				BBSOrder.Add( TGikoBBSColumnID( id ) );
 				// 幅の保存
-				GikoSys.Setting.BBSColumnWidth[ id ] := ListView.Column[ i ].Width;
+				GikoSys.Setting.BBSColumnWidth[ id ] := ListViewUC.Column[ i ].Width;
 			end;
-			for i := 0 to ListView.Columns.Count - 1 do
+			for i := 0 to ListViewUC.Columns.Count - 1 do
 				// 順序の保存
 				GikoSys.Setting.BBSColumnOrder[ i ] := BBSOrder[ i ];
 		finally
@@ -7290,15 +7322,15 @@ begin
 		//===== 板リスト =====
 		CategoryOrder := TGikoCategoryColumnList.Create;
 		try
-			for i := 0 to ListView.Columns.Count - 1 do begin
+			for i := 0 to ListViewUC.Columns.Count - 1 do begin
 				// 順序の取得
-				idx := ListView.Column[ i ].Tag;
+				idx := ListViewUC.Column[ i ].Tag;
 				id := Ord( GikoSys.Setting.CategoryColumnOrder[ idx ] );
 				CategoryOrder.Add( TGikoCategoryColumnID( id ) );
 				// 幅の保存
-				GikoSys.Setting.CategoryColumnWidth[ id ] := ListView.Column[ i ].Width;
+				GikoSys.Setting.CategoryColumnWidth[ id ] := ListViewUC.Column[ i ].Width;
 			end;
-			for i := 0 to ListView.Columns.Count - 1 do
+			for i := 0 to ListViewUC.Columns.Count - 1 do
 				// 順序の保存
 				GikoSys.Setting.CategoryColumnOrder[ i ] := CategoryOrder[ i ];
 		finally
@@ -7308,15 +7340,15 @@ begin
 		//===== スレリスト =====
 		BoardOrder := TGikoBoardColumnList.Create;
 		try
-			for i := 0 to ListView.Columns.Count - 1 do begin
+			for i := 0 to ListViewUC.Columns.Count - 1 do begin
 				// 順序の取得
-				idx := ListView.Column[ i ].Tag;
+				idx := ListViewUC.Column[ i ].Tag;
 				id := Ord( GikoSys.Setting.BoardColumnOrder[ idx ] );
 				BoardOrder.Add( TGikoBoardColumnID( id ) );
 				// 幅の保存
-				GikoSys.Setting.BoardColumnWidth[ id ] := ListView.Column[ i ].Width;
+				GikoSys.Setting.BoardColumnWidth[ id ] := ListViewUC.Column[ i ].Width;
 			end;
-			for i := 0 to ListView.Columns.Count - 1 do
+			for i := 0 to ListViewUC.Columns.Count - 1 do
 				// 順序の保存
 				GikoSys.Setting.BoardColumnOrder[ i ] := BoardOrder[ i ];
 		finally
@@ -7392,7 +7424,7 @@ begin
 	end;
 
 	// メニューの表示
-	Point := ListView.ClientToScreen( Point );
+	Point := ListViewUC.ClientToScreen( Point );
 	if ListColumnPopupMenu.Items.Count > 0 then
 		ListColumnPopupMenu.Popup( Point.X, Point.Y );
 
@@ -7484,18 +7516,18 @@ begin
 	if TObject(Item.Data) is TThreadItem then begin
 		ThreadItem := TThreadItem(Item.Data);
 		if ( FUseOddResOddColor ) and ( ThreadItem.Count <> 0 ) and ( ThreadItem.AllResCount <> ThreadItem.Count) then begin
-			ListView.Canvas.Brush.Color := FOddColor;
+			ListViewUC.Canvas.Brush.Color := FOddColor;
 			//選択されているけど、フォーカスがないと、グレイになるので、太字に変更
 			if (GikoSys.Setting.UnFocusedBold) and
-			 (Item.Selected) and (not ListView.Focused) then begin
-				ListView.Canvas.Font.Style := [fsBold];
+			 (Item.Selected) and (not ListViewUC.Focused) then begin
+				ListViewUC.Canvas.Font.Style := [fsBold];
 			end;
 		end else begin
-			ListView.Canvas.Brush.Color := FListViewBackGroundColor;
+			ListViewUC.Canvas.Brush.Color := FListViewBackGroundColor;
 		end;
 
 		if ThreadItem.UnRead then
-			ListView.Canvas.Font.Style := [fsBold];
+			ListViewUC.Canvas.Font.Style := [fsBold];
 	end;
 
 end;
@@ -8209,7 +8241,7 @@ procedure TGikoForm.RefreshListView(Thread: TThreadItem);
 begin
 	//Threadの板と表示している板が同じなら描画を更新する
 	if (FActiveList is TBoard) and (TBoard(ActiveList) = Thread.ParentBoard) then begin
-		ListView.Refresh;
+		ListViewUC.Refresh;
 	end;
 end;
 
@@ -8360,7 +8392,7 @@ begin
 					if TreeViewUC.Visible then begin
 						TreeViewUC.Refresh;
 					end;
-					if GikoForm.ListView.Visible then begin
+					if ListViewUC.Visible then begin
 						UpdateListView();
 					end;
 				end else begin
@@ -8385,15 +8417,15 @@ begin
         TBoard(ActiveList).UserThreadCount:= TBoard(ActiveList).GetUserThreadCount;
         //ListViewのアイテムの個数も更新
         case GikoForm.ViewType of
-            gvtAll: ListView.Items.Count := TBoard(ActiveList).Count;
-            gvtLog: ListView.Items.Count := TBoard(ActiveList).LogThreadCount;
-            gvtNew: ListView.Items.Count := TBoard(ActiveList).NewThreadCount;
-            gvtArch: ListView.Items.Count := TBoard(ActiveList).ArchiveThreadCount;
-            gvtLive: ListView.Items.Count := TBoard(ActiveList).LiveThreadCount;
-            gvtUser: ListView.Items.Count := TBoard(ActiveList).UserThreadCount;
+            gvtAll: ListViewUC.Items.Count := TBoard(ActiveList).Count;
+            gvtLog: ListViewUC.Items.Count := TBoard(ActiveList).LogThreadCount;
+            gvtNew: ListViewUC.Items.Count := TBoard(ActiveList).NewThreadCount;
+            gvtArch: ListViewUC.Items.Count := TBoard(ActiveList).ArchiveThreadCount;
+            gvtLive: ListViewUC.Items.Count := TBoard(ActiveList).LiveThreadCount;
+            gvtUser: ListViewUC.Items.Count := TBoard(ActiveList).UserThreadCount;
         end;
     end;
-    ListView.Refresh;
+    ListViewUC.Refresh;
 end;
 //! ファイルチェック
 function TGikoForm.isValidFile(FileName: String) : boolean;

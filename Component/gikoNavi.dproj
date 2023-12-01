@@ -39,6 +39,7 @@
       <MainSource>MainSource</MainSource>
     </DelphiCompile>
     <DCCReference Include="$(SystemRoot)\system32\rtl.dcp" />
+    <DCCReference Include="$(SystemRoot)\system32\TntUnicodeVcl.dcp" />
     <DCCReference Include="$(SystemRoot)\system32\vcl.dcp" />
     <DCCReference Include="GikoCoolBar.pas" />
     <DCCReference Include="GikoListView.pas" />

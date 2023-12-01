@@ -893,7 +893,7 @@ begin
 		GikoForm.DeleteTab(ThreadItem);
 		ThreadItem.DeleteLogFile;
 
-		GikoForm.ListView.Refresh;
+		GikoForm.ListViewUC.Refresh;
 	finally
 	end;
 
@@ -1342,7 +1342,7 @@ begin
             GikoForm.DeleteHistory(ThreadItem);
 			ThreadItem.DeleteLogFile;
 			if ThreadItem.ParentBoard = GikoForm.ActiveList then
-				GikoForm.ListView.Refresh;
+				GikoForm.ListViewUC.Refresh;
 		end;
 	end;
 end;
@@ -1454,8 +1454,8 @@ end;
 // *************************************************************************
 procedure TGikoDM.ThreadFavoriteAddActionExecute(Sender: TObject);
 begin
-	if TObject(GikoForm.ListView.Selected.Data) is TThreadItem then
-		GikoForm.ShowFavoriteAddDialog(TObject(GikoForm.ListView.Selected.Data));
+	if TObject(GikoForm.ListViewUC.Selected.Data) is TThreadItem then
+		GikoForm.ShowFavoriteAddDialog(TObject(GikoForm.ListViewUC.Selected.Data));
 end;
 // *************************************************************************
 //! スレッド一覧で、スレが１つ以上選択されている有効になるUpdateイベント
@@ -1463,7 +1463,7 @@ end;
 procedure TGikoDM.ThreadFavoriteAddActionUpdate(Sender: TObject);
 begin
 	TAction(Sender).Enabled := (GikoForm.GetActiveList is TBoard)
-									and (GikoForm.ListView.SelCount > 0);
+									and (GikoForm.ListViewUC.SelCount > 0);
 end;
 // *************************************************************************
 //! レスの内容を絞り込む
@@ -2016,14 +2016,14 @@ var
 begin
 	List := TList.Create;
 	try
-		TmpListItem := GikoForm.ListView.Selected;
+		TmpListItem := GikoForm.ListViewUC.Selected;
 		while TmpListItem <> nil do begin
 			if TObject(TmpListItem.Data) is TThreadItem then begin
 				ThreadItem := TThreadItem(TmpListItem.Data);
 				if ThreadItem.IsLogFile then
 					List.Add(ThreadItem);
 			end;
-			TmpListItem := GikoForm.ListView.GetNextItem(TmpListItem, sdAll, [isSelected]);
+			TmpListItem := GikoForm.ListViewUC.GetNextItem(TmpListItem, sdAll, [isSelected]);
 		end;
 
 		if GikoSys.Setting.DeleteMsg and (List.Count > 0) then begin
@@ -2045,7 +2045,7 @@ begin
 			ThreadItem.DeleteLogFile;
 		end;
         GikoForm.TreeViewUC.Refresh;	// UnRead の表示を更新
-		GikoForm.ListView.Refresh;
+		GikoForm.ListViewUC.Refresh;
 	finally
 		List.Free;
 	end;
@@ -2056,7 +2056,7 @@ end;
 procedure TGikoDM.LogDeleteActionUpdate(Sender: TObject);
 begin
 	TAction(Sender).Enabled := (GikoForm.GetActiveList is TBoard)
-								and (GikoForm.ListView.SelCount > 0);
+								and (GikoForm.ListViewUC.SelCount > 0);
 end;
 // *************************************************************************
 //! 絞込み履歴を消去する
@@ -2664,7 +2664,7 @@ end;
 procedure TGikoDM.ListNumberVisibleActionExecute(Sender: TObject);
 begin
 	GikoSys.Setting.ListViewNo := ListNumberVisibleAction.Checked;
-	GikoForm.ListView.Refresh;
+	GikoForm.ListViewUC.Refresh;
 end;
 // *************************************************************************
 //! 上位フォルダに移動する
@@ -2691,7 +2691,7 @@ end;
 // *************************************************************************
 procedure TGikoDM.IconStyleExecute(Sender: TObject);
 begin
-	case GikoForm.ListView.ViewStyle of
+	case GikoForm.ListViewUC.ViewStyle of
 		vsIcon: SmallIconAction.Execute;
 		vsSmallIcon: ListIconAction.Execute;
 		vsList: DetailIconAction.Execute;
@@ -2706,7 +2706,7 @@ begin
 	if GikoForm.SelectComboBoxPanel.Visible then begin
 		GikoForm.SelectComboBoxUC.Text := SELECTCOMBOBOX_NAME;
 		GikoForm.SelectComboBoxUC.Color := SELECTCOMBOBOX_COLOR;
-		GikoForm.ListView.SetFocus;
+		GikoForm.ListViewUC.SetFocus;
 	end;
 end;
 // *************************************************************************
@@ -2938,7 +2938,7 @@ end;
 procedure TGikoDM.SelectItemURLCopyActionUpdate(Sender: TObject);
 begin
 	if ((GikoForm.GetActiveList is TBoard) or
-		(GikoForm.GetActiveList is TCategory))and (GikoForm.ListView.SelCount > 0) then
+		(GikoForm.GetActiveList is TCategory))and (GikoForm.ListViewUC.SelCount > 0) then
 		TAction(Sender).Enabled := True
 	else
 		TAction(Sender).Enabled := False;
@@ -2977,7 +2977,7 @@ procedure TGikoDM.SelectItemNameCopyActionUpdate(Sender: TObject);
 begin
 	if ((GikoForm.GetActiveList is TBBS) or
         (GikoForm.GetActiveList is TBoard) or
-		(GikoForm.GetActiveList is TCategory))and (GikoForm.ListView.SelCount > 0) then
+		(GikoForm.GetActiveList is TCategory))and (GikoForm.ListViewUC.SelCount > 0) then
 		TAction(Sender).Enabled := True
 	else
 		TAction(Sender).Enabled := False;
@@ -3045,7 +3045,7 @@ end;
 // *************************************************************************
 procedure TGikoDM.SelectListReloadActionUpdate(Sender: TObject);
 begin
-	if (GikoForm.GetActiveList is TCategory) and (GikoForm.ListView.SelCount > 0) then
+	if (GikoForm.GetActiveList is TCategory) and (GikoForm.ListViewUC.SelCount > 0) then
 		TAction(Sender).Enabled := True
 	else if GikoForm.GetActiveList is TBoard then begin
 		TAction(Sender).Enabled :=
@@ -3087,7 +3087,7 @@ end;
 procedure TGikoDM.SelectThreadReloadActionUpdate(Sender: TObject);
 begin
 	TAction(Sender).Enabled :=
-		(GikoForm.GetActiveList is TBoard) and (GikoForm.ListView.SelCount > 0);
+		(GikoForm.GetActiveList is TBoard) and (GikoForm.ListViewUC.SelCount > 0);
 end;
 // *************************************************************************
 //! スレッド巡回予約
@@ -3105,7 +3105,7 @@ var
 	i: Integer;
 	List: TList;
 begin
-	if (GikoForm.GetActiveList is TBoard) and (GikoForm.ListView.SelCount > 0) then begin
+	if (GikoForm.GetActiveList is TBoard) and (GikoForm.ListViewUC.SelCount > 0) then begin
 		List := TList.Create;
 		try
 			GikoForm.SelectListItem(List);
@@ -3121,7 +3121,7 @@ begin
 		finally
 			List.Free;
 		end;
-	end else if (GikoForm.GetActiveList is TCategory) and (GikoForm.ListView.SelCount > 0) then
+	end else if (GikoForm.GetActiveList is TCategory) and (GikoForm.ListViewUC.SelCount > 0) then
 		SelectReservAction.Enabled := True
 	else
 		SelectReservAction.Enabled := False;
@@ -3137,7 +3137,7 @@ var
 
 begin
 	//呼び出し元が、TActionでListViewに選択がいなければ、EXITする
-	if (Sender is TAction) and (GikoForm.ListView.Selected = nil) then
+	if (Sender is TAction) and (GikoForm.ListViewUC.Selected = nil) then
 		Exit;
 
 	//登録上限チェック
@@ -3156,17 +3156,17 @@ begin
 			if (Sender is TMenuItem) then begin
 				GikoForm.SetSelectItemRound(True, s, TMenuItem(Sender).Parent.Name);
 			end else if (Sender is TAction) then begin
-				if (GikoForm.ListView.Selected <> nil) then begin
-					if (TObject(GikoForm.ListView.Selected.Data) is TThreadItem) then begin
+				if (GikoForm.ListViewUC.Selected <> nil) then begin
+					if (TObject(GikoForm.ListViewUC.Selected.Data) is TThreadItem) then begin
 						GikoForm.SetSelectItemRound(True, s,
-							TThreadItem(GikoForm.ListView.Selected.Data).Title);
-					end else if (TObject(GikoForm.ListView.Selected.Data) is TBoard) then begin
+							TThreadItem(GikoForm.ListViewUC.Selected.Data).Title);
+					end else if (TObject(GikoForm.ListViewUC.Selected.Data) is TBoard) then begin
 						GikoForm.SetSelectItemRound(True, s,
-							TBoard(GikoForm.ListView.Selected.Data).Title);
+							TBoard(GikoForm.ListViewUC.Selected.Data).Title);
 					end;
 				end;
 			end;
-			GikoForm.ListView.Refresh;
+			GikoForm.ListViewUC.Refresh;
 		end;
 	finally
 		Dlg.Free;
@@ -3186,11 +3186,11 @@ begin
 		end;
 	end else if (Sender is TAction) then begin
 		try
-			if GikoForm.ListView.Selected <> nil then begin
-				if (TObject(GikoForm.ListView.Selected.Data) is TThreadItem) then begin
-					s := TThreadItem(GikoForm.ListView.Selected.Data).Title;
-				end else if (TObject(GikoForm.ListView.Selected.Data) is TBoard) then begin
-					s := TBoard(GikoForm.ListView.Selected.Data).Title;
+			if GikoForm.ListViewUC.Selected <> nil then begin
+				if (TObject(GikoForm.ListViewUC.Selected.Data) is TThreadItem) then begin
+					s := TThreadItem(GikoForm.ListViewUC.Selected.Data).Title;
+				end else if (TObject(GikoForm.ListViewUC.Selected.Data) is TBoard) then begin
+					s := TBoard(GikoForm.ListViewUC.Selected.Data).Title;
 				end;
 				GikoForm.SetSelectItemRound(False, '', s);
 
@@ -3198,15 +3198,15 @@ begin
 		except
 		end;
 	end;
-	GikoForm.ListView.Refresh;
+	GikoForm.ListViewUC.Refresh;
 end;
 // *************************************************************************
 //! 選択されている板をお気に入りに追加する
 // *************************************************************************
 procedure TGikoDM.BoardFavoriteAddActionExecute(Sender: TObject);
 begin
-	if TObject(GikoForm.ListView.Selected.Data) is TBoard then
-		GikoForm.ShowFavoriteAddDialog(TObject(GikoForm.ListView.Selected.Data));
+	if TObject(GikoForm.ListViewUC.Selected.Data) is TBoard then
+		GikoForm.ShowFavoriteAddDialog(TObject(GikoForm.ListViewUC.Selected.Data));
 end;
 // *************************************************************************
 //! 選択されている板をお気に入りに追加するUpdateイベント
@@ -3214,7 +3214,7 @@ end;
 procedure TGikoDM.BoardFavoriteAddActionUpdate(Sender: TObject);
 begin
 	BoardFavoriteAddAction.Enabled :=
-		(GikoForm.GetActiveList is TCategory) and (GikoForm.ListView.SelCount > 0);
+		(GikoForm.GetActiveList is TCategory) and (GikoForm.ListViewUC.SelCount > 0);
 end;
 // *************************************************************************
 //! ExplorerでLogフォルダを開く
@@ -3251,7 +3251,7 @@ begin
 	if (((GikoForm.GetActiveList is TBoard) and
         (GikoForm.GetActiveList <> BoardGroup.SpecialBoard))
         or (GikoForm.GetActiveList is TCategory))
-	    	and (GikoForm.ListView.SelCount > 0) then
+	    	and (GikoForm.ListViewUC.SelCount > 0) then
 		TAction(Sender).Enabled := True
 	else
 		TAction(Sender).Enabled := False;
@@ -3318,12 +3318,12 @@ var
 	so : boolean;
 begin
 	if GetSortProperties(GikoForm.GetActiveList, so) then begin
-		for i := 0 to GikoForm.ListView.Columns.Count - 1 do begin
-			if (GikoForm.ListView.Column[ i ].ImageIndex = ITEM_ICON_SORT1) or
-				(GikoForm.ListView.Column[ i ].ImageIndex = ITEM_ICON_SORT2) then begin
+		for i := 0 to GikoForm.ListViewUC.Columns.Count - 1 do begin
+			if (GikoForm.ListViewUC.Column[ i ].ImageIndex = ITEM_ICON_SORT1) or
+				(GikoForm.ListViewUC.Column[ i ].ImageIndex = ITEM_ICON_SORT2) then begin
 				so := not so;
-				TListViewUtils.ListViewSort(nil, GikoForm.ListView,
-					 GikoForm.ListView.Column[ i ], ListNumberVisibleAction.Checked,
+				TListViewUtils.ListViewSort(nil, GikoForm.ListViewUC,
+					 GikoForm.ListViewUC.Column[ i ], ListNumberVisibleAction.Checked,
 					 so);
 				break;
 			end;
@@ -3337,14 +3337,14 @@ procedure TGikoDM.SortNextColumnActionExecute(Sender: TObject);
 var
 	i, id	: Integer;
 begin
-	for i := 0 to GikoForm.ListView.Columns.Count - 1 do begin
-		if (GikoForm.ListView.Column[ i ].ImageIndex = ITEM_ICON_SORT1) or
-			(GikoForm.ListView.Column[ i ].ImageIndex = ITEM_ICON_SORT2) then begin
+	for i := 0 to GikoForm.ListViewUC.Columns.Count - 1 do begin
+		if (GikoForm.ListViewUC.Column[ i ].ImageIndex = ITEM_ICON_SORT1) or
+			(GikoForm.ListViewUC.Column[ i ].ImageIndex = ITEM_ICON_SORT2) then begin
 			id := i + 1;
-			if id > GikoForm.ListView.Columns.Count - 1 then
+			if id > GikoForm.ListViewUC.Columns.Count - 1 then
 				id := 0;
-			TListViewUtils.ListViewSort( nil, GikoForm.ListView,
-				GikoForm.ListView.Column[ id ], ListNumberVisibleAction.Checked,
+			TListViewUtils.ListViewSort( nil, GikoForm.ListViewUC,
+				GikoForm.ListViewUC.Column[ id ], ListNumberVisibleAction.Checked,
 				id = 0);
 			break;
 		end;
@@ -3357,14 +3357,14 @@ procedure TGikoDM.SortPrevColumnActionExecute(Sender: TObject);
 var
 	i, id	: Integer;
 begin
-	for i := 0 to GikoForm.ListView.Columns.Count - 1 do begin
-		if (GikoForm.ListView.Column[ i ].ImageIndex = ITEM_ICON_SORT1) or
-			(GikoForm.ListView.Column[ i ].ImageIndex = ITEM_ICON_SORT2) then begin
+	for i := 0 to GikoForm.ListViewUC.Columns.Count - 1 do begin
+		if (GikoForm.ListViewUC.Column[ i ].ImageIndex = ITEM_ICON_SORT1) or
+			(GikoForm.ListViewUC.Column[ i ].ImageIndex = ITEM_ICON_SORT2) then begin
 			id := i - 1;
 			if id < 0 then
-				id := GikoForm.ListView.Columns.Count - 1;
-			TListViewUtils.ListViewSort( nil, GikoForm.ListView,
-				GikoForm.ListView.Column[ id ], ListNumberVisibleAction.Checked,
+				id := GikoForm.ListViewUC.Columns.Count - 1;
+			TListViewUtils.ListViewSort( nil, GikoForm.ListViewUC,
+				GikoForm.ListViewUC.Column[ id ], ListNumberVisibleAction.Checked,
 				id = 0);
 			break;
 		end;
@@ -3599,7 +3599,7 @@ end;
 // *************************************************************************
 procedure TGikoDM.LargeIconActionExecute(Sender: TObject);
 begin
-	GikoForm.ListView.ViewStyle := vsIcon;
+	GikoForm.ListViewUC.ViewStyle := vsIcon;
 	LargeIconAction.Checked := True;
 end;
 // *************************************************************************
@@ -3607,7 +3607,7 @@ end;
 // *************************************************************************
 procedure TGikoDM.SmallIconActionExecute(Sender: TObject);
 begin
-	GikoForm.ListView.ViewStyle := vsSmallIcon;
+	GikoForm.ListViewUC.ViewStyle := vsSmallIcon;
 	SmallIconAction.Checked := True;
 end;
 // *************************************************************************
@@ -3615,7 +3615,7 @@ end;
 // *************************************************************************
 procedure TGikoDM.ListIconActionExecute(Sender: TObject);
 begin
-	GikoForm.ListView.ViewStyle := vsList;
+	GikoForm.ListViewUC.ViewStyle := vsList;
 	ListIconAction.Checked := True;
 end;
 // *************************************************************************
@@ -3623,7 +3623,7 @@ end;
 // *************************************************************************
 procedure TGikoDM.DetailIconActionExecute(Sender: TObject);
 begin
-	GikoForm.ListView.ViewStyle := vsReport;
+	GikoForm.ListViewUC.ViewStyle := vsReport;
 	DetailIconAction.Checked := True;
 end;
 // *************************************************************************
@@ -3825,14 +3825,14 @@ procedure TGikoDM.SetFocusForThreadListActionExecute(Sender: TObject);
 begin
 	if GikoForm.ActiveContent <> nil then
 		GikoForm.WebBrowserClick(GikoForm.ActiveContent.Browser); //一回Browserに当てないと動かないときがある
-	GikoForm.ListView.SetFocus;
+	GikoForm.ListViewUC.SetFocus;
 
-	if( GikoForm.ListView.Items.Count > 0 ) and (GikoForm.ListView.ItemFocused = nil) then
-		GikoForm.ListView.Items.Item[0].Selected := true; //選択アイテムが無いときは先頭のを選択する
+	if( GikoForm.ListViewUC.Items.Count > 0 ) and (GikoForm.ListViewUC.ItemFocused = nil) then
+		GikoForm.ListViewUC.Items.Item[0].Selected := true; //選択アイテムが無いときは先頭のを選択する
 
 	//スクロールさせる
-	if (GikoForm.ListView.ItemFocused <> nil) then begin
-		GikoForm.ListView.ItemFocused.MakeVisible(False);
+	if (GikoForm.ListViewUC.ItemFocused <> nil) then begin
+		GikoForm.ListViewUC.ItemFocused.MakeVisible(False);
 	end;
 end;
 // *************************************************************************
@@ -3880,9 +3880,9 @@ end;
 // *************************************************************************
 procedure TGikoDM.UnSelectedListViewActionExecute(Sender: TObject);
 begin
-	if GikoForm.ListView.Selected <> nil then begin
-		GikoForm.ListView.Selected.Focused := True;
-		GikoForm.ListView.Selected := nil;
+	if GikoForm.ListViewUC.Selected <> nil then begin
+		GikoForm.ListViewUC.Selected.Focused := True;
+		GikoForm.ListViewUC.Selected := nil;
 	end;
 end;
 ////////////////////////////////表示までおしまい/////////////////////
@@ -3920,8 +3920,8 @@ begin
 		end;
 		if GikoForm.TreeViewUC.Visible then
 			GikoForm.TreeViewUC.Refresh;
-		if GikoForm.ListView.Visible then
-			GikoForm.ListView.Refresh;
+		if GikoForm.ListViewUC.Visible then
+			GikoForm.ListViewUC.Refresh;
 	finally
 		List.Free;
 	end;
@@ -3938,7 +3938,7 @@ end;
 // *************************************************************************
 procedure TGikoDM.AllSelectActionUpdate(Sender: TObject);
 begin
-	AllSelectAction.Enabled := GikoForm.ListView.SelCount > 0;
+	AllSelectAction.Enabled := GikoForm.ListViewUC.SelCount > 0;
 end;
 ////////////////////////////////編集までおしまい/////////////////////
 //! スレッドのサイズを再計算する
@@ -4517,14 +4517,14 @@ procedure TGikoDM.ShowTabListActionExecute(Sender: TObject);
 var
     i : Integer;
 begin
-    GikoForm.ListView.Items.BeginUpdate;
-    GikoForm.ListView.Items.Clear;
+    GikoForm.ListViewUC.Items.BeginUpdate;
+    GikoForm.ListViewUC.Items.Clear;
     BoardGroup.SpecialBoard.Clear;
 	for i := GikoForm.BrowserTabUC.Tabs.Count - 1 downto 0 do begin
         BoardGroup.SpecialBoard.Add(
     		TBrowserRecord(GikoForm.BrowserTabUC.Tabs.Objects[i]).Thread);
 	end;
-    GikoForm.ListView.Items.EndUpdate;
+    GikoForm.ListViewUC.Items.EndUpdate;
     GikoForm.SetActiveList(BoardGroup.SpecialBoard);
 end;
 //! 逆参照しているレスを追加する
@@ -4730,7 +4730,7 @@ procedure TGikoDM.ThreadNgEditActionExecute(Sender: TObject);
 begin
     ThreadNGEdit := TThreadNGEdit.Create(GikoForm);
     if (ThreadNGEdit.ShowModal = mrOk) then begin
-        GikoForm.ListView.Refresh;
+        GikoForm.ListViewUC.Refresh;
     end;
     ThreadNGEdit.Free;
     ThreadNGEdit := nil;

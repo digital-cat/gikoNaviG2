@@ -1251,7 +1251,7 @@ var
 begin
 	GikoForm.TreeViewUC.Items.BeginUpdate;
 	GikoForm.FavoriteTreeViewUC.Items.BeginUpdate;
-	GikoForm.ListView.Items.BeginUpdate;
+	GikoForm.ListViewUC.Items.BeginUpdate;
 	try
 		GikoForm.TreeViewUC.Font.Name := GikoSys.Setting.CabinetFontName;
 		GikoForm.TreeViewUC.Font.Size := GikoSys.Setting.CabinetFontSize;
@@ -1261,14 +1261,14 @@ begin
 		GikoForm.FavoriteTreeViewUC.Font.Assign(GikoForm.TreeViewUC.Font);
 		GikoForm.FavoriteTreeViewUC.Color := GikoSys.Setting.CabinetBackColor;
 
-		GikoForm.ListView.Font.Name := GikoSys.Setting.ListFontName;
-		GikoForm.ListView.Font.Size := GikoSys.Setting.ListFontSize;
-		GikoForm.ListView.Font.Color := GikoSys.Setting.ListFontColor;
-		GikoForm.ListView.Font.Style := [];
+		GikoForm.ListViewUC.Font.Name := GikoSys.Setting.ListFontName;
+		GikoForm.ListViewUC.Font.Size := GikoSys.Setting.ListFontSize;
+		GikoForm.ListViewUC.Font.Color := GikoSys.Setting.ListFontColor;
+		GikoForm.ListViewUC.Font.Style := [];
 		if GikoSys.Setting.ListFontBold then
-			GikoForm.ListView.Font.Style := [fsbold];
+			GikoForm.ListViewUC.Font.Style := [fsbold];
 		if GikoSys.Setting.ListFontItalic then
-			GikoForm.ListView.Font.Style := GikoForm.ListView.Font.Style + [fsitalic];
+			GikoForm.ListViewUC.Font.Style := GikoForm.ListViewUC.Font.Style + [fsitalic];
 
 		//GikoForm.ListView.Color := GikoSys.Setting.ListBackColor;
 		GikoForm.ListViewBackGroundColor := GikoSys.Setting.ListBackColor;
@@ -1296,7 +1296,7 @@ begin
 	finally
 		GikoForm.TreeViewUC.Items.EndUpdate;
 		GikoForm.FavoriteTreeViewUC.Items.EndUpdate;
-		GikoForm.ListView.Items.EndUpdate;
+		GikoForm.ListViewUC.Items.EndUpdate;
 	end;
 
 	//アドレスバー

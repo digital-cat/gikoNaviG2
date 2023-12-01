@@ -7,8 +7,8 @@ unit WideCtrls;
 interface
 
 uses
-  Messages, Windows, Controls, StdCtrls, Classes, SysUtils, StrUtils,
-  TntStdCtrls, TntMenus, TntComCtrls;
+  Messages, Windows, Controls, StdCtrls, Classes, SysUtils, StrUtils, CommCtrl,
+  TntStdCtrls, TntMenus, TntComCtrls, GikoListView;
 
 { TWideMemo }
 type
@@ -107,6 +107,22 @@ public
   property AccessKey: Boolean read FAccessKey write FAccessKey;
 end;
 
+
+{ TWideGikoListView }
+type
+  TWideGikoListView = class;
+
+  TWideGikoListView = class(TTntListView)
+private
+  FColumnInfoEvent: TColumnInfoEvent;
+  procedure LVMSetColumn(var Message: TMessage); message LVM_SETCOLUMN;
+  procedure LVMInsertColumn(var Message: TMessage); message LVM_INSERTCOLUMN;
+public
+  constructor Create(AOwner: TComponent); override;
+  procedure Free;
+published
+  property OnColumnInfo: TColumnInfoEvent read FColumnInfoEvent write FColumnInfoEvent;
+end;
 
 
 
@@ -406,6 +422,38 @@ begin
     Caption := wideCaption;
   except
   end;
+end;
+
+
+
+{ TWideGikoListView }
+
+{ コンストラクタ }
+constructor TWideGikoListView.Create(AOwner: TComponent);
+begin
+  inherited Create(AOwner);
+end;
+
+{ デストラクタ }
+procedure TWideGikoListView.Free;
+begin
+  inherited Free;
+end;
+
+{  }
+procedure TWideGikoListView.LVMSetColumn(var Message: TMessage);
+begin
+	if Assigned(FColumnInfoEvent) then
+		FColumnInfoEvent(Self, PLVColumn(Message.LParam));
+	inherited;
+end;
+
+{  }
+procedure TWideGikoListView.LVMInsertColumn(var Message: TMessage);
+begin
+	if Assigned(FColumnInfoEvent) then
+		FColumnInfoEvent(Self, PLVColumn(Message.LParam));
+	inherited;
 end;
 
 
