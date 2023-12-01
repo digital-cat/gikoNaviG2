@@ -232,6 +232,8 @@ type
 		FURI: TIdURI;
 		procedure Preview;
 		procedure Preview2;
+    procedure TrimLinkFromHtml(var html: String);
+    procedure SetBodyClass(var html: String; attrClass: String);
 		function Check: Boolean;
 		procedure SetNameList(sName, sMail: string);
 		procedure Send(const ACOOKIE: string; const SPID: string; const PON: string; FirstWriting: Boolean);
@@ -701,18 +703,8 @@ const
 					+ '<span class="name_label"> 名前： </span><a class="name_mail" href="javascript:void(0);">'
 					+ '<b>%s</b></a><span class="date_label"> 投稿日：</span><span class="date"> %s</span></div>'
 					+ '<div class="mes">%s</div>';
-	// リンク置換用 開始キーワード
-  HREF_HDR = 'href="';
-	// リンク置換用 終了キーワード
-  HREF_FTR = '"';
-	// リンク置換用 置換文字列
-  HREF_RPL = 'javascript:void(0);';
-	// リンク置換用 削除文字列
-  HREF_TGT = 'target="_blank"';
-	// リンク置換用 キーワード文字列長
-  HREF_HDR_LEN = Length(HREF_HDR);
-  HREF_FTR_LEN = Length(HREF_FTR);
-  HREF_TGT_LEN = Length(HREF_TGT);
+  // bodyタグ用属性
+  ATTR_PREVIEW = ' class="preview"';
 var
 	Title: string;
 	No: string;
@@ -724,9 +716,6 @@ var
   pviewType: Integer;
 	cssPath: string;
   userStyle: string;
-  idx1: Integer;
-  idx2: Integer;
-  start: Integer;
 begin
 
 	// "プレビュー表示にCSSまたはスキンを適用する"がOFF
@@ -788,28 +777,6 @@ begin
 		HTMLCreater.AddAnchorTag(@Res);
     HTMLCreater.ConvRes(@Res, @ResLink);
 
-    // リンククリックで遷移しないようにリンク先を置換
-    start := 1;
-    while True do begin
-    	idx1 := PosEx(HREF_HDR, Res.FBody, start);
-      if idx1 < 1 then
-      	Break;
-    	start := idx1 + HREF_HDR_LEN;
-    	idx2 := PosEx(HREF_FTR, Res.FBody, start);
-      if idx2 < 1 then
-      	Break;
-    	Delete(Res.FBody, start, idx2 - start);
-      Insert(HREF_RPL, Res.FBody, start);
-      start := idx2 + HREF_FTR_LEN;
-    end;
-    // ターゲット名を削除
-    while True do begin
-    	idx1 := Pos(HREF_TGT, Res.FBody);
-      if idx1 < 1 then
-      	Break;
-      Delete(Res.FBody, idx1, HREF_TGT_LEN);
-    end;
-
     // CSS/スキンの他にフォントや色が設定されている場合
     userStyle := GikoSys.SetUserOptionalStyle;
     if userStyle <> '' then
@@ -826,6 +793,8 @@ begin
 
         if userStyle <> '' then
           html := StringReplace( html, '</head>', userStyle + '</head>', [rfReplaceAll] );
+
+				SetBodyClass(html, ATTR_PREVIEW);
       end;
 			TYPE_CSS: begin	// css
         html := '<html><head>' +
@@ -833,7 +802,7 @@ begin
                 '<title>' + Title + '</title>' +
                 '<link rel="stylesheet" href="' + cssPath + '" type="text/css">' +
                 userStyle + '</head>' +
-                '<body><div class="title">' + Title + '</div>';
+                '<body' + ATTR_PREVIEW + '><div class="title">' + Title + '</div>';
 
         if Res.FMailTo = '' then
           html := html + Format(FORMAT_NOMAIL, [No, No, Res.FName, Res.FDateTime, Res.FBody])
@@ -846,6 +815,9 @@ begin
       end;
 		end;
 
+		// クリックで遷移しないようにリンクをコロす
+		TrimLinkFromHtml(html);
+
 		try
 			SetContent(html, Browser);
 		except
@@ -856,6 +828,116 @@ begin
 			Thread.Free;
 	end;
 
+end;
+
+procedure TEditorForm.TrimLinkFromHtml(var html: String);
+const
+	// リンク置換用 開始キーワード
+  REPL_HDR : array[0..5] of String = ('href="', 'onclick="', 'onClick="', 'onmouseover="', 'onMouseOver="', 'onmouseout="');
+	// リンク置換用 終了キーワード
+  REPL_FTR = '"';
+	// リンク置換用 置換文字列
+  REPL_VAL = 'javascript:void(0);';
+	// ターゲット削除用 開始キーワード
+  TRGT_HDR = 'target="';
+	// ターゲット削除用 終了キーワード
+  TRGT_FTR = '"';
+	// リンク置換用 キーワード文字列長
+  REPL_FTR_LEN = Length(REPL_FTR);
+  REPL_VAL_LEN = Length(REPL_VAL);
+  TRGT_HDR_LEN = Length(TRGT_HDR);
+	// 検索範囲の目印
+  BODY_TOP1 = '</head>';
+  BODY_TOP2 = '</HEAD>';
+  BODY_BTM1 = '</body>';
+  BODY_BTM2 = '</BODY>';
+var
+	REPL_HDR_LEN: Integer;
+  i: Integer;
+  idx1: Integer;
+  idx2: Integer;
+  start: Integer;
+  bodyTop: Integer;
+  bodyBtm: Integer;
+  bodyType: Integer;
+
+	function GetBodyBottom(var html: String; bodyType: Integer): Integer;
+  begin
+  	case bodyType of
+    1:   Result := Pos(BODY_BTM1, html);
+    2:   Result := Pos(BODY_BTM2, html);
+    else Result := Length(html);
+    end;
+  end;
+
+begin
+  bodyTop := Pos(BODY_TOP1, html);
+  if bodyTop < 1 then
+    bodyTop := Pos(BODY_TOP2, html);
+    if bodyTop < 1 then
+      bodyTop := 1;
+
+  if Pos(BODY_BTM1, html) > 0 then
+    bodyType := 1
+  else if Pos(BODY_BTM2, html) > 0 then
+		bodyType := 2
+  else
+  	bodyType := 0;
+
+  // リンククリックで遷移しないようにリンク先を置換
+  for i := Low(REPL_HDR) to High(REPL_HDR) do begin
+  	REPL_HDR_LEN := Length(REPL_HDR[i]);
+    start := bodyTop;
+    bodyBtm := GetBodyBottom(html, bodyType);
+    while start < bodyBtm do begin
+      idx1 := PosEx(REPL_HDR[i], html, start);
+      if (idx1 < 1) or (idx1 >= bodyBtm) then
+        Break;
+      start := idx1 + REPL_HDR_LEN;
+      idx2 := PosEx(REPL_FTR, html, start);
+      if (idx2 < 1) or (idx2 >= bodyBtm) then
+        Break;
+      Delete(html, start, idx2 - start);
+      Insert(REPL_VAL, html, start);
+      start := start + REPL_VAL_LEN + REPL_FTR_LEN;
+	    bodyBtm := GetBodyBottom(html, bodyType);
+    end;
+  end;
+  // ターゲット名を削除
+  start := bodyTop;
+	bodyBtm := GetBodyBottom(html, bodyType);
+  while start < bodyBtm do begin
+    idx1 := PosEx(TRGT_HDR, html, start);
+		if (idx1 < 1) or (idx1 >= bodyBtm) then
+      Break;
+    start := idx1 + TRGT_HDR_LEN;
+    idx2 := PosEx(TRGT_FTR, html, start);
+		if (idx2 < 1) or (idx2 >= bodyBtm) then
+      Break;
+    Delete(html, idx1, idx2 - idx1 + 1);
+    start := idx1;
+    bodyBtm := GetBodyBottom(html, bodyType);
+  end;
+end;
+
+// bodyタグに属性追加
+procedure TEditorForm.SetBodyClass(var html: String; attrClass: String);
+const
+	TAG_S1  = '<body';
+	TAG_S2  = '<BODY';
+var
+	idx1: Integer;
+  idx2: Integer;
+begin
+	idx1 := Pos(TAG_S1, html);
+  if idx1 < 1 then
+		idx1 := Pos(TAG_S2, html);
+  if idx1 < 1 then
+  	Exit;
+
+	idx2 := PosEx('>', html, idx1);
+  if idx2 > idx1 then
+		Insert(attrClass, html, idx2);
 end;
 
 procedure TEditorForm.EditorPageChange(Sender: TObject);
