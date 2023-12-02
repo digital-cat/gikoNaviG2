@@ -22,218 +22,218 @@ type
 		FontDialog: TFontDialog;
 		ColorDialog: TColorDialog;
 		OpenDialog: TOpenDialog;
-    Label26: TLabel;
-    CroutOption: TButton;
-    OptionTab: TPageControl;
-    ConnectSheet: TTabSheet;
-    ReadProxyGroupBox: TGroupBox;
-    ReadAddressLabel: TLabel;
-    ReadPortLabel: TLabel;
-    ReadUserIDLabel: TLabel;
-    ReadPasswordLabel: TLabel;
-    ReadProxyCheck: TCheckBox;
-    ReadProxyAddressEdit: TEdit;
-    ReadPortEdit: TEdit;
-    ReadProxyUserIDEdit: TEdit;
-    ReadProxyPasswordEdit: TEdit;
-    WriteProxyGroupBox: TGroupBox;
-    WriteAddressLabel: TLabel;
-    WritePortLabel: TLabel;
-    WriteUserIDLabel: TLabel;
-    WritePasswordLabel: TLabel;
-    WriteProxyCheck: TCheckBox;
-    WriteProxyAddressEdit: TEdit;
-    WritePortEdit: TEdit;
-    WriteProxyUserIDEdit: TEdit;
-    WriteProxyPasswordEdit: TEdit;
-    Font1Sheet: TTabSheet;
-    Bevel1: TBevel;
-    Bevel2: TBevel;
-    Label19: TLabel;
-    Bevel5: TBevel;
-    Label20: TLabel;
-    Label21: TLabel;
-    Label22: TLabel;
-    Label23: TLabel;
-    lblSFont: TLabel;
-    CabinetFontBotton: TButton;
-    CabinetColorBotton: TButton;
-    CabinetDefaultButton: TButton;
-    CabinetMemo: TMemo;
-    ListMemo: TMemo;
-    ListFontBotton: TButton;
-    ListColorBotton: TButton;
-    ListDefaultBotton: TButton;
-    HintFontButton: TButton;
-    HintBackButton: TButton;
-    HintDefaultButton: TButton;
-    HintMemo: TMemo;
-    EditorMemo: TMemo;
-    EditorFontBotton: TButton;
-    EditorColorBotton: TButton;
-    EditorDefaultBotton: TButton;
-    BrowserTabMemo: TMemo;
-    BruwserTabFontButton: TButton;
-    BrowserTabDefaultButton: TButton;
-    OddResNumCheckBox: TCheckBox;
-    OddResNumColorBox: TColorBox;
-    CSSTabSheet: TTabSheet;
-    GroupBox12: TGroupBox;
-    CSSListLabel: TLabel;
-    CSSCheckBox: TCheckBox;
-    CSSListView: TListView;
-    CSSBrowser: TWebBrowser;
-    CSSFontCheckBox: TCheckBox;
-    CSSBackColorCheckBox: TCheckBox;
-    CSSFontButton: TButton;
-    CSSBackColorButton: TButton;
-    TabSheet3: TTabSheet;
-    GroupBox9: TGroupBox;
-    ThreadListIconCheckBox: TCheckBox;
-    GroupBox16: TGroupBox;
-    CreationTimeLogsCheckBox: TCheckBox;
-    FutureThreadCheckBox: TCheckBox;
-    GroupBox5: TGroupBox;
-    BrowserMaxLabel: TLabel;
-    BrowserMaxCombo: TComboBox;
-    GroupBox17: TGroupBox;
-    SelectIntervalLabel: TLabel;
-    Label4: TLabel;
-    Label6: TLabel;
-    SelectIntervalEdit: TEdit;
-    GroupBox18: TGroupBox;
-    DatOchiSortCombo: TComboBox;
-    ThreadSheet: TTabSheet;
-    GroupBox1: TGroupBox;
-    ShowMailCheckBox: TCheckBox;
-    ResRangeHoldCheckBox: TCheckBox;
-    ResRangeHoldComboBox: TComboBox;
-    GroupBox2: TGroupBox;
-    AppFolderLabel: TLabel;
-    URLAppCheckBox: TCheckBox;
-    AppFolderEdit: TEdit;
-    AppFolderButton: TButton;
-    OpenMailerCheckBox: TCheckBox;
-    GroupBox6: TGroupBox;
-    LogDeleteMessageCheckBox: TCheckBox;
-    TabSheet1: TTabSheet;
-    TabAddRadioGroup: TRadioGroup;
-    GroupBox8: TGroupBox;
-    Label14: TLabel;
-    Label15: TLabel;
-    Label16: TLabel;
-    PreviewVisibleCheckBox: TCheckBox;
-    PreviewSizeComboBox: TComboBox;
-    PreviewWaitEdit: TEdit;
-    GroupBox10: TGroupBox;
-    UnActivePopupCheckBox: TCheckBox;
-    ResPopupBoldCheckBox: TCheckBox;
-    TabSheet2: TTabSheet;
-    GroupBox7: TGroupBox;
-    Label3: TLabel;
-    Label11: TLabel;
-    URLDisplayCheckBox: TCheckBox;
-    AddressHistoryCountEdit: TEdit;
-    TabStopAddressBarCheckBox: TCheckBox;
-    LinkAddCheckBox: TCheckBox;
-    GroupBox15: TGroupBox;
-    ShowDialogForEndCheckBox: TCheckBox;
-    AllTabCloseCheckBox: TCheckBox;
-    SambaGroupBox: TGroupBox;
-    UseSambaCheckBox: TCheckBox;
-    TabAutoSaveLoad: TGroupBox;
-    TabLoadSave: TCheckBox;
-    SoundSheet: TTabSheet;
-    SoundEventGroupBox: TGroupBox;
-    SoundListView: TListView;
-    SoundReferButton: TButton;
-    SoundFileEdit: TEdit;
-    SoundPlayButton: TBitBtn;
-    FolderSheet: TTabSheet;
-    FolderGroupBox: TGroupBox;
-    Label1: TLabel;
-    Label2: TLabel;
-    Label5: TLabel;
-    LogFolderEdit: TEdit;
-    LogFolderButton: TButton;
-    NGwordSheet: TTabSheet;
-    GroupBox14: TGroupBox;
-    RloCheckBox: TCheckBox;
-    ReplaceulCheckBox: TCheckBox;
-    PopUpAbonCheckBox: TCheckBox;
-    ShowNGLineCheckBox: TCheckBox;
-    AddResAnchorCheckBox: TCheckBox;
-    DeleteSyriaCheckBox: TCheckBox;
-    UserIDSheet: TTabSheet;
-    GroupBox3: TGroupBox;
-    Label9: TLabel;
-    Label10: TLabel;
-    ForcedLoginLabel: TLabel;
-    UserIDEdit: TEdit;
-    PasswordEdit: TEdit;
-    AutoLoginCheckBox: TCheckBox;
-    ForcedLoginCheckBox: TCheckBox;
-    GroupBox4: TGroupBox;
-    Label13: TLabel;
-    BoardURLComboBox: TComboBox;
-    AddURLButton: TButton;
-    RemoveURLButton: TButton;
-    OkBotton: TButton;
-    SpamFilterGroupBox: TGroupBox;
-    SpamFilterAlgorithmComboBox: TComboBox;
-    TabSheet4: TTabSheet;
-    GroupBox13: TGroupBox;
-    UseUndecidedCheckBox: TCheckBox;
-    Tora3URLLabel: TLabel;
-    Label12: TLabel;
-    GroupBox11: TGroupBox;
-    Label7: TLabel;
-    BeUserIDEdit: TEdit;
-    Label8: TLabel;
-    BeCodeEdit: TEdit;
-    BeAutoLoginCheckBox: TCheckBox;
-    GroupBox19: TGroupBox;
-    Label17: TLabel;
-    MaxRecordCountEdit: TEdit;
-    Label18: TLabel;
-    UnFocusedBoldCheckBox: TCheckBox;
-    IgnoreKanaCheckBox: TCheckBox;
-    UseKatjuTypeSkinCheckBox: TCheckBox;
-    GroupBox20: TGroupBox;
-    AutoSortCheckBox: TCheckBox;
-    Label24: TLabel;
-    GroupBox21: TGroupBox;
-    StoredTaskTrayCB: TCheckBox;
-    GroupBox22: TGroupBox;
-    LoopBrowserTabsCB: TCheckBox;
-    GroupBox23: TGroupBox;
-    IgnoreContextCheckBox: TCheckBox;
-    GroupBox24: TGroupBox;
-    gppRightTopRB: TRadioButton;
-    gppTopRB: TRadioButton;
-    gppLeftTopRB: TRadioButton;
-    gppLeftRB: TRadioButton;
-    gppRightRB: TRadioButton;
-    gppLeftBottomRB: TRadioButton;
-    gppBottomRB: TRadioButton;
-    gppRighBottomRB: TRadioButton;
-    ResAnchorCheckBox: TCheckBox;
-    IgnoreLimitResCountCheckBox: TCheckBox;
-    GroupBox25: TGroupBox;
-    Label25: TLabel;
-    BoukenComboBox: TComboBox;
-    BoukenModButton: TButton;
-    BoukenDelButton: TButton;
-    BoukenEdit: TEdit;
-    GroupBox26: TGroupBox;
-    UseUnicodeCB: TCheckBox;
-    DispImageCheckBox: TCheckBox;
-    GroupBox27: TGroupBox;
-    ThreadTitleTrimCheckBox: TCheckBox;
-    GroupBox28: TGroupBox;
-    NGTextEditCheckBox: TCheckBox;
-    BoardInfCheckBox: TCheckBox;
-    PreviewStyleCheckBox: TCheckBox;
+		Label26: TLabel;
+		CroutOption: TButton;
+		OptionTab: TPageControl;
+		ConnectSheet: TTabSheet;
+		ReadProxyGroupBox: TGroupBox;
+		ReadAddressLabel: TLabel;
+		ReadPortLabel: TLabel;
+		ReadUserIDLabel: TLabel;
+		ReadPasswordLabel: TLabel;
+		ReadProxyCheck: TCheckBox;
+		ReadProxyAddressEdit: TEdit;
+		ReadPortEdit: TEdit;
+		ReadProxyUserIDEdit: TEdit;
+		ReadProxyPasswordEdit: TEdit;
+		WriteProxyGroupBox: TGroupBox;
+		WriteAddressLabel: TLabel;
+		WritePortLabel: TLabel;
+		WriteUserIDLabel: TLabel;
+		WritePasswordLabel: TLabel;
+		WriteProxyCheck: TCheckBox;
+		WriteProxyAddressEdit: TEdit;
+		WritePortEdit: TEdit;
+		WriteProxyUserIDEdit: TEdit;
+		WriteProxyPasswordEdit: TEdit;
+		Font1Sheet: TTabSheet;
+		Bevel1: TBevel;
+		Bevel2: TBevel;
+		Label19: TLabel;
+		Bevel5: TBevel;
+		Label20: TLabel;
+		Label21: TLabel;
+		Label22: TLabel;
+		Label23: TLabel;
+		lblSFont: TLabel;
+		CabinetFontBotton: TButton;
+		CabinetColorBotton: TButton;
+		CabinetDefaultButton: TButton;
+		CabinetMemo: TMemo;
+		ListMemo: TMemo;
+		ListFontBotton: TButton;
+		ListColorBotton: TButton;
+		ListDefaultBotton: TButton;
+		HintFontButton: TButton;
+		HintBackButton: TButton;
+		HintDefaultButton: TButton;
+		HintMemo: TMemo;
+		EditorMemo: TMemo;
+		EditorFontBotton: TButton;
+		EditorColorBotton: TButton;
+		EditorDefaultBotton: TButton;
+		BrowserTabMemo: TMemo;
+		BruwserTabFontButton: TButton;
+		BrowserTabDefaultButton: TButton;
+		OddResNumCheckBox: TCheckBox;
+		OddResNumColorBox: TColorBox;
+		CSSTabSheet: TTabSheet;
+		GroupBox12: TGroupBox;
+		CSSListLabel: TLabel;
+		CSSCheckBox: TCheckBox;
+		CSSListView: TListView;
+		CSSBrowser: TWebBrowser;
+		CSSFontCheckBox: TCheckBox;
+		CSSBackColorCheckBox: TCheckBox;
+		CSSFontButton: TButton;
+		CSSBackColorButton: TButton;
+		TabSheet3: TTabSheet;
+		GroupBox9: TGroupBox;
+		ThreadListIconCheckBox: TCheckBox;
+		GroupBox16: TGroupBox;
+		CreationTimeLogsCheckBox: TCheckBox;
+		FutureThreadCheckBox: TCheckBox;
+		GroupBox5: TGroupBox;
+		BrowserMaxLabel: TLabel;
+		BrowserMaxCombo: TComboBox;
+		GroupBox17: TGroupBox;
+		SelectIntervalLabel: TLabel;
+		Label4: TLabel;
+		Label6: TLabel;
+		SelectIntervalEdit: TEdit;
+		GroupBox18: TGroupBox;
+		DatOchiSortCombo: TComboBox;
+		ThreadSheet: TTabSheet;
+		GroupBox1: TGroupBox;
+		ShowMailCheckBox: TCheckBox;
+		ResRangeHoldCheckBox: TCheckBox;
+		ResRangeHoldComboBox: TComboBox;
+		GroupBox2: TGroupBox;
+		AppFolderLabel: TLabel;
+		URLAppCheckBox: TCheckBox;
+		AppFolderEdit: TEdit;
+		AppFolderButton: TButton;
+		OpenMailerCheckBox: TCheckBox;
+		GroupBox6: TGroupBox;
+		LogDeleteMessageCheckBox: TCheckBox;
+		TabSheet1: TTabSheet;
+		TabAddRadioGroup: TRadioGroup;
+		GroupBox8: TGroupBox;
+		Label14: TLabel;
+		Label15: TLabel;
+		Label16: TLabel;
+		PreviewVisibleCheckBox: TCheckBox;
+		PreviewSizeComboBox: TComboBox;
+		PreviewWaitEdit: TEdit;
+		GroupBox10: TGroupBox;
+		UnActivePopupCheckBox: TCheckBox;
+		ResPopupBoldCheckBox: TCheckBox;
+		TabSheet2: TTabSheet;
+		GroupBox7: TGroupBox;
+		Label3: TLabel;
+		Label11: TLabel;
+		URLDisplayCheckBox: TCheckBox;
+		AddressHistoryCountEdit: TEdit;
+		TabStopAddressBarCheckBox: TCheckBox;
+		LinkAddCheckBox: TCheckBox;
+		GroupBox15: TGroupBox;
+		ShowDialogForEndCheckBox: TCheckBox;
+		AllTabCloseCheckBox: TCheckBox;
+		SambaGroupBox: TGroupBox;
+		UseSambaCheckBox: TCheckBox;
+		TabAutoSaveLoad: TGroupBox;
+		TabLoadSave: TCheckBox;
+		SoundSheet: TTabSheet;
+		SoundEventGroupBox: TGroupBox;
+		SoundListView: TListView;
+		SoundReferButton: TButton;
+		SoundFileEdit: TEdit;
+		SoundPlayButton: TBitBtn;
+		FolderSheet: TTabSheet;
+		FolderGroupBox: TGroupBox;
+		Label1: TLabel;
+		Label2: TLabel;
+		Label5: TLabel;
+		LogFolderEdit: TEdit;
+		LogFolderButton: TButton;
+		NGwordSheet: TTabSheet;
+		GroupBox14: TGroupBox;
+		RloCheckBox: TCheckBox;
+		ReplaceulCheckBox: TCheckBox;
+		PopUpAbonCheckBox: TCheckBox;
+		ShowNGLineCheckBox: TCheckBox;
+		AddResAnchorCheckBox: TCheckBox;
+		DeleteSyriaCheckBox: TCheckBox;
+		UserIDSheet: TTabSheet;
+		GroupBox3: TGroupBox;
+		Label9: TLabel;
+		Label10: TLabel;
+		ForcedLoginLabel: TLabel;
+		UserIDEdit: TEdit;
+		PasswordEdit: TEdit;
+		AutoLoginCheckBox: TCheckBox;
+		ForcedLoginCheckBox: TCheckBox;
+		GroupBox4: TGroupBox;
+		Label13: TLabel;
+		BoardURLComboBox: TComboBox;
+		AddURLButton: TButton;
+		RemoveURLButton: TButton;
+		OkBotton: TButton;
+		SpamFilterGroupBox: TGroupBox;
+		SpamFilterAlgorithmComboBox: TComboBox;
+		TabSheet4: TTabSheet;
+		GroupBox13: TGroupBox;
+		UseUndecidedCheckBox: TCheckBox;
+		Tora3URLLabel: TLabel;
+		Label12: TLabel;
+		GroupBox11: TGroupBox;
+		Label7: TLabel;
+		BeUserIDEdit: TEdit;
+		Label8: TLabel;
+		BeCodeEdit: TEdit;
+		BeAutoLoginCheckBox: TCheckBox;
+		GroupBox19: TGroupBox;
+		Label17: TLabel;
+		MaxRecordCountEdit: TEdit;
+		Label18: TLabel;
+		UnFocusedBoldCheckBox: TCheckBox;
+		IgnoreKanaCheckBox: TCheckBox;
+		UseKatjuTypeSkinCheckBox: TCheckBox;
+		GroupBox20: TGroupBox;
+		AutoSortCheckBox: TCheckBox;
+		Label24: TLabel;
+		GroupBox21: TGroupBox;
+		StoredTaskTrayCB: TCheckBox;
+		GroupBox22: TGroupBox;
+		LoopBrowserTabsCB: TCheckBox;
+		GroupBox23: TGroupBox;
+		IgnoreContextCheckBox: TCheckBox;
+		GroupBox24: TGroupBox;
+		gppRightTopRB: TRadioButton;
+		gppTopRB: TRadioButton;
+		gppLeftTopRB: TRadioButton;
+		gppLeftRB: TRadioButton;
+		gppRightRB: TRadioButton;
+		gppLeftBottomRB: TRadioButton;
+		gppBottomRB: TRadioButton;
+		gppRighBottomRB: TRadioButton;
+		ResAnchorCheckBox: TCheckBox;
+		IgnoreLimitResCountCheckBox: TCheckBox;
+		GroupBox25: TGroupBox;
+		Label25: TLabel;
+		BoukenComboBox: TComboBox;
+		BoukenModButton: TButton;
+		BoukenDelButton: TButton;
+		BoukenEdit: TEdit;
+		GroupBox26: TGroupBox;
+		UseUnicodeCB: TCheckBox;
+		DispImageCheckBox: TCheckBox;
+		GroupBox27: TGroupBox;
+		ThreadTitleTrimCheckBox: TCheckBox;
+		GroupBox28: TGroupBox;
+		NGTextEditCheckBox: TCheckBox;
+		BoardInfCheckBox: TCheckBox;
+		PreviewStyleCheckBox: TCheckBox;
 		procedure FormCreate(Sender: TObject);
 		procedure FormDestroy(Sender: TObject);
 		procedure ApplyButtonClick(Sender: TObject);
@@ -279,13 +279,13 @@ type
 			Change: TItemChange);
 		procedure AddURLButtonClick(Sender: TObject);
 		procedure RemoveURLButtonClick(Sender: TObject);
-    procedure OddResNumCheckBoxClick(Sender: TObject);
-    procedure ResRangeHoldCheckBoxClick(Sender: TObject);
-    procedure CroutOptionClick(Sender: TObject);
-    procedure MaxRecordCountEditExit(Sender: TObject);
-    procedure BoukenDelButtonClick(Sender: TObject);
-    procedure BoukenComboBoxChange(Sender: TObject);
-    procedure BoukenModButtonClick(Sender: TObject);
+		procedure OddResNumCheckBoxClick(Sender: TObject);
+		procedure ResRangeHoldCheckBoxClick(Sender: TObject);
+		procedure CroutOptionClick(Sender: TObject);
+		procedure MaxRecordCountEditExit(Sender: TObject);
+		procedure BoukenDelButtonClick(Sender: TObject);
+		procedure BoukenComboBoxChange(Sender: TObject);
+		procedure BoukenModButtonClick(Sender: TObject);
 	private
 		{ Private 宣言 }
 		FClose: Boolean;
@@ -339,16 +339,16 @@ const
 
 procedure TOptionDialog.FormCreate(Sender: TObject);
 var
-    CenterForm: TCustomForm;
+	CenterForm: TCustomForm;
 begin
-    CenterForm := TCustomForm(Owner);
-    if Assigned(CenterForm) then begin
-        Left := ((CenterForm.Width - Width) div 2) + CenterForm.Left;
-        Top := ((CenterForm.Height - Height) div 2) + CenterForm.Top;
-    end else begin
-        Left := (Screen.Width - Width) div 2;
-        Top := (Screen.Height - Height) div 2;
-    end;
+	CenterForm := TCustomForm(Owner);
+	if Assigned(CenterForm) then begin
+		Left := ((CenterForm.Width - Width) div 2) + CenterForm.Left;
+		Top := ((CenterForm.Height - Height) div 2) + CenterForm.Top;
+	end else begin
+		Left := (Screen.Width - Width) div 2;
+		Top := (Screen.Height - Height) div 2;
+	end;
 
 	CSSBrowser.Navigate('about:blank');
 	FClose := True;
@@ -368,7 +368,7 @@ begin
 										+ '「CSS とスキン」タブで設定出来ます';
 
 	ForcedLoginLabel.Caption := '- チェックを入れるのはセキュリティ上好ましくありません。' + #13#10
-    								        + '　やむを得ない時だけにしてください。';
+										+ '　やむを得ない時だけにしてください。';
 	CSSCheckBoxClick(Sender);
 	BrowserMaxLabel.Caption :=
 		'ブラウザが最小化されているときに以下の操作でブラウザを最大化します。'#13#10 +
@@ -378,7 +378,7 @@ begin
 		OptionTab.ActivePageIndex := GikoSys.Setting.OptionDialogTabIndex;
 		OptionTabChange( nil );
 	end;
-	
+
 end;
 
 procedure TOptionDialog.FormDestroy(Sender: TObject);
@@ -1103,14 +1103,14 @@ begin
 	// ブラウザ最大化
 	GikoSys.Setting.BrowserAutoMaximize := TGikoBrowserAutoMaximize( BrowserMaxCombo.ItemIndex );
 	//ポップアップ位置
-    if (gppRightTopRB.Checked) then GikoSys.Setting.PopupPosition := gppRightTop;
-    if (gppRightRB.Checked) then GikoSys.Setting.PopupPosition := gppRight;
-    if (gppRighBottomRB.Checked) then GikoSys.Setting.PopupPosition := gppRightBottom;
-    if (gppTopRB.Checked) then GikoSys.Setting.PopupPosition := gppTop;
-    if (gppBottomRB.Checked) then GikoSys.Setting.PopupPosition := gppBottom;
-    if (gppLeftTopRB.Checked) then GikoSys.Setting.PopupPosition := gppLeftTop;
-    if (gppLeftRB.Checked) then GikoSys.Setting.PopupPosition := gppLeft;
-    if (gppLeftBottomRB.Checked) then GikoSys.Setting.PopupPosition := gppLeftBottom;
+	if (gppRightTopRB.Checked) then GikoSys.Setting.PopupPosition := gppRightTop;
+	if (gppRightRB.Checked) then GikoSys.Setting.PopupPosition := gppRight;
+	if (gppRighBottomRB.Checked) then GikoSys.Setting.PopupPosition := gppRightBottom;
+	if (gppTopRB.Checked) then GikoSys.Setting.PopupPosition := gppTop;
+	if (gppBottomRB.Checked) then GikoSys.Setting.PopupPosition := gppBottom;
+	if (gppLeftTopRB.Checked) then GikoSys.Setting.PopupPosition := gppLeftTop;
+	if (gppLeftRB.Checked) then GikoSys.Setting.PopupPosition := gppLeft;
+	if (gppLeftBottomRB.Checked) then GikoSys.Setting.PopupPosition := gppLeftBottom;
 	//非アクティブ時ポップアップ表示
 	GikoSys.Setting.UnActivePopup := UnActivePopupCheckBox.Checked;
 	//レスポップアップボールド表示
@@ -1225,21 +1225,21 @@ begin
 	//Tab自動保存
 	GikoSys.Setting.TabAutoLoadSave := TabLoadSave.Checked;
 	GikoSys.Setting.UseUndecided := UseUndecidedCheckBox.Checked;
-  //Be2ch
-  GikoSys.Setting.BeUserID := BeUserIDEdit.Text;
-  GikoSys.Setting.BePassword := BeCodeEdit.Text;
-  GikoSys.Setting.BeAutoLogin := BeAutoLoginCheckBox.Checked;
+	//Be2ch
+	GikoSys.Setting.BeUserID := BeUserIDEdit.Text;
+	GikoSys.Setting.BePassword := BeCodeEdit.Text;
+	GikoSys.Setting.BeAutoLogin := BeAutoLoginCheckBox.Checked;
 	//履歴の最大保存数
 	GikoSys.Setting.MaxRecordCount := Max(StrToInt64Def(MaxRecordCountEdit.Text,100),1);
-  GikoSys.Setting.StoredTaskTray := StoredTaskTrayCB.Checked;
-  GikoSys.Setting.LoopBrowserTabs := LoopBrowserTabsCB.Checked;
+	GikoSys.Setting.StoredTaskTray := StoredTaskTrayCB.Checked;
+	GikoSys.Setting.LoopBrowserTabs := LoopBrowserTabsCB.Checked;
 
-  GikoSys.Setting.GestureIgnoreContext := IgnoreContextCheckBox.Checked;
+	GikoSys.Setting.GestureIgnoreContext := IgnoreContextCheckBox.Checked;
 
-  // レスエディタUnicode入力
-  Gikosys.Setting.UseUnicode := UseUnicodeCB.Checked;
+	// レスエディタUnicode入力
+	Gikosys.Setting.UseUnicode := UseUnicodeCB.Checked;
 	// プレビュー表示にCSSまたはスキンを適用する
-  Gikosys.Setting.PreviewStyle := PreviewStyleCheckBox.Checked;
+	Gikosys.Setting.PreviewStyle := PreviewStyleCheckBox.Checked;
 	// スレタイ特定文字列除去
 	GikoSys.Setting.ThreadTitleTrim := ThreadTitleTrimCheckBox.Checked;
 
@@ -1249,62 +1249,21 @@ procedure TOptionDialog.SettingApply;
 var
 	i: Integer;
 begin
-	GikoForm.TreeViewUC.Items.BeginUpdate;
-	GikoForm.FavoriteTreeViewUC.Items.BeginUpdate;
-	GikoForm.ListViewUC.Items.BeginUpdate;
+	//コントロールの色とフォント
+	GikoForm.SetFontAndColor(False);
+
+	//表示中のレスエディタの色とフォント
 	try
-		GikoForm.TreeViewUC.Font.Name := GikoSys.Setting.CabinetFontName;
-		GikoForm.TreeViewUC.Font.Size := GikoSys.Setting.CabinetFontSize;
-		GikoForm.TreeViewUC.Font.Color := GikoSys.Setting.CabinetFontColor;
-		GikoForm.TreeViewUC.Color := GikoSys.Setting.CabinetBackColor;
-
-		GikoForm.FavoriteTreeViewUC.Font.Assign(GikoForm.TreeViewUC.Font);
-		GikoForm.FavoriteTreeViewUC.Color := GikoSys.Setting.CabinetBackColor;
-
-		GikoForm.ListViewUC.Font.Name := GikoSys.Setting.ListFontName;
-		GikoForm.ListViewUC.Font.Size := GikoSys.Setting.ListFontSize;
-		GikoForm.ListViewUC.Font.Color := GikoSys.Setting.ListFontColor;
-		GikoForm.ListViewUC.Font.Style := [];
-		if GikoSys.Setting.ListFontBold then
-			GikoForm.ListViewUC.Font.Style := [fsbold];
-		if GikoSys.Setting.ListFontItalic then
-			GikoForm.ListViewUC.Font.Style := GikoForm.ListViewUC.Font.Style + [fsitalic];
-
-		//GikoForm.ListView.Color := GikoSys.Setting.ListBackColor;
-		GikoForm.ListViewBackGroundColor := GikoSys.Setting.ListBackColor;
-		GikoForm.UseOddResOddColor := GikoSys.Setting.UseOddColorOddResNum;
-		GikoForm.OddColor := GikoSys.Setting.OddColor;
-		GikoSys.Setting.UnFocusedBold := (UnFocusedBoldCheckBox.Enabled) and
-											(UnFocusedBoldCheckBox.Checked);
-
-		GikoForm.BrowserTabUC.Font.Name := GikoSys.Setting.BrowserTabFontName;
-		GikoForm.BrowserTabUC.Font.Size := GikoSys.Setting.BrowserTabFontSize;
-		GikoForm.BrowserTabUC.Font.Style := [];
-		if GikoSys.Setting.BrowserTabFontBold then
-			GikoForm.BrowserTabUC.Font.Style := [fsBold];
-		if GikoSys.Setting.BrowserTabFontItalic then
-			GikoForm.BrowserTabUC.Font.Style := GikoForm.BrowserTabUC.Font.Style + [fsItalic];
-//		GikoForm.BrowserTabUC.Height := (GikoSys.Setting.BrowserTabFontSize * 2) + 1;
-//		GikoForm.BrowserBottomPanel.Height := GikoForm.BrowserTabUC.Height;
-
 		for i := 0 to Screen.CustomFormCount - 1 do begin
 			if TObject(Screen.CustomForms[i]) is TEditorForm then begin
 				TEditorForm(Screen.CustomForms[i]).SetFont;
 			end;
 		end;
-
 	finally
-		GikoForm.TreeViewUC.Items.EndUpdate;
-		GikoForm.FavoriteTreeViewUC.Items.EndUpdate;
-		GikoForm.ListViewUC.Items.EndUpdate;
 	end;
 
 	//アドレスバー
-	for i := GikoForm.AddressComboBox.Items.Count - 1 downto 0 do begin
-		if GikoSys.Setting.AddressHistoryCount >= GikoForm.AddressComboBox.Items.Count then
-			Break;
-		GikoForm.AddressComboBox.Items.Delete(i);
-	end;
+	GikoForm.AddressItemsSetCount;
 	GikoForm.AddressComboBox.TabStop := GikoSys.Setting.AddressBarTabStop;
 
 	//スレ一覧のリフレッシュ
@@ -1321,8 +1280,8 @@ begin
 		GikoForm.BrowserTabUC.OnChange(nil);
 	end;
 
-    // タブのスレタイ更新
-    GikoForm.UpdateThreadTitle;
+	// タブのスレタイ更新
+	GikoForm.UpdateThreadTitle;
 end;
 
 procedure TOptionDialog.ReadProxyCheckClick(Sender: TObject);
@@ -1405,10 +1364,10 @@ end;
 
 procedure TOptionDialog.SoundPlayButtonClick(Sender: TObject);
 var
-    s : String;
+	s : String;
 begin
-    SetCurrentDir(GikoSys.Setting.GetAppDir);
-    s := ExpandFileName(SoundFileEdit.Text);
+	SetCurrentDir(GikoSys.Setting.GetAppDir);
+	s := ExpandFileName(SoundFileEdit.Text);
 	if not FileExists(s) then begin
 		MsgBox(Handle, '存在しないファイルです', 'エラー', MB_ICONSTOP or MB_OK);
 		SoundFileEdit.Text := '';
@@ -1523,14 +1482,15 @@ end;
 
 procedure TOptionDialog.SetAbonpropertys;
 begin
-        //あぼ～ん
-        GikoSys.FAbon.Deleterlo := RloCheckBox.Checked;
-        GikoSys.FAbon.Replaceul := ReplaceulCheckBox.Checked;
-        GikoSys.FAbon.AbonPopupRes := PopUpAbonCheckBox.Checked;
+	//あぼ～ん
+	GikoSys.FAbon.Deleterlo := RloCheckBox.Checked;
+	GikoSys.FAbon.Replaceul := ReplaceulCheckBox.Checked;
+	GikoSys.FAbon.AbonPopupRes := PopUpAbonCheckBox.Checked;
 	GikoSys.FAbon.ReturnNGwordLineNum := ShowNGLineCheckBox.Checked;
 	GikoSys.FAbon.SetNGResAnchor := AddResAnchorCheckBox.Checked;
-		GikoSys.FAbon.DeleteSyria := DeleteSyriaCheckBox.Checked;
+	GikoSys.FAbon.DeleteSyria := DeleteSyriaCheckBox.Checked;
 end;
+
 procedure TOptionDialog.CSSFontButtonClick(Sender: TObject);
 begin
 
@@ -1581,11 +1541,11 @@ begin
 	if CSSBrowser.Document <> nil then begin
 		doc := CSSBrowser.OleObject.Document;
 		doc.open;
-        doc.Clear;
+		doc.Clear;
 		doc.charset := 'Shift_JIS';
 		doc.Write(Content);
 		doc.Close;
-  end;
+	end;
 end;
 
 procedure TOptionDialog.CSSPreview;
@@ -1730,7 +1690,7 @@ end;
 procedure TOptionDialog.AddURLButtonClick(Sender: TObject);
 begin
 	BoardURLComboBox.Items.Append(BoardURLComboBox.Text);
-  BoardURLComboBox.ItemIndex := BoardURLComboBox.Items.Count - 1;
+	BoardURLComboBox.ItemIndex := BoardURLComboBox.Items.Count - 1;
 end;
 
 procedure TOptionDialog.RemoveURLButtonClick(Sender: TObject);

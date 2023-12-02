@@ -1172,10 +1172,9 @@ begin
 	Indy.Request.CustomHeaders.Add('Pragma: no-cache');
 	Indy.Request.AcceptLanguage := 'ja';
 	//Indy.Request.Accept := 'image/gif, image/x-xbitmap, image/jpeg, image/pjpeg, */*';
-	if isUTF8 then begin
-		Indy.Request.ContentType := 'application/x-www-form-urlencoded; charset=UTF-8';
-		Indy.Request.AcceptCharSet := 'utf-8';
-	end else
+	if isUTF8 then
+		Indy.Request.ContentType := 'application/x-www-form-urlencoded; charset=UTF-8'
+	else
 		Indy.Request.ContentType := 'application/x-www-form-urlencoded';
 	Indy.Request.CustomHeaders.Add(getHeaderStr(ACOOKIE, SPID, PON, GikoSys.GetBouken(URL, FCookieDomain), Board));
 

@@ -865,7 +865,11 @@ type
 		//! スレタイ表示更新
 		procedure UpdateThreadTitle;
 		//! フォームキャプション設定
-    procedure SetFormCaption(AThreadTitle: String);
+		procedure SetFormCaption(AThreadTitle: String);
+		//! コントロールのフォントと色設定
+		procedure SetFontAndColor(ACreate: Boolean);
+		//! アドレスコンボボックスリスト件数超過項目削除
+		procedure AddressItemsSetCount;
 	published
 		property EnabledCloseButton: Boolean read FEnabledCloseButton write SetEnabledCloseButton;
 	end;
@@ -1044,13 +1048,13 @@ begin
 	TreeViewUC.RightClickSelect := TreeView.RightClickSelect;
 	TreeViewUC.ShowRoot         := TreeView.ShowRoot;
 	TreeViewUC.TabOrder         := TreeView.TabOrder;
-  TreeViewUC.OnCollapsed      := TreeView.OnCollapsed;
-  TreeViewUC.OnCustomDraw     := TreeView.OnCustomDraw;
-  TreeViewUC.OnCustomDrawItem := TreeView.OnCustomDrawItem;
-  TreeViewUC.OnExpanded       := TreeView.OnExpanded;
-  TreeViewUC.OnKeyDown        := TreeView.OnKeyDown;
-  TreeViewUC.OnMouseDown      := TreeView.OnMouseDown;
-  TreeView.Visible            := False;
+	TreeViewUC.OnCollapsed      := TreeView.OnCollapsed;
+	TreeViewUC.OnCustomDraw     := TreeView.OnCustomDraw;
+	TreeViewUC.OnCustomDrawItem := TreeView.OnCustomDrawItem;
+	TreeViewUC.OnExpanded       := TreeView.OnExpanded;
+	TreeViewUC.OnKeyDown        := TreeView.OnKeyDown;
+	TreeViewUC.OnMouseDown      := TreeView.OnMouseDown;
+	TreeView.Visible            := False;
 	// お気に入りツリービューをUnicode版に差し替え
 	FavoriteTreeViewUC := TTntTreeView.Create(Self);
 	FavoriteTreeViewUC.Parent           := FavoriteTreeView.Parent;
@@ -1131,7 +1135,7 @@ begin
 	SelectComboBoxUC.OnEnter          := SelectComboBox.OnEnter;
 	SelectComboBoxUC.OnExit           := SelectComboBox.OnExit;
 	SelectComboBoxUC.OnKeyDown        := SelectComboBox.OnKeyDown;
-  SelectComboBox.Visible := False;
+	SelectComboBox.Visible := False;
 	// スレ一覧リストビューをUnicode対応版に差し替え
 	ListViewUC := TWideGikoListView.Create(Self);
 	ListViewUC.Parent             := ListView.Parent;
@@ -1141,26 +1145,26 @@ begin
 	ListViewUC.Height             := ListView.Height;
 	ListViewUC.Align              := ListView.Align;
 	ListViewUC.AllocBy            := ListView.AllocBy;
-  ListViewUC.Font               := ListView.Font;
-  ListViewUC.ViewStyle          := ListView.ViewStyle;
-  ListViewUC.DragMode           := ListView.DragMode;
-  ListViewUC.HideSelection      := ListView.HideSelection;
-  ListViewUC.LargeImages        := ListView.LargeImages;
-  ListViewUC.MultiSelect        := ListView.MultiSelect;
-  ListViewUC.OwnerData          := ListView.OwnerData;
-  ListViewUC.ReadOnly           := ListView.ReadOnly;
-  ListViewUC.RowSelect          := ListView.RowSelect;
-  ListViewUC.SmallImages        := ListView.SmallImages;
-  ListViewUC.StateImages        := ListView.StateImages;
-  ListViewUC.TabOrder           := ListView.TabOrder;
-  ListViewUC.OnColumnClick      := ListView.OnColumnClick;
-  ListViewUC.OnColumnInfo       := ListView.OnColumnInfo;
-  ListViewUC.OnColumnRightClick := ListView.OnColumnRightClick;
-  ListViewUC.OnCustomDraw       := ListView.OnCustomDraw;
-  ListViewUC.OnCustomDrawItem   := ListView.OnCustomDrawItem;
-  ListViewUC.OnKeyDown          := ListView.OnKeyDown;
-  ListViewUC.OnKeyUp            := ListView.OnKeyUp;
-  ListViewUC.OnMouseDown        := ListView.OnMouseDown;
+	ListViewUC.Font               := ListView.Font;
+	ListViewUC.ViewStyle          := ListView.ViewStyle;
+	ListViewUC.DragMode           := ListView.DragMode;
+	ListViewUC.HideSelection      := ListView.HideSelection;
+	ListViewUC.LargeImages        := ListView.LargeImages;
+	ListViewUC.MultiSelect        := ListView.MultiSelect;
+	ListViewUC.OwnerData          := ListView.OwnerData;
+	ListViewUC.ReadOnly           := ListView.ReadOnly;
+	ListViewUC.RowSelect          := ListView.RowSelect;
+	ListViewUC.SmallImages        := ListView.SmallImages;
+	ListViewUC.StateImages        := ListView.StateImages;
+	ListViewUC.TabOrder           := ListView.TabOrder;
+	ListViewUC.OnColumnClick      := ListView.OnColumnClick;
+	ListViewUC.OnColumnInfo       := ListView.OnColumnInfo;
+	ListViewUC.OnColumnRightClick := ListView.OnColumnRightClick;
+	ListViewUC.OnCustomDraw       := ListView.OnCustomDraw;
+	ListViewUC.OnCustomDrawItem   := ListView.OnCustomDrawItem;
+	ListViewUC.OnKeyDown          := ListView.OnKeyDown;
+	ListViewUC.OnKeyUp            := ListView.OnKeyUp;
+	ListViewUC.OnMouseDown        := ListView.OnMouseDown;
 	ListView.Visible := False;
 	//-------------------
 
@@ -1200,48 +1204,8 @@ begin
 	GikoDM.StatusBarVisibleActionExecute(nil);
 
 	//フォント・色設定
-	TreeViewUC.Items.BeginUpdate;
-	FavoriteTreeViewUC.Items.BeginUpdate;
-	ListViewUC.Items.BeginUpdate;
-	MessageListViewUC.Items.BeginUpdate;
-	try
-		TreeViewUC.Font.Name := GikoSys.Setting.CabinetFontName;
-		TreeViewUC.Font.Size := GikoSys.Setting.CabinetFontSize;
-		TreeViewUC.Font.Color := GikoSys.Setting.CabinetFontColor;
-		TreeViewUC.Color := GikoSys.Setting.CabinetBackColor;
-		FavoriteTreeViewUC.Font.Assign(TreeViewUC.Font);
-		FavoriteTreeViewUC.Color := GikoSys.Setting.CabinetBackColor;
+	SetFontAndColor(True);
 
-		ListViewUC.Font.Name := GikoSys.Setting.ListFontName;
-		ListViewUC.Font.Size := GikoSys.Setting.ListFontSize;
-		ListViewUC.Font.Color := GikoSys.Setting.ListFontColor;
-		ListViewUC.Font.Style := [];
-		if GikoSys.Setting.ListFontBold then
-			ListViewUC.Font.Style := [fsbold];
-		if GikoSys.Setting.ListFontItalic then
-			ListViewUC.Font.Style := ListViewUC.Font.Style + [fsitalic];
-
-		ListViewBackGroundColor := clWhite;												// デフォルトに設定したのち
-		ListViewBackGroundColor := GikoSys.Setting.ListBackColor;	// ユーザ定義に変更
-		FUseOddResOddColor := GikoSys.Setting.UseOddColorOddResNum;
-		FOddColor := GikoSys.Setting.OddColor;
-
-		MessageListViewUC.Font.Name := GikoSys.Setting.MessageFontName;
-		MessageListViewUC.Font.Size := GikoSys.Setting.MessageFontSize;
-		MessageListViewUC.Font.Color := GikoSys.Setting.MessageFontColor;
-		MessageListViewUC.Font.Style := [];
-		if GikoSys.Setting.MessageFontBold then
-			MessageListViewUC.Font.Style := [fsbold];
-		if GikoSys.Setting.MessageFontItalic then
-			MessageListViewUC.Font.Style := MessageListViewUC.Font.Style + [fsitalic];
-    MessageListViewUC.Color := GikoSys.Setting.MessageBackColor;
-
-	finally
-		TreeViewUC.Items.EndUpdate;
-		FavoriteTreeViewUC.Items.EndUpdate;
-		ListViewUC.Items.EndUpdate;
-		MessageListViewUC.Items.EndUpdate;
-	end;
 	//ViewNoButton.Down := GikoSys.Setting.ListViewNo;
 	GikoDM.ListNumberVisibleAction.Checked := GikoSys.Setting.ListViewNo;
 
@@ -1301,15 +1265,7 @@ begin
 		end;
 	end;
 
-	//ブラウザタブフォント
-	BrowserTabUC.Font.Name := GikoSys.Setting.BrowserTabFontName;
-	BrowserTabUC.Font.Size := GikoSys.Setting.BrowserTabFontSize;
-	BrowserTabUC.Font.Style := [];
-	if GikoSys.Setting.BrowserTabFontBold then
-		BrowserTabUC.Font.Style := [fsBold];
-	if GikoSys.Setting.BrowserTabFontItalic then
-		BrowserTabUC.Font.Style := BrowserTabUC.Font.Style + [fsItalic];
-
+	//ブラウザタブ
 	BrowserTabUC.DoubleBuffered := True;
 	FDragWFirst := false;
 	SetContent(BrowserNullTab);													//ブラウザを空白表示
@@ -1602,6 +1558,63 @@ begin
 		Self.Close;
 	end;
 
+end;
+
+//! コントロールのフォントと色設定
+procedure TGikoForm.SetFontAndColor(ACreate: Boolean);
+begin
+
+	TreeViewUC.Items.BeginUpdate;
+	FavoriteTreeViewUC.Items.BeginUpdate;
+	ListViewUC.Items.BeginUpdate;
+	MessageListViewUC.Items.BeginUpdate;
+	try
+		TreeViewUC.Font.Name := GikoSys.Setting.CabinetFontName;
+		TreeViewUC.Font.Size := GikoSys.Setting.CabinetFontSize;
+		TreeViewUC.Font.Color := GikoSys.Setting.CabinetFontColor;
+		TreeViewUC.Color := GikoSys.Setting.CabinetBackColor;
+		FavoriteTreeViewUC.Font.Assign(TreeViewUC.Font);
+		FavoriteTreeViewUC.Color := GikoSys.Setting.CabinetBackColor;
+
+		ListViewUC.Font.Name := GikoSys.Setting.ListFontName;
+		ListViewUC.Font.Size := GikoSys.Setting.ListFontSize;
+		ListViewUC.Font.Color := GikoSys.Setting.ListFontColor;
+		ListViewUC.Font.Style := [];
+		if GikoSys.Setting.ListFontBold then
+			ListViewUC.Font.Style := [fsbold];
+		if GikoSys.Setting.ListFontItalic then
+			ListViewUC.Font.Style := ListViewUC.Font.Style + [fsitalic];
+
+		if ACreate then
+			ListViewBackGroundColor := clWhite;						// デフォルトに設定したのち
+		ListViewBackGroundColor := GikoSys.Setting.ListBackColor;	// ユーザ定義に変更
+		FUseOddResOddColor := GikoSys.Setting.UseOddColorOddResNum;
+		FOddColor := GikoSys.Setting.OddColor;
+
+		BrowserTabUC.Font.Name := GikoSys.Setting.BrowserTabFontName;
+		BrowserTabUC.Font.Size := GikoSys.Setting.BrowserTabFontSize;
+		BrowserTabUC.Font.Style := [];
+		if GikoSys.Setting.BrowserTabFontBold then
+			BrowserTabUC.Font.Style := [fsBold];
+		if GikoSys.Setting.BrowserTabFontItalic then
+			BrowserTabUC.Font.Style := BrowserTabUC.Font.Style + [fsItalic];
+
+		MessageListViewUC.Font.Name := GikoSys.Setting.MessageFontName;
+		MessageListViewUC.Font.Size := GikoSys.Setting.MessageFontSize;
+		MessageListViewUC.Font.Color := GikoSys.Setting.MessageFontColor;
+		MessageListViewUC.Font.Style := [];
+		if GikoSys.Setting.MessageFontBold then
+			MessageListViewUC.Font.Style := [fsbold];
+		if GikoSys.Setting.MessageFontItalic then
+			MessageListViewUC.Font.Style := MessageListViewUC.Font.Style + [fsitalic];
+		MessageListViewUC.Color := GikoSys.Setting.MessageBackColor;
+
+	finally
+		TreeViewUC.Items.EndUpdate;
+		FavoriteTreeViewUC.Items.EndUpdate;
+		ListViewUC.Items.EndUpdate;
+		MessageListViewUC.Items.EndUpdate;
+	end;
 end;
 
 // CoolBar の設定を変数に保存
@@ -3497,7 +3510,8 @@ begin
 
 		case ViewType of
 			gvtAll: begin
-				ListViewUC.Canvas.Font.Color := clWindowText;
+				//ListViewUC.Canvas.Font.Color := clWindowText
+				ListViewUC.Canvas.Font.Color := (not ListViewUC.Color) and $FFFFFF;
 				s := 'このビューにはアイテムがありません。';
 			end;
 			gvtLog: begin
@@ -4141,10 +4155,10 @@ end;
 
 procedure TGikoForm.ListPopupMenuPopup(Sender: TObject);
 var
-    bBoard, bCategory : Boolean;
+	bBoard, bCategory : Boolean;
 begin
-    bBoard := (GetActiveList is TBoard);
-    bCategory := (GetActiveList is TCategory);
+	bBoard := (GetActiveList is TBoard);
+	bCategory := (GetActiveList is TCategory);
 	ItemRoundPMenu.Visible := bBoard;
 	ItemReservPMenu.Visible := bBoard;
 	LPMSep01.Visible := bBoard;
@@ -4161,7 +4175,7 @@ begin
 	LPMSep06.Visible := bCategory or bBoard;
 	BoardFavoriteAddMenu.Visible := bCategory;
 	ThreadFavoriteAddMenu.Visible := bBoard;
-    SaveThreadFile.Visible := bBoard;
+	SaveThreadFile.Visible := bBoard;
 	AddRoundNameMenu(ItemReservPMenu);
 	AddRoundNameMenu(ListReservPMenu);
 end;
@@ -4179,7 +4193,7 @@ begin
 		TreeSelectFavoriteAddPupupMenu.Visible := False;
 		TreeSelectLogDeleteSeparator.Visible := False;
 		TreeSelectLogDeletePopupMenu.Visible := False;
-        SearchBoardName.Visible := False;
+		SearchBoardName.Visible := False;
 	end else if TObject(FClickNode.Data) is TBoard then begin
 		TreeSelectThreadPupupMenu.Visible := False;
 		TreeSelectBoardPupupMenu.Visible := True;
@@ -4190,7 +4204,7 @@ begin
 		TreeSelectFavoriteAddPupupMenu.Visible := True;
 		TreeSelectLogDeleteSeparator.Visible := False;
 		TreeSelectLogDeletePopupMenu.Visible := False;
-        SearchBoardName.Visible := True;
+		SearchBoardName.Visible := True;
 	end else if TObject(FClickNode.Data) is TFavoriteBoardItem then begin
 		TreeSelectThreadPupupMenu.Visible := False;
 		TreeSelectBoardPupupMenu.Visible := True;
@@ -4201,7 +4215,7 @@ begin
 		TreeSelectFavoriteAddPupupMenu.Visible := True;
 		TreeSelectLogDeleteSeparator.Visible := False;
 		TreeSelectLogDeletePopupMenu.Visible := False;
-        SearchBoardName.Visible := False;
+		SearchBoardName.Visible := False;
 	end else if (TObject(FClickNode.Data) is TThreadItem) then begin
 		TreeSelectThreadPupupMenu.Visible := True;
 		TreeSelectBoardPupupMenu.Visible := False;
@@ -4212,7 +4226,7 @@ begin
 		TreeSelectFavoriteAddPupupMenu.Visible := True;
 		TreeSelectLogDeleteSeparator.Visible := True;
 		TreeSelectLogDeletePopupMenu.Visible := True;
-        SearchBoardName.Visible := False;
+		SearchBoardName.Visible := False;
 	end else if (TObject(FClickNode.Data) is TFavoriteThreadItem) then begin
 		TreeSelectThreadPupupMenu.Visible := True;
 		TreeSelectBoardPupupMenu.Visible := False;
@@ -4223,7 +4237,7 @@ begin
 		TreeSelectFavoriteAddPupupMenu.Visible := True;
 		TreeSelectLogDeleteSeparator.Visible := True;
 		TreeSelectLogDeletePopupMenu.Visible := True;
-        SearchBoardName.Visible := False;
+		SearchBoardName.Visible := False;
 	end else if (TObject(FClickNode.Data) is TCategory) then begin
 		TreeSelectThreadPupupMenu.Visible := False;
 		TreeSelectBoardPupupMenu.Visible := False;
@@ -4234,7 +4248,7 @@ begin
 		TreeSelectFavoriteAddPupupMenu.Visible := False;
 		TreeSelectLogDeleteSeparator.Visible := False;
 		TreeSelectLogDeletePopupMenu.Visible := False;
-        SearchBoardName.Visible := True;
+		SearchBoardName.Visible := True;
 	end else if FClickNode.IsFirstNode then begin
 		TreeSelectThreadPupupMenu.Visible := False;
 		TreeSelectBoardPupupMenu.Visible := False;
@@ -4245,7 +4259,7 @@ begin
 		TreeSelectFavoriteAddPupupMenu.Visible := False;
 		TreeSelectLogDeleteSeparator.Visible := False;
 		TreeSelectLogDeletePopupMenu.Visible := False;
-        SearchBoardName.Visible := True;
+		SearchBoardName.Visible := True;
 	end else begin
 		TreeSelectThreadPupupMenu.Visible := False;
 		TreeSelectBoardPupupMenu.Visible := False;
@@ -4256,7 +4270,7 @@ begin
 		TreeSelectFavoriteAddPupupMenu.Visible := False;
 		TreeSelectLogDeleteSeparator.Visible := False;
 		TreeSelectLogDeletePopupMenu.Visible := False;
-        SearchBoardName.Visible := False;
+		SearchBoardName.Visible := False;
 	end;
 end;
 
@@ -4269,11 +4283,11 @@ var
 	idx: Integer;
 	wkIntSt: Integer;
 	wkIntTo: Integer;
-    BNum, BRes: string;
-    threadItem: TThreadItem;
-    aElement : IHTMLElement;
-    senderBrowser : TWebBrowser;
-    doc : IHTMLDocument2;
+	BNum, BRes: string;
+	threadItem: TThreadItem;
+	aElement : IHTMLElement;
+	senderBrowser : TWebBrowser;
+	doc : IHTMLDocument2;
 begin
 {$IFDEF DEBUG}
 	Writeln(IntToStr(Integer(ppDisp)));
@@ -4283,8 +4297,8 @@ begin
 	if not( TObject(Sender) is TWebBrowser )then
 		Exit;
 
-    senderBrowser := TWebBrowser(Sender);
-    doc := senderBrowser.ControlInterface.Document as IHTMLDocument2;
+	senderBrowser := TWebBrowser(Sender);
+	doc := senderBrowser.ControlInterface.Document as IHTMLDocument2;
 	if not Assigned(doc) then
 		Exit;
 
@@ -4320,32 +4334,32 @@ begin
 			end;
 
 			if wkIntSt <> 0 then begin
-            	FActiveContent.IDAnchorPopup('');
-                MoveHisotryManager.pushItem(FActiveContent);
-                if (Sender is TResPopupBrowser) then begin
-                    TResPopupBrowser(Sender).ChildClear;
-                    OpenThreadItem(
-                        GetActiveContent(true),
-                        GetActiveContent(true).URL + '&st=' +
-                             IntToStr(wkIntSt) + '&to=' + IntToStr(wkIntSt));
-                end else begin
+				FActiveContent.IDAnchorPopup('');
+				MoveHisotryManager.pushItem(FActiveContent);
+				if (Sender is TResPopupBrowser) then begin
+					TResPopupBrowser(Sender).ChildClear;
+					OpenThreadItem(
+						GetActiveContent(true),
+						GetActiveContent(true).URL + '&st=' +
+								IntToStr(wkIntSt) + '&to=' + IntToStr(wkIntSt));
+				end else begin
 					BrowserMovement(IntToStr(wkIntSt));
-                end;
-            end;
+				end;
+			end;
 		end;
 	end else begin
-        ////'http://be.2ch.net/test/p.php?i='+id+'&u=d:'+bas+num
+		////'http://be.2ch.net/test/p.php?i='+id+'&u=d:'+bas+num
 
 		URL := GikoSys.GetHRefText(Html);
 		URL := GikoSys.HTMLDecode(URL);
         if AnsiPos('BE:', URL) = 1 then begin
 			BNum := Copy(URL, 4, AnsiPos('/', URL) - 4);
 			BRes := Copy(URL, AnsiPos('/', URL) + 1,  Length(URL));
-            threadItem := FActiveContent.Thread;
-            if threadItem = nil then Exit;
-            URL := BE_PHP_URL + BNum + '&u=d'
-            	+ CustomStringReplace(threadItem.URL, 'l50', '') + BRes;
-        end;
+			threadItem := FActiveContent.Thread;
+			if threadItem = nil then Exit;
+			URL := BE_PHP_URL + BNum + '&u=d'
+				+ CustomStringReplace(threadItem.URL, 'l50', '') + BRes;
+		end;
 
 		if( AnsiPos('http://', URL) = 1) or (AnsiPos('https://', URL) = 1) or
 			( AnsiPos('ftp://', URL) = 1) then begin
@@ -4354,23 +4368,38 @@ begin
 				idx := AddressComboBox.Items.IndexOf(URL);
 				if idx = -1 then begin
 					AddressComboBox.Items.Insert(0, URL);
-					if AddressComboBox.Items.Count > GikoSys.Setting.AddressHistoryCount then
-						AddressComboBox.Items.Delete(AddressComboBox.Items.Count - 1);
+					AddressItemsSetCount;
 				end else begin
 					AddressComboBox.Items.Delete(idx);
 					AddressComboBox.Items.Insert(0, URL);
 				end;
 			end;
-            if (Sender is TResPopupBrowser) then begin
-                TResPopupBrowser(Sender).ChildClear
-            end;
+			if (Sender is TResPopupBrowser) then begin
+				TResPopupBrowser(Sender).ChildClear
+			end;
 
-            MoveHisotryManager.pushItem(FActiveContent);
+			MoveHisotryManager.pushItem(FActiveContent);
 			MoveToURL( URL );
 		end;
 	end;
 
 end;
+
+//! アドレスコンボボックスリスト件数超過項目削除
+procedure TGikoForm.AddressItemsSetCount;
+var
+	i: Integer;
+begin;
+	try
+		for i := AddressComboBox.Items.Count - 1 downto 0 do begin
+			if GikoSys.Setting.AddressHistoryCount >= AddressComboBox.Items.Count then
+				Break;
+			AddressComboBox.Items.Delete(i);
+		end;
+	except
+	end;
+end;
+
 
 procedure TGikoForm.ListSplitterMoved(Sender: TObject);
 begin
@@ -5904,7 +5933,7 @@ procedure TGikoForm.ResetBandInfo( bar : TGikoCoolBar; band : TToolBar );
 var
 	bandInfo	: tagREBARBANDINFOA;
 	pBandInfo	: PReBarBandInfoA;
-	lResult		: Integer;
+	//lResult		: Integer;
 	h					: HWND;
 	i, idx		: Integer;
 begin
@@ -5925,7 +5954,7 @@ begin
 		end;
 	end;
 	// 設定
-	lResult := SendMessage( bar.Handle, RB_SETBANDINFO, idx, Integer( pBandInfo ) );
+	{lResult :=} SendMessage( bar.Handle, RB_SETBANDINFO, idx, Integer( pBandInfo ) );
 
 end;
 
