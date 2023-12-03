@@ -7310,6 +7310,9 @@ end;
 //スレッド一覧を最大化してフォーカスを当てる
 procedure TGikoForm.SelectTimerTimer(Sender: TObject);
 begin
+	if ListViewUC = nil then
+  	Exit;
+
 	SelectTimer.Interval := 0;
 	if not (ListViewUC.Selected = nil) then
 		if( FActiveContent = nil) or
