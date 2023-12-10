@@ -911,7 +911,7 @@ begin
 	UseUndecidedCheckBox.Checked := GikoSys.Setting.UseUndecided;
 
   // レスエディタUnicode入力
-  UseUnicodeCB.Checked := Gikosys.Setting.UseUnicode;
+  //UseUnicodeCB.Checked := Gikosys.Setting.UseUnicode;
 	// プレビュー表示にCSSまたはスキンを適用する
   PreviewStyleCheckBox.Checked := Gikosys.Setting.PreviewStyle;
   // スレタイ特定文字列除去
@@ -1237,7 +1237,7 @@ begin
 	GikoSys.Setting.GestureIgnoreContext := IgnoreContextCheckBox.Checked;
 
 	// レスエディタUnicode入力
-	Gikosys.Setting.UseUnicode := UseUnicodeCB.Checked;
+	//Gikosys.Setting.UseUnicode := UseUnicodeCB.Checked;
 	// プレビュー表示にCSSまたはスキンを適用する
 	Gikosys.Setting.PreviewStyle := PreviewStyleCheckBox.Checked;
 	// スレタイ特定文字列除去

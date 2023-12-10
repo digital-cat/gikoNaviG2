@@ -1413,6 +1413,9 @@ object OptionDialog: TOptionDialog
           Width = 166
           Height = 17
           Caption = 'Unicode'#20837#21147#12434#21487#33021#12395#12377#12427
+          Checked = True
+          Enabled = False
+          State = cbChecked
           TabOrder = 0
         end
         object PreviewStyleCheckBox: TCheckBox

@@ -1387,7 +1387,7 @@ begin
 		FSpaceToNBSP	:= ini.ReadBool( 'Editor', 'SpaceToNBSP', False );
 		FAmpToCharRef	:= ini.ReadBool( 'Editor', 'AmpToCharRef', False );
 		FUseGobakuCheck := ini.ReadBool( 'Editor', 'UseGobakuCheck', True );
-		FUseUnicode     := ini.ReadBool( 'Editor', 'UseUnicode', False );
+		FUseUnicode     := True;//ini.ReadBool( 'Editor', 'UseUnicode', False );
     FPreviewStyle   := ini.ReadBool( 'Editor', 'PreviewStyle', False );
 
 		//Tabé©ìÆï€ë∂ÅAì«Ç›çûÇ›
@@ -1858,7 +1858,7 @@ begin
 		ini.WriteBool( 'Editor', 'SpaceToNBSP',    FSpaceToNBSP );
 		ini.WriteBool( 'Editor', 'AmpToCharRef',   FAmpToCharRef );
 		ini.WriteBool( 'Editor', 'UseGobakuCheck', FUseGobakuCheck );
-		ini.WriteBool( 'Editor', 'UseUnicode',     FUseUnicode );
+		//ini.WriteBool( 'Editor', 'UseUnicode',     FUseUnicode );
     ini.WriteBool( 'Editor', 'PreviewStyle',   FPreviewStyle );
 
     //! çÌèúóvêøî¬Çì¡ï àµÇ¢
