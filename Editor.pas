@@ -87,6 +87,7 @@ type
 		TitlePanel: TPanel;
 		TitleLabel: TLabel;
 		TitleEdit: TEdit;
+		OekakiPanel: TPanel;
 		SelectAllAction: TAction;
 		N2: TMenuItem;
 		SelectAll1: TMenuItem;
@@ -145,6 +146,11 @@ type
 		UCInfoPanel: TPanel;
 		BodyEdit: TMemo;
 		IdSSLIOHandlerSocketOpenSSL: TIdSSLIOHandlerSocketOpenSSL;
+    Label1: TLabel;
+    OekakiEdit: TEdit;
+    OekakiButton: TButton;
+    OekakiOpenDialog: TOpenDialog;
+    OekakiClearButton: TButton;
 
 		procedure EditorPageChange(Sender: TObject);
 		procedure FormCreate(Sender: TObject);
@@ -209,6 +215,8 @@ type
 			var ABuffer: TIdBytes);
 		procedure IdLogDebugSend(ASender: TIdConnectionIntercept;
 			var ABuffer: TIdBytes);
+    procedure OekakiButtonClick(Sender: TObject);
+    procedure OekakiClearButtonClick(Sender: TObject);
 	private
 		FThreadItem: TThreadItem;
 		FBoard: TBoard;
@@ -230,6 +238,7 @@ type
 		NameComboBoxUC: TWideComboBox;
 		MailComboBoxUC: TWideComboBox;
 		FURI: TIdURI;
+    FOekaki: String;
 		procedure Preview;
 		procedure Preview2;
     procedure TrimLinkFromHtml(var html: String);
@@ -314,6 +323,8 @@ type
 		//! タイトル文字列取得
 		function GetTitleText: String;
 		function GetTitleUTF8: UTF8String;
+    //! 添付画像チェック
+		function ChkPNG(var pngStream: TMemoryStream): Boolean;
 	protected
 		procedure CreateParams(var Params: TCreateParams); override;
 	public
@@ -336,7 +347,7 @@ implementation
 uses
 	Giko, ItemDownload, MojuUtils, GikoMessage,  Imm,
 	InputAssistDataModule, InputAssist, HTMLCreate, IdCookie, GikoDataModule,
-	Belib, DmSession5ch;
+	Belib, DmSession5ch, UBase64;
 const
 	CAPTION_NAME_NEW: string = 'ギコナビ スレ立てエディタ';
 	CAPTION_NAME_RES: string = 'ギコナビ レスエディタ';
@@ -433,7 +444,7 @@ begin
 
 	EditorPage.ActivePage := EditorTab;
 	if FUseUC then begin
-		EditorTab.Caption := EditorTab.Caption + '(Unicodeモード)';
+		//EditorTab.Caption := EditorTab.Caption + '(Unicodeモード)';
 		FNameComboEdit := GetWindow(NameComboBoxUC.Handle, GW_CHILD);
 		FMailComboEdit := GetWindow(MailComboBoxUC.Handle, GW_CHILD);
 		NameComboBoxUC.Items_Assign(GikoSys.Setting.NameList);
@@ -516,6 +527,7 @@ begin
 	SetMailText(FBoard.KotehanMail);
 	SageCheckBox.Checked := AnsiPos('sage', GetMailText) <> 0;
 	TitlePanel.Visible := True;
+  OekakiPanel.Visible := False;
 
 	if (FSambaTimer.SetBoard(FBoard) >= 0) then begin
 		UpdateSambaStatus;
@@ -535,6 +547,7 @@ begin
 	SetMailText(FThreadItem.ParentBoard.KotehanMail);
 	SageCheckBox.Checked := AnsiPos('sage', GetMailText) <> 0;
 	TitlePanel.Visible := False;
+  OekakiPanel.Visible := GikoSys.Is2chURL(FThreadItem.URL);		// ５ちゃんのみお絵描き有効
 
 	if (FSambaTimer.SetBoard(FThreadItem.ParentBoard) >= 0) then begin
 		UpdateSambaStatus;
@@ -768,6 +781,11 @@ begin
     end;
 
     Res.FBody := GetBody;
+    if FOekaki <> '' then begin
+    	if Res.FBody <> '' then
+	    	Res.FBody := Res.FBody + #13#10;
+    	Res.FBody := Res.FBody + 'sssp://o.5ch.net/dummy.png';
+    end;
     Res.FBody := THTMLCreate.RepHtml(Res.FBody);
     Res.FBody := CustomStringReplace(Res.FBody, #13#10, '<br>', False);
     Res.FDateTime := FormatDateTime('yyyy/mm/dd(aaa) hh:nn:ss', Now());
@@ -1510,8 +1528,11 @@ begin
 
 	if FThreadItem = nil then
 		s := s + 'subject=' + subject + '&'
-	else
+	else begin
 		s := s + 'key=' + ChangeFileExt(FThreadItem.FileName, '') + '&';
+    if FOekaki <> '' then
+        s := s + '&oekaki=data%3Aimage%2Fpng%3Bbase64%2C' + FOekaki + '&';
+  end;
 	s := s + 'submit=' + submit;
 	if AddCRLF then s := s + #13#10;
 
@@ -2029,9 +2050,9 @@ end;
 procedure TEditorForm.ShowBoardInformation(ABoard: TBoard; AMemo: TMemo);
 var
 	body: TStringList;
-	UCType: Integer;    // 0:不明、1:対応、-1:非対応
+//	UCType: Integer;    // 0:不明、1:対応、-1:非対応
 begin
-	UCType := 0;
+//	UCType := 0;
 	AMemo.Clear;
 	AMemo.Lines.Add('[SETTING.TXT]');
 	if ABoard.IsSETTINGTXT then begin
@@ -2044,10 +2065,10 @@ begin
 			finally
 				body.Free;
 			end;
-			if (Pos('BBS_UNICODE=pass', AMemo.Text) > 0) then
-				UCType := 1
-			else if (Pos('BBS_UNICODE=', AMemo.Text) > 0) then
-				UCType := -1;
+//			if (Pos('BBS_UNICODE=pass', AMemo.Text) > 0) then
+//				UCType := 1
+//			else if (Pos('BBS_UNICODE=', AMemo.Text) > 0) then
+//				UCType := -1;
 		end else begin
 			ABoard.IsSETTINGTXT := false;
 			ABoard.SETTINGTXTTime := ZERO_DATE;
@@ -2059,23 +2080,23 @@ begin
 		AMemo.Lines.Add('メニューより取得してください。');
 	end;
 
-	case UCType of
-		-1: begin
-			UCInfoPanel.Caption := 'Unicode非対応板';
-			UCInfoPanel.Color := clRed;
-			UCInfoPanel.Hint := 'この板はUnicodeでのレスに対応していません。';
-		end;
-		0: begin
-			UCInfoPanel.Caption := 'Unicode対応不明';
-			UCInfoPanel.Color := clBtnFace;
-			UCInfoPanel.Hint := '板情報を取得してください。';
-		end;
-		1: begin
-			UCInfoPanel.Caption := 'Unicode対応板';
-			UCInfoPanel.Color := clLime;
-			UCInfoPanel.Hint := 'この板はUnicodeでのレスに対応しています。';
-		end;
-	end;
+//	case UCType of
+//		-1: begin
+//			UCInfoPanel.Caption := 'Unicode非対応板';
+//			UCInfoPanel.Color := clRed;
+//			UCInfoPanel.Hint := 'この板はUnicodeでのレスに対応していません。';
+//		end;
+//		0: begin
+//			UCInfoPanel.Caption := 'Unicode対応不明';
+//			UCInfoPanel.Color := clBtnFace;
+//			UCInfoPanel.Hint := '板情報を取得してください。';
+//		end;
+//		1: begin
+//			UCInfoPanel.Caption := 'Unicode対応板';
+//			UCInfoPanel.Color := clLime;
+//			UCInfoPanel.Hint := 'この板はUnicodeでのレスに対応しています。';
+//		end;
+//	end;
 end;
 function TEditorForm.GetTitlePictureURL(body: TStringList; ABoard: TBoard): string;
 //BBS_TITLE_PICTURE=
@@ -2326,6 +2347,87 @@ begin
 		ActStr := '（' + Action.Caption + '）';
 	s := 'ジェスチャー: ' + s + ActStr;
 	StatusBar.Panels[0].Text := s;
+end;
+
+//! 添付画像チェック
+function TEditorForm.ChkPNG(var pngStream: TMemoryStream): Boolean;
+const
+	PNG_SIG: array[0..7] of Byte = ($89, $50, $4E, $47, $0D, $0A, $1A, $0A);
+	PNG_SIG_LEN: Integer = 8;
+	IHDR_HDR: array[0..11] of Byte = ($49, $48, $44, $52, $00, $00, $01, $F4, $00, $00, $00, $FA);
+	IHDR_HDR_LEN: Integer = 12;
+	IHDR_SIG_LEN: Integer = 4;
+  MSG_CAP = '画像添付';
+  MSG_DSC = #13#10 + '500×250ピクセルのPNG画像を添付できます。';
+var
+	i: Integer;
+	Last: Integer;
+	Buf: array[0..15] of Byte;
+begin
+
+	Result := False;
+	pngStream.Position := 0;
+
+	if (pngStream.Size > PNG_SIG_LEN) and CompareMem(pngStream.Memory, @PNG_SIG[0], PNG_SIG_LEN) then begin
+    Last := pngStream.Size - IHDR_HDR_LEN - 10;
+    for i := PNG_SIG_LEN to Last do begin
+      pngStream.Position := i;
+      pngStream.Read(Buf, 12);
+      if CompareMem(@Buf[0], @IHDR_HDR[0], IHDR_SIG_LEN) then begin
+        if CompareMem(@Buf[0], @IHDR_HDR[0], IHDR_HDR_LEN) then
+          Result := True
+        else
+          MsgBox(Handle, '画像サイズが不正です。' + MSG_DSC, MSG_CAP, MB_OK or MB_ICONERROR);
+        Exit;
+      end;
+    end;
+	end;
+
+	MsgBox(Handle, '画像フォーマットが不正です。' + MSG_DSC, MSG_CAP, MB_OK or MB_ICONERROR);
+
+end;
+
+procedure TEditorForm.OekakiButtonClick(Sender: TObject);
+const
+	MAX_SIZE = 120 * 1024;
+  MSG_CAP = '画像添付';
+var
+  srcStream: TMemoryStream;
+  dstStream: TStringStream;
+  b64: String;
+begin
+
+	if not OekakiOpenDialog.Execute then
+  	Exit;
+
+  srcStream := TMemoryStream.Create;
+  dstStream := TStringStream.Create('');
+  try
+    srcStream.LoadFromFile(OekakiOpenDialog.FileName);
+    if ChkPNG(srcStream) then begin
+      srcStream.Position := 0;
+      HogeBase64Encode(srcStream, dstStream);
+      b64 := HttpEncode(dstStream.DataString);
+    	if Length(b64) > MAX_SIZE then
+	      MsgBox(Handle, '画像のファイルサイズが大きすぎます。', MSG_CAP, MB_OK or MB_ICONERROR)
+      else begin
+        FOekaki := b64;
+        OekakiEdit.Text := OekakiOpenDialog.FileName;
+      end;
+    end;
+  except
+    on E: Exception do begin
+      MsgBox(Handle, 'エラーが発生しました。' + #13#10 + E.Message, MSG_CAP, MB_OK or MB_ICONERROR);
+    end;
+  end;
+  srcStream.Free;
+  dstStream.Free;
+end;
+
+procedure TEditorForm.OekakiClearButtonClick(Sender: TObject);
+begin
+	FOekaki := '';
+	OekakiEdit.Text := '';
 end;
 
 procedure TEditorForm.OnGestureEnd(Sender: TObject);
