@@ -28,7 +28,7 @@ package gikoNavi;
 requires
   rtl,
   vcl;
-
+  
 contains
   GikoPanel in 'GikoPanel.pas',
   GikoCoolBar in 'GikoCoolBar.pas',

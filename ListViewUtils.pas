@@ -4,29 +4,29 @@ interface
 
 uses
 	Windows, Messages, SysUtils, Classes, Graphics, Controls,
-	BoardGroup, StdCtrls, ComCtrls;
+	BoardGroup, StdCtrls, ComCtrls, TntComCtrls, WideCtrls;
 
 type
 	TListViewUtils = class(TObject)
 	private
 		{Private 宣言}
 
-		class procedure DrawCategoryItem(BBS: TBBS; Item: TListItem; ListView: TListView);
-		class procedure DrawBoardItem(Category: TCategory; Item: TListItem; ListView: TListView);
-		class procedure DrawThreadItem(Board: TBoard; Item: TListItem; ListView: TListView);
-		class procedure DrawItemLogThread(Thread: TThreadItem; Item: TListItem; ColumnCount: Integer);
-		class procedure DrawItemNoLogThread(Thread: TThreadItem; Item: TListItem; ColumnCount: Integer);
+		class procedure DrawCategoryItem(BBS: TBBS; Item: TTntListItem; ListView: TTntListView);
+		class procedure DrawBoardItem(Category: TCategory; Item: TTntListItem; ListView: TTntListView);
+		class procedure DrawThreadItem(Board: TBoard; Item: TTntListItem; ListView: TTntListView);
+		class procedure DrawItemLogThread(Thread: TThreadItem; Item: TTntListItem; ColumnCount: Integer);
+		class procedure DrawItemNoLogThread(Thread: TThreadItem; Item: TTntListItem; ColumnCount: Integer);
 	public
 		{Public 宣言}
-		class procedure SetBoardTreeNode(inBBS : TBBS; treeView: TTreeView);
-		class function SetCategoryListItem(ABBS2ch: TBBS; ListView: TListView;
+		class procedure SetBoardTreeNode(inBBS : TBBS; treeView: TTntTreeView);
+		class function SetCategoryListItem(ABBS2ch: TBBS; ListView: TTntListView;
 			NumberVisible: Boolean): Integer;
-		class procedure ListViewSort(Sender: TObject; ListView: TListView; Column: TListColumn;
+		class procedure ListViewSort(Sender: TObject; ListView: TTntListView; Column: TTntListColumn;
 			NumberVisible: Boolean; vSortOrder: Boolean);
 		class function	ActiveListTrueColumn( column : TListColumn ) : TListColumn;
-		class function SetBoardListItem(Category: TCategory; ListView: TListView;
+		class function SetBoardListItem(Category: TCategory; ListView: TTntListView;
 			NumberVisible: Boolean): Integer;
-		class function SetThreadListItem(Board: TBoard; ListView: TListView;
+		class function SetThreadListItem(Board: TBoard; ListView: TTntListView;
 			NumberVisible: Boolean): Integer;
 		class procedure ListViewData(Sender: TObject; Item: TListItem);
 	end;
@@ -60,13 +60,13 @@ const
 //ボードツリー設定
 class procedure TListViewUtils.SetBoardTreeNode(
 	inBBS : TBBS;
-	treeView : TTreeView
+	treeView : TTntTreeView
 );
 var
 	i, j, k: integer;
-	Root: TTreeNode;
-	CategoryNode: TTreeNode;
-	BoardNode: TTreeNode;
+	Root: TTntTreeNode;
+	CategoryNode: TTntTreeNode;
+	BoardNode: TTntTreeNode;
 	Category: TCategory;
 	Board: TBoard;
 begin
@@ -140,12 +140,12 @@ end;
 //ListViewにカテゴリを設定する
 class function TListViewUtils.SetCategoryListItem(
 	ABBS2ch: TBBS;
-	ListView: TListView;
+	ListView: TTntListView;
 	NumberVisible: Boolean
 ): Integer;
 var
-	TitleColumn	: TListColumn;
-	ListColumn	: TListColumn;
+	TitleColumn	: TTntListColumn;
+	ListColumn	: TTntListColumn;
 	i, id, idx	: Integer;
 begin
 	ListView.Items.BeginUpdate;
@@ -198,8 +198,8 @@ end;
 
 class procedure TListViewUtils.ListViewSort(
 	Sender: TObject;
-	ListView: TListView;
-	Column: TListColumn;
+	ListView: TTntListView;
+	Column: TTntListColumn;
 	NumberVisible: Boolean;
 	vSortOrder: Boolean
 );
@@ -267,12 +267,12 @@ end;
 //ListViewにBoardItemを設定する
 class function TListViewUtils.SetBoardListItem(
 	Category: TCategory;
-	ListView: TListView;
+	ListView: TTntListView;
 	NumberVisible: Boolean
 ): Integer;
 var
-	TitleColumn	: TListColumn;
-	ListColumn	: TListColumn;
+	TitleColumn	: TTntListColumn;
+	ListColumn	: TTntListColumn;
 	i, id, idx	: Integer;
 begin
 	ListView.Items.BeginUpdate;
@@ -340,7 +340,7 @@ end;
 //ListViewにThreadItemを設定する
 class function TListViewUtils.SetThreadListItem(
 	Board: TBoard;
-	ListView: TListView;
+	ListView: TTntListView;
 	NumberVisible: Boolean
 ): Integer;
 var
@@ -444,23 +444,25 @@ end;
 class procedure TListViewUtils.ListViewData(Sender: TObject; Item: TListItem);
 var
 	ActivListObj : TObject;
-	ListView : TListView;
+	ListView : TTntListView;
+  WideItem : TTntListItem;
 begin
-	if (Sender <> nil) and (Sender is TListView) then begin
-		ListView := TListView(Sender);
+	if (Sender <> nil) and (Sender is TTntListView) then begin
+		WideItem := TTntListItem(Item);
+		ListView := TTntListView(Sender);
 		ActivListObj := GikoForm.ActiveList;
 		if ActivListObj is TBBS then begin
-			DrawCategoryItem(TBBS(ActivListObj), Item, ListView);
+			DrawCategoryItem(TBBS(ActivListObj), WideItem, ListView);
 		end else if ActivListObj is TCategory then begin
-			DrawBoardItem(TCategory(ActivListObj), Item, ListView);
+			DrawBoardItem(TCategory(ActivListObj), WideItem, ListView);
 		end else if ActivListObj is TBoard then begin
-			DrawThreadItem(TBoard(ActivListObj), Item, ListView);
+			DrawThreadItem(TBoard(ActivListObj), WideItem, ListView);
 		end;
 	end;
 end;
 //! リストビューのアイテムを描画する（カテゴリー用）
 class procedure TListViewUtils.DrawCategoryItem(
-	BBS: TBBS; Item: TListItem; ListView: TListView
+	BBS: TBBS; Item: TTntListItem; ListView: TTntListView
 );
 var
 	Category : TCategory;
@@ -487,7 +489,7 @@ begin
 end;
 //! リストビューのアイテムを描画する（板用）
 class procedure TListViewUtils.DrawBoardItem(
-	Category: TCategory; Item: TListItem; ListView: TListView
+	Category: TCategory; Item: TTntListItem; ListView: TTntListView
 );
 var
 	Board: TBoard;
@@ -546,7 +548,7 @@ begin
 end;
 //! リストビューのアイテムを描画する（スレッド用）
 class procedure TListViewUtils.DrawThreadItem(
-	Board: TBoard; Item: TListItem;ListView : TListView
+	Board: TBoard; Item: TTntListItem;ListView : TTntListView
 );
 var
 	ThreadItem: TThreadItem;
@@ -609,9 +611,9 @@ begin
 	end;
 
 	if GikoDM.ListNumberVisibleAction.Checked then
-		Item.Caption := IntToStr(ThreadItem.No) + ': ' + RepStr
-	else
-		Item.Caption := RepStr;
+		RepStr := IntToStr(ThreadItem.No) + ': ' + RepStr;
+
+	Item.Caption := EncAnsiToWideString(RepStr);
 
 	case ThreadItem.AgeSage of
 		gasNone: Item.StateIndex := -1;
@@ -630,7 +632,7 @@ begin
 	Item.Data := ThreadItem;
 end;
 //! ログ有りスレッドを描画する
-class procedure TListViewUtils.DrawItemLogThread(Thread: TThreadItem; Item: TListItem; ColumnCount: Integer);
+class procedure TListViewUtils.DrawItemLogThread(Thread: TThreadItem; Item: TTntListItem; ColumnCount: Integer);
 var
 	i, idx : Integer;
 	spanday: Double;
@@ -704,7 +706,7 @@ begin
 		Item.ImageIndex := ITEM_ICON_THREADLOG1;
 end;
 //! ログなしスレッドを描画する
-class procedure TListViewUtils.DrawItemNoLogThread(Thread: TThreadItem; Item: TListItem; ColumnCount: Integer);
+class procedure TListViewUtils.DrawItemNoLogThread(Thread: TThreadItem; Item: TTntListItem; ColumnCount: Integer);
 var
 	i, idx: Integer;
 	spanday: Double;

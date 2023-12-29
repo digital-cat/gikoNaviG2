@@ -24,7 +24,6 @@ type
 		function GetErrorCode: Integer;
 		function GetErrorMsg:  string;
     function Login: Boolean;
-    procedure InitHTTP;
     procedure Clear;
   public
 		constructor Create(AOwner: TComponent); reintroduce; virtual;
@@ -124,8 +123,10 @@ begin
     SrcContent := TStringStream.Create(FormData);
     ResContent := TMemoryStream.Create;
 
-    InitHTTP;
+    TIndyMdl.InitHTTP(IdHTTP);
 
+    IdHTTP.AllowCookies           := True;
+    IdHTTP.Request.AcceptEncoding := '';
     IdHTTP.Request.AcceptLanguage := 'ja';
     IdHTTP.Request.Accept         := LOGIN_5GH_ACCEPT;
     IdHTTP.Request.ContentType    := LOGIN_5CH_CNTTYPE;
@@ -187,32 +188,6 @@ begin
     end;
   end;
 
-end;
-
-{ HTTPコンポーネント初期化 }
-procedure TSession5ch.InitHTTP;
-begin
-  IdHTTP.CookieManager.CookieCollection.Clear;
-	IdHTTP.Request.Clear;
-	IdHTTP.ProxyParams.BasicAuthentication := False;
-	if GikoSys.Setting.WriteProxy then begin
-		IdHTTP.ProxyParams.ProxyServer   := GikoSys.Setting.WriteProxyAddress;
-		IdHTTP.ProxyParams.ProxyPort     := GikoSys.Setting.WriteProxyPort;
-		IdHTTP.ProxyParams.ProxyUsername := GikoSys.Setting.WriteProxyUserID;
-		IdHTTP.ProxyParams.ProxyPassword := GikoSys.Setting.WriteProxyPassword;
-		if GikoSys.Setting.ReadProxyUserID <> '' then
-			IdHTTP.ProxyParams.BasicAuthentication := True;
-	end else begin
-		IdHTTP.ProxyParams.ProxyServer   := '';
-		IdHTTP.ProxyParams.ProxyPort     := 80;
-		IdHTTP.ProxyParams.ProxyUsername := '';
-		IdHTTP.ProxyParams.ProxyPassword := '';
-	end;
-	IdHTTP.Request.UserAgent      := GikoSys.GetUserAgent;
-	IdHTTP.Request.AcceptEncoding := '';
-  IdHTTP.AllowCookies   := True;
-  IdHTTP.ReadTimeout    := GikoSys.Setting.ReadTimeOut;
-  IdHTTP.ConnectTimeout := GikoSys.Setting.ReadTimeOut;
 end;
 
 { セッションID取得 }

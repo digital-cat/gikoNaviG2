@@ -60,7 +60,7 @@ object OptionDialog: TOptionDialog
     Top = 4
     Width = 509
     Height = 389
-    ActivePage = UserIDSheet
+    ActivePage = TabSheet4
     MultiLine = True
     TabOrder = 3
     OnChange = OptionTabChange
@@ -389,7 +389,7 @@ object OptionDialog: TOptionDialog
         Lines.Strings = (
           #12473#12524#12483#12489#12522#12473#12488)
         ReadOnly = True
-        TabOrder = 15
+        TabOrder = 16
         WantReturns = False
         WordWrap = False
       end
@@ -456,7 +456,7 @@ object OptionDialog: TOptionDialog
         Lines.Strings = (
           #12502#12521#12454#12470#12509#12483#12503#12450#12483#12503)
         ReadOnly = True
-        TabOrder = 16
+        TabOrder = 17
         WantReturns = False
         WordWrap = False
       end
@@ -469,7 +469,7 @@ object OptionDialog: TOptionDialog
         Lines.Strings = (
           #12456#12487#12451#12479#12486#12461#12473#12488)
         ReadOnly = True
-        TabOrder = 17
+        TabOrder = 18
         WantReturns = False
         WordWrap = False
       end
@@ -509,7 +509,7 @@ object OptionDialog: TOptionDialog
         Lines.Strings = (
           #12502#12521#12454#12470#12479#12502)
         ReadOnly = True
-        TabOrder = 18
+        TabOrder = 19
         WantReturns = False
         WordWrap = False
       end
@@ -537,7 +537,7 @@ object OptionDialog: TOptionDialog
         Width = 130
         Height = 17
         Caption = #12524#12473#25968#22679#28187#12473#12524#24375#35519
-        TabOrder = 19
+        TabOrder = 20
         OnClick = OddResNumCheckBoxClick
       end
       object OddResNumColorBox: TColorBox
@@ -547,7 +547,7 @@ object OptionDialog: TOptionDialog
         Height = 22
         Style = [cbStandardColors, cbExtendedColors, cbSystemColors, cbCustomColor]
         ItemHeight = 16
-        TabOrder = 20
+        TabOrder = 21
       end
       object UnFocusedBoldCheckBox: TCheckBox
         Left = 15
@@ -555,16 +555,20 @@ object OptionDialog: TOptionDialog
         Width = 210
         Height = 17
         Caption = #12501#12457#12540#12459#12473#12364#28961#12356#12392#12365#12399#22826#23383#12395#12377#12427
-        TabOrder = 21
+        TabOrder = 22
+      end
+      object BoardInfCheckBox: TCheckBox
+        Left = 267
+        Top = 201
+        Width = 218
+        Height = 17
+        Caption = #26495#24773#22577#12418#21516#12376#35373#23450#12391#34920#31034#12377#12427
+        TabOrder = 15
       end
     end
     object CSSTabSheet: TTabSheet
       Caption = 'CSS '#12392#12473#12461#12531
       ImageIndex = 10
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object GroupBox12: TGroupBox
         Left = 12
         Top = 8
@@ -1141,10 +1145,6 @@ object OptionDialog: TOptionDialog
     object TabSheet2: TTabSheet
       Caption = #12381#12398#20182#21205#20316#65297
       ImageIndex = 8
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object GroupBox7: TGroupBox
         Left = 12
         Top = 8
@@ -1276,10 +1276,6 @@ object OptionDialog: TOptionDialog
     object TabSheet4: TTabSheet
       Caption = #12381#12398#20182#21205#20316#65298
       ImageIndex = 11
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object GroupBox13: TGroupBox
         Left = 12
         Top = 8
@@ -1383,30 +1379,27 @@ object OptionDialog: TOptionDialog
         Height = 48
         Caption = #12524#12473#12456#12487#12451#12479
         TabOrder = 5
-        object Label27: TLabel
-          Left = 180
-          Top = 22
-          Width = 238
-          Height = 12
-          Caption = #8251#38480#23450#30340#12394#27231#33021#12391#12356#12367#12388#12363#12398#21046#32004#12364#12354#12426#12414#12377#65281
-        end
-        object UseUnicodeCB: TCheckBox
+        object PreviewStyleCheckBox: TCheckBox
           Left = 11
           Top = 20
-          Width = 166
+          Width = 274
           Height = 17
-          Caption = 'Unicode'#20837#21147#12434#21487#33021#12395#12377#12427
+          Caption = #12503#12524#12499#12517#12540#34920#31034#12395'CSS'#12414#12383#12399#12473#12461#12531#12434#36969#29992
           TabOrder = 0
+        end
+        object OekakiCheckBox: TCheckBox
+          Left = 280
+          Top = 20
+          Width = 177
+          Height = 17
+          Caption = #12362#32117#25551#12365#65288#30011#20687#28155#20184#65289#26377#21177
+          TabOrder = 1
         end
       end
     end
     object SoundSheet: TTabSheet
       Caption = #12469#12454#12531#12489
       ImageIndex = 6
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object SoundEventGroupBox: TGroupBox
         Left = 12
         Top = 8
@@ -1474,10 +1467,6 @@ object OptionDialog: TOptionDialog
     object FolderSheet: TTabSheet
       Caption = #12501#12457#12523#12480
       ImageIndex = 5
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object FolderGroupBox: TGroupBox
         Left = 12
         Top = 8

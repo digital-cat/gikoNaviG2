@@ -131,6 +131,7 @@ object EditorForm: TEditorForm
           Height = 20
           BevelOuter = bvLowered
           TabOrder = 4
+          Visible = False
         end
       end
       object TitlePanel: TPanel
@@ -141,7 +142,7 @@ object EditorForm: TEditorForm
         Align = alTop
         BevelOuter = bvNone
         TabOrder = 0
-        object Label1: TLabel
+        object TitleLabel: TLabel
           Left = 4
           Top = 8
           Width = 54
@@ -161,19 +162,73 @@ object EditorForm: TEditorForm
         Left = 0
         Top = 60
         Width = 725
-        Height = 253
+        Height = 224
         Align = alClient
         ScrollBars = ssBoth
         TabOrder = 2
+      end
+      object OekakiPanel: TPanel
+        Left = 0
+        Top = 284
+        Width = 725
+        Height = 29
+        Align = alBottom
+        BevelOuter = bvNone
+        TabOrder = 3
+        OnResize = OekakiPanelResize
+        object Label1: TLabel
+          Left = 4
+          Top = 8
+          Width = 48
+          Height = 12
+          Caption = #30011#20687#28155#20184
+        end
+        object OekakiEdit: TEdit
+          Left = 64
+          Top = 4
+          Width = 433
+          Height = 20
+          Hint = '500'#215'250'#12500#12463#12475#12523#12398'PNG'#30011#20687#12434#28155#20184
+          Color = clBtnFace
+          Constraints.MinWidth = 80
+          ReadOnly = True
+          TabOrder = 0
+        end
+        object OekakiRightPanel: TPanel
+          Left = 565
+          Top = 0
+          Width = 160
+          Height = 29
+          Align = alRight
+          BevelOuter = bvNone
+          TabOrder = 1
+          ExplicitLeft = 360
+          object OekakiButton: TButton
+            Left = 2
+            Top = 4
+            Width = 80
+            Height = 25
+            Hint = '500'#215'250'#12500#12463#12475#12523#12398'PNG'#30011#20687#12434#28155#20184
+            Caption = #30011#20687#36984#25246'(&I)'
+            TabOrder = 0
+            OnClick = OekakiButtonClick
+          end
+          object OekakiClearButton: TButton
+            Left = 88
+            Top = 4
+            Width = 64
+            Height = 25
+            Hint = #28155#20184#30011#20687#12434#21066#38500
+            Caption = #12463#12522#12450'(&L)'
+            TabOrder = 1
+            OnClick = OekakiClearButtonClick
+          end
+        end
       end
     end
     object PreviewTab: TTabSheet
       Caption = #12503#12524#12499#12517#12540
       ImageIndex = 1
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Browser: TWebBrowser
         Left = 0
         Top = 0
@@ -195,10 +250,6 @@ object EditorForm: TEditorForm
     object BoardInformationTab: TTabSheet
       Caption = #26495#24773#22577
       ImageIndex = 2
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object BoardInformationMemo: TMemo
         Left = 0
         Top = 0
@@ -213,10 +264,6 @@ object EditorForm: TEditorForm
     object BoardtopTab: TTabSheet
       Caption = #26495#12488#12483#12503#30011#20687
       ImageIndex = 3
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object TitlePictureBrowser: TWebBrowser
         Left = 0
         Top = 0
@@ -237,10 +284,6 @@ object EditorForm: TEditorForm
     object RocalRuleTab: TTabSheet
       Caption = #12525#12540#12459#12523#12523#12540#12523
       ImageIndex = 4
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object WebBrowser1: TWebBrowser
         Left = 352
         Top = 208
@@ -537,7 +580,7 @@ object EditorForm: TEditorForm
     Left = 72
     Top = 124
     Bitmap = {
-      494C01010D000E003C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01010D000E009C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000004000000001002000000000000040
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -1076,7 +1119,7 @@ object EditorForm: TEditorForm
     Left = 104
     Top = 124
     Bitmap = {
-      494C01010D000E003C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01010D000E009C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000004000000001002000000000000040
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -1870,6 +1913,14 @@ object EditorForm: TEditorForm
     SSLOptions.VerifyMode = []
     SSLOptions.VerifyDepth = 0
     Left = 168
+    Top = 128
+  end
+  object OekakiOpenDialog: TOpenDialog
+    DefaultExt = '.png'
+    Filter = 'PNG'#12501#12449#12452#12523'(*.png)|*.png|'#12377#12409#12390#12398#12501#12449#12452#12523'(*.*)|*.*'
+    Options = [ofReadOnly, ofHideReadOnly, ofFileMustExist, ofEnableSizing]
+    Title = #28155#20184#30011#20687#36984#25246#65288'500'#215'250'#12500#12463#12475#12523'PNG'#30011#20687#12398#12415#65289
+    Left = 360
     Top = 128
   end
 end

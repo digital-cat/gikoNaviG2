@@ -4,7 +4,8 @@ interface
 
 uses
 	Messages, SysUtils, Classes, Contnrs, ComCtrls, {HttpApp,} YofUtils,
-	GikoSystem{, XMLIntf, XMLDoc}, GikoXMLDoc, BoardGroup, windows;
+	GikoSystem{, XMLIntf, XMLDoc}, GikoXMLDoc, BoardGroup, windows,
+  TntComCtrls, WideCtrls;
 	{SAX, SAXHelpers, SAXComps, SAXKW;}
 
 type
@@ -47,23 +48,23 @@ type
 	TFavoriteDM = class(TDataModule)
 	private
 		{ Private 宣言 }
-        FAbEnd: Boolean;
-		FTreeView: TTreeView;
+		FAbEnd: Boolean;
+		FTreeView: TTntTreeView;
 		FModified: boolean;
-		procedure ReadNode(Node: IXMLNode; Stack: TStack; TreeView: TTreeView);
-		procedure AddSaveString(Node: TTreeNode; SaveList: TStringList);
+		procedure ReadNode(Node: IXMLNode; Stack: TStack; TreeView: TTntTreeView);
+		procedure AddSaveString(Node: TTntTreeNode; SaveList: TStringList);
 	public
 		{ Public 宣言 }
 		procedure Clear;
 		function GetFavoriteFilePath() : String;
 		function SaveFavoriteFile(FileName: String) : Boolean;
-		procedure SetFavTreeView(TreeView: TTreeView);
+		procedure SetFavTreeView(TreeView: TTntTreeView);
 		procedure ReadFavorite;
 		procedure WriteFavorite;
 		procedure URLReplace(oldURLs: TStringList; newURLs: TStringList);
-		property TreeView: TTreeView read FTreeView;
+		property TreeView: TTntTreeView read FTreeView;
 		property Modified: boolean read FModified write FModified;
-        property AbEnd: Boolean read FAbEnd write FAbEnd;
+		property AbEnd: Boolean read FAbEnd write FAbEnd;
 	end;
 
 var
@@ -259,7 +260,7 @@ end;
 
 procedure TFavoriteDM.Clear;
 var
-	Node	: TTreeNode;
+	Node	: TTntTreeNode;
 begin
 	TreeView.Items.BeginUpdate;
 	Node	:= TreeView.Items.GetFirstNode;
@@ -274,7 +275,7 @@ begin
     FavoriteDM.Modified := true;
 end;
 
-procedure TFavoriteDM.SetFavTreeView(TreeView: TTreeView);
+procedure TFavoriteDM.SetFavTreeView(TreeView: TTntTreeView);
 begin
 	FTreeView := TreeView;
 end;
@@ -284,14 +285,14 @@ var
 	FileName: string;
 	XMLDoc: IXMLDocument;
 	XMLNode: IXMLNode;
-	Node: TTreeNode;
+	Node: TTntTreeNode;
 	i: Integer;
 	FavFolder: TFavoriteFolder;
 	LinkExists: Boolean;
-    Stack: TStack;
+	Stack: TStack;
 begin
-    FABend := False;
-    
+	FABend := False;
+
 	FavoriteDM.Modified := true;
 	FileName := GikoSys.GetConfigDir + FAVORITE_FILE_NAME;
 
@@ -302,9 +303,9 @@ begin
 
 	if FileExists(FileName) then begin
 		try
-            XMLDoc := IXMLDocument.Create;
+			XMLDoc := IXMLDocument.Create;
 			//XMLDoc := LoadXMLDocument(FileName);
-            LoadXMLDocument(FileName, XMLDoc);
+			LoadXMLDocument(FileName, XMLDoc);
 			XMLNode := XMLDoc.DocumentElement;
 
 			Stack := TStack.Create;
@@ -329,31 +330,32 @@ begin
 
 			finally
 				Stack.Free;
-                XMLDoc.Free;
+				XMLDoc.Free;
 			end;
 		except
-            on e : Exception do begin
-                FABend := True;
-            end;
+			on e : Exception do begin
+				FABend := True;
+			end;
 		end;
 	end;
 
 end;
 
-procedure TFavoriteDM.ReadNode(Node: IXMLNode; Stack: TStack; TreeView: TTreeView);
+procedure TFavoriteDM.ReadNode(Node: IXMLNode; Stack: TStack; TreeView: TTntTreeView);
 var
 	i: Integer;
 
-	ParentNode: TTreeNode;
-	CurrentNode: TTreeNode;
+	ParentNode: TTntTreeNode;
+	CurrentNode: TTntTreeNode;
 	FavFolder: TFavoriteFolder;
 	FavBoard: TFavoriteBoardItem;
 	FavThread: TFavoriteThreadItem;
 	board				: TBoard;
 	threadItem	: TThreadItem;
+  title: String;
 begin
 	if Node.NodeName = 'folder' then begin
-        CurrentNode := nil;
+		CurrentNode := nil;
 		ParentNode := Stack.Peek;
 		if TObject(ParentNode.Data) is TFavoriteFolder then begin
 			FavFolder := TFavoriteFolder.Create;
@@ -413,7 +415,8 @@ begin
 						FavThread := TFavoriteThreadItem.Create(
 							Node.Attributes[ 'url' ], UnSanitize(Node.Attributes[ 'title' ]), nil );
 					end;
-					CurrentNode := TreeView.Items.AddChildObjectFirst(ParentNode, UnSanitize(Node.Attributes['title']), FavThread);
+          title := UnSanitize(Node.Attributes['title']);
+					CurrentNode := TreeView.Items.AddChildObjectFirst(ParentNode, EncAnsiToWideString(title), FavThread);
 					CurrentNode.ImageIndex := 16;
 					CurrentNode.SelectedIndex := 16;
 				end;
@@ -426,55 +429,56 @@ end;
 
 procedure TFavoriteDM.WriteFavorite;
 var
-	FileName, tmpFileName, bakFileName: string;
-	SaveList: TStringList;
-    Buffer: array[0..MAX_PATH] of Char;   // バッファ
-    FileRep : Boolean;
+  FileName, tmpFileName, bakFileName: string;
+  SaveList: TStringList;
+  Buffer: array[0..MAX_PATH] of Char;   // バッファ
+  FileRep : Boolean;
 begin
-    FavoriteDM.Modified := true;
+	FavoriteDM.Modified := true;
 	FileName := GikoSys.GetConfigDir + FAVORITE_FILE_NAME;
 	SaveList := TStringList.Create;
-    tmpFileName := '';
-    // 書き込み用一時ファイル取得
-    if GetTempFileName(PChar(GikoSys.GetConfigDir), PChar('fav'), 0, Buffer) <> 0 then begin
-        tmpFileName := Buffer;
-        try
-            try
-                SaveList.Add('<?xml version="1.0" encoding="Shift_JIS" standalone="yes"?>');
-                SaveList.Add('<favorite>');
-                AddSaveString(TreeView.Items.GetFirstNode.getFirstChild, SaveList);
-                SaveList.Add('</favorite>');
-                // 一時ファイルとして保存
-                SaveList.SaveToFile(tmpFileName);
-                FileRep := True;
-                // 前のファイルを移動する
-                if FileExists(FileName) then begin
-                    bakFileName := GikoSys.GetConfigDir + '~' + FAVORITE_FILE_NAME;
-                    if FileExists(bakFileName) then begin
-                        FileRep := SysUtils.DeleteFile(bakFileName); //SysUtils.をつけないとWinAPIと区別できないので
-                    end;
-                    if FileRep then begin
-                        FileRep := RenameFile(FileName, bakFileName);
-                    end;
-                end;
-                // 正規のファイル名にリネームする
-                if FileRep then begin
-                    FileRep := RenameFile(tmpFileName, FileName);
-                end;
-            except
-            end;
-        finally
-            SaveList.Free;
-        end;
+	tmpFileName := '';
+  // 書き込み用一時ファイル取得
+  if GetTempFileName(PChar(GikoSys.GetConfigDir), PChar('fav'), 0, Buffer) <> 0 then begin
+    tmpFileName := Buffer;
+    try
+      try
+        SaveList.Add('<?xml version="1.0" encoding="Shift_JIS" standalone="yes"?>');
+        SaveList.Add('<favorite>');
+        AddSaveString(TreeView.Items.GetFirstNode.getFirstChild, SaveList);
+        SaveList.Add('</favorite>');
+        // 一時ファイルとして保存
+        SaveList.SaveToFile(tmpFileName);
+        FileRep := True;
+        // 前のファイルを移動する
+        if FileExists(FileName) then begin
+          bakFileName := GikoSys.GetConfigDir + '~' + FAVORITE_FILE_NAME;
+          if FileExists(bakFileName) then begin
+	          FileRep := SysUtils.DeleteFile(bakFileName); //SysUtils.をつけないとWinAPIと区別できないので
+          end;
+          if FileRep then begin
+	          FileRep := RenameFile(FileName, bakFileName);
+          end;
+				end;
+        // 正規のファイル名にリネームする
+        if FileRep then begin
+	      	FileRep := RenameFile(tmpFileName, FileName);
+				end;
+      except
+      end;
+    finally
+			SaveList.Free;
     end;
+  end;
 end;
 
-procedure TFavoriteDM.AddSaveString(Node: TTreeNode; SaveList: TStringList);
+procedure TFavoriteDM.AddSaveString(Node: TTntTreeNode; SaveList: TStringList);
 var
 	s: string;
 	FavBoard: TFavoriteBoardItem;
 	FavThread: TFavoriteThreadItem;
 	data : Pointer;
+  title: String;
 begin
 	while Node <> nil do begin
 		data := Node.Data;
@@ -492,9 +496,10 @@ begin
 									[HtmlEncode( FavBoard.URL ), HtmlEncode(MojuUtils.Sanitize(Node.Text))]);
 			SaveList.Add(s);
 		end else if TObject(data) is TFavoriteThreadItem then begin
+    	title := WideToEncAnsiString(Node.Text);
 			FavThread := TFavoriteThreadItem(data);
 			s := Format('<favitem type="2ch" favtype="thread" url="%s" title="%s"/>',
-									[HtmlEncode( FavThread.URL ), HtmlEncode(MojuUtils.Sanitize(Node.Text))]);
+									[HtmlEncode( FavThread.URL ), HtmlEncode(MojuUtils.Sanitize(title))]);
 			SaveList.Add(s);
 		end;
 		Node := Node.getNextSibling;
@@ -504,9 +509,9 @@ end;
 function TFavoriteDM.SaveFavoriteFile(FileName: String) : Boolean;
 var
 	FavoriteFilePath: string;
-		tempStringList: TStringList;
+	tempStringList: TStringList;
 begin
-   	WriteFavorite;
+	WriteFavorite;
 	FavoriteFilePath := GikoSys.GetConfigDir + FAVORITE_FILE_NAME;
 
 	if FileExists( FavoriteFilePath ) then begin
@@ -526,16 +531,16 @@ end;
 procedure TFavoriteDM.URLReplace(oldURLs: TStringList; newURLs: TStringList);
 var
 	i					: Integer;
-		tmpURL: string;
-    oldHost: string;
-    oldBoardName: string;
-    newHost: string;
-    newBoardName: string;
-		tempString: string;
+  tmpURL: string;
+  oldHost: string;
+  oldBoardName: string;
+  newHost: string;
+  newBoardName: string;
+  tempString: string;
 	favBoard	: TFavoriteBoardItem;
 	favThread	: TFavoriteThreadItem;
-	favorites	: TTreeNodes;
-	Node			: TTreeNode;
+	favorites	: TTntTreeNodes;
+	Node			: TTntTreeNode;
 begin
 
 	// 面倒だけどthreadはそれぞれURLをチェックしながらやってかなきゃいけない。

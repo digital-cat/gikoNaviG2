@@ -3,12 +3,12 @@ unit GikoListView;
 interface
 
 uses
-	Windows, Messages, SysUtils, Classes, Controls, ComCtrls, CommCtrl;
+	Windows, Messages, SysUtils, Classes, Controls, ComCtrls, CommCtrl{, TntComCtrls};
 
 type
 	TColumnInfoEvent = procedure(Sender: TObject; var Column: PLVColumn) of object;
 
-	TGikoListView = class(TListView)
+	TGikoListView = class(TListView) {class(TTntListView)}
 	private
 		{ Private êÈåæ }
 		FColumnInfoEvent: TColumnInfoEvent;

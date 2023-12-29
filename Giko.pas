@@ -19,13 +19,13 @@ uses
 	{HintWindow,} GikoCoolBar, GikoListView, Search, ExternalBoardManager,
 	ExternalBoardPlugInMain, StdActns, Variants, ExtActns,IdTCPConnection,
 	IdBaseComponent, IdTCPClient, AppEvnts, BrowserRecord, MoveHistoryItem,
-    ShellAPI,Preview, HistoryList, ResPopupBrowser, ExtPreviewDatamodule,
-  SHDocVw;
+	ShellAPI,Preview, HistoryList, ResPopupBrowser, ExtPreviewDatamodule,
+	SHDocVw, WideCtrls, TntComCtrls, TntForms;
 
 const
 	NGWORDNAME_PANEL = 3;
 	THREADSIZE_PANEL = 2;
-    USER_POPUPCLEAR		= WM_USER + 2005;	///< wParam : TWebBrowser
+	USER_POPUPCLEAR		= WM_USER + 2005;	///< wParam : TWebBrowser
 type
 
 	TToolBarSettingSenderType = (tssNone, tssMain, tssList, tssBrowser);
@@ -34,7 +34,7 @@ type
 
 //	TBrowserRecord = class;
 
-	TGikoForm = class(TForm)
+	TGikoForm = class(TTntForm)
 		StatusBar: TStatusBar;
 		MainPanel: TPanel;
 		ClientPanel: TPanel;
@@ -52,12 +52,12 @@ type
 		MessageListView: TListView;
 		MessageSplitter: TSplitter;
 		Panel3: TPanel;
-    CabinetCloseSpeedButton: TSpeedButton;
+		CabinetCloseSpeedButton: TSpeedButton;
 		ToolBar1: TToolBar;
 		CabinetSelectToolButton: TToolButton;
 		HistoryToolBar: TToolBar;
-    HistoryShowToolButton: TToolButton;
-    HistoryAllClearToolButton: TToolButton;
+		HistoryShowToolButton: TToolButton;
+		HistoryAllClearToolButton: TToolButton;
 		ItemIcon16: TImageList;
 		ItemIcon32: TImageList;
 		HotToobarImageList: TImageList;
@@ -282,7 +282,7 @@ type
 		SelectItemNameCopyAction1: TMenuItem;
 		B6: TMenuItem;
 		T9: TMenuItem;
-    NameCopyPMenu: TMenuItem;
+		NameCopyPMenu: TMenuItem;
 		SelectComboBox: TComboBox;
 		MainCoolBarPopupMenu: TPopupMenu;
 		StdToolBarVisiblePMenu: TMenuItem;
@@ -317,13 +317,13 @@ type
 		IndividualAbon1: TMenuItem;
 		N41: TMenuItem;
 		IndividualAbon2: TMenuItem;
-    AntiIndivAbonMenuItem: TMenuItem;
+		AntiIndivAbonMenuItem: TMenuItem;
 		AntiIndividualAbon: TMenuItem;
 		N49: TMenuItem;
 		N51: TMenuItem;
 		N52: TMenuItem;
 		SearchBoardName: TMenuItem;
-    TreeSelectLogDeleteSeparator: TMenuItem;
+		TreeSelectLogDeleteSeparator: TMenuItem;
 		N54: TMenuItem;
 		A13: TMenuItem;
 		FavoriteTreePopupMenu: TPopupMenu;
@@ -332,8 +332,8 @@ type
 		N56: TMenuItem;
 		FavoriteTreeDeletePopupMenu: TMenuItem;
 		FavoriteToolBar: TToolBar;
-    FavoriteAddToolButton: TToolButton;
-    FavoriteArrangeToolButton: TToolButton;
+		FavoriteAddToolButton: TToolButton;
+		FavoriteArrangeToolButton: TToolButton;
 		FavoriteTreeBrowseFolderPopupMenu: TMenuItem;
 		N57: TMenuItem;
 		FavoriteTreeReloadPopupMenu: TMenuItem;
@@ -347,93 +347,95 @@ type
 		ExportFavoriteFileAction1: TMenuItem;
 		N6: TMenuItem;
 		N17: TMenuItem;
-    N18: TMenuItem;
-    N20: TMenuItem;
-	N24: TMenuItem;
-    N62: TMenuItem;
-	N61: TMenuItem;
-	N63: TMenuItem;
-    N64: TMenuItem;
-    dummy1: TMenuItem;
-	TreeSelectLogDeletePopupMenu: TMenuItem;
-	N65: TMenuItem;
-    BBSSelectPopupMenu: TPopupMenu;
+		N18: TMenuItem;
+		N20: TMenuItem;
+		N24: TMenuItem;
+		N62: TMenuItem;
+		N61: TMenuItem;
+		N63: TMenuItem;
+		N64: TMenuItem;
+		dummy1: TMenuItem;
+		TreeSelectLogDeletePopupMenu: TMenuItem;
+		N65: TMenuItem;
+		BBSSelectPopupMenu: TPopupMenu;
 		PlugInMenu: TMenuItem;
-	TreeSelectNamePupupMenu: TMenuItem;
-    BrowserPanel: TPanel;
-	SelectTimer: TTimer;
-    SelectThreadSave: TMenuItem;
-    N55: TMenuItem;
-    N66: TMenuItem;
-    dat1: TMenuItem;
+		TreeSelectNamePupupMenu: TMenuItem;
+		BrowserPanel: TPanel;
+		SelectTimer: TTimer;
+		SelectThreadSave: TMenuItem;
+		N55: TMenuItem;
+		N66: TMenuItem;
+		dat1: TMenuItem;
 		OpenLogFolder: TMenuItem;
-    Browser: TWebBrowser;
-    TabSave: TMenuItem;
-	TabOpen: TMenuItem;
-    ResRangePopupMenu: TPopupMenu;
-    ResRangeHundPMenuItem: TMenuItem;
-    ResRangeKokoPMenuItem: TMenuItem;
-    ResRangeNewPMenuItem: TMenuItem;
-    ResRangeAllPMenuItem: TMenuItem;
-	BrowsBoradHeadAction1: TMenuItem;
-    ThreadRangePopupMenu: TPopupMenu;
-    A15: TMenuItem;
-    L8: TMenuItem;
-	N67: TMenuItem;
-    N68: TMenuItem;
-    S6: TMenuItem;
-    N69: TMenuItem;
-    ResRangeSelectPMenuItem: TMenuItem;
-    ListColumnPopupMenu: TPopupMenu;
-    N70: TMenuItem;
-    ID1: TMenuItem;
-    ID2: TMenuItem;
-    N53: TMenuItem;
-    ID3: TMenuItem;
-    N71: TMenuItem;
-    N72: TMenuItem;
-    N73: TMenuItem;
-    SelectComboBoxPanel: TPanel;
-    SelectComboBoxSplitter: TImage;
-    N74: TMenuItem;
-    WikiFAQ: TMenuItem;
-    GikoApplicationEvents: TApplicationEvents;
-    N22: TMenuItem;
-    N42: TMenuItem;
-    DAT2: TMenuItem;
-    N75: TMenuItem;
-    DAT3: TMenuItem;
-    N76: TMenuItem;
-    FavoriteTreeItemNameCopyPopupMenu: TMenuItem;
-    N77: TMenuItem;
-    N78: TMenuItem;
-    SaveThreadFile: TMenuItem;
-    N79: TMenuItem;
-    HTML1: TMenuItem;
-    DAT4: TMenuItem;
-    N80: TMenuItem;
-    SameBoardThreadItem: TMenuItem;
-    N81: TMenuItem;
-    N82: TMenuItem;
-    IDNG1: TMenuItem;
-    IDNG2: TMenuItem;
-    ResPopupClearTimer: TTimer;
-    TaskTrayPopupMenu: TPopupMenu;
-    Exit1: TMenuItem;
-    N83: TMenuItem;
-    UpdateGikonaviAction1: TMenuItem;
-    N84: TMenuItem;
-    N85: TMenuItem;
-    URL2: TMenuItem;
-    URLPATHINFO1: TMenuItem;
-    URLQUERYSTRING1: TMenuItem;
-    N86: TMenuItem;
-    K4: TMenuItem;
-    WikiFAQ1: TMenuItem;
-    ThrNGEdit: TMenuItem;
-				procedure FormCreate(Sender: TObject);
+		Browser: TWebBrowser;
+		TabSave: TMenuItem;
+		TabOpen: TMenuItem;
+		ResRangePopupMenu: TPopupMenu;
+		ResRangeHundPMenuItem: TMenuItem;
+		ResRangeKokoPMenuItem: TMenuItem;
+		ResRangeNewPMenuItem: TMenuItem;
+		ResRangeAllPMenuItem: TMenuItem;
+		BrowsBoradHeadAction1: TMenuItem;
+		ThreadRangePopupMenu: TPopupMenu;
+		A15: TMenuItem;
+		L8: TMenuItem;
+		N67: TMenuItem;
+		N68: TMenuItem;
+		S6: TMenuItem;
+		N69: TMenuItem;
+		ResRangeSelectPMenuItem: TMenuItem;
+		ListColumnPopupMenu: TPopupMenu;
+		N70: TMenuItem;
+		ID1: TMenuItem;
+		ID2: TMenuItem;
+		N53: TMenuItem;
+		ID3: TMenuItem;
+		N71: TMenuItem;
+		N72: TMenuItem;
+		N73: TMenuItem;
+		SelectComboBoxPanel: TPanel;
+		SelectComboBoxSplitter: TImage;
+		N74: TMenuItem;
+		WikiFAQ: TMenuItem;
+		GikoApplicationEvents: TApplicationEvents;
+		N22: TMenuItem;
+		N42: TMenuItem;
+		DAT2: TMenuItem;
+		N75: TMenuItem;
+		DAT3: TMenuItem;
+		N76: TMenuItem;
+		FavoriteTreeItemNameCopyPopupMenu: TMenuItem;
+		N77: TMenuItem;
+		N78: TMenuItem;
+		SaveThreadFile: TMenuItem;
+		N79: TMenuItem;
+		HTML1: TMenuItem;
+		DAT4: TMenuItem;
+		N80: TMenuItem;
+		SameBoardThreadItem: TMenuItem;
+		N81: TMenuItem;
+		N82: TMenuItem;
+		IDNG1: TMenuItem;
+		IDNG2: TMenuItem;
+		ResPopupClearTimer: TTimer;
+		TaskTrayPopupMenu: TPopupMenu;
+		Exit1: TMenuItem;
+		N83: TMenuItem;
+		UpdateGikonaviAction1: TMenuItem;
+		N84: TMenuItem;
+		N85: TMenuItem;
+		URL2: TMenuItem;
+		URLPATHINFO1: TMenuItem;
+		URLQUERYSTRING1: TMenuItem;
+		N86: TMenuItem;
+		K4: TMenuItem;
+		WikiFAQ1: TMenuItem;
+		ThrNGEdit: TMenuItem;
+		RangeBon: TMenuItem;
+		N87: TMenuItem;
+		procedure FormCreate(Sender: TObject);
 		procedure FormDestroy(Sender: TObject);
-        procedure SaveSettingAll();
+		procedure SaveSettingAll();
 		procedure BrowserStatusTextChange(Sender: TObject;
 			const Text: WideString);
 		procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
@@ -532,47 +534,47 @@ type
 		procedure FavoriteTreeViewEndDrag(Sender, Target: TObject; X,
 			Y: Integer);
 		procedure FavoriteTreeBrowseBoardPopupMenuClick(Sender: TObject);
-    procedure BrowserTabContextPopup(Sender: TObject; MousePos: TPoint;
-      var Handled: Boolean);
-    procedure BrowserTabPopupMenuPopup(Sender: TObject);
-    procedure BrowserTabResize(Sender: TObject);
-    procedure TreeViewKeyDown(Sender: TObject; var Key: Word;
-      Shift: TShiftState);
-    procedure FavoriteTreeViewMouseDown(Sender: TObject;
+		procedure BrowserTabContextPopup(Sender: TObject; MousePos: TPoint;
+			var Handled: Boolean);
+		procedure BrowserTabPopupMenuPopup(Sender: TObject);
+		procedure BrowserTabResize(Sender: TObject);
+		procedure TreeViewKeyDown(Sender: TObject; var Key: Word;
+			Shift: TShiftState);
+		procedure FavoriteTreeViewMouseDown(Sender: TObject;
 			Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
-    procedure MessagePanelResize(Sender: TObject);
+		procedure MessagePanelResize(Sender: TObject);
 		procedure OnResized;
-	procedure SelectTimerTimer(Sender: TObject);
+		procedure SelectTimerTimer(Sender: TObject);
 		procedure ListViewColumnRightClick(Sender: TObject;
-      Column: TListColumn; Point: TPoint);
-	procedure ListViewCustomDrawItem(Sender: TCustomListView;
-      Item: TListItem; State: TCustomDrawState; var DefaultDraw: Boolean);
-    procedure FormActivate(Sender: TObject);
-    procedure BrowserPanelResize(Sender: TObject);
-    procedure MenuToolBarResize(Sender: TObject);
-    procedure ListToolBarResize(Sender: TObject);
-    procedure BrowserToolBarResize(Sender: TObject);
-	procedure KokoPopupMenuPopup(Sender: TObject);
-	procedure ListViewKeyUp(Sender: TObject; var Key: Word;
-	  Shift: TShiftState);
-    procedure FavoriteTreeViewEditing(Sender: TObject; Node: TTreeNode;
-      var AllowEdit: Boolean);
-	procedure CabinetCloseSpeedButtonClick(Sender: TObject);
-    procedure FavoriteArrangeToolButtonClick(Sender: TObject);
-    procedure GikoApplicationEventsMessage(var Msg: tagMSG;
-	  var Handled: Boolean);
-    procedure GikoApplicationEventsDeactivate(Sender: TObject);
-    procedure GikoApplicationEventsException(Sender: TObject; E: Exception);
-    procedure TreeViewMouseDown(Sender: TObject; Button: TMouseButton;
-      Shift: TShiftState; X, Y: Integer);
-    procedure GetResURLMenuClick(Sender: TObject);
-    procedure MainCoolBarContextPopup(Sender: TObject; MousePos: TPoint;
-      var Handled: Boolean);
-    procedure ResPopupClearTimerTimer(Sender: TObject);
+			Column: TListColumn; Point: TPoint);
+		procedure ListViewCustomDrawItem(Sender: TCustomListView;
+			Item: TListItem; State: TCustomDrawState; var DefaultDraw: Boolean);
+		procedure FormActivate(Sender: TObject);
+		procedure BrowserPanelResize(Sender: TObject);
+		procedure MenuToolBarResize(Sender: TObject);
+		procedure ListToolBarResize(Sender: TObject);
+		procedure BrowserToolBarResize(Sender: TObject);
+		procedure KokoPopupMenuPopup(Sender: TObject);
+		procedure ListViewKeyUp(Sender: TObject; var Key: Word;
+			Shift: TShiftState);
+		procedure FavoriteTreeViewEditing(Sender: TObject; Node: TTreeNode;
+			var AllowEdit: Boolean);
+		procedure CabinetCloseSpeedButtonClick(Sender: TObject);
+		procedure FavoriteArrangeToolButtonClick(Sender: TObject);
+		procedure GikoApplicationEventsMessage(var Msg: tagMSG;
+			var Handled: Boolean);
+		procedure GikoApplicationEventsDeactivate(Sender: TObject);
+		procedure GikoApplicationEventsException(Sender: TObject; E: Exception);
+		procedure TreeViewMouseDown(Sender: TObject; Button: TMouseButton;
+			Shift: TShiftState; X, Y: Integer);
+		procedure GetResURLMenuClick(Sender: TObject);
+		procedure MainCoolBarContextPopup(Sender: TObject; MousePos: TPoint;
+			var Handled: Boolean);
+		procedure ResPopupClearTimerTimer(Sender: TObject);
 	private
 		{ Private 宣言 }
 		FEnabledCloseButton: Boolean;
-		FClickNode: TTreeNode;
+		FClickNode: TTntTreeNode;
 		FHttpState: Boolean;
 		FPreviewBrowser: TPreviewBrowser;
 		FPreviewURL: string;
@@ -596,14 +598,14 @@ type
 		IsDraggingSelectComboBox : Boolean;
 		DraggingSelectComboBoxPosition : TPoint;
 		FSearchDialog: TSearchDialog;
-		FDropSpaceNode: TTreeNode;
+		FDropSpaceNode: TTntTreeNode;
 		FDragTime : Cardinal;								///< リンクのD&D用
 		FDragButton : TToolButton;					///< リンクのD&D用にDragしてるButton保存
 		FDragWFirst : Boolean;							///< WebTabのD&D用
 		FListViewBackGroundColor : TColor;	///< ListViewのBackGroundColor
 		FUseOddResOddColor : Boolean; 			///< 取得レス数とスレッドのレス数が違ったときに他の色で表示
 		FOddColor : TColor;					 				///< その色
-		FSelectResWord	: string;						///< レス絞込ワード
+		FSelectResWord	: WideString;				///< レス絞込ワード
 		FIsIgnoreResize	: TResizeType;			///< リサイズイベントを無視するかどうか
 		FIsMinimize			: TMinimizeType;		///< 最小化している最中か
 		FOldFormWidth		: Integer;					///< 直前のウィンドウの幅
@@ -613,15 +615,17 @@ type
 		FResRangeMenuSelect	: Longint;			///< ResRangeButton で選択されている項目 (フォーマットは ResRange 互換)
 		FStartUp : Boolean;
 		FIsHandledWheel	: Boolean;			///< 既に受け取った WM_MOUSEWHEEL かどうか
-				DiffComp: Boolean;                      //Add by Genyakun スレが更新されたときにTrueになる
+		DiffComp: Boolean;                      //Add by Genyakun スレが更新されたときにTrueになる
 		FOrigenCaption: String;				//お気に入りツリーのアイテム編集時の編集前の文字列
 		FPreviewBrowserRect: TRect;			///< プレビューの表示位置を記憶する
 		FActionListGroupIndexes: array of Integer;	///<GikoDM上のアクションリストの各アクションに設定されたGroupIndexを保存する配列
-        FResPopupBrowser: TResPopupBrowser;
-        FUpdateExePath: string;    ///ギコナビ更新インストーラパス
-        FUpdateExeArgs: string;    ///ギコナビ更新インストーラ引数
-        FKokoPopupThreadItem: TThreadItem;
-        FCwSave: Word;  // 8087CW値保存
+		FResPopupBrowser: TResPopupBrowser;
+		FUpdateExePath: string;    ///ギコナビ更新インストーラパス
+		FUpdateExeArgs: string;    ///ギコナビ更新インストーラ引数
+		FKokoPopupThreadItem: TThreadItem;
+		FCwSave: Word;  // 8087CW値保存
+		BrowserNameLabelUC: TWideLabel;
+		MessageListViewUC: TTntListView;
 		procedure DownloadEnd(Sender: TObject; Item: TDownloadItem);
 		procedure DownloadMsg(Sender: TObject; Item: TDownloadItem; Msg: string; Icon: TGikoMessageIcon);
 		procedure WorkBegin(Sender: TObject; AWorkMode: TWorkMode; const AWorkCountMax: Integer; Number: Integer; const AWorkTitle: string);
@@ -632,7 +636,7 @@ type
 		function Hook(var Message: TMessage): Boolean;
 		procedure AddRoundNameMenu(MenuItem: TMenuItem);
 		procedure SetMenuFont;
-		procedure CreateFavMenu(Node: TTreeNode; MenuItem: TMenuItem);
+		procedure CreateFavMenu(Node: TTntTreeNode; MenuItem: TMenuItem);
 		procedure FavoriteClick(Sender: TObject; ActiveTab: Boolean); overload;
 		procedure FavoriteClick(Sender: TObject); overload;
 		procedure FavoriteDragOver(Sender, Source: TObject; X, Y: Integer; State: TDragState; var Accept: Boolean);
@@ -646,10 +650,10 @@ type
 		procedure LinkToolButtonOnMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
 		procedure LinkToolButtonOnMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 		procedure LinkToolButtonStartDrag(Sender: TObject; var DragObject: TDragObject);
-		function TreeNodeDataFind(Node: TTreeNode; FindPointer: Pointer): TTreeNode;
-		procedure FavoriteMoveTo( SenderNode, SourceNode: TTreeNode );
-		procedure FavoriteAddTo( SenderNode: TTreeNode; Source: TObject );
-		procedure FavoriteDragDrop( SenderNode: TTreeNode; Source: TObject );
+		function TreeNodeDataFind(Node: TTntTreeNode; FindPointer: Pointer): TTntTreeNode;
+		procedure FavoriteMoveTo( SenderNode, SourceNode: TTntTreeNode );
+		procedure FavoriteAddTo( SenderNode: TTntTreeNode; Source: TObject );
+		procedure FavoriteDragDrop( SenderNode: TTntTreeNode; Source: TObject );
 		/// 
 		procedure SetListViewBackGroundColor(value: TColor);
 		procedure BBSMenuItemOnClick( Sender : TObject );
@@ -692,28 +696,30 @@ type
 		procedure RefreshListView(Thread: TThreadItem);
 		//! スレッド一覧の表示範囲設定チェッククリア
 		procedure ClearThreadRengeAction;
-        //! タスクトレイのアイコン削除＆フォーム表示
-        procedure UnStoredTaskTray;
-        //! レスエディタの表示非表示
-        procedure ShowEditors(nCmdShow: Integer);
-        //! もっとも古いBrowserの開放
-        procedure ReleaseOldestBrowser;
-        //! アクティブなタブと同じ板の開いているスレッドをメニューアイテムに追加
-        procedure AddMenuSameBoardThread(MenuItem: TMenuItem);
-        //!  アクティブなタブと同じ板の開いているスレッドクリックイベント
-        procedure SameBoardThreadSubItemOnClick(Sender: TObject);
-        //! ポップアップブラウザ作成
-        procedure CreateResPopupBrowser;
-        //! ファイルチェック
-        function isValidFile(FileName: String) : boolean;
-        //! ListViewのD&D受け取り
-        procedure AcceptDropFiles(var Msg: TMsg);
-        //! スレッド一覧更新処理
-        procedure UpdateListView();
-        //! アイコン読み込み
-        procedure LoadIcon();
-        //! ポップアップメニュー読み込み
-//        procedure LoadPopupMenu();
+		//! タスクトレイのアイコン削除＆フォーム表示
+		procedure UnStoredTaskTray;
+		//! レスエディタの表示非表示
+		procedure ShowEditors(nCmdShow: Integer);
+		//! もっとも古いBrowserの開放
+		procedure ReleaseOldestBrowser;
+		//! アクティブなタブと同じ板の開いているスレッドをメニューアイテムに追加
+		procedure AddMenuSameBoardThread(MenuItem: TMenuItem);
+		//!  アクティブなタブと同じ板の開いているスレッドクリックイベント
+		procedure SameBoardThreadSubItemOnClick(Sender: TObject);
+		//! ポップアップブラウザ作成
+		procedure CreateResPopupBrowser;
+		//! ファイルチェック
+		function isValidFile(FileName: String) : boolean;
+		//! ListViewのD&D受け取り
+		procedure AcceptDropFiles(var Msg: TMsg);
+		//! スレッド一覧更新処理
+		procedure UpdateListView();
+		//! アイコン読み込み
+		procedure LoadIcon();
+		//! ポップアップメニュー読み込み
+//		procedure LoadPopupMenu();
+		procedure FavoriteTreeViewUCEdited(Sender: TObject; Node: TTntTreeNode;
+			var S: WideString);
 	protected
 		procedure CreateParams(var Params: TCreateParams); override;
 		procedure WndProc(var Message: TMessage); override;
@@ -725,7 +731,13 @@ type
 		LastRoundTime: TDateTime;
 		BrowserNullTab: TBrowserRecord;
 		FControlThread: TThreadControl;
-        FIconData : TNotifyIconData;
+		FIconData: TNotifyIconData;
+		LinkToolBarUC: TTntToolBar;
+		FavoriteTreeViewUC: TTntTreeView;
+		BrowserTabUC: TTntTabControl;
+		TreeViewUC: TTntTreeView;
+		SelectComboBoxUC: TWideComboBox;
+		ListViewUC: TWideGikoListView;
 		procedure MoveToURL(const inURL: string; KeyMask: Boolean = False);
 		function InsertBrowserTab(ThreadItem: TThreadItem; ActiveTab: Boolean = True) : TBrowserRecord;
 		procedure ReloadBBS;
@@ -738,11 +750,11 @@ type
 		property ViewType: TGikoViewType read FViewType write FViewType;
 		property NameCookie: string read FNameCookie write FNameCookie;
 		property MailCookie: string read FMailCookie write FMailCookie;
-		property ClickNode: TTreeNode read FClickNode write FClickNode;
+		property ClickNode: TTntTreeNode read FClickNode write FClickNode;
 		property TreeType: TGikoTreeType read FTreeType write FTreeType;
 		property ActiveContent: TBrowserRecord read FActiveContent write FActiveContent;
 		property ResRangeMenuSelect: Longint read FResRangeMenuSelect write FResRangeMenuSelect;
-		property SelectResWord	: string read FSelectResWord write FSelectResWord;
+		property SelectResWord	: WideString read FSelectResWord write FSelectResWord;
 		property BrowserSizeWidth: Integer read FBrowserSizeWidth write FBrowserSizeWidth;
 		property BrowserSizeHeight: Integer read FBrowserSizeHeight write FBrowserSizeHeight;
 		property SearchDialog: TSearchDialog read FSearchDialog write FSearchDialog;
@@ -751,8 +763,8 @@ type
 		property ScreenCursor : TCursor read GetScreenCursor write SetScreenCursor;
 		property ActiveBBS : TBBS read FActiveBBS write FActiveBBS;
 		property WorkCount: Integer read FWorkCount write FWorkCount;
-        property UpdateExePath: string read FUpdateExePath write FUpdateExePath;
-        property UpdateExeArgs: string read FUpdateExeArgs write FUpdateExeArgs;
+		property UpdateExePath: string read FUpdateExePath write FUpdateExePath;
+		property UpdateExeArgs: string read FUpdateExeArgs write FUpdateExeArgs;
 
 		procedure SetContent(inThread: TBrowserRecord);
 		function GetActiveContent(popup :Boolean = false): TThreadItem;
@@ -773,8 +785,8 @@ type
 		property ListViewBackGroundColor: TColor read FListViewBackGroundColor write SetListViewBackGroundColor;
 		property UseOddResOddColor : Boolean read FUseOddResOddColor write FUseOddResOddColor;
 		property OddColor : TColor read FOddColor write FOddColor;
-        //! レスメニューアクティブスレッドアイテム
-        property KokoPopupThreadItem : TThreadItem read FKokoPopupThreadItem;
+		//! レスメニューアクティブスレッドアイテム
+		property KokoPopupThreadItem : TThreadItem read FKokoPopupThreadItem;
 
 		function FindToolBarButton( bar : TToolBar; action : TAction ) : TToolButton;
 		procedure OnPlugInMenuItem( Sender : TObject );
@@ -789,8 +801,10 @@ type
 		procedure IndividualAbonID(Atype : Integer);
 		//このレスあぼ～ん
 		procedure IndividualAbon(Atag, Atype : Integer);
-        //同一IDをNGワードに登録
-        procedure AddIDtoNGWord(invisible : boolean);
+		//同一IDをNGワードに登録
+		procedure AddIDtoNGWord(invisible : boolean);
+		//範囲あぼ～ん
+		procedure RangeAbon(Atag: Integer);
 		//ブラウザの再描画 true:全てのタブ false:アクティブなタブのみ
 		procedure RepaintAllTabsBrowser();
 		//リンクバー設定
@@ -806,8 +820,8 @@ type
 		procedure DeleteTab(ThreadItem: TThreadItem); overload;
 		//タブを削除 ブラウザレコード（タブ）指定
 		procedure DeleteTab(BrowserRecord: TBrowserRecord); overload;
-        // タブ削除（実装部）
-        procedure DeleteTab(index, selectIndex: Integer); overload;
+		// タブ削除（実装部）
+		procedure DeleteTab(index, selectIndex: Integer); overload;
 		//現在表示しているスレッドをスクロール
 		procedure BrowserMovement(const AName: string); overload;
 		//現在表示しているスレッドをスクロール
@@ -842,19 +856,25 @@ type
 		//! ツールバーにスレ絞込みコンボボックスを設定する
 		procedure SetSelectComboBox();
 
-        //! タスクトレイに格納したアイコンをクリックしたときの処理
-        procedure TaskTrayIconMessage(var Msg : TMsg); message WM_USER + 2010;
-        //! タスクトレイにアイコン登録＆フォーム隠し
-        procedure StoredTaskTray;
-        //! 同IDレスアンカー表示
-        procedure ShowSameIDAncher(const AID: String);
-        //! スレタイ表示更新
-        procedure UpdateThreadTitle;
+		//! タスクトレイに格納したアイコンをクリックしたときの処理
+		procedure TaskTrayIconMessage(var Msg : TMsg); message WM_USER + 2010;
+		//! タスクトレイにアイコン登録＆フォーム隠し
+		procedure StoredTaskTray;
+		//! 同IDレスアンカー表示
+		procedure ShowSameIDAncher(const AID: String);
+		//! スレタイ表示更新
+		procedure UpdateThreadTitle;
+		//! フォームキャプション設定
+		procedure SetFormCaption(AThreadTitle: String);
+		//! コントロールのフォントと色設定
+		procedure SetFontAndColor(ACreate: Boolean);
+		//! アドレスコンボボックスリスト件数超過項目削除
+		procedure AddressItemsSetCount;
 	published
 		property EnabledCloseButton: Boolean read FEnabledCloseButton write SetEnabledCloseButton;
 	end;
 
-	TFavoriteMenuItem = class(TMenuItem)
+	TFavoriteMenuItem = class(TWideMenuItem)
 	private
 		FData : Pointer;
 	public
@@ -868,7 +888,7 @@ type
 		property Data: Pointer read FData write FData;
 	end;
 
-	TLinkToolButton = class(TToolButton)
+	TLinkToolButton = class(TWideToolButton)
 	private
 		FData : Pointer;
 	public
@@ -877,7 +897,7 @@ type
 
 var
 	GikoForm: TGikoForm;
-    g_AppTerminated: Boolean = False;
+	g_AppTerminated: Boolean = False;
 
 implementation
 
@@ -889,7 +909,7 @@ uses
 	About, Option, Round, Splash, Sort, ListSelect, Imm,
 	NewBoard, MojuUtils, Clipbrd, GikoBayesian,Y_TextConverter,
 	HTMLCreate, ListViewUtils, GikoDataModule, GikoMessage,
-  InputAssistDataModule, Types, ReplaceDataModule, PopupMenuUtil;
+	InputAssistDataModule, Types, ReplaceDataModule, PopupMenuUtil, RangeAbon;
 
 const
 	BLANK_HTML: string = 'about:blank';
@@ -904,7 +924,7 @@ const
 	USER_MINIMIZED					= WM_USER + 2002;
 	USER_SETLINKBAR					= WM_USER + 2003;
 	USER_DOCUMENTCOMPLETE		= WM_USER + 2004;	///< wParam : TWebBrowser
-    USER_TASKTRAY               = WM_USER + 2010;
+	USER_TASKTRAY               = WM_USER + 2010;
 {$R *.DFM}
 
 procedure TGikoForm.CreateParams(var Params: TCreateParams);
@@ -927,6 +947,7 @@ var
 	msg: string;
 	i: Integer;
 	wp: TWindowPlacement;
+  msgCol: TTntListColumn;
 begin
 {$IFDEF DEBUG}
 	AllocConsole;
@@ -938,12 +959,12 @@ begin
 	Writeln('============================================================');
 {$ENDIF}
 //try
-    // ゼロ割例外の現在の設定を保存する
-    FCwSave := Get8087CW;
-    if ( AnsiPos('9.0', GikoSys.GetIEVersion()) = 1 ) then begin
-        // IE 9の場合だけ、無効ビットを立てる
-        Set8087CW(FCwSave or $0004);
-    end;
+	// ゼロ割例外の現在の設定を保存する
+	FCwSave := Get8087CW;
+	if ( AnsiPos('9.0', GikoSys.GetIEVersion()) = 1 ) then begin
+		// IE 9の場合だけ、無効ビットを立てる
+		Set8087CW(FCwSave or $0004);
+	end;
 	Sort.SetSortDate(Now());
 
 	FTreeType := gttNone;
@@ -956,11 +977,196 @@ begin
 	//これ以後Set～で再設定するまで、ActionのCheckedをいじるときは注意！
 	GetGroupIndex(GikoDM.GikoFormActionList);
 	FSearchDialog := nil;
-    FResPopupBrowser := nil;
+	FResPopupBrowser := nil;
 	CreateBrowsers(BROWSER_COUNT);
-    FIconData.uID := 0;
-    FUpdateExePath := '';
-    FUpdateExeArgs := '';
+	FIconData.uID := 0;
+	FUpdateExePath := '';
+	FUpdateExeArgs := '';
+
+	// スレ表示ブラウザーのタブコントロールをUnicode版に差し替え
+	BrowserTabUC := TTntTabControl.Create(Self);
+	BrowserTabUC.Parent         := BrowserTab.Parent;
+	BrowserTabUC.ParentFont     := BrowserTab.ParentFont;
+	BrowserTabUC.ParentShowHint := BrowserTab.ParentShowHint;
+	BrowserTabUC.Left           := BrowserTab.Left;
+	BrowserTabUC.Top            := BrowserTab.Top;
+	BrowserTabUC.Width          := BrowserTab.Width;
+	BrowserTabUC.Height         := BrowserTab.Height;
+	BrowserTabUC.Font           := BrowserTab.Font;
+	BrowserTabUC.Align          := BrowserTab.Align;
+	BrowserTabUC.HotTrack       := BrowserTab.HotTrack;
+	BrowserTabUC.PopupMenu      := BrowserTab.PopupMenu;
+	BrowserTabUC.ShowHint       := BrowserTab.ShowHint;
+	BrowserTabUC.Style          := BrowserTab.Style;
+	BrowserTabUC.TabHeight      := BrowserTab.TabHeight;
+	BrowserTabUC.TabOrder       := BrowserTab.TabOrder;
+	BrowserTabUC.OnChange       := BrowserTab.OnChange;
+	BrowserTabUC.OnContextPopup := BrowserTab.OnContextPopup;
+	BrowserTabUC.OnDragDrop     := BrowserTab.OnDragDrop;
+	BrowserTabUC.OnDragOver     := BrowserTab.OnDragOver;
+	BrowserTabUC.OnMouseDown    := BrowserTab.OnMouseDown;
+	BrowserTabUC.OnMouseMove    := BrowserTab.OnMouseMove;
+	BrowserTabUC.OnMouseUp      := BrowserTab.OnMouseUp;
+	BrowserTabUC.OnResize       := BrowserTab.OnResize;
+	BrowserTab.Visible          := False;
+	// お気に入りツールバーをUnicode版に差し替え
+	LinkToolBarUC := TTntToolBar.Create(Self);
+	LinkToolBarUC.Parent       := LinkToolBar.Parent;
+	LinkToolBarUC.Align        := LinkToolBar.Align;
+	LinkToolBarUC.AutoSize     := LinkToolBar.AutoSize;
+	LinkToolBarUC.Constraints  := LinkToolBar.Constraints;
+	LinkToolBarUC.Left         := LinkToolBar.Left;
+	LinkToolBarUC.Top          := LinkToolBar.Top;
+	LinkToolBarUC.Width        := LinkToolBar.Width;
+	LinkToolBarUC.Height       := LinkToolBar.Height;
+	LinkToolBarUC.Font         := LinkToolBar.Font;
+	LinkToolBarUC.ButtonHeight := LinkToolBar.ButtonHeight;
+	LinkToolBarUC.ButtonWidth  := LinkToolBar.ButtonWidth;
+	LinkToolBarUC.Images       := LinkToolBar.Images;
+	LinkToolBarUC.List         := LinkToolBar.List;
+	LinkToolBarUC.ShowCaptions := LinkToolBar.ShowCaptions;
+	LinkToolBarUC.Transparent  := LinkToolBar.Transparent;
+	LinkToolBarUC.Wrapable     := LinkToolBar.Wrapable;
+	LinkToolBarUC.OnDragDrop   := LinkToolBar.OnDragDrop;
+	LinkToolBarUC.OnDragOver   := LinkToolBar.OnDragOver;
+	LinkToolBarUC.OnResize     := LinkToolBar.OnResize;
+	LinkToolBar.Visible        := False;
+	// カテゴリツリービューをUnicode版に差し替え
+	TreeViewUC := TTntTreeView.Create(Self);
+	TreeViewUC.Parent           := TreeView.Parent;
+	TreeViewUC.Left             := TreeView.Left;
+	TreeViewUC.Top              := TreeView.Top;
+	TreeViewUC.Width            := TreeView.Width;
+	TreeViewUC.Height           := TreeView.Height;
+	TreeViewUC.Font             := TreeView.Font;
+	TreeViewUC.BorderStyle      := TreeView.BorderStyle;
+	TreeViewUC.HideSelection    := TreeView.HideSelection;
+	TreeViewUC.Images           := TreeView.Images;
+	TreeViewUC.Indent           := TreeView.Indent;
+	TreeViewUC.PopupMenu        := TreeView.PopupMenu;
+	TreeViewUC.ReadOnly         := TreeView.ReadOnly;
+	TreeViewUC.RightClickSelect := TreeView.RightClickSelect;
+	TreeViewUC.ShowRoot         := TreeView.ShowRoot;
+	TreeViewUC.TabOrder         := TreeView.TabOrder;
+	TreeViewUC.OnCollapsed      := TreeView.OnCollapsed;
+	TreeViewUC.OnCustomDraw     := TreeView.OnCustomDraw;
+	TreeViewUC.OnCustomDrawItem := TreeView.OnCustomDrawItem;
+	TreeViewUC.OnExpanded       := TreeView.OnExpanded;
+	TreeViewUC.OnKeyDown        := TreeView.OnKeyDown;
+	TreeViewUC.OnMouseDown      := TreeView.OnMouseDown;
+	TreeView.Visible            := False;
+	// お気に入りツリービューをUnicode版に差し替え
+	FavoriteTreeViewUC := TTntTreeView.Create(Self);
+	FavoriteTreeViewUC.Parent           := FavoriteTreeView.Parent;
+	FavoriteTreeViewUC.Left             := FavoriteTreeView.Left;
+	FavoriteTreeViewUC.Top              := FavoriteTreeView.Top;
+	FavoriteTreeViewUC.Width            := FavoriteTreeView.Width;
+	FavoriteTreeViewUC.Height           := FavoriteTreeView.Height;
+	FavoriteTreeViewUC.Font             := FavoriteTreeView.Font;
+	FavoriteTreeViewUC.BorderStyle      := FavoriteTreeView.BorderStyle;
+	FavoriteTreeViewUC.ChangeDelay      := FavoriteTreeView.ChangeDelay;
+	FavoriteTreeViewUC.DragMode         := FavoriteTreeView.DragMode;
+	FavoriteTreeViewUC.HideSelection    := FavoriteTreeView.HideSelection;
+	FavoriteTreeViewUC.Images           := FavoriteTreeView.Images;
+	FavoriteTreeViewUC.Indent           := FavoriteTreeView.Indent;
+	FavoriteTreeViewUC.PopupMenu        := FavoriteTreeView.PopupMenu;
+	FavoriteTreeViewUC.ReadOnly         := FavoriteTreeView.ReadOnly;
+	FavoriteTreeViewUC.RightClickSelect := FavoriteTreeView.RightClickSelect;
+	FavoriteTreeViewUC.ShowRoot         := FavoriteTreeView.ShowRoot;
+	FavoriteTreeViewUC.TabOrder         := FavoriteTreeView.TabOrder;
+	FavoriteTreeViewUC.OnDragDrop       := FavoriteTreeView.OnDragDrop;
+	FavoriteTreeViewUC.OnDragOver       := FavoriteTreeView.OnDragOver;
+	FavoriteTreeViewUC.OnEdited         := FavoriteTreeViewUCEdited;
+	FavoriteTreeViewUC.OnEditing        := FavoriteTreeView.OnEditing;
+	FavoriteTreeViewUC.OnKeyDown        := FavoriteTreeView.OnKeyDown;
+	FavoriteTreeViewUC.OnMouseDown      := FavoriteTreeView.OnMouseDown;
+	FavoriteTreeView.Visible            := False;
+	// ブラウザタブのスレッド名ラベルをUnicode対応版に差し替え
+	BrowserNameLabelUC := TWideLabel.Create(Self);
+	BrowserNameLabelUC.ParentFont    := False;
+	BrowserNameLabelUC.ShowAccelChar := False;
+	BrowserNameLabelUC.Transparent   := True;
+	BrowserNameLabelUC.Parent        := BrowserNameLabel.Parent;
+	BrowserNameLabelUC.Left          := BrowserNameLabel.Left;
+	BrowserNameLabelUC.Top           := BrowserNameLabel.Top;
+	BrowserNameLabelUC.Width         := BrowserNameLabel.Width;
+	BrowserNameLabelUC.Height        := BrowserNameLabel.Height;
+	BrowserNameLabelUC.Font          := BrowserNameLabel.Font;
+	BrowserNameLabelUC.Layout        := BrowserNameLabel.Layout;
+	BrowserNameLabel.Visible         := False;
+	// メッセージリストビューをUnicode対応版に差し替え
+	MessageListViewUC := TTntListView.Create(Self);
+	MessageListViewUC.BorderStyle       := bsNone;
+	MessageListViewUC.ReadOnly          := True;
+	MessageListViewUC.RowSelect         := True;
+	MessageListViewUC.ShowColumnHeaders := False;
+	MessageListViewUC.ViewStyle         := vsReport;
+	MessageListViewUC.Parent            := MessageListView.Parent;
+	MessageListViewUC.Align             := MessageListView.Align;
+	MessageListViewUC.Left              := MessageListView.Left;
+	MessageListViewUC.Top               := MessageListView.Top;
+	MessageListViewUC.Width             := MessageListView.Width;
+	MessageListViewUC.Height            := MessageListView.Height;
+	MessageListViewUC.SmallImages       := MessageListView.SmallImages;
+	MessageListViewUC.OnResize          := MessageListView.OnResize;
+	for i := 0 to MessageListView.Columns.Count - 1 do begin
+		msgCol := MessageListViewUC.Columns.Add;
+		msgCol.Alignment  := MessageListView.Column[i].Alignment;
+		msgCol.AutoSize   := MessageListView.Column[i].AutoSize;
+		msgCol.Caption    := MessageListView.Column[i].Caption;
+		msgCol.ImageIndex := MessageListView.Column[i].ImageIndex;
+		msgCol.Width      := MessageListView.Column[i].Width;
+	end;
+	MessageListView.Visible := False;
+	// フレッド絞り込みコンボボックスをUnicode対応版に差し替え
+	SelectComboBoxUC := TWideComboBox.Create(Self);
+	SelectComboBoxUC.Parent           := SelectComboBox.Parent;
+	SelectComboBoxUC.Left             := SelectComboBox.Left;
+	SelectComboBoxUC.Top              := SelectComboBox.Top;
+	SelectComboBoxUC.Width            := SelectComboBox.Width;
+	SelectComboBoxUC.Height           := SelectComboBox.Height;
+	SelectComboBoxUC.Font             := SelectComboBox.Font;
+	SelectComboBoxUC.Style            := SelectComboBox.Style;
+	SelectComboBoxUC.Hint             := SelectComboBox.Hint;
+	SelectComboBoxUC.ItemHeight       := SelectComboBox.ItemHeight;
+	SelectComboBoxUC.TabOrder         := SelectComboBox.TabOrder;
+	SelectComboBoxUC.Tag              := SelectComboBox.Tag;
+	SelectComboBoxUC.OnChange         := SelectComboBox.OnChange;
+	SelectComboBoxUC.OnEnter          := SelectComboBox.OnEnter;
+	SelectComboBoxUC.OnExit           := SelectComboBox.OnExit;
+	SelectComboBoxUC.OnKeyDown        := SelectComboBox.OnKeyDown;
+	SelectComboBox.Visible := False;
+	// スレ一覧リストビューをUnicode対応版に差し替え
+	ListViewUC := TWideGikoListView.Create(Self);
+	ListViewUC.Parent             := ListView.Parent;
+	ListViewUC.Left               := ListView.Left;
+	ListViewUC.Top                := ListView.Top;
+	ListViewUC.Width              := ListView.Width;
+	ListViewUC.Height             := ListView.Height;
+	ListViewUC.Align              := ListView.Align;
+	ListViewUC.AllocBy            := ListView.AllocBy;
+	ListViewUC.Font               := ListView.Font;
+	ListViewUC.ViewStyle          := ListView.ViewStyle;
+	ListViewUC.DragMode           := ListView.DragMode;
+	ListViewUC.HideSelection      := ListView.HideSelection;
+	ListViewUC.LargeImages        := ListView.LargeImages;
+	ListViewUC.MultiSelect        := ListView.MultiSelect;
+	ListViewUC.OwnerData          := ListView.OwnerData;
+	ListViewUC.ReadOnly           := ListView.ReadOnly;
+	ListViewUC.RowSelect          := ListView.RowSelect;
+	ListViewUC.SmallImages        := ListView.SmallImages;
+	ListViewUC.StateImages        := ListView.StateImages;
+	ListViewUC.TabOrder           := ListView.TabOrder;
+	ListViewUC.OnColumnClick      := ListView.OnColumnClick;
+	ListViewUC.OnColumnInfo       := ListView.OnColumnInfo;
+	ListViewUC.OnColumnRightClick := ListView.OnColumnRightClick;
+	ListViewUC.OnCustomDraw       := ListView.OnCustomDraw;
+	ListViewUC.OnCustomDrawItem   := ListView.OnCustomDrawItem;
+	ListViewUC.OnKeyDown          := ListView.OnKeyDown;
+	ListViewUC.OnKeyUp            := ListView.OnKeyUp;
+	ListViewUC.OnMouseDown        := ListView.OnMouseDown;
+	ListView.Visible := False;
+	//-------------------
 
 	//メニューフォント
 	SetMenuFont;
@@ -968,8 +1174,8 @@ begin
 	//手のカーソル
 	Screen.Cursors[5] := LoadCursor(HInstance, 'GIKOHAND');
 
-    // アイコンの読み取り
-    LoadIcon;
+	// アイコンの読み取り
+	LoadIcon;
 
 	//アドレス履歴読み込み
 	AddressHistoryDM.ReadHistory(AddressComboBox.Items, GikoSys.Setting.MaxRecordCount);
@@ -977,7 +1183,7 @@ begin
 	EnabledCloseButton := True;
 
 	//リストスタイル
-	ListView.ViewStyle := GikoSys.Setting.ListStyle;
+	ListViewUC.ViewStyle := GikoSys.Setting.ListStyle;
 
 	//アニメパネル位置
 	AnimePanel.Top := 0;
@@ -998,36 +1204,8 @@ begin
 	GikoDM.StatusBarVisibleActionExecute(nil);
 
 	//フォント・色設定
-	TreeView.Items.BeginUpdate;
-	FavoriteTreeView.Items.BeginUpdate;
-	ListView.Items.BeginUpdate;
-	try
-		TreeView.Font.Name := GikoSys.Setting.CabinetFontName;
-		TreeView.Font.Size := GikoSys.Setting.CabinetFontSize;
-		TreeView.Font.Color := GikoSys.Setting.CabinetFontColor;
-		TreeView.Color := GikoSys.Setting.CabinetBackColor;
-		FavoriteTreeView.Font.Assign(TreeView.Font);
-		FavoriteTreeView.Color := GikoSys.Setting.CabinetBackColor;
+	SetFontAndColor(True);
 
-		ListView.Font.Name := GikoSys.Setting.ListFontName;
-		ListView.Font.Size := GikoSys.Setting.ListFontSize;
-		ListView.Font.Color := GikoSys.Setting.ListFontColor;
-		ListView.Font.Style := [];
-		if GikoSys.Setting.ListFontBold then
-			ListView.Font.Style := [fsbold];
-		if GikoSys.Setting.ListFontItalic then
-			ListView.Font.Style := ListView.Font.Style + [fsitalic];
-
-		ListViewBackGroundColor := clWhite;												// デフォルトに設定したのち
-		ListViewBackGroundColor := GikoSys.Setting.ListBackColor;	// ユーザ定義に変更
-		FUseOddResOddColor := GikoSys.Setting.UseOddColorOddResNum;
-		FOddColor := GikoSys.Setting.OddColor;
-
-	finally
-		TreeView.Items.EndUpdate;
-		FavoriteTreeView.Items.EndUpdate;
-		ListView.Items.EndUpdate;
-	end;
 	//ViewNoButton.Down := GikoSys.Setting.ListViewNo;
 	GikoDM.ListNumberVisibleAction.Checked := GikoSys.Setting.ListViewNo;
 
@@ -1043,7 +1221,7 @@ begin
 		end;
 	Ord( grrSelect ):
 		begin
-			SelectComboBox.Text := SelectComboBox.Items[ 1 ];
+			SelectComboBoxUC.Text := SelectComboBoxUC.Items[ 1 ];
 			GikoDM.SelectResAction.Checked := True;
 		end;
 	else
@@ -1051,10 +1229,10 @@ begin
 		Ord( grrKoko ):	GikoDM.OnlyKokoResAction.Checked	:= True;
 		Ord( grrNew ):	GikoDM.OnlyNewResAction.Checked	:= True;
 		10..65535:
-            begin
-                GikoDM.OnlyAHundredResAction.Checked		:= True;
-                GikoSys.ResRange := GikoSys.Setting.ResRangeExCount;
-            end;
+			begin
+				GikoDM.OnlyAHundredResAction.Checked		:= True;
+				GikoSys.ResRange := GikoSys.Setting.ResRangeExCount;
+			end;
 		end;
 	end;
 
@@ -1087,17 +1265,8 @@ begin
 		end;
 	end;
 
-
-	//ブラウザタブフォント
-	BrowserTab.Font.Name := GikoSys.Setting.BrowserTabFontName;
-	BrowserTab.Font.Size := GikoSys.Setting.BrowserTabFontSize;
-	BrowserTab.Font.Style := [];
-	if GikoSys.Setting.BrowserTabFontBold then
-		BrowserTab.Font.Style := [fsBold];
-	if GikoSys.Setting.BrowserTabFontItalic then
-		BrowserTab.Font.Style := GikoForm.BrowserTab.Font.Style + [fsItalic];
-
-	BrowserTab.DoubleBuffered := True;
+	//ブラウザタブ
+	BrowserTabUC.DoubleBuffered := True;
 	FDragWFirst := false;
 	SetContent(BrowserNullTab);													//ブラウザを空白表示
 
@@ -1126,8 +1295,8 @@ begin
 	ProgressBar.Height := StatusBar.Height - 2;
 	ProgressBar.Position := 0;
 
-    // スレッド名NGリスト
-    ThreadNgList := TThreadNgList.Create;
+	// スレッド名NGリスト
+	ThreadNgList := TThreadNgList.Create;
 
 	// 外部板プラグインをロード(ReadBoardFile, LoadHistory より先に行うこと)
 	InitializeBoardPlugIns;
@@ -1159,14 +1328,14 @@ begin
 	RoundList.LoadRoundThreadFile;
 
 	//TreeViewの邪魔臭いToolTipを非表示
-	Style := GetWindowLong(TreeView.Handle, GWL_STYLE);
+	Style := GetWindowLong(TreeViewUC.Handle, GWL_STYLE);
 	Style := Style or TVS_NOTOOLTIPS;
-	SetWindowLong(TreeView.Handle, GWL_STYLE, Style);
+	SetWindowLong(TreeViewUC.Handle, GWL_STYLE, Style);
 
 	// ツリーをメインだけ表示にして最大化
-	TreeView.Align := alClient;
-	FavoriteTreeView.Align := alClient;
-	FavoriteTreeView.Visible := False;
+	TreeViewUC.Align := alClient;
+	FavoriteTreeViewUC.Align := alClient;
+	FavoriteTreeViewUC.Visible := False;
 
 	// メニューに追加
 	SetBBSMenu;
@@ -1206,10 +1375,10 @@ begin
 
 	// 履歴読み込み
 	FHistoryList.LoadFromFile(GikoSys.GetConfigDir + 'History.xml',
-        TreeView, FTreeType);
+			TreeViewUC, FTreeType);
 
 	//お気に入り読み込み
-	FavoriteDM.SetFavTreeView(FavoriteTreeView);
+	FavoriteDM.SetFavTreeView(FavoriteTreeViewUC);
 	FavoriteDM.ReadFavorite;
 
 	GikoDM.ArrangeAction.Checked := not (GikoSys.Setting.ListOrientation = gloVertical);
@@ -1256,7 +1425,7 @@ begin
 	//ダウンロードオブジェクト
 	CreateControlThread();
 
-  // ツールバーの初期化の影響？でコンボボックスが初期化される(？)ため最後の方へ移動 for D2007
+	// ツールバーの初期化の影響？でコンボボックスが初期化される(？)ため最後の方へ移動 for D2007
 	//// 絞込検索履歴
 	//SelectComboBox.Items.Assign( GikoSys.Setting.SelectTextList );
 
@@ -1264,7 +1433,7 @@ begin
 	SetBrowserTabState;
 
 	BrowserBoardNameLabel.Caption := '';
-	BrowserNameLabel.Caption := '';
+	BrowserNameLabelUC.Caption := '';
 	FWorkCount := 0;
 
 	FTabHintIndex := -1;
@@ -1305,7 +1474,7 @@ begin
 	//最終巡回時間
 //	FLastRoundTime := 0;
 
-	ListView.OnData := TListViewUtils.ListViewData;
+	ListViewUC.OnData := TListViewUtils.ListViewData;
 
 	// 最後に選択されたキャビネットの復元
 	CabinetVisible( False );
@@ -1337,10 +1506,10 @@ begin
 
 //	dummy1.Caption	:= ItemReservPMenu.Caption;
 //	dummy1.Hint     := ItemReservPMenu.Hint;
-    // ブラウザポップアップメニューの初期化
-    PopupMenuUtil.ReadSetting(GikoDM.GikoFormActionList, BrowserTabPopupMenu);
-    // マウスジェスチャー
-    MouseGesture := TMouseGesture.Create;
+	// ブラウザポップアップメニューの初期化
+	PopupMenuUtil.ReadSetting(GikoDM.GikoFormActionList, BrowserTabPopupMenu);
+	// マウスジェスチャー
+	MouseGesture := TMouseGesture.Create;
 
 {$IFDEF SPAM_FILTER_ENABLED}
 	// スパムフィルタ学習履歴
@@ -1354,8 +1523,8 @@ begin
 	if GikoSys.Setting.AutoLogin then
 		GikoDM.LoginAction.Execute;
 
-    if GikoSys.Setting.BeAutoLogin then
-        GikoDM.BeLogInOutAction.Execute;
+	if GikoSys.Setting.BeAutoLogin then
+		GikoDM.BeLogInOutAction.Execute;
 
 	//キャプションが上書きされてしまうので、ここで再設定
 	FavoriteAddToolButton.Caption := '追加...';
@@ -1364,31 +1533,88 @@ begin
 	//入力アシスト機構の初期化
 	InputAssistDM.Init(GikoSys.GetInputAssistFileName);
 
-    //置換設定ファイルの読み込み
-    ReplaceDM.LoadFromFile(GikoSys.GetReplaceFileName);
+	//置換設定ファイルの読み込み
+	ReplaceDM.LoadFromFile(GikoSys.GetReplaceFileName);
 
-    //レスポップアップ消去タイマー
-    ResPopupClearTimer.Interval := GikoSys.Setting.RespopupWait;
+	//レスポップアップ消去タイマー
+	ResPopupClearTimer.Interval := GikoSys.Setting.RespopupWait;
 
-    // D&Dを受け取る
-    DragAcceptFiles(ListView.Handle, True);
+	// D&Dを受け取る
+	DragAcceptFiles(ListViewUC.Handle, True);
 
-  // ツールバーの初期化の影響？でコンボボックスが初期化される(？)ため上からここへ移動 for D2007
+	// ツールバーの初期化の影響？でコンボボックスが初期化される(？)ため上からここへ移動 for D2007
 	// 絞込検索履歴
-	SelectComboBox.Items.Assign( GikoSys.Setting.SelectTextList );
+	SelectComboBoxUC.Items_Assign( GikoSys.Setting.SelectTextList );
 
-    // 初期化に失敗したモジュールチェック
-    if (FavoriteDM.AbEnd) then begin
-        GikoUtil.MsgBox(Self.Handle,
-            'お気に入りの初期化に失敗しました。ギコナビを終了します。'#13#10 +
-            'ギコナビフォルダを開きます、config/' + Favorite.FAVORITE_FILE_NAME +
-            ' を config/~' + Favorite.FAVORITE_FILE_NAME + '(前回起動時のお気に入り)で'#13#10 +
-             '置き換える事で直る可能性があります。',
-            '初期化異常');
-        GikoDM.GikoFolderOpenAction.Execute;
-        Self.Close;
-    end;
+	// 初期化に失敗したモジュールチェック
+	if (FavoriteDM.AbEnd) then begin
+		GikoUtil.MsgBox(Self.Handle,
+						'お気に入りの初期化に失敗しました。ギコナビを終了します。'#13#10 +
+						'ギコナビフォルダを開きます、config/' + Favorite.FAVORITE_FILE_NAME +
+						' を config/~' + Favorite.FAVORITE_FILE_NAME + '(前回起動時のお気に入り)で'#13#10 +
+						'置き換える事で直る可能性があります。',
+						'初期化異常');
+		GikoDM.GikoFolderOpenAction.Execute;
+		Self.Close;
+	end;
 
+end;
+
+//! コントロールのフォントと色設定
+procedure TGikoForm.SetFontAndColor(ACreate: Boolean);
+begin
+
+	TreeViewUC.Items.BeginUpdate;
+	FavoriteTreeViewUC.Items.BeginUpdate;
+	ListViewUC.Items.BeginUpdate;
+	MessageListViewUC.Items.BeginUpdate;
+	try
+		TreeViewUC.Font.Name := GikoSys.Setting.CabinetFontName;
+		TreeViewUC.Font.Size := GikoSys.Setting.CabinetFontSize;
+		TreeViewUC.Font.Color := GikoSys.Setting.CabinetFontColor;
+		TreeViewUC.Color := GikoSys.Setting.CabinetBackColor;
+		FavoriteTreeViewUC.Font.Assign(TreeViewUC.Font);
+		FavoriteTreeViewUC.Color := GikoSys.Setting.CabinetBackColor;
+
+		ListViewUC.Font.Name := GikoSys.Setting.ListFontName;
+		ListViewUC.Font.Size := GikoSys.Setting.ListFontSize;
+		ListViewUC.Font.Color := GikoSys.Setting.ListFontColor;
+		ListViewUC.Font.Style := [];
+		if GikoSys.Setting.ListFontBold then
+			ListViewUC.Font.Style := [fsbold];
+		if GikoSys.Setting.ListFontItalic then
+			ListViewUC.Font.Style := ListViewUC.Font.Style + [fsitalic];
+
+		if ACreate then
+			ListViewBackGroundColor := clWhite;						// デフォルトに設定したのち
+		ListViewBackGroundColor := GikoSys.Setting.ListBackColor;	// ユーザ定義に変更
+		FUseOddResOddColor := GikoSys.Setting.UseOddColorOddResNum;
+		FOddColor := GikoSys.Setting.OddColor;
+
+		BrowserTabUC.Font.Name := GikoSys.Setting.BrowserTabFontName;
+		BrowserTabUC.Font.Size := GikoSys.Setting.BrowserTabFontSize;
+		BrowserTabUC.Font.Style := [];
+		if GikoSys.Setting.BrowserTabFontBold then
+			BrowserTabUC.Font.Style := [fsBold];
+		if GikoSys.Setting.BrowserTabFontItalic then
+			BrowserTabUC.Font.Style := BrowserTabUC.Font.Style + [fsItalic];
+
+		MessageListViewUC.Font.Name := GikoSys.Setting.MessageFontName;
+		MessageListViewUC.Font.Size := GikoSys.Setting.MessageFontSize;
+		MessageListViewUC.Font.Color := GikoSys.Setting.MessageFontColor;
+		MessageListViewUC.Font.Style := [];
+		if GikoSys.Setting.MessageFontBold then
+			MessageListViewUC.Font.Style := [fsbold];
+		if GikoSys.Setting.MessageFontItalic then
+			MessageListViewUC.Font.Style := MessageListViewUC.Font.Style + [fsitalic];
+		MessageListViewUC.Color := GikoSys.Setting.MessageBackColor;
+
+	finally
+		TreeViewUC.Items.EndUpdate;
+		FavoriteTreeViewUC.Items.EndUpdate;
+		ListViewUC.Items.EndUpdate;
+		MessageListViewUC.Items.EndUpdate;
+	end;
 end;
 
 // CoolBar の設定を変数に保存
@@ -1509,16 +1735,16 @@ end;
 ///
 procedure TGikoForm.FormShow(Sender: TObject);
 var
-   	item        : TThreadItem;
-    MonCnt: Integer;
-    MonOk: Boolean;
-    MonR: Integer;
-    MonB: Integer;
-    Right: Integer;
-    Bottom: Integer;
+	item        : TThreadItem;
+	MonCnt: Integer;
+	MonOk: Boolean;
+	MonR: Integer;
+	MonB: Integer;
+	Right: Integer;
+	Bottom: Integer;
 begin
 	if FStartUp then begin
-    	FStartUp := false;
+		FStartUp := false;
 		ShowWindow(Application.Handle, SW_HIDE);
 		//FormCreateでやると可視設定が反映されない場合があるのでFormShowでやることにした
 		//ツールバー表示
@@ -1549,60 +1775,60 @@ begin
 
 		//FormCreteから移動。
 		if GikoSys.Setting.TabAutoLoadSave then begin
-            GikoDM.TabsOpenAction.Tag := 1;
+			GikoDM.TabsOpenAction.Tag := 1;
 			GikoDM.TabsOpenAction.Execute;
-            GikoDM.TabsOpenAction.Tag := 0;
-            if (GikoSys.Setting.LastCloseTabURL <> '') then begin
-                if ( FActiveContent <> nil) and (FActiveContent.Browser <> nil) then begin
-            		while (FActiveContent.Browser.ReadyState <> READYSTATE_COMPLETE) and
-    			    	(FActiveContent.Browser.ReadyState <> READYSTATE_INTERACTIVE) do begin
-                        // メッセージを受け取らないようにスリープに変更
-                        Sleep(1);
-                    end;
-		        end;
-                item := BBSsFindThreadFromURL( GikoSys.Setting.LastCloseTabURL );
-                GikoSys.Setting.LastCloseTabURL := '';
-                if (item <> nil) and (item.IsLogFile) then begin
-                    OpenThreadItem(item, item.URL);
-                end;
-                //ShowWindow(Self.Handle, SW_SHOW);
-            end;
+			GikoDM.TabsOpenAction.Tag := 0;
+			if (GikoSys.Setting.LastCloseTabURL <> '') then begin
+				if ( FActiveContent <> nil) and (FActiveContent.Browser <> nil) then begin
+					while (FActiveContent.Browser.ReadyState <> READYSTATE_COMPLETE) and
+						(FActiveContent.Browser.ReadyState <> READYSTATE_INTERACTIVE) do begin
+						// メッセージを受け取らないようにスリープに変更
+						Sleep(1);
+					end;
+				end;
+				item := BBSsFindThreadFromURL( GikoSys.Setting.LastCloseTabURL );
+				GikoSys.Setting.LastCloseTabURL := '';
+				if (item <> nil) and (item.IsLogFile) then begin
+					OpenThreadItem(item, item.URL);
+				end;
+				//ShowWindow(Self.Handle, SW_SHOW);
+			end;
 		end;
 
 //===== マルチモニタ環境でFormCreateではフォーム位置が正しく反映されない場合
 //===== があるためFormShow初回で座標設定を行う
-        Top := GikoSys.Setting.WindowTop;
-        Left := GikoSys.Setting.WindowLeft;
-        Height := GikoSys.Setting.WindowHeight;
-        Width := GikoSys.Setting.WindowWidth;
+		Top := GikoSys.Setting.WindowTop;
+		Left := GikoSys.Setting.WindowLeft;
+		Height := GikoSys.Setting.WindowHeight;
+		Width := GikoSys.Setting.WindowWidth;
 
-        //ウィンドウが画面外なら画面内に移動する
-        Right := Left + Width;
-        Bottom := Top + Height;
-        MonOk := False;
-        MonCnt := 0;
-        while (MonCnt < Screen.MonitorCount) do begin
-            MonR := Screen.Monitors[MonCnt].Left + Screen.Monitors[MonCnt].Width;
-            MonB := Screen.Monitors[MonCnt].Top  + Screen.Monitors[MonCnt].Height;
+		//ウィンドウが画面外なら画面内に移動する
+		Right := Left + Width;
+		Bottom := Top + Height;
+		MonOk := False;
+		MonCnt := 0;
+		while (MonCnt < Screen.MonitorCount) do begin
+			MonR := Screen.Monitors[MonCnt].Left + Screen.Monitors[MonCnt].Width;
+			MonB := Screen.Monitors[MonCnt].Top  + Screen.Monitors[MonCnt].Height;
 
-            if ((Left  >= Screen.Monitors[MonCnt].Left) and (Left   <  MonR) and
-                (Top   >= Screen.Monitors[MonCnt].Top)  and (Top    <  MonB) and
-                (Right  > Screen.Monitors[MonCnt].Left) and (Right  <= MonR) and
-                (Bottom > Screen.Monitors[MonCnt].Top)  and (Bottom <= MonB)) then begin
-                MonOk := True;
-                Break;
-            end;
+			if ((Left  >= Screen.Monitors[MonCnt].Left) and (Left   <  MonR) and
+				(Top   >= Screen.Monitors[MonCnt].Top)  and (Top    <  MonB) and
+				(Right  > Screen.Monitors[MonCnt].Left) and (Right  <= MonR) and
+				(Bottom > Screen.Monitors[MonCnt].Top)  and (Bottom <= MonB)) then begin
+				MonOk := True;
+				Break;
+			end;
 
-            MonCnt := MonCnt + 1;
-        end;
+			MonCnt := MonCnt + 1;
+		end;
 
-        if (MonOk = False) then begin
-            Left := 0;
-            Top := 0;
-        end;
+		if (MonOk = False) then begin
+			Left := 0;
+			Top := 0;
+		end;
 
-        if GikoSys.Setting.WindowMax then
-            WindowState := wsMaximized;
+		if GikoSys.Setting.WindowMax then
+			WindowState := wsMaximized;
 //==========================================================================
 	end;
 end;
@@ -1682,7 +1908,7 @@ begin
 		GikoSys.Setting.WindowWidth := wp.rcNormalPosition.Right - wp.rcNormalPosition.Left;
 		GikoSys.Setting.WindowMax := (WindowState = wsMaximized) or
                                         (WindowPlacement.flags = WPF_RESTORETOMAXIMIZED);
-		GikoSys.Setting.ListStyle := ListView.ViewStyle;
+		GikoSys.Setting.ListStyle := ListViewUC.ViewStyle;
 		GikoSys.Setting.CabinetVisible := GikoDM.CabinetVisibleAction.Checked;
 		GikoSys.Setting.CabinetWidth := CabinetPanel.Width;
 		GikoSys.Setting.ListHeight := FBrowserSizeHeight;
@@ -1766,14 +1992,14 @@ begin
 
 	// マウスジェスチャー開放
 	try
-        if GikoSys.Setting.GestureEnabled then begin
-	    	MouseGesture.OnGestureStart := nil;
-		    MouseGesture.OnGestureMove := nil;
-		    MouseGesture.OnGestureEnd := nil;
-        end;
-        MouseGesture.Clear;
+		if GikoSys.Setting.GestureEnabled then begin
+      MouseGesture.OnGestureStart := nil;
+      MouseGesture.OnGestureMove := nil;
+      MouseGesture.OnGestureEnd := nil;
+		end;
+		MouseGesture.Clear;
 		MouseGesture.UnHook;
-        MouseGesture.Free;
+		MouseGesture.Free;
 	except
 	end;
 
@@ -1794,8 +2020,8 @@ begin
 
 	try
 		for i := FBrowsers.Count - 1 downto 0 do begin
-            GikoSys.ShowRefCount('browser' + IntToStr(i), TWebBrowser(FBrowsers[i]).ControlInterface);
-            GikoSys.ShowRefCount('document' + IntToStr(i), TWebBrowser(FBrowsers[i]).ControlInterface.Document);
+			GikoSys.ShowRefCount('browser' + IntToStr(i), TWebBrowser(FBrowsers[i]).ControlInterface);
+			GikoSys.ShowRefCount('document' + IntToStr(i), TWebBrowser(FBrowsers[i]).ControlInterface.Document);
 		end;
 
 		for i := FBrowsers.Count - 1 downto 0 do begin
@@ -1818,10 +2044,10 @@ begin
 	end;
 
 	try
-		TreeView.Items.BeginUpdate;
-		TreeView.Items.GetFirstNode.Free;
-		TreeView.Items.Clear;
-		TreeView.Items.EndUpdate;
+		TreeViewUC.Items.BeginUpdate;
+		TreeViewUC.Items.GetFirstNode.Free;
+		TreeViewUC.Items.Clear;
+		TreeViewUC.Items.EndUpdate;
 	except
 	end;
 
@@ -1842,17 +2068,17 @@ begin
 		end;
 	finally
 		RoundList.Free;
-	 end;
+	end;
 
 	try
-        try
-            //FControlThread.DownloadAbort;
-            FControlThread.Terminate;
-            FControlThread.WaitFor;
-        except
-        end;
-    finally
-        FControlThread.Free;
+    try
+      //FControlThread.DownloadAbort;
+      FControlThread.Terminate;
+      FControlThread.WaitFor;
+    except
+    end;
+	finally
+		FControlThread.Free;
 	end;
     // プラグインによって追加されたメニューを開放する
     for i := GikoForm.PlugInMenu.Count - 1 downto 0 do begin
@@ -1860,6 +2086,17 @@ begin
 	end;
     GikoForm.PlugInMenu.Clear;
 
+  try
+    BrowserNameLabelUC.Free;
+    MessageListViewUC.Free;
+    LinkToolBarUC.Free;
+    FavoriteTreeViewUC.Free;
+    BrowserTabUC.Free;
+    TreeViewUC.Free;
+    SelectComboBoxUC.Free;
+    ListViewUC.Free;
+  except
+  end;
 
 	// TBBS は保持している TCategory, TBoard, TThreadItem すべてを開放する
 	// TBoard, TThreadItem のデストラクタはプラグインに破棄を伝えるので
@@ -1885,14 +2122,14 @@ begin
 		if FEvent <> nil then
 			FEvent.Free;
 
-        try
-            if FResPopupBrowser <> nil then  begin
-                TOleControl(FResPopupBrowser).Parent := nil;
-                FResPopupBrowser.Free;
-            end;
+			try
+				if FResPopupBrowser <> nil then  begin
+					TOleControl(FResPopupBrowser).Parent := nil;
+					FResPopupBrowser.Free;
+				end;
 
-        except
-        end;
+			except
+			end;
 		//Preview破棄
 		if FPreviewBrowser <> nil then begin
 			FPreviewBrowser.Free;
@@ -1967,7 +2204,7 @@ begin
 	GikoSys.Setting.ShowDialogForAllTabClose := tmpBool;
 	SetContent(BrowserNullTab);
 	//TreeViewクリア（BBS2ch.Freeの後にクリアするとXPスタイル時にエラー出る）
-	TreeView.Items.Clear;
+	TreeViewUC.Items.Clear;
 
 	//巡回リスト保存
 	try
@@ -2035,7 +2272,7 @@ begin
 
 	// 履歴読み込み
     FHistoryList.LoadFromFile(GikoSys.GetConfigDir + 'History.xml',
-        TreeView, FTreeType);
+        TreeViewUC, FTreeType);
 
 	//お気に入り読み込み
 	FavoriteDM.ReadFavorite;
@@ -2341,14 +2578,14 @@ begin
 		VK_RETURN:		ListClick;
 		VK_APPS:
 			begin
-				if ListView.Selected <> nil then begin
-					pos.X := ListView.Column[ 0 ].Width;
-					pos.Y := ListView.Selected.Top;
+				if ListViewUC.Selected <> nil then begin
+					pos.X := ListViewUC.Column[ 0 ].Width;
+					pos.Y := ListViewUC.Selected.Top;
 				end else begin
-					pos.X := ListView.Left;
-					pos.Y := ListView.Top;
+					pos.X := ListViewUC.Left;
+					pos.Y := ListViewUC.Top;
 				end;
-				Windows.ClientToScreen( ListView.Handle, pos );
+				Windows.ClientToScreen( ListViewUC.Handle, pos );
 				ListPopupMenu.Popup( pos.X, pos.Y );
 			end;
 		end;
@@ -2359,14 +2596,14 @@ begin
 		VK_RETURN:		ListDoubleClick(Shift);
 		VK_APPS:
 			begin
-				if ListView.Selected <> nil then begin
-					pos.X := ListView.Column[ 0 ].Width;
-					pos.Y := ListView.Selected.Top;
+				if ListViewUC.Selected <> nil then begin
+					pos.X := ListViewUC.Column[ 0 ].Width;
+					pos.Y := ListViewUC.Selected.Top;
 				end else begin
-					pos.X := ListView.Left;
-					pos.Y := ListView.Top;
+					pos.X := ListViewUC.Left;
+					pos.Y := ListViewUC.Top;
 				end;
-				Windows.ClientToScreen( ListView.Handle, pos );
+				Windows.ClientToScreen( ListViewUC.Handle, pos );
 				ListPopupMenu.Popup( pos.X, pos.Y );
 			end;
 		end;
@@ -2411,7 +2648,7 @@ begin
 		vSortOrder := id = 0;
 	end;
 
-	TListViewUtils.ListViewSort(Sender, ListView, Column, GikoDM.ListNumberVisibleAction.Checked, vSortOrder);
+	TListViewUtils.ListViewSort(Sender, ListViewUC, ListViewUC.Column[Column.Index], GikoDM.ListNumberVisibleAction.Checked, vSortOrder);
 end;
 
 procedure TGikoForm.MenuToolBarCustomDrawButton(Sender: TToolBar;
@@ -2437,10 +2674,10 @@ end;
 
 function TGikoForm.GetTreeNode(Data: TObject): TTreeNode;
 var
-	Nodes: TTreeNodes;
+	Nodes: TTntTreeNodes;
 	i: integer;
 begin
-	Nodes := TreeView.Items;
+	Nodes := TreeViewUC.Items;
 
 	for i := 0 to Nodes.Count - 1 do begin
 		if Nodes.Item[i].Data = Data then begin
@@ -2518,19 +2755,19 @@ begin
 
 	if FTreeType = gttHistory then Exit;
 
-	TreeView.Canvas.Font.Color := clBlue;
+	TreeViewUC.Canvas.Font.Color := clBlue;
 	IsBoardNode := False;
-	for i := 0 to TreeView.Items.Count - 1 do begin
+	for i := 0 to TreeViewUC.Items.Count - 1 do begin
 		Cnt := 0;
-		if not TreeView.Items[i].IsVisible then
+		if not TreeViewUC.Items[i].IsVisible then
 			continue;
 
-		if TObject(TreeView.Items[i].Data) is TCategory then begin
-			if TreeView.Items[i].Expanded then
+		if TObject(TreeViewUC.Items[i].Data) is TCategory then begin
+			if TreeViewUC.Items[i].Expanded then
 				continue;
 
 			IsBoardNode := False;
-			Category := TCategory(TreeView.Items[i].Data);
+			Category := TCategory(TreeViewUC.Items[i].Data);
 			for j := 0 to Category.Count - 1 do begin
 				Board := Category.Items[j];
 				if Board <> nil then begin
@@ -2542,9 +2779,9 @@ begin
 			end;
 			if Cnt <> 1 then
 				continue;
-		end else if TObject(TreeView.Items[i].Data) is TBoard then begin
+		end else if TObject(TreeViewUC.Items[i].Data) is TBoard then begin
 			IsBoardNode := True;
-			Board := TBoard(TreeView.Items[i].Data);
+			Board := TBoard(TreeViewUC.Items[i].Data);
 
 			Cnt := Board.UnRead;
 			if Cnt <= 0 then
@@ -2554,14 +2791,14 @@ begin
 
 		Bitmap := TBitmap.Create;
 		try
-			Bitmap.Canvas.Font.Assign(TreeView.Canvas.Font);
+			Bitmap.Canvas.Font.Assign(TreeViewUC.Canvas.Font);
 			Bitmap.Canvas.Font.Style := [fsBold];
-			NodeWidth := Bitmap.Canvas.TextWidth(TreeView.Items[i].Text);
+			NodeWidth := Bitmap.Canvas.TextWidth(TreeViewUC.Items[i].Text);
 		finally
 			Bitmap.Free;
 		end;
 
-		NodeRect := TreeView.Items[i].DisplayRect(True);
+		NodeRect := TreeViewUC.Items[i].DisplayRect(True);
 
 		if IsBoardNode then
 			CntText := '(' + IntToStr(Cnt) + ')'
@@ -2569,13 +2806,13 @@ begin
 			CntText := '(+)';
 
 
-		TextWidth := TreeView.Canvas.TextWidth(CntText);
+		TextWidth := TreeViewUC.Canvas.TextWidth(CntText);
 
 		TextRect := Rect(NodeRect.Left + NodeWidth + 8,
 										 NodeRect.Top,
 										 NodeRect.Left + NodeWidth + TextWidth + 8,
 										 NodeRect.Bottom);
-		DrawText(TreeView.Canvas.Handle,
+		DrawText(TreeViewUC.Canvas.Handle,
 						 PChar(CntText),
 						 -1,
 						 TextRect,
@@ -2595,7 +2832,7 @@ begin
 
 	if FTreeType = gttHistory then Exit;
 
-	TreeView.Canvas.Font.Style := [];
+	TreeViewUC.Canvas.Font.Style := [];
 	if Node <> nil then begin
 		if TObject(Node.Data) is TCategory then begin
 			Category := TCategory(Node.Data);
@@ -2603,7 +2840,7 @@ begin
 				Board := Category.Items[i];
 				if Board <> nil then begin
 					if Board.UnRead > 0 then begin
-						TreeView.Canvas.Font.Style := [fsBold];
+						TreeViewUC.Canvas.Font.Style := [fsBold];
 						Break;
 					end;
 				end;
@@ -2611,14 +2848,14 @@ begin
 		end else if TObject(Node.Data) is TBoard then begin
 			Board := TBoard(Node.Data);
 			if Board.UnRead > 0 then
-				TreeView.Canvas.Font.Style := [fsBold];
+				TreeViewUC.Canvas.Font.Style := [fsBold];
 		end;
 	end;
 end;
 
 procedure TGikoForm.TreeViewExpanded(Sender: TObject; Node: TTreeNode);
 begin
-	TreeView.Invalidate;
+	TreeViewUC.Invalidate;
 
 	if TObject(Node.Data) is TBBS then begin
 		TBBS(Node.Data).NodeExpand := True;
@@ -2631,8 +2868,8 @@ end;
 
 procedure TGikoForm.ListViewAllSelect;
 begin
-	ListView.SetFocus;
-	ListView.SelectAll;
+	ListViewUC.SetFocus;
+	ListViewUC.SelectAll;
 end;
 procedure TGikoForm.DownloadMsg(Sender: TObject; Item: TDownloadItem; Msg: string; Icon: TGikoMessageIcon);
 begin
@@ -2680,7 +2917,7 @@ begin
 				Item.Board.Modified := True;
 				Item.Board.IsThreadDatRead := True;
 				PlaySound('New');
-				ListView.Refresh;
+				ListViewUC.Refresh;
 			end else if Item.DownType = gdtThread then begin
 				//スレ
 				Item.SaveItemFile;
@@ -2696,50 +2933,50 @@ begin
 					THTMLCreate.DivideStrLine(GikoSys.ReadThreadFile(Item.ThreadItem.GetThreadFileName, 1), @Res);
 					ATitle := Res.FTitle;
 				end;
-				for i := BrowserTab.Tabs.Count - 1 downto 0 do begin
-					if TBrowserRecord(BrowserTab.Tabs.Objects[i]).Thread = Item.ThreadItem then begin
-						TBrowserRecord(BrowserTab.Tabs.Objects[i]).Repaint := true;
+				for i := BrowserTabUC.Tabs.Count - 1 downto 0 do begin
+					if TBrowserRecord(BrowserTabUC.Tabs.Objects[i]).Thread = Item.ThreadItem then begin
+						TBrowserRecord(BrowserTabUC.Tabs.Objects[i]).Repaint := true;
 						break;
 					end;
 				end;
 				if GikoSys.Setting.BrowserTabVisible then begin
 					if GetActiveContent = Item.ThreadItem then
 						InsertBrowserTab(Item.ThreadItem)
-					else if (ListView.Selected <> nil ) and ( TObject(ListView.Selected.Data) is TThreadItem ) and ( Item.ThreadItem = TThreadItem(ListView.Selected.Data)) then
+					else if (ListViewUC.Selected <> nil ) and ( TObject(ListViewUC.Selected.Data) is TThreadItem ) and ( Item.ThreadItem = TThreadItem(ListViewUC.Selected.Data)) then
 						InsertBrowserTab(Item.ThreadItem, True)
 					else
 						InsertBrowserTab(Item.ThreadItem, False);
 
 				end else begin
 					if (GetActiveContent = Item.ThreadItem) or (FActiveContent = nil) or(FActiveContent.Browser = BrowserNullTab.Browser) then
-												InsertBrowserTab(Item.ThreadItem);
+						InsertBrowserTab(Item.ThreadItem);
 				end;
 
-								Application.ProcessMessages;
+				Application.ProcessMessages;
 
 				if Item.State = gdsComplete then begin
 					PlaySound('New');
-										AddMessageList(ATitle + ' ' + GikoSys.GetGikoMessage(gmSureSyutoku), nil, gmiOK);
-										//Add by Genyakun
-										DiffComp := True;
+					AddMessageList(ATitle + ' ' + GikoSys.GetGikoMessage(gmSureSyutoku), nil, gmiOK);
+					//Add by Genyakun
+					DiffComp := True;
 				end else begin
 					PlaySound('NewDiff');
-										AddMessageList(ATitle + ' ' + GikoSys.GetGikoMessage(gmSureDiff), nil, gmiOK);
-										//Add by Genyakun
-										DiffComp := True;
+					AddMessageList(ATitle + ' ' + GikoSys.GetGikoMessage(gmSureDiff), nil, gmiOK);
+					//Add by Genyakun
+					DiffComp := True;
 				end;
 
 				//巡回ありの場合＆１０００超は巡回削除
 				if (Item.ThreadItem.Round) and (Item.ThreadItem.Count > 1000) then begin
-                    // 2ch以外は、1000が最高か不明なので、2ch限定にする
-                    if (Item.ThreadItem.ParentBoard.Is2ch) then begin
-    					Item.ThreadItem.Round := False;
-	    				AddMessageList('★1000発言を超えたので巡回を削除しました - [' + Item.ThreadItem.Title + ']', nil, gmiOK);
-                    end;
+					// 2ch以外は、1000が最高か不明なので、2ch限定にする
+					if (Item.ThreadItem.ParentBoard.Is2ch) then begin
+						Item.ThreadItem.Round := False;
+						AddMessageList('★1000発言を超えたので巡回を削除しました - [' + Item.ThreadItem.Title + ']', nil, gmiOK);
+					end;
 				end;
-				TreeView.Refresh;
+				TreeViewUC.Refresh;
 				//ListViewでこのスレが含まれる板を表示しているときの更新処理
-                UpdateListView();
+				UpdateListView();
 				RefreshListView(Item.ThreadItem);
 			end;
 
@@ -2754,7 +2991,7 @@ begin
 			Screen.Cursor := crDefault;
 		end else if Item.State = gdsAbort then begin
 			//中断
-						AddMessageList(ATitle + ' ' + GikoSys.GetGikoMessage(gmAbort), nil, gmiOK);
+			AddMessageList(ATitle + ' ' + GikoSys.GetGikoMessage(gmAbort), nil, gmiOK);
 		end else if Item.State = gdsError then begin
 			//エラー
 			s := Item.ErrText;
@@ -2814,22 +3051,22 @@ end;
 
 procedure TGikoForm.AddMessageList(ACaption: string; AObject: TObject; Icon: TGikoMessageIcon);
 var
-	ListItem: TListItem;
+	ListItem: TTntListItem;
 begin
-	MessageListView.Items.BeginUpdate;
+	MessageListViewUC.Items.BeginUpdate;
 	try
-		ListItem := MessageListView.Items.Add;
-		ListItem.Caption := ACaption;
+		ListItem := MessageListViewUC.Items.Add;
+		ListItem.Caption := EncAnsiToWideString(ACaption);
 		ListItem.Data := AObject;
 		ListItem.MakeVisible(False);
 		case Icon of
 			gmiOK:	 ListItem.ImageIndex := 0;
-			gmiSAD:	ListItem.ImageIndex := 1;
+			gmiSAD:	 ListItem.ImageIndex := 1;
 			gmiNG:	 ListItem.ImageIndex := 2;
 			gmiWhat: ListItem.ImageIndex := 3;
 		end;
 	finally
-		MessageListView.Items.EndUpdate;
+		MessageListViewUC.Items.EndUpdate;
 	end;
 end;
 
@@ -2838,10 +3075,10 @@ procedure TGikoForm.ReleaseOldestBrowser;
 var
     i: Integer;
 begin
-    for i := BrowserTab.Tabs.Count - 1 downto 0 do begin
-        if TBrowserRecord(BrowserTab.Tabs.Objects[i]).Browser =
+    for i := BrowserTabUC.Tabs.Count - 1 downto 0 do begin
+        if TBrowserRecord(BrowserTabUC.Tabs.Objects[i]).Browser =
                 TWebBrowser(FBrowsers[BROWSER_COUNT - 1]) then begin
-            ReleaseBrowser(TBrowserRecord(BrowserTab.Tabs.Objects[i]));
+            ReleaseBrowser(TBrowserRecord(BrowserTabUC.Tabs.Objects[i]));
             break;
         end;
     end;
@@ -2855,7 +3092,8 @@ var
 	i, j, idx		: Integer;
 	favItem			: TFavoriteThreadItem;
 	newBrowser	: TBrowserRecord;
-    ins : Integer;
+	ins : Integer;
+	title: WideString;
 begin
 
 	Result := nil;
@@ -2871,98 +3109,105 @@ begin
 				FBrowsers.Move(BROWSER_COUNT - 1, 0);
 		end;
 		favItem := TFavoriteThreadItem.Create(ThreadItem.URL, ThreadItem.Title );
-		if not FHistoryList.AddHistory( favItem, TreeView, FTreeType ) then
+		if not FHistoryList.AddHistory( favItem, TreeViewUC, FTreeType ) then
 			favItem.Free;
 
-		for i := 0 to BrowserTab.Tabs.Count - 1 do begin
-			if TObject(BrowserTab.Tabs.Objects[i]) is TBrowserRecord then begin
-				if TBrowserRecord(BrowserTab.Tabs.Objects[i]).Thread = ThreadItem then begin
-					Result := TBrowserRecord( BrowserTab.Tabs.Objects[i] );
-					if TBrowserRecord(BrowserTab.Tabs.Objects[i]).Browser = nil then begin
-                        //一番古いブラウザを開放する
-                        ReleaseOldestBrowser;
-						TBrowserRecord(BrowserTab.Tabs.Objects[i]).Browser := TWebBrowser(FBrowsers[BROWSER_COUNT - 1]);
-						TBrowserRecord(BrowserTab.Tabs.Objects[i]).Repaint := true;
+		for i := 0 to BrowserTabUC.Tabs.Count - 1 do begin
+			if TObject(BrowserTabUC.Tabs.Objects[i]) is TBrowserRecord then begin
+				if TBrowserRecord(BrowserTabUC.Tabs.Objects[i]).Thread = ThreadItem then begin
+					Result := TBrowserRecord( BrowserTabUC.Tabs.Objects[i] );
+					if TBrowserRecord(BrowserTabUC.Tabs.Objects[i]).Browser = nil then begin
+						//一番古いブラウザを開放する
+						ReleaseOldestBrowser;
+						TBrowserRecord(BrowserTabUC.Tabs.Objects[i]).Browser := TWebBrowser(FBrowsers[BROWSER_COUNT - 1]);
+						TBrowserRecord(BrowserTabUC.Tabs.Objects[i]).Repaint := true;
 						FBrowsers.Move(BROWSER_COUNT - 1, 0);
 					end;
 					if ActiveTab then begin
-						BrowserTab.TabIndex := i;
-							BrowserTab.OnChange(nil);
-						BrowserTab.Repaint;
+						BrowserTabUC.TabIndex := i;
+							BrowserTabUC.OnChange(nil);
+						BrowserTabUC.Repaint;
 					end;
 					Exit;
 				end;
 			end;
 		end;
-		idx := BrowserTab.TabIndex;
-        newBrowser := TBrowserRecord.Create;
-        // 一番古いブラウザを開放する
-        ReleaseOldestBrowser;
-        newBrowser.Browser := TWebBrowser(FBrowsers[BROWSER_COUNT - 1]);
-        FBrowsers.Move(BROWSER_COUNT - 1, 0);
-        newBrowser.thread := ThreadItem;
-        newBrowser.Repaint := true;
+		idx := BrowserTabUC.TabIndex;
+		newBrowser := TBrowserRecord.Create;
+		// 一番古いブラウザを開放する
+		ReleaseOldestBrowser;
+		newBrowser.Browser := TWebBrowser(FBrowsers[BROWSER_COUNT - 1]);
+		FBrowsers.Move(BROWSER_COUNT - 1, 0);
+		newBrowser.thread := ThreadItem;
+		newBrowser.Repaint := true;
+
+		// タブに表示するタイトル
+    if Pos('&#', ThreadItem.Title) < 1 then
+			title := GikoSys.GetShortName(ThreadItem.Title, 20)
+    else begin
+      title := EncAnsiToWideString(GikoSys.TrimThreadTitle(ThreadItem.Title));
+      title := GikoSys.GetShortNameW(title, 20);
+    end;
 
 		if GikoSys.Setting.BrowserTabAppend = gtaFirst then begin
-			BrowserTab.Tabs.InsertObject(0, GikoSys.GetShortName(ThreadItem.Title, 20), newBrowser);
-			if (not GikoSys.Setting.BrowserTabVisible) and (BrowserTab.Tabs.Count > 1) then begin
-				DeleteTab( TBrowserRecord( BrowserTab.Tabs.Objects[ 1 ] ) );
+			BrowserTabUC.Tabs.InsertObject(0, title, newBrowser);
+			if (not GikoSys.Setting.BrowserTabVisible) and (BrowserTabUC.Tabs.Count > 1) then begin
+				DeleteTab( TBrowserRecord( BrowserTabUC.Tabs.Objects[ 1 ] ) );
 			end;// else begin
 			//end;
-			BrowserTab.Repaint;
+			BrowserTabUC.Repaint;
 			if ActiveTab then begin
-				BrowserTab.TabIndex := 0;
+				BrowserTabUC.TabIndex := 0;
 			end;
 		end else if GikoSys.Setting.BrowserTabAppend = gtaLast then begin
-			i := BrowserTab.Tabs.AddObject(GikoSys.GetShortName(ThreadItem.Title, 20), newBrowser);
-			if (not GikoSys.Setting.BrowserTabVisible) and (BrowserTab.Tabs.Count > 1) then begin
-				DeleteTab( TBrowserRecord( BrowserTab.Tabs.Objects[ 0 ] ) );
+			i := BrowserTabUC.Tabs.AddObject(title, newBrowser);
+			if (not GikoSys.Setting.BrowserTabVisible) and (BrowserTabUC.Tabs.Count > 1) then begin
+				DeleteTab( TBrowserRecord( BrowserTabUC.Tabs.Objects[ 0 ] ) );
 			end;
 			//end;
-			BrowserTab.Repaint;
+			BrowserTabUC.Repaint;
 			if ActiveTab then begin
-				if (not GikoSys.Setting.BrowserTabVisible) and (BrowserTab.Tabs.Count > 0) then
-					BrowserTab.TabIndex := 0
+				if (not GikoSys.Setting.BrowserTabVisible) and (BrowserTabUC.Tabs.Count > 0) then
+					BrowserTabUC.TabIndex := 0
 				else
-					BrowserTab.TabIndex := i;
+					BrowserTabUC.TabIndex := i;
 			end;
 		end else begin
-            // タブ位置を取得
-            ins := -1;
-            for i := BrowserTab.Tabs.Count - 1 downto 0 do begin
-            if TBrowserRecord(BrowserTab.Tabs.Objects[i]).Browser =
-                    TWebBrowser(FBrowsers[1]) then begin
-                    ins := i;
-                    break;
-                end;
-            end;
-            if GikoSys.Setting.BrowserTabAppend = gtaRight then begin
-                Inc(ins);
-		    end;
-            // タブが無いときなど対策
-            if (ins < 0) then begin
-                ins := 0;
-            end;
-			BrowserTab.Tabs.InsertObject(ins, GikoSys.GetShortName(ThreadItem.Title, 20), newBrowser);
+			// タブ位置を取得
+			ins := -1;
+			for i := BrowserTabUC.Tabs.Count - 1 downto 0 do begin
+				if TBrowserRecord(BrowserTabUC.Tabs.Objects[i]).Browser = TWebBrowser(FBrowsers[1]) then begin
+					ins := i;
+					break;
+				end;
+			end;
+			if GikoSys.Setting.BrowserTabAppend = gtaRight then begin
+				Inc(ins);
+			end;
+			// タブが無いときなど対策
+			if (ins < 0) then begin
+			    ins := 0;
+			end;
+			BrowserTabUC.Tabs.InsertObject(ins, title, newBrowser);
 			if (not GikoSys.Setting.BrowserTabVisible) and (BrowserTab.Tabs.Count > 1) then begin
-                if GikoSys.Setting.BrowserTabAppend = gtaRight then begin
-    				DeleteTab( TBrowserRecord( BrowserTab.Tabs.Objects[ 0 ] ) );
-                end else begin
-                    DeleteTab( TBrowserRecord( BrowserTab.Tabs.Objects[ 1 ] ) );
-                end;
+				if GikoSys.Setting.BrowserTabAppend = gtaRight then begin
+    				DeleteTab( TBrowserRecord( BrowserTabUC.Tabs.Objects[ 0 ] ) );
+				end else begin
+					DeleteTab( TBrowserRecord( BrowserTabUC.Tabs.Objects[ 1 ] ) );
+				end;
 			end;
 			//end;
-			BrowserTab.Repaint;
+			BrowserTabUC.Repaint;
 			if ActiveTab then begin
-				if (not GikoSys.Setting.BrowserTabVisible) and (BrowserTab.Tabs.Count > 0) then
-					BrowserTab.TabIndex := 0
+				if (not GikoSys.Setting.BrowserTabVisible) and (BrowserTabUC.Tabs.Count > 0) then
+					BrowserTabUC.TabIndex := 0
 				else
-					BrowserTab.TabIndex := ins;
+					BrowserTabUC.TabIndex := ins;
 			end;
-        end;
+		end;
 		Result := newBrowser;
 		if(ActiveTab) or (idx = -1) then begin
-			BrowserTab.OnChange(nil);
+			BrowserTabUC.OnChange(nil);
 		end;
 	end else begin
 		if BrowserNullTab = nil then begin
@@ -2974,7 +3219,7 @@ begin
 //		end;
 		BrowserNullTab.thread := ThreadItem;
 		Result := BrowserNullTab;
-		BrowserTab.TabIndex := -1;
+		BrowserTabUC.TabIndex := -1;
 		SetContent(BrowserNullTab);
 	end;
 
@@ -2997,7 +3242,7 @@ var
 	ThreadIsLog, {ThreadUnRead,} ThreadNewArraical: boolean;
 begin
 	Thread := inThread;
-	idx := BrowserTab.TabIndex;
+	idx := BrowserTabUC.TabIndex;
 	if  (not FStartUp) and
         (FActiveContent <> nil) and
 		(FActiveContent.Thread <> Thread.Thread) and
@@ -3017,7 +3262,7 @@ begin
 		Thread.Browser.Navigate(BLANK_HTML);
 		BrowserBoardNameLabel.Caption := '';
 		ItemBoardImage.Picture := nil;
-		BrowserNameLabel.Caption := '';
+		BrowserNameLabelUC.Caption := '';
 		ItemImage.Picture := nil;
         BrowserNullTab.Thread := nil;
 		//TOleControl(BrowserNullTab.Browser).Visible := true;
@@ -3049,7 +3294,7 @@ begin
 	BBSID := ThreadItem.ParentBoard.BBSID;
 	FileName := ThreadItem.FileName;
 
-	if GetCapture = ListView.Handle then
+	if GetCapture = ListViewUC.Handle then
 		ReleaseCapture;
 
 	Screen.Cursor := crHourGlass;
@@ -3067,7 +3312,7 @@ begin
 		while (Thread.Browser.ReadyState <> READYSTATE_COMPLETE) and
 				(Thread.Browser.ReadyState <> READYSTATE_INTERACTIVE) do begin
 			Application.ProcessMessages;
-			if idx <> BrowserTab.TabIndex then begin
+			if idx <> BrowserTabUC.TabIndex then begin
 				Exit;
 			end;
 		end;
@@ -3075,7 +3320,7 @@ begin
 		if (Thread <> nil) and (ThreadItem <>nil) then begin
 			BrowserBoardNameLabel.Caption := ThreadPTitle;
 			ItemIcon16.GetBitmap(4, ItemBoardImage.Picture.Bitmap);
-            BrowserNameLabel.Caption := GikoSys.TrimThreadTitle(ThreadTitle);
+            BrowserNameLabelUC.EncodeCaption := GikoSys.TrimThreadTitle(ThreadTitle);
 			ItemImage.Picture := nil;
 			if ThreadIsLog then
 				if ThreadNewArraical then
@@ -3086,14 +3331,14 @@ begin
 				ItemImageList.GetBitmap(1, ItemImage.Picture.Bitmap);
 
 			ItemImage.Left := BrowserBoardNameLabel.Left + BrowserBoardNameLabel.Width + 8;
-			BrowserNameLabel.Left := ItemImage.Left + 20;
+			BrowserNameLabelUC.Left := ItemImage.Left + 20;
 
 		end;
 		//ActiveContent　の更新
 		FActiveContent := Thread;
 
 		if not ThreadIsLog then begin
-			Self.Caption := GikoDataModule.CAPTION_NAME ;
+			SetFormCaption('');
 			//ステータスバーに表示しているスレの容量を消去
 			StatusBar.Panels[THREADSIZE_PANEL].Text := '';
 			try
@@ -3108,7 +3353,7 @@ begin
 				
 			end;
 		end else begin
-			Self.Caption := GikoDataModule.CAPTION_NAME + ' - [' + GikoSys.TrimThreadTitle(ThreadTitle) + ']';
+			SetFormCaption(GikoSys.TrimThreadTitle(ThreadTitle));
 			//ステータスバーに表示しているスレの容量を表示
 			StatusBar.Panels[THREADSIZE_PANEL].Text := Format('%6.2f kB', [ThreadItem.Size / 1024]);
 			StatusBar.Panels[THREADSIZE_PANEL].Width :=
@@ -3157,32 +3402,32 @@ begin
 //	if FActiveList <> Obj then begin
 		FActiveList := Obj;
         try
-			if ListView.Selected <> nil then
-				idx := ListView.Selected.Index
+			if ListViewUC.Selected <> nil then
+				idx := ListViewUC.Selected.Index
 			else
 				idx := -1;
         except
         	idx := -1;
         end;
-		ListView.Items.Count := 0;
-		ListView.Items.Clear;
-		ListView.Selected := nil;
+		ListViewUC.Items.Count := 0;
+		ListViewUC.Items.Clear;
+		ListViewUC.Selected := nil;
 //	ListView.Columns.Clear;
 		if (FActiveContent <> nil) and (FActiveContent.Thread <> nil)
 			and (FActiveContent.Thread.IsLogFile) then begin
 			try
-				Self.Caption := GikoDataModule.CAPTION_NAME + ' - [' + GikoSys.TrimThreadTitle(FActiveContent.Thread.Title) + ']'
+      	SetFormCaption(GikoSys.TrimThreadTitle(FActiveContent.Thread.Title))
 			except
 				on E: Exception do begin
 					//スレ一覧DL後などにFActiveContentの持つThreadが
 					//削除されている場合があるのでここて処理する
 					ReleaseBrowser(FActiveContent);
 					FActiveContent.Thread := nil;
-					Self.Caption := GikoDataModule.CAPTION_NAME;
+					SetFormCaption('');
 				end;
 			end;
 		end else
-			Self.Caption := GikoDataModule.CAPTION_NAME;
+			SetFormCaption('');
 		//Application.Title := CAPTION_NAME;
 
 //		ActiveListColumnSave;
@@ -3190,21 +3435,21 @@ begin
 		Screen.Cursor := crHourGlass;
 		try
 			if Obj is TBBS then begin
-				TListViewUtils.SetCategoryListItem(TBBS(obj), ListView, GikoDM.ListNumberVisibleAction.Checked);
+				TListViewUtils.SetCategoryListItem(TBBS(obj), ListViewUC, GikoDM.ListNumberVisibleAction.Checked);
 			end else if Obj is TCategory then begin
-				TListViewUtils.SetBoardListItem(TCategory(Obj), ListView, GikoDM.ListNumberVisibleAction.Checked);
+				TListViewUtils.SetBoardListItem(TCategory(Obj), ListViewUC, GikoDM.ListNumberVisibleAction.Checked);
 			end else if Obj is TBoard then begin
-				TListViewUtils.SetThreadListItem(TBoard(Obj), ListView,  GikoDM.ListNumberVisibleAction.Checked);
+				TListViewUtils.SetThreadListItem(TBoard(Obj), ListViewUC,  GikoDM.ListNumberVisibleAction.Checked);
 			end;
 		finally
 			Screen.Cursor := crDefault;
 		end;
 
 		if idx >= 0  then begin
-			if idx >= ListView.Items.Count then
-				idx := ListView.Items.Count - 1;
-			ListView.ItemIndex := idx;
-			ListView.ItemFocused := ListView.Items.Item[ idx ];
+			if idx >= ListViewUC.Items.Count then
+				idx := ListViewUC.Items.Count - 1;
+			ListViewUC.ItemIndex := idx;
+			ListViewUC.ItemFocused := ListViewUC.Items.Item[ idx ];
 		end;
 //	end;
 end;
@@ -3258,34 +3503,35 @@ var
 	p: TPoint;
 //	Board: TBoard;
 begin
-	if ListView.Items.Count = 0 then begin
+	if ListViewUC.Items.Count = 0 then begin
 		DefaultDraw := true;
-		ListView.Canvas.Brush.Color := ListView.Color;
-		ListView.Canvas.FillRect(ARect);
+		ListViewUC.Canvas.Brush.Color := ListViewUC.Color;
+		ListViewUC.Canvas.FillRect(ARect);
 
 		case ViewType of
 			gvtAll: begin
-				ListView.Canvas.Font.Color := clWindowText;
+				//ListViewUC.Canvas.Font.Color := clWindowText
+				ListViewUC.Canvas.Font.Color := (not ListViewUC.Color) and $FFFFFF;
 				s := 'このビューにはアイテムがありません。';
 			end;
 			gvtLog: begin
-				ListView.Canvas.Font.Color := clBlue;
+				ListViewUC.Canvas.Font.Color := clBlue;
 				s := 'このビューにはログ有りアイテムがありません。';
 			end;
 			gvtNew: begin
-				ListView.Canvas.Font.Color := clGreen;
+				ListViewUC.Canvas.Font.Color := clGreen;
 				s := 'このビューには新着アイテムがありません。';
 			end;
 			gvtArch: begin
-				ListView.Canvas.Font.Color := clFuchsia;
+				ListViewUC.Canvas.Font.Color := clFuchsia;
 				s := 'このビューにはDAT落ちアイテムがありません。';
 			end;
 			gvtLive: begin
-				ListView.Canvas.Font.Color := clMaroon;
+				ListViewUC.Canvas.Font.Color := clMaroon;
 				s := 'このビューには生存アイテムがありません。';
 			end;
 			gvtUser: begin
-				ListView.Canvas.Font.Color := clNavy;
+				ListViewUC.Canvas.Font.Color := clNavy;
 				s := 'このビューにはタイトルが「%s」を含むアイテムがありません。';
 				if GetActiveList is TBoard then
 					s := Format(s, [TBoard(GetActiveList).ParentCategory.ParenTBBS.SelectText]);
@@ -3296,9 +3542,9 @@ begin
 			end;
 		end;
 
-		p := Point((ListView.ClientWidth div 2) - (ListView.Canvas.TextWidth(s) div 2),
-							 (ListView.ClientHeight div 2) - (ListView.Canvas.TextHeight(s) div 2));
-		ListView.Canvas.TextOut(p.X, p.Y, s);
+		p := Point((ListViewUC.ClientWidth div 2) - (ListViewUC.Canvas.TextWidth(s) div 2),
+							 (ListViewUC.ClientHeight div 2) - (ListViewUC.Canvas.TextHeight(s) div 2));
+		ListViewUC.Canvas.TextOut(p.X, p.Y, s);
 	end else begin
 		DefaultDraw := True;
 	end;
@@ -3372,7 +3618,7 @@ end;
 //履歴から削除
 procedure TGikoForm.DeleteHistory( threadItem: TThreadItem );
 begin
-    FHistoryList.DeleteHistory( threadItem, TreeView, TreeType );
+    FHistoryList.DeleteHistory( threadItem, TreeViewUC, TreeType );
 end;
 
 procedure TGikoForm.ShowBBSTreeOld(
@@ -3383,9 +3629,9 @@ var
 	item		: TMenuItem;
 begin
 	try
-		FavoriteTreeView.Visible := False;
+		FavoriteTreeViewUC.Visible := False;
 		FavoriteToolBar.Hide;
-		TreeView.Visible := True;
+		TreeViewUC.Visible := True;
 
 		b := CabinetSelectPopupMenu.Items.Count - 1;
 		for i := 0 to b do begin
@@ -3412,19 +3658,19 @@ begin
 			FTreeType := gtt2ch;
 			HistoryToolBar.Hide;
 			FActiveBBS := inBBS;
-			TListViewUtils.SetBoardTreeNode(inBBS, TreeView);
-			TreeView.Items.GetFirstNode.Expanded := True;				//?c???[?g?b?v???????J??
+			TListViewUtils.SetBoardTreeNode(inBBS, TreeViewUC);
+			TreeViewUC.Items.GetFirstNode.Expanded := True;				//?c???[?g?b?v???????J??
 			//?c???[??g?b?v?????I????
 			if GetActiveList = nil then
-				TreeView.Selected := TreeView.Items[0]
+				TreeViewUC.Selected := TreeViewUC.Items[0]
 			else begin
-				for i := 0 to TreeView.Items.Count - 1 do begin
-					if TreeView.Items[i].Data = GetActiveList then begin
-						TreeView.Selected := TreeView.Items[i];
+				for i := 0 to TreeViewUC.Items.Count - 1 do begin
+					if TreeViewUC.Items[i].Data = GetActiveList then begin
+						TreeViewUC.Selected := TreeViewUC.Items[i];
 						Exit;
 					end;
 				end;
-				TreeView.Selected := TreeView.Items[0]
+				TreeViewUC.Selected := TreeViewUC.Items[0]
 			end;
 		end;
 	except
@@ -3441,9 +3687,9 @@ var
 begin
 
 	try
-		FavoriteTreeView.Visible := False;
+		FavoriteTreeViewUC.Visible := False;
 		FavoriteToolBar.Hide;
-		TreeView.Visible := True;
+		TreeViewUC.Visible := True;
 
 		b := CabinetSelectPopupMenu.Items.Count - 1;
 		for i := 0 to b do begin
@@ -3471,22 +3717,22 @@ begin
 			FTreeType := gtt2ch;
 			HistoryToolBar.Hide;
 			FActiveBBS := inBBS;
-			TListViewUtils.SetBoardTreeNode(inBBS, TreeView);
-			TreeView.Items.GetFirstNode.Expanded := True;				//ツリートップ項目だけを開く
+			TListViewUtils.SetBoardTreeNode(inBBS, TreeViewUC);
+			TreeViewUC.Items.GetFirstNode.Expanded := True;				//ツリートップ項目だけを開く
 			//ツリーのトップ項目を選択する
 			if GetActiveList = nil then begin
 				try
-					TreeClick( TreeView.Items[0] );
+					TreeClick( TreeViewUC.Items[0] );
 				except
 				end;
 			end else begin
-				for i := 0 to TreeView.Items.Count - 1 do begin
-					if TreeView.Items[i].Data = GetActiveList then begin
-						TreeClick( TreeView.Items[i] );
+				for i := 0 to TreeViewUC.Items.Count - 1 do begin
+					if TreeViewUC.Items[i].Data = GetActiveList then begin
+						TreeClick( TreeViewUC.Items[i] );
 						Exit;
 					end;
 				end;
-				TreeClick( TreeView.Items[0] );
+				TreeClick( TreeViewUC.Items[0] );
 			end;
 		end;
 	except
@@ -3514,8 +3760,8 @@ begin
 	// BBS...BBS, History, Favorite
 	GikoSys.Setting.CabinetIndex := CabinetSelectPopupMenu.Items.Count - 2;
 
-	FavoriteTreeView.Visible := False;
-	TreeView.Visible := True;
+	FavoriteTreeViewUC.Visible := False;
+	TreeViewUC.Visible := True;
 
 	GikoDM.CabinetBBSAction.Checked := False;
 	GikoDM.CabinetFavoriteAction.Checked := False;
@@ -3534,7 +3780,7 @@ begin
 		FTreeType := gttHistory;
 		HistoryToolBar.Show;
 		FavoriteToolBar.Hide;
-        FHistoryList.SetTreeNode( TreeView );
+		FHistoryList.SetTreeNode( TreeViewUC );
 		CabinetSelectToolButton.Caption := '履歴リスト';
 	end;
 end;
@@ -3559,28 +3805,28 @@ begin
 			ChangingEvent := nil;
 
 			if not CallEvent then begin
-				ChangeEvent := TreeView.OnChange;
-				ChangingEvent := TreeView.OnChanging;
+				ChangeEvent := TreeViewUC.OnChange;
+				ChangingEvent := TreeViewUC.OnChanging;
 			end;
 			try
 				if not CallEvent then begin
-					TreeView.OnChange := nil;
-					TreeView.OnChanging := nil;
+					TreeViewUC.OnChange := nil;
+					TreeViewUC.OnChanging := nil;
 				end;
 				//Application.ProcessMessages;
-				for i := 0 to TreeView.Items.Count - 1 do begin
-					if TreeView.Items[i].Data = Item then begin
-						TreeView.Items[i].Selected := True;
+				for i := 0 to TreeViewUC.Items.Count - 1 do begin
+					if TreeViewUC.Items[i].Data = Item then begin
+						TreeViewUC.Items[i].Selected := True;
 						if CallEvent then
-							TreeClick(TreeView.Items[i]);
+							TreeClick(TreeViewUC.Items[i]);
 						Break;
 					end;
 				end;
 				//Application.ProcessMessages;
 			finally
 				if not CallEvent then begin
-					TreeView.OnChange := ChangeEvent;
-					TreeView.OnChanging := ChangingEvent;
+					TreeViewUC.OnChange := ChangeEvent;
+					TreeViewUC.OnChanging := ChangingEvent;
 				end;
 			end;
 		end;
@@ -3588,7 +3834,7 @@ begin
 		if Item <> FActiveList then begin
 			ActiveListColumnSave;
 			if (Item is TBBS) or (Item is TCategory) then begin
-				ListView.Columns.Clear;
+				ListViewUC.Columns.Clear;
 				SetActiveList( Item );
 			end else if Item is TBoard then begin
 				if not TBoard( Item ).IsThreadDatRead then begin
@@ -3611,13 +3857,13 @@ begin
 			if GikoSys.Setting.ListWidthState = glsMax then begin
 				GikoDM.BrowserMinAction.Execute;
 				if GikoForm.Visible then
-					ListView.SetFocus;
+					ListViewUC.SetFocus;
 			end;
 		end else begin
 			if GikoSys.Setting.ListHeightState = glsMax then begin
 				GikoDM.BrowserMinAction.Execute;
 				if GikoForm.Visible then
-					ListView.SetFocus;
+					ListViewUC.SetFocus;
 			end;
 		end;
 	end;
@@ -3635,14 +3881,14 @@ begin
 	mbMiddle:
 		begin
 			if not (GetActiveList is TBoard) then Exit;
-			listItem := ListView.GetItemAt( X, Y );
+			listItem := ListViewUC.GetItemAt( X, Y );
 			if listItem = nil then Exit;
 			if not (TObject(listItem.Data) is TThreadItem) then Exit;
 
 			threadItem := TThreadItem(ListItem.Data);
 			InsertBrowserTab(threadItem, False);
 			if threadItem.IsLogFile then
-				ListView.UpdateItems(listItem.Index, listItem.Index);
+				ListViewUC.UpdateItems(listItem.Index, listItem.Index);
 		end;
 	mbLeft:
 		begin
@@ -3656,7 +3902,7 @@ begin
 		begin
 			pos.X := X;
 			pos.Y := Y;
-			Windows.ClientToScreen( ListView.Handle, pos );
+			Windows.ClientToScreen( ListViewUC.Handle, pos );
 			ListPopupMenu.Popup( pos.X, pos.Y );
 		end;
 	end;
@@ -3668,15 +3914,15 @@ var
 	ListItem: TListItem;
 	ThreadItem: TThreadItem;
 begin
-	if ListView.SelCount <> 1 then Exit;
-	ListItem := ListView.Selected;
+	if ListViewUC.SelCount <> 1 then Exit;
+	ListItem := ListViewUC.Selected;
 	if ListItem = nil then Exit;
 	if not (TObject(ListItem.Data) is TThreadItem) then Exit;
 
 	ThreadItem := TThreadItem(ListItem.Data);
 	if ThreadItem.IsLogFile then begin
 		InsertBrowserTab(ThreadItem);
-		ListView.UpdateItems(ListItem.Index, ListItem.Index);
+		ListViewUC.UpdateItems(ListItem.Index, ListItem.Index);
 	end else begin
 		InsertBrowserTab(ThreadItem);
 	end;
@@ -3701,15 +3947,15 @@ var
 begin
 	shiftDown := (ssShift in Shift);
 
-	if ListView.Selected = nil then Exit;
+	if ListViewUC.Selected = nil then Exit;
 
-	if TObject(ListView.Selected.Data) is TCategory then begin
-		SelectTreeNode(ListView.Selected.Data, True);
-	end else if TObject(ListView.Selected.Data) is TBoard then begin
-		SelectTreeNode(ListView.Selected.Data, True)
-	end else if TObject(ListView.Selected.Data) is TThreadItem then begin
+	if TObject(ListViewUC.Selected.Data) is TCategory then begin
+		SelectTreeNode(ListViewUC.Selected.Data, True);
+	end else if TObject(ListViewUC.Selected.Data) is TBoard then begin
+		SelectTreeNode(ListViewUC.Selected.Data, True)
+	end else if TObject(ListViewUC.Selected.Data) is TThreadItem then begin
 		Application.ProcessMessages;
-		ThreadItem := TThreadItem(ListView.Selected.Data);
+		ThreadItem := TThreadItem(ListViewUC.Selected.Data);
 		DownloadContent(ThreadItem, shiftDown);
 
 		if GikoSys.Setting.BrowserAutoMaximize = gbmDoubleClick then begin
@@ -3731,7 +3977,7 @@ end;
 procedure TGikoForm.BrowserMovement(const AName: string);
 begin
 	// Access Violation が起きる事があるので今後要チェック
-	if(BrowserTab.Tabs.Count > 0) and (BrowserTab.TabIndex >= 0)
+	if(BrowserTabUC.Tabs.Count > 0) and (BrowserTabUC.TabIndex >= 0)
 		and (FActiveContent <> nil) then begin
 		FActiveContent.Move(AName);
 	end;
@@ -3739,7 +3985,7 @@ end;
 //現在表示しているスレッドをスクロール
 procedure TGikoForm.BrowserMovement(scroll: Integer);
 begin
-	if(BrowserTab.Tabs.Count > 0) and (BrowserTab.TabIndex >= 0)
+	if(BrowserTabUC.Tabs.Count > 0) and (BrowserTabUC.TabIndex >= 0)
 		and (FActiveContent <> nil) then begin
 		FActiveContent.Move(scroll);
 	end;
@@ -3753,8 +3999,8 @@ begin
 	end else if TObject(Node.Data) is TBoard then begin
 		TBoard(Node.Data).NodeExpand := False;
 	end;
-	if (TreeView.Selected <> nil) and (TreeView.Selected = Node) then begin
-    	TreeClick(TreeView.Selected);
+	if (TreeViewUC.Selected <> nil) and (TreeViewUC.Selected = Node) then begin
+    	TreeClick(TreeViewUC.Selected);
 	end;
 end;
 
@@ -3775,10 +4021,10 @@ var
 begin
 	List.Clear;
 	List.Capacity := 0;
-	TmpListItem := ListView.Selected;
+	TmpListItem := ListViewUC.Selected;
 	while TmpListItem <> nil do begin
 		List.Add(TmpListItem.Data);
-		TmpListItem := ListView.GetNextItem(TmpListItem, sdAll, [isSelected]);
+		TmpListItem := ListViewUC.GetNextItem(TmpListItem, sdAll, [isSelected]);
 	end;
 
 end;
@@ -3786,7 +4032,7 @@ end;
 procedure TGikoForm.FormResize(Sender: TObject);
 begin
 
-	MessageListView.Column[0].Width := MessageListView.ClientWidth - 32;
+	MessageListViewUC.Column[0].Width := MessageListViewUC.ClientWidth - 32;
 	MainCoolBar.Width := TopPanel.Width - TopRightPanel.Width;
 
 	if GikoSys.Setting.ListOrientation = gloHorizontal then begin
@@ -3812,9 +4058,9 @@ var
 	i: Integer;
 begin
 	FTabHintIndex := -1;
-	for i := 0 to BrowserTab.Tabs.Count - 1 do begin
-		if TBrowserRecord(BrowserTab.Tabs.Objects[i]) = BrowserRecord then begin
-            DeleteTab(i, BrowserTab.TabIndex);
+	for i := 0 to BrowserTabUC.Tabs.Count - 1 do begin
+		if TBrowserRecord(BrowserTabUC.Tabs.Objects[i]) = BrowserRecord then begin
+            DeleteTab(i, BrowserTabUC.TabIndex);
 			Break;
 		end;
 	end;
@@ -3824,9 +4070,9 @@ var
 	i: Integer;
 begin
 	FTabHintIndex := -1;
-	for i := 0 to BrowserTab.Tabs.Count - 1 do begin
-		if TBrowserRecord(BrowserTab.Tabs.Objects[i]).Thread = ThreadItem then begin
-            DeleteTab(i, BrowserTab.TabIndex);
+	for i := 0 to BrowserTabUC.Tabs.Count - 1 do begin
+		if TBrowserRecord(BrowserTabUC.Tabs.Objects[i]).Thread = ThreadItem then begin
+            DeleteTab(i, BrowserTabUC.TabIndex);
 			Break;
 		end;
 	end;
@@ -3837,7 +4083,7 @@ var
     doc: OleVariant;
     j: Integer;
 begin
-    browserRec := TBrowserRecord(BrowserTab.Tabs.Objects[index]);
+    browserRec := TBrowserRecord(BrowserTabUC.Tabs.Objects[index]);
     try
         if browserRec.Browser <> nil then begin
             doc := browserRec.Browser.OleObject.Document;
@@ -3855,44 +4101,44 @@ begin
             FBrowsers.Move(j, BROWSER_COUNT - 1);
     end;
 
-    BrowserTab.Tabs.BeginUpdate;
+    BrowserTabUC.Tabs.BeginUpdate;
     try
         GikoSys.Setting.LastCloseTabURL := browserRec.Thread.URL;
         browserRec.Free;
-        if ( BrowserTab.Tabs.Count - 1 = index ) and
-            ( BrowserTab.TabRect(index).Left
-                <= BrowserTab.DisplayRect.Left ) then begin
-            BrowserTab.ScrollTabs(-1);
+        if ( BrowserTabUC.Tabs.Count - 1 = index ) and
+            ( BrowserTabUC.TabRect(index).Left
+                <= BrowserTabUC.DisplayRect.Left ) then begin
+            BrowserTabUC.ScrollTabs(-1);
         end;
-        BrowserTab.Tabs.Delete(index);
+        BrowserTabUC.Tabs.Delete(index);
         if selectIndex > index then begin
-            BrowserTab.TabIndex := selectIndex - 1;
+            BrowserTabUC.TabIndex := selectIndex - 1;
         end else begin
-            if BrowserTab.Tabs.Count -1 >= selectIndex then
-                BrowserTab.TabIndex := selectIndex
+            if BrowserTabUC.Tabs.Count -1 >= selectIndex then
+                BrowserTabUC.TabIndex := selectIndex
             else
-                BrowserTab.TabIndex := BrowserTab.Tabs.Count - 1;
+                BrowserTabUC.TabIndex := BrowserTabUC.Tabs.Count - 1;
         end;
     finally
-        BrowserTab.Tabs.EndUpdate;
+        BrowserTabUC.Tabs.EndUpdate;
     end;
-    if BrowserTab.Tabs.Count = 0 then begin
+    if BrowserTabUC.Tabs.Count = 0 then begin
         BrowserNullTab.Thread := nil;
     end;
 
-    if(BrowserTab.TabIndex <> -1) and
-        ( TBrowserRecord(BrowserTab.Tabs.Objects[BrowserTab.TabIndex]).Browser = nil) then begin
+    if(BrowserTabUC.TabIndex <> -1) and
+        ( TBrowserRecord(BrowserTabUC.Tabs.Objects[BrowserTabUC.TabIndex]).Browser = nil) then begin
         // 一番古いブラウザを開放する
         ReleaseOldestBrowser;
 
-        TBrowserRecord(BrowserTab.Tabs.Objects[BrowserTab.TabIndex]).Browser
+        TBrowserRecord(BrowserTabUC.Tabs.Objects[BrowserTabUC.TabIndex]).Browser
              :=  TWebBrowser(FBrowsers[BROWSER_COUNT - 1]);
-        TBrowserRecord(BrowserTab.Tabs.Objects[BrowserTab.TabIndex]).Repaint := true;
+        TBrowserRecord(BrowserTabUC.Tabs.Objects[BrowserTabUC.TabIndex]).Repaint := true;
         FBrowsers.Move(BROWSER_COUNT - 1, 0);
     end;
 
     if( FActiveContent = nil) then
-        BrowserTab.OnChange(nil);
+        BrowserTabUC.OnChange(nil);
 end;
 function TGikoForm.Hook(var Message: TMessage): Boolean;
 begin
@@ -3909,10 +4155,10 @@ end;
 
 procedure TGikoForm.ListPopupMenuPopup(Sender: TObject);
 var
-    bBoard, bCategory : Boolean;
+	bBoard, bCategory : Boolean;
 begin
-    bBoard := (GetActiveList is TBoard);
-    bCategory := (GetActiveList is TCategory);
+	bBoard := (GetActiveList is TBoard);
+	bCategory := (GetActiveList is TCategory);
 	ItemRoundPMenu.Visible := bBoard;
 	ItemReservPMenu.Visible := bBoard;
 	LPMSep01.Visible := bBoard;
@@ -3929,14 +4175,14 @@ begin
 	LPMSep06.Visible := bCategory or bBoard;
 	BoardFavoriteAddMenu.Visible := bCategory;
 	ThreadFavoriteAddMenu.Visible := bBoard;
-    SaveThreadFile.Visible := bBoard;
+	SaveThreadFile.Visible := bBoard;
 	AddRoundNameMenu(ItemReservPMenu);
 	AddRoundNameMenu(ListReservPMenu);
 end;
 
 procedure TGikoForm.TreePopupMenuPopup(Sender: TObject);
 begin
-	FClickNode := TreeView.Selected;
+	FClickNode := TreeViewUC.Selected;
 	if FClickNode = nil then begin
 		TreeSelectThreadPupupMenu.Visible := False;
 		TreeSelectBoardPupupMenu.Visible := False;
@@ -3947,7 +4193,7 @@ begin
 		TreeSelectFavoriteAddPupupMenu.Visible := False;
 		TreeSelectLogDeleteSeparator.Visible := False;
 		TreeSelectLogDeletePopupMenu.Visible := False;
-        SearchBoardName.Visible := False;
+		SearchBoardName.Visible := False;
 	end else if TObject(FClickNode.Data) is TBoard then begin
 		TreeSelectThreadPupupMenu.Visible := False;
 		TreeSelectBoardPupupMenu.Visible := True;
@@ -3958,7 +4204,7 @@ begin
 		TreeSelectFavoriteAddPupupMenu.Visible := True;
 		TreeSelectLogDeleteSeparator.Visible := False;
 		TreeSelectLogDeletePopupMenu.Visible := False;
-        SearchBoardName.Visible := True;
+		SearchBoardName.Visible := True;
 	end else if TObject(FClickNode.Data) is TFavoriteBoardItem then begin
 		TreeSelectThreadPupupMenu.Visible := False;
 		TreeSelectBoardPupupMenu.Visible := True;
@@ -3969,7 +4215,7 @@ begin
 		TreeSelectFavoriteAddPupupMenu.Visible := True;
 		TreeSelectLogDeleteSeparator.Visible := False;
 		TreeSelectLogDeletePopupMenu.Visible := False;
-        SearchBoardName.Visible := False;
+		SearchBoardName.Visible := False;
 	end else if (TObject(FClickNode.Data) is TThreadItem) then begin
 		TreeSelectThreadPupupMenu.Visible := True;
 		TreeSelectBoardPupupMenu.Visible := False;
@@ -3980,7 +4226,7 @@ begin
 		TreeSelectFavoriteAddPupupMenu.Visible := True;
 		TreeSelectLogDeleteSeparator.Visible := True;
 		TreeSelectLogDeletePopupMenu.Visible := True;
-        SearchBoardName.Visible := False;
+		SearchBoardName.Visible := False;
 	end else if (TObject(FClickNode.Data) is TFavoriteThreadItem) then begin
 		TreeSelectThreadPupupMenu.Visible := True;
 		TreeSelectBoardPupupMenu.Visible := False;
@@ -3991,7 +4237,7 @@ begin
 		TreeSelectFavoriteAddPupupMenu.Visible := True;
 		TreeSelectLogDeleteSeparator.Visible := True;
 		TreeSelectLogDeletePopupMenu.Visible := True;
-        SearchBoardName.Visible := False;
+		SearchBoardName.Visible := False;
 	end else if (TObject(FClickNode.Data) is TCategory) then begin
 		TreeSelectThreadPupupMenu.Visible := False;
 		TreeSelectBoardPupupMenu.Visible := False;
@@ -4002,7 +4248,7 @@ begin
 		TreeSelectFavoriteAddPupupMenu.Visible := False;
 		TreeSelectLogDeleteSeparator.Visible := False;
 		TreeSelectLogDeletePopupMenu.Visible := False;
-        SearchBoardName.Visible := True;
+		SearchBoardName.Visible := True;
 	end else if FClickNode.IsFirstNode then begin
 		TreeSelectThreadPupupMenu.Visible := False;
 		TreeSelectBoardPupupMenu.Visible := False;
@@ -4013,7 +4259,7 @@ begin
 		TreeSelectFavoriteAddPupupMenu.Visible := False;
 		TreeSelectLogDeleteSeparator.Visible := False;
 		TreeSelectLogDeletePopupMenu.Visible := False;
-        SearchBoardName.Visible := True;
+		SearchBoardName.Visible := True;
 	end else begin
 		TreeSelectThreadPupupMenu.Visible := False;
 		TreeSelectBoardPupupMenu.Visible := False;
@@ -4024,7 +4270,7 @@ begin
 		TreeSelectFavoriteAddPupupMenu.Visible := False;
 		TreeSelectLogDeleteSeparator.Visible := False;
 		TreeSelectLogDeletePopupMenu.Visible := False;
-        SearchBoardName.Visible := False;
+		SearchBoardName.Visible := False;
 	end;
 end;
 
@@ -4037,11 +4283,11 @@ var
 	idx: Integer;
 	wkIntSt: Integer;
 	wkIntTo: Integer;
-    BNum, BRes: string;
-    threadItem: TThreadItem;
-    aElement : IHTMLElement;
-    senderBrowser : TWebBrowser;
-    doc : IHTMLDocument2;
+	BNum, BRes: string;
+	threadItem: TThreadItem;
+	aElement : IHTMLElement;
+	senderBrowser : TWebBrowser;
+	doc : IHTMLDocument2;
 begin
 {$IFDEF DEBUG}
 	Writeln(IntToStr(Integer(ppDisp)));
@@ -4051,8 +4297,8 @@ begin
 	if not( TObject(Sender) is TWebBrowser )then
 		Exit;
 
-    senderBrowser := TWebBrowser(Sender);
-    doc := senderBrowser.ControlInterface.Document as IHTMLDocument2;
+	senderBrowser := TWebBrowser(Sender);
+	doc := senderBrowser.ControlInterface.Document as IHTMLDocument2;
 	if not Assigned(doc) then
 		Exit;
 
@@ -4088,32 +4334,32 @@ begin
 			end;
 
 			if wkIntSt <> 0 then begin
-            	FActiveContent.IDAnchorPopup('');
-                MoveHisotryManager.pushItem(FActiveContent);
-                if (Sender is TResPopupBrowser) then begin
-                    TResPopupBrowser(Sender).ChildClear;
-                    OpenThreadItem(
-                        GetActiveContent(true),
-                        GetActiveContent(true).URL + '&st=' +
-                             IntToStr(wkIntSt) + '&to=' + IntToStr(wkIntSt));
-                end else begin
+				FActiveContent.IDAnchorPopup('');
+				MoveHisotryManager.pushItem(FActiveContent);
+				if (Sender is TResPopupBrowser) then begin
+					TResPopupBrowser(Sender).ChildClear;
+					OpenThreadItem(
+						GetActiveContent(true),
+						GetActiveContent(true).URL + '&st=' +
+								IntToStr(wkIntSt) + '&to=' + IntToStr(wkIntSt));
+				end else begin
 					BrowserMovement(IntToStr(wkIntSt));
-                end;
-            end;
+				end;
+			end;
 		end;
 	end else begin
-        ////'http://be.2ch.net/test/p.php?i='+id+'&u=d:'+bas+num
+		////'http://be.2ch.net/test/p.php?i='+id+'&u=d:'+bas+num
 
 		URL := GikoSys.GetHRefText(Html);
 		URL := GikoSys.HTMLDecode(URL);
         if AnsiPos('BE:', URL) = 1 then begin
 			BNum := Copy(URL, 4, AnsiPos('/', URL) - 4);
 			BRes := Copy(URL, AnsiPos('/', URL) + 1,  Length(URL));
-            threadItem := FActiveContent.Thread;
-            if threadItem = nil then Exit;
-            URL := BE_PHP_URL + BNum + '&u=d'
-            	+ CustomStringReplace(threadItem.URL, 'l50', '') + BRes;
-        end;
+			threadItem := FActiveContent.Thread;
+			if threadItem = nil then Exit;
+			URL := BE_PHP_URL + BNum + '&u=d'
+				+ CustomStringReplace(threadItem.URL, 'l50', '') + BRes;
+		end;
 
 		if( AnsiPos('http://', URL) = 1) or (AnsiPos('https://', URL) = 1) or
 			( AnsiPos('ftp://', URL) = 1) then begin
@@ -4122,23 +4368,38 @@ begin
 				idx := AddressComboBox.Items.IndexOf(URL);
 				if idx = -1 then begin
 					AddressComboBox.Items.Insert(0, URL);
-					if AddressComboBox.Items.Count > GikoSys.Setting.AddressHistoryCount then
-						AddressComboBox.Items.Delete(AddressComboBox.Items.Count - 1);
+					AddressItemsSetCount;
 				end else begin
 					AddressComboBox.Items.Delete(idx);
 					AddressComboBox.Items.Insert(0, URL);
 				end;
 			end;
-            if (Sender is TResPopupBrowser) then begin
-                TResPopupBrowser(Sender).ChildClear
-            end;
+			if (Sender is TResPopupBrowser) then begin
+				TResPopupBrowser(Sender).ChildClear
+			end;
 
-            MoveHisotryManager.pushItem(FActiveContent);
+			MoveHisotryManager.pushItem(FActiveContent);
 			MoveToURL( URL );
 		end;
 	end;
 
 end;
+
+//! アドレスコンボボックスリスト件数超過項目削除
+procedure TGikoForm.AddressItemsSetCount;
+var
+	i: Integer;
+begin;
+	try
+		for i := AddressComboBox.Items.Count - 1 downto 0 do begin
+			if GikoSys.Setting.AddressHistoryCount >= AddressComboBox.Items.Count then
+				Break;
+			AddressComboBox.Items.Delete(i);
+		end;
+	except
+	end;
+end;
+
 
 procedure TGikoForm.ListSplitterMoved(Sender: TObject);
 begin
@@ -4193,18 +4454,18 @@ var
 	j: Integer;
 	idx: Integer;
 begin
-	BrowserTab.Tabs.BeginUpdate;
+	BrowserTabUC.Tabs.BeginUpdate;
 	try
-		if not BrowserTab.Dragging then begin
+		if not BrowserTabUC.Dragging then begin
 			FTabHintIndex := -1;
-			BrowserTab.Hint := '';
-			idx := BrowserTab.TabIndex;
+			BrowserTabUC.Hint := '';
+			idx := BrowserTabUC.TabIndex;
 			if idx = -1 then begin
 				SetContent(BrowserNullTab);
 
-			end else if(BrowserTab.Tabs.Objects[idx] <> nil) and (BrowserTab.Tabs.Objects[idx] is TBrowserRecord) then begin
-				if TBrowserRecord(BrowserTab.Tabs.Objects[idx]).Browser <> nil then begin
-					j := FBrowsers.IndexOf(TBrowserRecord(BrowserTab.Tabs.Objects[idx]).Browser);
+			end else if(BrowserTabUC.Tabs.Objects[idx] <> nil) and (BrowserTabUC.Tabs.Objects[idx] is TBrowserRecord) then begin
+				if TBrowserRecord(BrowserTabUC.Tabs.Objects[idx]).Browser <> nil then begin
+					j := FBrowsers.IndexOf(TBrowserRecord(BrowserTabUC.Tabs.Objects[idx]).Browser);
 					if j <> -1 then
 						FBrowsers.Move(j ,0);
 				end else begin
@@ -4216,26 +4477,26 @@ begin
                     // 一番古いブラウザを開放する
                     ReleaseOldestBrowser;
 
-					TBrowserRecord(BrowserTab.Tabs.Objects[idx]).Browser := TWebBrowser(FBrowsers[BROWSER_COUNT - 1]);
-					TBrowserRecord(BrowserTab.Tabs.Objects[idx]).Repaint := true;
+					TBrowserRecord(BrowserTabUC.Tabs.Objects[idx]).Browser := TWebBrowser(FBrowsers[BROWSER_COUNT - 1]);
+					TBrowserRecord(BrowserTabUC.Tabs.Objects[idx]).Repaint := true;
 					FBrowsers.Move(BROWSER_COUNT - 1, 0);
 				end;
-				MoveWindow(TBrowserRecord(BrowserTab.Tabs.Objects[idx]).Browser.Handle, 0, 0, BrowserPanel.Width, BrowserPanel.Height, false);
-				TOleControl(TBrowserRecord(BrowserTab.Tabs.Objects[idx]).Browser).BringToFront;
-				SetContent(TBrowserRecord(BrowserTab.Tabs.Objects[idx]));
+				MoveWindow(TBrowserRecord(BrowserTabUC.Tabs.Objects[idx]).Browser.Handle, 0, 0, BrowserPanel.Width, BrowserPanel.Height, false);
+				TOleControl(TBrowserRecord(BrowserTabUC.Tabs.Objects[idx]).Browser).BringToFront;
+				SetContent(TBrowserRecord(BrowserTabUC.Tabs.Objects[idx]));
 
 				if (GikoSys.Setting.URLDisplay) and (GetActiveContent <> nil) then
 					AddressComboBox.Text := GetActiveContent.URL;
 
-				if ((TreeView.Visible) and (TreeView.Focused)) or ((FavoriteTreeView.Visible) and (FavoriteTreeView.Focused)) or
-					(ListView.Focused) or (SelectComboBox.Focused) or (AddressComboBox.Focused)
+				if ((TreeViewUC.Visible) and (TreeViewUC.Focused)) or ((FavoriteTreeViewUC.Visible) and (FavoriteTreeViewUC.Focused)) or
+					(ListViewUC.Focused) or (SelectComboBoxUC.Focused) or (AddressComboBox.Focused)
 				then
 				else
 					GikoDM.SetFocusForBrowserAction.Execute;
 			end;
 		end;
 	finally
-		BrowserTab.Tabs.EndUpdate;
+		BrowserTabUC.Tabs.EndUpdate;
 	end;
 end;
 
@@ -4251,10 +4512,10 @@ begin
 		// マウス中ボタン
 		GetCursorPos(p);
 		p2 := p;
-		p := BrowserTab.ScreenToClient(p);
-		idx := BrowserTab.IndexOfTabAt(p.X, p.Y);
+		p := BrowserTabUC.ScreenToClient(p);
+		idx := BrowserTabUC.IndexOfTabAt(p.X, p.Y);
 		if idx <> -1 then
-			DeleteTab(TBrowserRecord(BrowserTab.Tabs.Objects[idx]));
+			DeleteTab(TBrowserRecord(BrowserTabUC.Tabs.Objects[idx]));
 	end else if Button = mbLeft then begin
 		FDragWFirst := true;
 		FMouseDownPos.X := X;
@@ -4269,41 +4530,41 @@ var
 begin
 	BrowserBottomPanel.AutoSize := False;
 	if GikoSys.Setting.BrowserTabVisible then begin
-		BrowserTab.Hide;
-		BrowserTab.Tabs.BeginUpdate;
+		BrowserTabUC.Hide;
+		BrowserTabUC.Tabs.BeginUpdate;
 		try
 			if GikoSys.Setting.BrowserTabStyle = gtsTab then begin
-				BrowserTab.Style := tsTabs;
+				BrowserTabUC.Style := tsTabs;
 				if GikoSys.Setting.BrowserTabPosition = gtpTop then
-					BrowserTab.TabPosition := tpTop
+					BrowserTabUC.TabPosition := tpTop
 				else
-					BrowserTab.TabPosition := tpBottom;
+					BrowserTabUC.TabPosition := tpBottom;
 			end else if GikoSys.Setting.BrowserTabStyle = gtsButton then begin
-				BrowserTab.TabPosition := tpTop;
-				BrowserTab.Style := tsButtons;
+				BrowserTabUC.TabPosition := tpTop;
+				BrowserTabUC.Style := tsButtons;
 			end else begin
-				BrowserTab.TabPosition := tpTop;
-				BrowserTab.Style := tsFlatButtons
+				BrowserTabUC.TabPosition := tpTop;
+				BrowserTabUC.Style := tsFlatButtons
 			end;
 
 			if GikoSys.Setting.BrowserTabPosition = gtpTop then begin
-				BrowserTab.Parent := BrowserTabToolBar;
+				BrowserTabUC.Parent := BrowserTabToolBar;
 				BrowserBottomPanel.Hide;
 				CoolBand := GetCoolBand(BrowserCoolBar, BrowserTabToolBar);
 				if CoolBand <> nil then
 					CoolBand.Visible := True;
 			end else begin
-				BrowserTab.Parent := BrowserBottomPanel;
-				BrowserTab.Top := 0;
-				BrowserTab.Left := 0;
+				BrowserTabUC.Parent := BrowserBottomPanel;
+				BrowserTabUC.Top := 0;
+				BrowserTabUC.Left := 0;
 				BrowserBottomPanel.Show;
 				CoolBand := GetCoolBand(BrowserCoolBar, BrowserTabToolBar);
 				if CoolBand <> nil then
 					CoolBand.Visible := False;
 			end;
 		finally
-			BrowserTab.Tabs.EndUpdate;
-			BrowserTab.Show;
+			BrowserTabUC.Tabs.EndUpdate;
+			BrowserTabUC.Show;
 		end;
 	end else begin
 		CoolBand := GetCoolBand(BrowserCoolBar, BrowserTabToolBar);
@@ -4319,8 +4580,8 @@ procedure TGikoForm.BrowserTabDragOver(Sender, Source: TObject; X,
 var
 	idx: Integer;
 begin
-	idx := BrowserTab.IndexOfTabAt(X, Y);
-	Accept := (Source = BrowserTab) and (BrowserTab.TabIndex <> idx);
+	idx := BrowserTabUC.IndexOfTabAt(X, Y);
+	Accept := (Source = BrowserTabUC) and (BrowserTabUC.TabIndex <> idx);
 end;
 
 procedure TGikoForm.BrowserTabDragDrop(Sender, Source: TObject; X,
@@ -4329,9 +4590,9 @@ var
 	idx: Integer;
 begin
     FDragWFirst := False;
-	idx := BrowserTab.IndexOfTabAt(X, Y);
+	idx := BrowserTabUC.IndexOfTabAt(X, Y);
 	if idx <> -1 then
-		BrowserTab.Tabs.Move(BrowserTab.TabIndex, idx);
+		BrowserTabUC.Tabs.Move(BrowserTabUC.TabIndex, idx);
 end;
 
 procedure TGikoForm.BrowserTabMouseMove(Sender: TObject;
@@ -4341,26 +4602,26 @@ var
 	ThreadItem: TThreadItem;
 begin
 
-	TabIdx := BrowserTab.IndexOfTabAt(x, y);
+	TabIdx := BrowserTabUC.IndexOfTabAt(x, y);
 
 	if ( ssLeft in Shift ) then begin
         if (FDragWFirst) then begin
-			BrowserTab.EndDrag(false);
-			BrowserTab.BeginDrag(false, DandD_THRESHOLD);
+			BrowserTabUC.EndDrag(false);
+			BrowserTabUC.BeginDrag(false, DandD_THRESHOLD);
         end;
 	end else begin
-		BrowserTab.EndDrag(false);
+		BrowserTabUC.EndDrag(false);
 		FDragWFirst := false;
 	end;
 	
 	if (FTabHintIndex <> TabIdx) and (TabIdx <> -1) then begin
 		Application.CancelHint;
-		ThreadItem := TBrowserRecord(BrowserTab.Tabs.Objects[TabIdx]).Thread;
-		if ThreadItem.Title <> BrowserTab.Tabs[TabIdx] then begin
-			BrowserTab.Hint := ThreadItem.Title;
+		ThreadItem := TBrowserRecord(BrowserTabUC.Tabs.Objects[TabIdx]).Thread;
+		if ThreadItem.Title <> BrowserTabUC.Tabs[TabIdx] then begin
+			BrowserTabUC.Hint := EncAnsiToWideString(ThreadItem.Title);
 			Application.ShowHint := True;
 		end else begin
-			BrowserTab.Hint := '';
+			BrowserTabUC.Hint := '';
 			Application.ShowHint := True;
 		end;
 		FTabHintIndex := TabIdx;
@@ -4378,10 +4639,10 @@ var
 begin
 	if TObject(Sender) is TWebBrowser then begin
 		BrowserRecord := nil;
-		if TWebBrowser(Sender) <> Browser then begin
-			for i := BrowserTab.Tabs.Count - 1 downto 0 do begin
-				if TBrowserRecord(BrowserTab.Tabs.Objects[i]).Browser = TWebBrowser(Sender) then begin
-						BrowserRecord := TBrowserRecord(BrowserTab.Tabs.Objects[i]);
+		if (TWebBrowser(Sender) <> Browser) and (BrowserTabUC <> nil) then begin
+			for i := BrowserTabUC.Tabs.Count - 1 downto 0 do begin
+				if TBrowserRecord(BrowserTabUC.Tabs.Objects[i]).Browser = TWebBrowser(Sender) then begin
+						BrowserRecord := TBrowserRecord(BrowserTabUC.Tabs.Objects[i]);
 						break;
 				end;
 			end;
@@ -4415,7 +4676,7 @@ begin
 			if (threadItem.JumpAddress > 0) then begin
 				if threadItem.UnRead then begin
 					threadItem.UnRead := False;
-					TreeView.Refresh;
+					TreeViewUC.Refresh;
 					RefreshListView(threadItem);
 				end;
 				// スクロール先が取得外のレスの時は終端に移動
@@ -4429,7 +4690,7 @@ begin
 
 			end else if threadItem.UnRead then begin
 				threadItem.UnRead := False;
-				TreeView.Refresh;
+				TreeViewUC.Refresh;
 				BrowserRecord.Move('new');
 				RefreshListView(threadItem);
 			end else if threadItem.ScrollTop <> 0 then begin
@@ -4528,7 +4789,7 @@ begin
 	if Sender is TMenuItem then begin
 		MenuItem := TMenuItem(Sender);
 		SetSelectItemRound(True, StripHotKey(MenuItem.Caption), TMenuItem(Sender).Parent.Name);
-		ListView.Refresh;
+		ListViewUC.Refresh;
 	end;
 end;
 
@@ -4549,8 +4810,8 @@ end;
 
 procedure TGikoForm.BrowserTabToolBarResize(Sender: TObject);
 begin
-	if BrowserTab.Parent = BrowserTabToolBar then
-		BrowserTab.Width := BrowserTabToolBar.Width;
+	if BrowserTabUC.Parent = BrowserTabToolBar then
+		BrowserTabUC.Width := BrowserTabToolBar.Width;
 end;
 
 procedure TGikoForm.WMSettingChange(var Message: TWMWinIniChange);
@@ -4596,7 +4857,7 @@ begin
 	end;
 end;
 
-procedure TGikoForm.CreateFavMenu(Node: TTreeNode; MenuItem: TMenuItem);
+procedure TGikoForm.CreateFavMenu(Node: TTntTreeNode; MenuItem: TMenuItem);
 var
 	i: Integer;
 	NewMenu: array of TMenuItem;
@@ -4607,7 +4868,8 @@ begin
 	while ( Node <> nil ) do begin
 		NewMenu[i] := TFavoriteMenuItem.Create(nil);
 		NewMenu[i].AutoHotkeys := maAutomatic;
-		NewMenu[i].Caption := CustomStringReplace(Node.Text, '&', '&&');
+    TFavoriteMenuItem(NewMenu[i]).AccessKey := False;
+		TFavoriteMenuItem(NewMenu[i]).Caption := Node.Text;
 		TFavoriteMenuItem(NewMenu[i]).Data := Node.Data;
 
 		if TObject(Node.Data) is TFavoriteFolder then begin
@@ -4642,7 +4904,7 @@ begin
 	else if Item is TFavoriteThreadItem then
 		Item := TFavoriteThreadItem( Item ).Item;
 
-	Node := FavoriteTreeView.Items.GetFirstNode;
+	Node := FavoriteTreeViewUC.Items.GetFirstNode;
 	if Item is TBoard then begin
 		ItemURL := TBoard( Item ).URL;
 		while Node <> nil do begin
@@ -4867,7 +5129,7 @@ begin
 								Board.Insert( 0, ThreadItem );
 								if ActiveList is TBoard then begin
 									if TBoard(ActiveList) = Board then
-										ListView.Items.Count := ListView.Items.Count + 1;
+										ListViewUC.Items.Count := ListViewUC.Items.Count + 1;
 								end;
 							end else begin
 								tmpThread.Free;
@@ -4932,7 +5194,7 @@ begin
 				Board.Insert(0, ThreadItem);
 				if ActiveList is TBoard then begin
 					if TBoard(ActiveList) = Board then
-						ListView.Items.Count := ListView.Items.Count + 1;
+						ListViewUC.Items.Count := ListViewUC.Items.Count + 1;
 				end;
 			end;
 			// ログなしスレッドのときは、ホスト名のチェックをする
@@ -5009,7 +5271,7 @@ begin
                 PostMessage(Handle, USER_MINIMIZED, 0, 0);
             end;
 		USER_TREECLICK:
-			TreeClick( TreeView.Selected );
+			TreeClick( TreeViewUC.Selected );
 		USER_RESIZED:
 			OnResized;
 		USER_MINIMIZED:
@@ -5052,7 +5314,7 @@ begin
 	Handled := False;
 	//アドレスもしくは絞り込みコンボボックスもしくはお気に入りが編集中は
 	//ショートカットなどを無効にする
-	if ((FavoriteTreeView.Visible) and (FavoriteTreeView.IsEditing)) then begin
+	if ((FavoriteTreeViewUC.Visible) and (FavoriteTreeViewUC.IsEditing)) then begin
 		if Msg.CharCode in [VK_BACK] then begin
 			//BSが２回送られる不具合回避
 			if Msg.KeyData > 0 then begin
@@ -5069,7 +5331,7 @@ begin
 				SendMessage(handle, WM_KEYDOWN, Msg.CharCode, Msg.KeyData);
 			Handled := True;
 		end;
-	end	else if (AddressComboBox.Focused) or (SelectComboBox.Focused) then begin
+	end	else if (AddressComboBox.Focused) or (SelectComboBoxUC.Focused) then begin
 		if Msg.CharCode in [VK_BACK] then begin
 			//BSが２回送られる不具合回避
 			if Msg.KeyData > 0 then begin
@@ -5210,7 +5472,7 @@ begin
 			if MsgBox(Handle, DEL_MSG, DEL_TITLE, MB_YESNO or MB_ICONWARNING or MB_DEFBUTTON2) <> ID_YES then
 				Exit;
 		FHistoryList.Clear;
-		TreeView.Items.Clear;
+		TreeViewUC.Items.Clear;
 	end;
 end;
 
@@ -5227,30 +5489,31 @@ begin
 	MainCoolBar.Bands.BeginUpdate;
 	try
 		LinkBarPopupMenu.Items.Clear;
-		for i := LinkToolBar.ButtonCount - 1 downto 0 do
+		for i := LinkToolBarUC.ButtonCount - 1 downto 0 do
 			//LinkToolBar.RemoveControl(LinkToolBar.Buttons[i]);
-			LinkToolBar.Buttons[i].Free;
-		for i := 0 to FavoriteTreeView.Items.Count - 1 do begin
-			if FavoriteTreeView.Items[i].Text = Favorite.FAVORITE_LINK_NAME then begin
-				for j := 0 to FavoriteTreeView.Items[i].Count - 1 do begin
-					ToolButton := TLinkToolButton.Create(LinkToolBar);
+			LinkToolBarUC.Buttons[i].Free;
+		for i := 0 to FavoriteTreeViewUC.Items.Count - 1 do begin
+			if FavoriteTreeViewUC.Items[i].Text = Favorite.FAVORITE_LINK_NAME then begin
+				for j := 0 to FavoriteTreeViewUC.Items[i].Count - 1 do begin
+					ToolButton := TLinkToolButton.Create(LinkToolBarUC);
 //                    ToolButton.Parent := LinkToolBar;
-					if TObject(FavoriteTreeView.Items[i].Item[j].Data) is TFavoriteFolder then begin
+					if TObject(FavoriteTreeViewUC.Items[i].Item[j].Data) is TFavoriteFolder then begin
 						MenuItem := TMenuItem.Create(Self);
-						CreateFavMenu(FavoriteTreeView.Items[i].Item[j], MenuItem);
+						CreateFavMenu(FavoriteTreeViewUC.Items[i].Item[j], MenuItem);
 						LinkBarPopupMenu.Items.Add(MenuItem);
 						ToolButton.MenuItem := MenuItem;
 						ToolButton.ImageIndex := GikoDataModule.TOOL_ICON_FAV_FOLDER;
-					end else if TObject(FavoriteTreeView.Items[i].Item[j].Data) is TFavoriteBoardItem then begin
+					end else if TObject(FavoriteTreeViewUC.Items[i].Item[j].Data) is TFavoriteBoardItem then begin
 						ToolButton.ImageIndex := GikoDataModule.TOOL_ICON_FAV_BOARD;
 						ToolButton.OnClick := FavoriteClick;
-					end else if TObject(FavoriteTreeView.Items[i].Item[j].Data) is TFavoriteThreadItem then begin
+					end else if TObject(FavoriteTreeViewUC.Items[i].Item[j].Data) is TFavoriteThreadItem then begin
 						ToolButton.ImageIndex := GikoDataModule.TOOL_ICON_FAV_THREAD;
 						ToolButton.OnClick := FavoriteClick;
 					end;
-					ToolButton.Caption := FavoriteTreeView.Items[i].Item[j].Text;
+          ToolButton.AccessKey := False;
+					ToolButton.Caption := FavoriteTreeViewUC.Items[i].Item[j].Text;
 					ToolButton.Left := 10000;
-					ToolButton.Data := FavoriteTreeView.Items[i].Item[j].Data;
+					ToolButton.Data := FavoriteTreeViewUC.Items[i].Item[j].Data;
 					ToolButton.AutoSize := True;
 					ToolButton.OnDragDrop := LinkToolButtonDragDrop;
 					ToolButton.OnDragOver := FavoriteDragOver;
@@ -5262,7 +5525,7 @@ begin
 					ToolButton.DragMode := dmManual;
 					ToolButton.PopupMenu := FavoriteTreePopupMenu;
 
-					LinkToolBar.InsertControl(ToolButton);
+					LinkToolBarUC.InsertControl(ToolButton);
 				end;
 				break;
 			end;
@@ -5283,14 +5546,14 @@ end;
 
 procedure TGikoForm.FavoriteDragOver(Sender, Source: TObject; X, Y: Integer; State: TDragState; var Accept: Boolean);
 var
-	Node: TTreeNode;
+	Node: TTntTreeNode;
 	bound: TRect;
 	height: Integer;
 	Change: Boolean;
 begin
 
-	if Sender = FavoriteTreeView then begin
-		Node := FavoriteTreeView.GetNodeAt(X, Y);
+	if Sender = FavoriteTreeViewUC then begin
+		Node := FavoriteTreeViewUC.GetNodeAt(X, Y);
 
 		if Node = nil then
 			Exit;
@@ -5298,7 +5561,7 @@ begin
 		bound := Node.DisplayRect( False );
 		height := bound.Bottom - bound.Top;
 		if (bound.Top + height / 2) <= Y then
-			Node := FavoriteTreeView.GetNodeAt(X, Y + height);
+			Node := FavoriteTreeViewUC.GetNodeAt(X, Y + height);
 
 		if Node = nil then
 			Exit;
@@ -5323,19 +5586,19 @@ begin
 		end;
 	end;
 
-	if Source = FavoriteTreeView then begin
-		if FavoriteTreeView.Selected = FavoriteTreeView.Items.GetFirstNode then begin
+	if Source = FavoriteTreeViewUC then begin
+		if FavoriteTreeViewUC.Selected = FavoriteTreeViewUC.Items.GetFirstNode then begin
 			Accept := False;
 			Exit;
 		end;
 		Accept := True;
-	end else if Source = BrowserTab then
+	end else if Source = BrowserTabUC then
 		Accept := True
-	else if Source = ListView then
+	else if Source = ListViewUC then
 		Accept := True
 	else if Source is TLinkToolButton then
 		Accept := True
-	else if Source = TreeView then
+	else if Source = TreeViewUC then
 		Accept := True
 	else
 		Accept := False;
@@ -5354,12 +5617,12 @@ end;
 
 procedure TGikoForm.LinkToolButtonDragDrop(Sender, Source: TObject; X, Y: Integer);
 var
-	SenderNode: TTreeNode;
+	SenderNode: TTntTreeNode;
 	LinkToolButton: TLinkToolButton;
 begin
 
 	LinkToolButton := TLinkToolButton( Sender );
-	SenderNode := TreeNodeDataFind( FavoriteTreeView.Items.GetFirstNode, LinkToolButton.Data );
+	SenderNode := TreeNodeDataFind( FavoriteTreeViewUC.Items.GetFirstNode, LinkToolButton.Data );
 	SenderNode.Selected := False;
 	FavoriteDragDrop( SenderNode, Source );
 
@@ -5455,7 +5718,7 @@ begin
 		BandInfo^.cxMinChild	:= 0;
 		BandInfo^.cx					:= GikoSys.Setting.MainCoolSet[ idx ].FCoolWidth;
 		BandInfo^.cxIdeal			:= GetWidthAllToolButton(TToolBar(Control));
-	end else if Control = LinkToolBar then begin
+	end else if Control = LinkToolBarUC then begin
 		BandInfo^.fMask				:= BandInfo.fMask or RBBIM_CHILDSIZE or RBBIM_STYLE or RBBIM_IDEALSIZE;
 		BandInfo^.fStyle			:= BandInfo.fStyle or RBBS_USECHEVRON;
 		BandInfo^.cxMinChild	:= 0;
@@ -5490,7 +5753,7 @@ begin
 			MenuBarChevronMenu;
 		end else if MainCoolBar.Bands[Idx].Control = StdToolbar then begin
 			ToolBarChevronMenu(StdToolBar);
-		end else if MainCoolBar.Bands[Idx].Control = LinkToolbar then begin
+		end else if MainCoolBar.Bands[Idx].Control = LinkToolbarUC then begin
 			LinkBarChevronMenu;
 		end else
 			Exit;
@@ -5510,10 +5773,13 @@ procedure TGikoForm.MenuBarChevronMenu;
 //			Item := nil;
 			if MenuItem[i] is TFavoriteMenuItem then begin
 				Item := TFavoriteMenuItem.Create(Self);
-				TFavoriteMenuItem(Item).Data := TFavoriteMenuItem(MenuItem[i]).Data;
-			end else
+        TFavoriteMenuItem(Item).AccessKey := False;
+				TFavoriteMenuItem(Item).Caption   := TFavoriteMenuItem(MenuItem[i]).Caption;
+				TFavoriteMenuItem(Item).Data      := TFavoriteMenuItem(MenuItem[i]).Data;
+			end else begin
 				Item := TMenuItem.Create(Self);
-			Item.Caption := MenuItem[i].Caption;
+				Item.Caption := MenuItem[i].Caption;
+      end;
 			Item.Action := MenuItem[i].Action;
 			Item.ImageIndex := MenuItem[i].ImageIndex;
 			Item.OnClick := MenuItem[i].OnClick;
@@ -5558,10 +5824,13 @@ procedure TGikoForm.ToolBarChevronMenu(ToolBar: TToolBar);
 //			Item := nil;
 			if PopupMenu.Items[i] is TFavoriteMenuItem then begin
 				Item := TFavoriteMenuItem.Create(Self);
-				TFavoriteMenuItem(Item).Data := TFavoriteMenuItem(PopupMenu.Items[i]).Data;
-			end else
-			Item := TMenuItem.Create(Self);
-			Item.Caption := PopupMenu.Items[i].Caption;
+        TFavoriteMenuItem(Item).AccessKey := False;
+        TFavoriteMenuItem(Item).Caption   := TFavoriteMenuItem(PopupMenu.Items[i]).Caption;
+				TFavoriteMenuItem(Item).Data      := TFavoriteMenuItem(PopupMenu.Items[i]).Data;
+			end else begin
+        Item := TMenuItem.Create(Self);
+        Item.Caption := PopupMenu.Items[i].Caption;
+      end;
 			Item.Action := PopupMenu.Items[i].Action;
 			Item.ImageIndex := PopupMenu.Items[i].ImageIndex;
 			Item.OnClick := PopupMenu.Items[i].OnClick;
@@ -5619,28 +5888,29 @@ var
 	Button: TLinkToolButton;
 begin
 	ChevronPopupMenu.Items.Clear;
-	ChevronPopupMenu.Images := LinkToolBar.Images;
-	bw := GetWidthAllToolButton(LinkToolBar);
-	if LinkToolBar.Width < bw then begin
+	ChevronPopupMenu.Images := LinkToolBarUC.Images;
+	bw := GetWidthAllToolButton(LinkToolBarUC);
+	if LinkToolBarUC.Width < bw then begin
 		w := 0;
-		for i := 0 to FavoriteTreeView.Items.Count - 1 do begin
-			if FavoriteTreeView.Items[i].Text = Favorite.FAVORITE_LINK_NAME then begin
-				for j := 0 to FavoriteTreeView.Items[i].Count - 1 do begin
-					w := w + LinkToolBar.Buttons[j].Width;
-					if LinkToolBar.Width <= w then begin
-						if LinkToolBar.Buttons[j] is TLinkToolButton then begin
-							Button := TLinkToolButton(LinkToolBar.Buttons[j]);
+		for i := 0 to FavoriteTreeViewUC.Items.Count - 1 do begin
+			if FavoriteTreeViewUC.Items[i].Text = Favorite.FAVORITE_LINK_NAME then begin
+				for j := 0 to FavoriteTreeViewUC.Items[i].Count - 1 do begin
+					w := w + LinkToolBarUC.Buttons[j].Width;
+					if LinkToolBarUC.Width <= w then begin
+						if LinkToolBarUC.Buttons[j] is TLinkToolButton then begin
+							Button := TLinkToolButton(LinkToolBarUC.Buttons[j]);
 							Item := TFavoriteMenuItem.Create(Self);
+              Item.AccessKey := False;
 							if TObject(Button.Data) is TFavoriteFolder then begin
-								CreateFavMenu(FavoriteTreeView.Items[i].Item[j], Item);
+								CreateFavMenu(FavoriteTreeViewUC.Items[i].Item[j], Item);
 							end else if TObject(Button.Data) is TFavoriteBoardItem then begin
 								Item.OnClick := FavoriteClick;
 							end else if TObject(Button.Data) is TFavoriteThreadItem then begin
 								Item.OnClick := FavoriteClick;
 							end;
 							Item.Data := Button.Data;
-							Item.Caption := LinkToolBar.Buttons[j].Caption;
-							Item.ImageIndex := LinkToolBar.Buttons[j].ImageIndex;
+							Item.Caption := TLinkToolButton(LinkToolBarUC.Buttons[j]).Caption;
+							Item.ImageIndex := LinkToolBarUC.Buttons[j].ImageIndex;
 							ChevronPopupMenu.Items.Add(Item);
 						end;
 					end;
@@ -5663,7 +5933,7 @@ procedure TGikoForm.ResetBandInfo( bar : TGikoCoolBar; band : TToolBar );
 var
 	bandInfo	: tagREBARBANDINFOA;
 	pBandInfo	: PReBarBandInfoA;
-	lResult		: Integer;
+	//lResult		: Integer;
 	h					: HWND;
 	i, idx		: Integer;
 begin
@@ -5684,7 +5954,7 @@ begin
 		end;
 	end;
 	// 設定
-	lResult := SendMessage( bar.Handle, RB_SETBANDINFO, idx, Integer( pBandInfo ) );
+	{lResult :=} SendMessage( bar.Handle, RB_SETBANDINFO, idx, Integer( pBandInfo ) );
 
 end;
 
@@ -5847,17 +6117,17 @@ begin
 	else
 		Delta := 1;
 
-	if (Wnd = BrowserTab.Handle) or
-		 (Wnd = BrowserTab.Parent.Handle) then begin
-		BrowserTab.ScrollTabs(Delta);
+	if (Wnd = BrowserTabUC.Handle) or
+		 (Wnd = BrowserTabUC.Parent.Handle) then begin
+		BrowserTabUC.ScrollTabs(Delta);
 	end else begin
 		if FIsHandledWheel then begin
 			FIsHandledWheel := False;
 			Handled := False;
 		end else begin
 			FIsHandledWheel := True;
-			if (Wnd = TreeView.Handle) or  (Wnd = FavoriteTreeView.Handle)
-			or (Wnd = ListView.Handle) or (Wnd = MessageListView.Handle)
+			if (Wnd = TreeViewUC.Handle) or  (Wnd = FavoriteTreeViewUC.Handle)
+			or (Wnd = ListViewUC.Handle) or (Wnd = MessageListViewUC.Handle)
 			then
 				SendMessage( Wnd, WM_MOUSEWHEEL, WheelDelta shl 16, (Mouse.CursorPos.X shl 16) or Mouse.CursorPos.Y )
 			else
@@ -5884,7 +6154,7 @@ end;
 procedure TGikoForm.SelectComboBoxChange(Sender: TObject);
 begin
 
-	SetSelectWord( SelectComboBox.Text );
+	SetSelectWord( SelectComboBoxUC.EncodeText );
 
 end;
 
@@ -5893,8 +6163,9 @@ procedure TGikoForm.SelectComboBoxKeyDown(Sender: TObject; var Key: Word;
 var
   IMC: HIMC;
   Len, idx: integer;
-  Str: string;
-  tmp: string;
+  StrA: AnsiString;
+  Str: WideString;
+  tmp: WideString;
 begin
 
 	if Key = VK_Return then
@@ -5902,37 +6173,38 @@ begin
 		ModifySelectList;
 	end else if Key = 229 then begin
 		if GikoSys.Setting.UseUndecided then begin
-			IMC := ImmGetContext(SelectComboBox.Handle); //コンテキスト取得
-			Len := ImmGetCompositionString(IMC, GCS_COMPSTR, nil, 0); //まず長さを取得
+			IMC := ImmGetContext(SelectComboBoxUC.Handle); //コンテキスト取得
+			Len := ImmGetCompositionStringW(IMC, GCS_COMPSTR, nil, 0); //まず長さを取得
 			SetLength(Str, Len + 1); //Bufferのメモリを設定
-			ImmGetCompositionString(IMC, GCS_COMPSTR, PChar(Str), Len + 1); //まず長さを取得
-			ImmReleaseContext(SelectComboBox.Handle, IMC);  //コンテキスト解放
+			ImmGetCompositionStringW(IMC, GCS_COMPSTR, PWideChar(Str), Len + 1); //まず長さを取得
+			ImmReleaseContext(SelectComboBoxUC.Handle, IMC);  //コンテキスト解放
 			SetLength(Str, Len);
-			if SelectComboBox.SelLength > 0 then begin //選択中の文字列があるか
-				tmp := Copy(SelectComboBox.Text, 1, SelectComboBox.SelStart);
-				Str := tmp + Str + Copy(SelectComboBox.Text, SelectComboBox.SelStart + SelectComboBox.SelLength + 1, Length(SelectComboBox.Text));
+			if SelectComboBoxUC.SelLength > 0 then begin //選択中の文字列があるか
+				tmp := Copy(SelectComboBoxUC.Text, 1, SelectComboBoxUC.SelStart);
+				Str := tmp + Str + Copy(SelectComboBoxUC.Text, SelectComboBoxUC.SelStart + SelectComboBoxUC.SelLength + 1, Length(SelectComboBoxUC.Text));
 			end else
-				Str := SelectComboBox.Text + Str;
+				Str := SelectComboBoxUC.Text + Str;
 
 			if (Length(Str) > 0) then begin
-				SetSelectWord(Str);
+				SetSelectWord(WideToEncAnsiString(Str));
 			end;
 		end;
-    end else if (Key = Windows.VK_DELETE) and (ssCtrl in Shift) then begin
-        // Ctrl + DEL で削除する
-        Str := SelectComboBox.Text;
-        idx := GikoSys.Setting.SelectTextList.IndexOf( Str );
-        if idx <> -1 then begin
-            GikoSys.Setting.SelectTextList.Delete( idx );
-        end;
-        idx := SelectComboBox.Items.IndexOf( Str );
-		if idx <> -1 then begin
-            SelectComboBox.Items.Delete( idx );
-        end;
-        SelectComboBox.Text := '';
-        // 絞込みを解除するために変更イベントを呼び出す
-        SelectComboBox.OnChange(Sender);
-	end else if Length( SelectComboBox.Text ) = 0 then
+	end else if (Key = Windows.VK_DELETE) and (ssCtrl in Shift) then begin
+		// Ctrl + DEL で削除する
+    Str  := SelectComboBoxUC.Text;
+    StrA := SelectComboBoxUC.EncodeText;
+    idx := GikoSys.Setting.SelectTextList.IndexOf( StrA );
+    if idx <> -1 then begin
+	    GikoSys.Setting.SelectTextList.Delete( idx );
+    end;
+    idx := SelectComboBoxUC.Items.IndexOf( Str );
+    if idx <> -1 then begin
+	    SelectComboBoxUC.Items.Delete( idx );
+    end;
+    SelectComboBoxUC.Text := '';
+    // 絞込みを解除するために変更イベントを呼び出す
+    SelectComboBoxUC.OnChange(Sender);
+	end else if Length( SelectComboBoxUC.Text ) = 0 then
 	begin
 		{* SelectComboBox.Textが空でも、入力途中でEscしたとか
 		 * 空のときにDelキーを押したとかなので、スレの絞込みを維持する。
@@ -5966,10 +6238,10 @@ begin
 
 	ModifySelectList;
 
-	if Length( SelectComboBox.Text ) = 0 then
+	if Length( SelectComboBoxUC.Text ) = 0 then
 	begin
-		SelectComboBox.Text := GikoDataModule.SELECTCOMBOBOX_NAME;
-		SelectComboBox.Color := GikoDataModule.SELECTCOMBOBOX_COLOR;
+		SelectComboBoxUC.Text := GikoDataModule.SELECTCOMBOBOX_NAME;
+		SelectComboBoxUC.Color := GikoDataModule.SELECTCOMBOBOX_COLOR;
 	end;
 
 end;
@@ -5979,24 +6251,26 @@ procedure TGikoForm.ModifySelectList;
 var
 	idx : Integer;
 	oldText : string;
+	oldTextW : WideString;
 begin
 
 	try
 		if not SelectComboBoxPanel.Visible then
 			exit;
 
-		if Length( SelectComboBox.Text ) > 0 then
+		if Length( SelectComboBoxUC.Text ) > 0 then
 		begin
-			oldText := SelectComboBox.Text;
+			oldTextW := SelectComboBoxUC.Text;
+			oldText  := SelectComboBoxUC.EncodeText;
 			idx := GikoSys.Setting.SelectTextList.IndexOf( oldText );
 			if idx <> -1 then
 				GikoSys.Setting.SelectTextList.Delete( idx );
-			idx := SelectComboBox.Items.IndexOf( oldText );
+			idx := SelectComboBoxUC.Items.IndexOf( oldTextW );
 			if idx <> -1 then
-				SelectComboBox.Items.Delete( idx );
+				SelectComboBoxUC.Items.Delete( idx );
 			GikoSys.Setting.SelectTextList.Insert( 0, oldText );
-			SelectComboBox.Items.Insert( 0, oldText );
-			SelectComboBox.Text := oldText;
+			SelectComboBoxUC.Items.Insert( 0, oldTextW );
+			SelectComboBoxUC.Text := oldTextW;
 		end;
 	except
 	end;
@@ -6030,7 +6304,7 @@ begin
 		//If SelectComboBox.Width <> w Then Begin
 		If SelectComboBoxPanel.Width <> w Then Begin
 			SelectComboBoxPanel.Width := w;
-			SelectComboBox.Width := SelectComboBoxPanel.Width - SelectComboBoxSplitter.Width;
+			SelectComboBoxUC.Width := SelectComboBoxPanel.Width - SelectComboBoxSplitter.Width;
 			GikoSys.Setting.SelectComboBoxWidth := w;
 			DraggingSelectComboBoxPosition := pos;
 
@@ -6070,16 +6344,16 @@ end;
 procedure TGikoForm.SelectComboBoxEnter(Sender: TObject);
 begin
 
-	if (Length( SelectComboBox.Text ) = 0) or
-		(SelectComboBox.Text = GikoDataModule.SELECTCOMBOBOX_NAME) then
+	if (Length( SelectComboBoxUC.Text ) = 0) or
+		(SelectComboBoxUC.Text = GikoDataModule.SELECTCOMBOBOX_NAME) then
 	begin
-		SelectComboBox.Text := '';
-		SelectComboBox.Color := clWindow;
+		SelectComboBoxUC.Text := '';
+		SelectComboBoxUC.Color := clWindow;
 	end;
 
 end;
 
-procedure TGikoForm.FavoriteMoveTo( SenderNode, SourceNode: TTreeNode );
+procedure TGikoForm.FavoriteMoveTo( SenderNode, SourceNode: TTntTreeNode );
 begin
 
 	if (SenderNode = nil) or (SourceNode = nil) or (SenderNode = SourceNode) then
@@ -6092,10 +6366,10 @@ begin
 
 end;
 
-procedure TGikoForm.FavoriteAddTo( SenderNode: TTreeNode; Source: TObject );
+procedure TGikoForm.FavoriteAddTo( SenderNode: TTntTreeNode; Source: TObject );
 var
-	Node: TTreeNode;
-	FavNode: TTreeNode;
+	Node: TTntTreeNode;
+	FavNode: TTntTreeNode;
 	FavoBoardItem: TFavoriteBoardItem;
 	FavoThreadItem: TFavoriteThreadItem;
 	Board: TBoard;
@@ -6153,10 +6427,10 @@ begin
 
 end;
 
-procedure TGikoForm.FavoriteDragDrop( SenderNode: TTreeNode; Source: TObject );
+procedure TGikoForm.FavoriteDragDrop( SenderNode: TTntTreeNode; Source: TObject );
 var
 	idx: Integer;
-	SourceNode: TTreeNode;
+	SourceNode: TTntTreeNode;
 	LinkToolButton: TLinkToolButton;
 begin
 
@@ -6167,30 +6441,30 @@ begin
 		if FDropSpaceNode <> nil then
 			SenderNode := FDropSpaceNode;
 
-	if Source = FavoriteTreeView then begin
-		SourceNode := FavoriteTreeView.Selected;
+	if Source = FavoriteTreeViewUC then begin
+		SourceNode := FavoriteTreeViewUC.Selected;
 		FavoriteMoveTo( SenderNode, SourceNode );
 	end else if Source is TLinkToolButton then begin
 		LinkToolButton := TLinkToolButton( Source );
-		SourceNode := TreeNodeDataFind( FavoriteTreeView.Items.GetFirstNode, LinkToolButton.Data );
+		SourceNode := TreeNodeDataFind( FavoriteTreeViewUC.Items.GetFirstNode, LinkToolButton.Data );
 		FavoriteMoveTo( SenderNode, SourceNode );
-	end else if Source = BrowserTab then begin
-		idx := BrowserTab.TabIndex;
-		FavoriteAddTo( SenderNode, BrowserTab.Tabs.Objects[idx] );
-	end else if Source = ListView then begin
-		FavoriteAddTo( SenderNode, ListView.Selected.Data );
-	end else if Source = TreeView then begin
-		FavoriteAddTo( SenderNode, TreeView.Selected.Data );
+	end else if Source = BrowserTabUC then begin
+		idx := BrowserTabUC.TabIndex;
+		FavoriteAddTo( SenderNode, BrowserTabUC.Tabs.Objects[idx] );
+	end else if Source = ListViewUC then begin
+		FavoriteAddTo( SenderNode, ListViewUC.Selected.Data );
+	end else if Source = TreeViewUC then begin
+		FavoriteAddTo( SenderNode, TreeViewUC.Selected.Data );
 	end;
 end;
 
 procedure TGikoForm.FavoriteTreeViewDragDrop(Sender, Source: TObject; X,
 	Y: Integer);
 var
-	SenderNode: TTreeNode;
+	SenderNode: TTntTreeNode;
 begin
 
-	SenderNode := FavoriteTreeView.GetNodeAt(X, Y);
+	SenderNode := FavoriteTreeViewUC.GetNodeAt(X, Y);
 	if SenderNode <> nil then begin
 		FavoriteDragDrop( SenderNode, Source );
 	end;
@@ -6216,10 +6490,21 @@ begin
 	//更新したことを教える
 	FavoriteDM.Modified := true;
 
-	FavoriteTreeView.ReadOnly := True;
+	FavoriteTreeViewUC.ReadOnly := True;
 	SetLinkBar;
 
 end;
+
+procedure TGikoForm.FavoriteTreeViewUCEdited(Sender: TObject;
+	Node: TTntTreeNode; var S: WideString);
+begin
+	//更新したことを教える
+	FavoriteDM.Modified := true;
+
+	FavoriteTreeViewUC.ReadOnly := True;
+	SetLinkBar;
+end;
+
 
 procedure TGikoForm.FavoriteTreeViewKeyDown(Sender: TObject; var Key: Word;
 	Shift: TShiftState);
@@ -6228,22 +6513,22 @@ begin
 		Case Key of
 		VK_F2:
 			begin
-				FClickNode := FavoriteTreeView.Selected;
+				FClickNode := FavoriteTreeViewUC.Selected;
 				GikoDM.FavoriteTreeViewRenameActionExecute( Sender );
 			end;
 		VK_DELETE:
 			begin
-				FClickNode := FavoriteTreeView.Selected;
+				FClickNode := FavoriteTreeViewUC.Selected;
 				GikoDM.FavoriteTreeViewDeleteActionExecute( Sender );
 			end;
 		VK_RETURN:
 			begin
-			FavoriteClick( FavoriteTreeView.Selected );
-			FavoriteTreeView.Selected.Expanded := not FavoriteTreeView.Selected.Expanded;
+			FavoriteClick( FavoriteTreeViewUC.Selected );
+			FavoriteTreeViewUC.Selected.Expanded := not FavoriteTreeViewUC.Selected.Expanded;
 			end;
 		VK_SPACE:
 			begin
-			FClickNode := FavoriteTreeView.Selected;
+			FClickNode := FavoriteTreeViewUC.Selected;
 			GikoDM.FavoriteTreeViewReloadActionExecute( Sender );
 			end;
 		end;
@@ -6265,16 +6550,16 @@ var
 	LinkToolButton: TLinkToolButton;
 begin
 
-	if FavoriteTreePopupMenu.PopupComponent = FavoriteTreeView then begin
+	if FavoriteTreePopupMenu.PopupComponent = FavoriteTreeViewUC then begin
 	
-		FClickNode := FavoriteTreeView.Selected;
+		FClickNode := FavoriteTreeViewUC.Selected;
 
 	end else if FavoriteTreePopupMenu.PopupComponent is TLinkToolButton then begin
 
 		LinkToolButton := TLinkToolButton( FavoriteTreePopupMenu.PopupComponent );
-		for i := 0 to FavoriteTreeView.Items.Count - 1 do begin
-			if FavoriteTreeView.Items[i].Text = Favorite.FAVORITE_LINK_NAME then begin
-				FClickNode := FavoriteTreeView.Items[i];
+		for i := 0 to FavoriteTreeViewUC.Items.Count - 1 do begin
+			if FavoriteTreeViewUC.Items[i].Text = Favorite.FAVORITE_LINK_NAME then begin
+				FClickNode := FavoriteTreeViewUC.Items[i];
 				Break;
 			end;
 		end;
@@ -6385,9 +6670,9 @@ begin
 	end;
 
 end;
-function TGikoForm.TreeNodeDataFind(Node: TTreeNode; FindPointer: Pointer): TTreeNode;
+function TGikoForm.TreeNodeDataFind(Node: TTntTreeNode; FindPointer: Pointer): TTntTreeNode;
 var
-	Found: TTreeNode;
+	Found: TTntTreeNode;
 	i: Integer;
 begin
 
@@ -6412,13 +6697,13 @@ procedure TGikoForm.LinkToolBarDragDrop(Sender, Source: TObject; X,
 	Y: Integer);
 var
 	i: Integer;
-	SenderNode: TTreeNode;
+	SenderNode: TTntTreeNode;
 begin
 
 	SenderNode := nil;
-	for i := 0 to FavoriteTreeView.Items.Count - 1 do begin
-		if FavoriteTreeView.Items[i].Text = Favorite.FAVORITE_LINK_NAME then begin
-			SenderNode := FavoriteTreeView.Items[i];
+	for i := 0 to FavoriteTreeViewUC.Items.Count - 1 do begin
+		if FavoriteTreeViewUC.Items[i].Text = Favorite.FAVORITE_LINK_NAME then begin
+			SenderNode := FavoriteTreeViewUC.Items[i];
 			Break;
 		end;
 	end;
@@ -6478,7 +6763,7 @@ procedure TGikoForm.SetListViewBackGroundColor(value: TColor);
 begin
 	if FListViewBackGroundColor <> value then begin
 		FListViewBackGroundColor := value;
-		ListView.Color := FListViewBackGroundColor;
+		ListViewUC.Color := FListViewBackGroundColor;
 	end;
 end;
 procedure TGikoForm.FavoriteTreeBrowseBoardPopupMenuClick(Sender: TObject);
@@ -6512,14 +6797,14 @@ procedure TGikoForm.BrowserTabContextPopup(Sender: TObject;
 var
 	idx : Integer;
 begin
-		idx := BrowserTab.IndexOfTabAt(MousePos.X, MousePos.Y);
+		idx := BrowserTabUC.IndexOfTabAt(MousePos.X, MousePos.Y);
     if idx = -1 then begin
       Handled := True;  // タブじゃない所ではタブのメニューを出さない
       Exit;
     end;
-		if BrowserTab.TabIndex <> idx then begin
-      BrowserTab.TabIndex := idx;
-			BrowserTab.OnChange(nil);
+		if BrowserTabUC.TabIndex <> idx then begin
+      BrowserTabUC.TabIndex := idx;
+			BrowserTabUC.OnChange(nil);
 		end;
 end;
 
@@ -6610,16 +6895,16 @@ var
 	Item: TMenuItem;
 begin
     MenuItem.Clear;
-    for i := 0 to BrowserTab.Tabs.Count - 1 do begin
+    for i := 0 to BrowserTabUC.Tabs.Count - 1 do begin
         // 同じ板かどうか
         if (FActiveContent.Thread.ParentBoard =
-            TBrowserRecord(BrowserTab.Tabs.Objects[i]).Thread.ParentBoard) then begin
+            TBrowserRecord(BrowserTabUC.Tabs.Objects[i]).Thread.ParentBoard) then begin
             // 自分は外す
             if FActiveContent.Thread <>
-                TBrowserRecord(BrowserTab.Tabs.Objects[i]).Thread then begin
+                TBrowserRecord(BrowserTabUC.Tabs.Objects[i]).Thread then begin
                 Item := TMenuItem.Create(Self);
-                Item.Caption := TBrowserRecord(BrowserTab.Tabs.Objects[i]).Thread.Title;
-                Item.Hint    := TBrowserRecord(BrowserTab.Tabs.Objects[i]).Thread.URL;
+                Item.Caption := TBrowserRecord(BrowserTabUC.Tabs.Objects[i]).Thread.Title;
+                Item.Hint    := TBrowserRecord(BrowserTabUC.Tabs.Objects[i]).Thread.URL;
                 Item.OnClick := SameBoardThreadSubItemOnClick;
                 MenuItem.Add(Item);
             end;
@@ -6637,13 +6922,13 @@ begin
 	if Sender is TMenuItem then begin
         try
             MenuItem := TMenuItem(Sender);
-            for i := 0 to BrowserTab.Tabs.Count - 1 do begin
+            for i := 0 to BrowserTabUC.Tabs.Count - 1 do begin
                 // 同じ板かどうか
                 if (FActiveContent.Thread.ParentBoard =
-                    TBrowserRecord(BrowserTab.Tabs.Objects[i]).Thread.ParentBoard) then begin
+                    TBrowserRecord(BrowserTabUC.Tabs.Objects[i]).Thread.ParentBoard) then begin
                     if FActiveContent.Thread <>
-                        TBrowserRecord(BrowserTab.Tabs.Objects[i]).Thread then begin
-                        if (MenuItem.Hint = TBrowserRecord(BrowserTab.Tabs.Objects[i])
+                        TBrowserRecord(BrowserTabUC.Tabs.Objects[i]).Thread then begin
+                        if (MenuItem.Hint = TBrowserRecord(BrowserTabUC.Tabs.Objects[i])
                                 .Thread.URL) then begin
                             MoveToURL( MenuItem.Hint);
                             Exit;
@@ -6815,13 +7100,13 @@ begin
 			if GikoSys.Setting.ListWidthState = glsMax then begin
 				GikoDM.BrowserMinAction.Execute;
 				if GikoForm.Visible then
-					ListView.SetFocus;
+					ListViewUC.SetFocus;
 			end;
 		end else begin
 			if GikoSys.Setting.ListHeightState = glsMax then begin
 				GikoDM.BrowserMinAction.Execute;
 				if GikoForm.Visible then
-					ListView.SetFocus;
+					ListViewUC.SetFocus;
 			end;
 		end;
 	end;
@@ -6860,12 +7145,12 @@ begin
 	if Key = VK_BACK then begin
 //		UpFolderButtonClick(Sender);
 	end else if Key = VK_SPACE then begin
-		TreeDoubleClick( TreeView.Selected );
+		TreeDoubleClick( TreeViewUC.Selected );
 	end else if Key = VK_RETURN then begin
-		TreeClick( TreeView.Selected );
+		TreeClick( TreeViewUC.Selected );
         // 履歴の場合、消されているのでチェックする
-        if (TreeView.Selected <> nil) then begin
-    		TreeView.Selected.Expanded := not TreeView.Selected.Expanded;
+        if (TreeViewUC.Selected <> nil) then begin
+    		TreeViewUC.Selected.Expanded := not TreeViewUC.Selected.Expanded;
         end;
 	end;
 end;
@@ -6880,27 +7165,27 @@ begin
 	case Button of
 	mbLeft:
 		begin
-			if not (ssAlt in Shift) and (FavoriteTreeView.Selected <> nil) and 
-				(FavoriteTreeView.Selected = FavoriteTreeView.GetNodeAt(X, Y)) then begin
+			if not (ssAlt in Shift) and (FavoriteTreeViewUC.Selected <> nil) and 
+				(FavoriteTreeViewUC.Selected = FavoriteTreeViewUC.GetNodeAt(X, Y)) then begin
 				//マウスがnodeの上にいるか
-				rect := FavoriteTreeView.Selected.DisplayRect(true);
+				rect := FavoriteTreeViewUC.Selected.DisplayRect(true);
 				// アイコン分左にずらす
-				if ((rect.Left - FavoriteTreeView.Indent <= X) and (rect.Right >= X)) and
+				if ((rect.Left - FavoriteTreeViewUC.Indent <= X) and (rect.Right >= X)) and
 					((rect.Bottom >= Y) and (rect.Top <= Y)) then begin
 					if ssDouble in Shift then begin
-						FClickNode := FavoriteTreeView.Selected;
+						FClickNode := FavoriteTreeViewUC.Selected;
 						GikoDM.FavoriteTreeViewReloadActionExecute(Sender);
 						FClickNode := nil;
 					end else begin
 						FavoriteClick(
-							TObject(FavoriteTreeView.Selected));
+							TObject(FavoriteTreeViewUC.Selected));
 					end;
 				end;
 			end;
 		end;
 	mbMiddle:
 		begin
-			favItem := FavoriteTreeView.GetNodeAt( X, Y );
+			favItem := FavoriteTreeViewUC.GetNodeAt( X, Y );
 			if favItem = nil then Exit;
 
 			if TObject( favItem.Data ) is TFavoriteThreadItem then begin
@@ -7025,10 +7310,13 @@ end;
 //スレッド一覧を最大化してフォーカスを当てる
 procedure TGikoForm.SelectTimerTimer(Sender: TObject);
 begin
+	if ListViewUC = nil then
+  	Exit;
+
 	SelectTimer.Interval := 0;
-	if not (ListView.Selected = nil) then
+	if not (ListViewUC.Selected = nil) then
 		if( FActiveContent = nil) or
-				(GetActiveContent <> TThreadItem(ListView.Selected.Data) ) then begin
+				(GetActiveContent <> TThreadItem(ListViewUC.Selected.Data) ) then begin
 			ListClick;
 		end;
 end;
@@ -7048,15 +7336,15 @@ begin
 		//===== カテゴリリスト =====
 		BBSOrder := TGikoBBSColumnList.Create;
 		try
-			for i := 0 to ListView.Columns.Count - 1 do begin
+			for i := 0 to ListViewUC.Columns.Count - 1 do begin
 				// 順序の取得
-				idx := ListView.Column[ i ].Tag;
+				idx := ListViewUC.Column[ i ].Tag;
 				id := Ord( GikoSys.Setting.BBSColumnOrder[ idx ] );
 				BBSOrder.Add( TGikoBBSColumnID( id ) );
 				// 幅の保存
-				GikoSys.Setting.BBSColumnWidth[ id ] := ListView.Column[ i ].Width;
+				GikoSys.Setting.BBSColumnWidth[ id ] := ListViewUC.Column[ i ].Width;
 			end;
-			for i := 0 to ListView.Columns.Count - 1 do
+			for i := 0 to ListViewUC.Columns.Count - 1 do
 				// 順序の保存
 				GikoSys.Setting.BBSColumnOrder[ i ] := BBSOrder[ i ];
 		finally
@@ -7066,15 +7354,15 @@ begin
 		//===== 板リスト =====
 		CategoryOrder := TGikoCategoryColumnList.Create;
 		try
-			for i := 0 to ListView.Columns.Count - 1 do begin
+			for i := 0 to ListViewUC.Columns.Count - 1 do begin
 				// 順序の取得
-				idx := ListView.Column[ i ].Tag;
+				idx := ListViewUC.Column[ i ].Tag;
 				id := Ord( GikoSys.Setting.CategoryColumnOrder[ idx ] );
 				CategoryOrder.Add( TGikoCategoryColumnID( id ) );
 				// 幅の保存
-				GikoSys.Setting.CategoryColumnWidth[ id ] := ListView.Column[ i ].Width;
+				GikoSys.Setting.CategoryColumnWidth[ id ] := ListViewUC.Column[ i ].Width;
 			end;
-			for i := 0 to ListView.Columns.Count - 1 do
+			for i := 0 to ListViewUC.Columns.Count - 1 do
 				// 順序の保存
 				GikoSys.Setting.CategoryColumnOrder[ i ] := CategoryOrder[ i ];
 		finally
@@ -7084,15 +7372,15 @@ begin
 		//===== スレリスト =====
 		BoardOrder := TGikoBoardColumnList.Create;
 		try
-			for i := 0 to ListView.Columns.Count - 1 do begin
+			for i := 0 to ListViewUC.Columns.Count - 1 do begin
 				// 順序の取得
-				idx := ListView.Column[ i ].Tag;
+				idx := ListViewUC.Column[ i ].Tag;
 				id := Ord( GikoSys.Setting.BoardColumnOrder[ idx ] );
 				BoardOrder.Add( TGikoBoardColumnID( id ) );
 				// 幅の保存
-				GikoSys.Setting.BoardColumnWidth[ id ] := ListView.Column[ i ].Width;
+				GikoSys.Setting.BoardColumnWidth[ id ] := ListViewUC.Column[ i ].Width;
 			end;
-			for i := 0 to ListView.Columns.Count - 1 do
+			for i := 0 to ListViewUC.Columns.Count - 1 do
 				// 順序の保存
 				GikoSys.Setting.BoardColumnOrder[ i ] := BoardOrder[ i ];
 		finally
@@ -7168,7 +7456,7 @@ begin
 	end;
 
 	// メニューの表示
-	Point := ListView.ClientToScreen( Point );
+	Point := ListViewUC.ClientToScreen( Point );
 	if ListColumnPopupMenu.Items.Count > 0 then
 		ListColumnPopupMenu.Popup( Point.X, Point.Y );
 
@@ -7260,18 +7548,18 @@ begin
 	if TObject(Item.Data) is TThreadItem then begin
 		ThreadItem := TThreadItem(Item.Data);
 		if ( FUseOddResOddColor ) and ( ThreadItem.Count <> 0 ) and ( ThreadItem.AllResCount <> ThreadItem.Count) then begin
-			ListView.Canvas.Brush.Color := FOddColor;
+			ListViewUC.Canvas.Brush.Color := FOddColor;
 			//選択されているけど、フォーカスがないと、グレイになるので、太字に変更
 			if (GikoSys.Setting.UnFocusedBold) and
-			 (Item.Selected) and (not ListView.Focused) then begin
-				ListView.Canvas.Font.Style := [fsBold];
+			 (Item.Selected) and (not ListViewUC.Focused) then begin
+				ListViewUC.Canvas.Font.Style := [fsBold];
 			end;
 		end else begin
-			ListView.Canvas.Brush.Color := FListViewBackGroundColor;
+			ListViewUC.Canvas.Brush.Color := FListViewBackGroundColor;
 		end;
 
 		if ThreadItem.UnRead then
-			ListView.Canvas.Font.Style := [fsBold];
+			ListViewUC.Canvas.Font.Style := [fsBold];
 	end;
 
 end;
@@ -7452,9 +7740,10 @@ var
 	ReadList		: TStringList;
 	wordCount		: TWordCount;
 {$ENDIF}
-    id, dateStr: String;
-    ThreadTitle: String;
-    Idx: Integer;
+  id, dateStr: String;
+  ThreadTitle: String;
+  Idx: Integer;
+  len: Integer;
 begin
 	No := KokoPopupMenu.Tag;
 	if No = 0 then Exit;
@@ -7469,6 +7758,13 @@ begin
             if (Idx < 1) then
                 Break;
             Delete(ThreadTitle, Idx, 1);
+        end;
+        // slipを除去
+        idx := Pos('ID:', id);
+        if idx > 0 then begin
+          len := idx + 10;    // 'I'の位置 + 'D:'2桁 + ID8桁
+          if len < Length(id) then
+            SetLength(id, len);
         end;
         // コメントとして、スレッド名と今日の日付を追加
         DateTimeToString(dateStr, 'yyyymmdd', Now);
@@ -7559,6 +7855,65 @@ begin
 	end;
 
 end;
+//範囲あぼ～ん
+procedure TGikoForm.RangeAbon(Atag: Integer);
+var
+  abonForm:   TRangeAbonForm;
+  fromNo:     Integer;
+  toNo:       Integer;
+  abonType:   Integer;
+  doc:        IHTMLDocument2;
+  ThreadItem: TThreadItem;
+  ReadList:   TStringList;
+  wordCount:  TWordCount;
+begin
+	ThreadItem := GetActiveContent(True);
+  // 範囲あぼーん画面表示
+  abonType := -1;
+  abonForm := TRangeAbonForm.Create(self);
+  try
+    abonForm.FromNo := Atag;
+    abonForm.ToNo   := Atag;
+    abonForm.MaxNo  := ThreadItem.Count;
+    if abonForm.ShowModal <> mrOk then
+      Exit;
+    fromNo   := abonForm.FromNo;
+    toNo     := abonForm.ToNo;
+    abonType := abonForm.AbonType;
+  finally
+    abonForm.Free;
+  end;
+
+  if (abonType <> 0) and (abonType <> 1) then
+    Exit;
+
+  if not Assigned(FActiveContent) then
+    Exit;
+  doc := FActiveContent.Browser.ControlInterface.Document as IHTMLDocument2;
+  if not Assigned(doc) then
+    Exit;
+
+	ReadList := TStringList.Create;
+	wordCount := TWordCount.Create;
+	try
+		ThreadItem.ScrollTop := (doc.body as IHTMLElement2).ScrollTop;
+{$IFDEF SPAM_FILTER_ENABLED}
+		// スパムに設定
+		ReadList.LoadFromFile( ThreadItem.GetThreadFileName );
+		GikoSys.SpamCountWord( ReadList[ abonType - 1 ], wordCount );
+		GikoSys.SpamForget( wordCount, False );	// ハムを解除
+		GikoSys.SpamLearn( wordCount, True );		// スパムに設定
+{$ENDIF}
+    //範囲指定で個別あぼ～んファイルに追加
+    GikoSys.FAbon.AddRangeAbon(fromNo, toNo, abonType, ChangeFileExt(ThreadItem.GetThreadFileName, '.NG'));
+	finally
+		wordCount.Free;
+		ReadList.Free;
+	end;
+	FActiveContent.Repaint := true;
+	if ThreadItem <> nil then
+		InsertBrowserTab( ThreadItem, True );
+end;
 
 procedure TGikoForm.KokoPopupMenuPopup(Sender: TObject);
 var
@@ -7581,8 +7936,8 @@ var
 	i : Integer;
 	ThreadItem: TThreadItem;
 begin
-	for i := BrowserTab.Tabs.Count - 1 downto 0 do
-		TBrowserRecord(BrowserTab.Tabs.Objects[i]).Repaint := true;
+	for i := BrowserTabUC.Tabs.Count - 1 downto 0 do
+		TBrowserRecord(BrowserTabUC.Tabs.Objects[i]).Repaint := true;
 
 	ThreadItem := GetActiveContent;
 	if ThreadItem <> nil then
@@ -7808,10 +8163,10 @@ begin
 				SelectComboBoxPanel.Parent := ListToolBar;
 				SelectComboBoxPanel.Visible := True;
 
-				SelectComboBox.Left := 0;
-				SelectComboBox.Top  := 0;
-				SelectComboBox.Height := SelectComboBoxPanel.ClientHeight;
-				SelectComboBox.Width := SelectComboBoxPanel.Width -
+				SelectComboBoxUC.Left := 0;
+				SelectComboBoxUC.Top  := 0;
+				SelectComboBoxUC.Height := SelectComboBoxPanel.ClientHeight;
+				SelectComboBoxUC.Width := SelectComboBoxPanel.Width -
 										SelectComboBoxSplitter.Width;
 
 				//一つ見えないボタンを突っ込む
@@ -7851,18 +8206,18 @@ begin
 	case Button of
 	mbLeft:
 		begin
-			if (TreeView.Selected <> nil) and
-				(TreeView.Selected = TreeView.GetNodeAt(X, Y)) then begin
+			if (TreeViewUC.Selected <> nil) and
+				(TreeViewUC.Selected = TreeViewUC.GetNodeAt(X, Y)) then begin
 				//マウスがnodeの上にいるか
-				rect := TreeView.Selected.DisplayRect(true);
+				rect := TreeViewUC.Selected.DisplayRect(true);
 				// アイコン分だけ左にずらす
-				if ((rect.Left - TreeView.Indent <= X) and (rect.Right >= X)) and
+				if ((rect.Left - TreeViewUC.Indent <= X) and (rect.Right >= X)) and
 					((rect.Bottom >= Y) and (rect.Top <= Y)) then begin
 					// クリックとダブルクリックをココで判定
 					if ssDouble in Shift then begin
-						TreeDoubleClick( TreeView.Selected );
+						TreeDoubleClick( TreeViewUC.Selected );
 					end else begin
-						TreeClick(TreeView.Selected);
+						TreeClick(TreeViewUC.Selected);
 					end;
 				end;
 			end;
@@ -7918,7 +8273,7 @@ procedure TGikoForm.RefreshListView(Thread: TThreadItem);
 begin
 	//Threadの板と表示している板が同じなら描画を更新する
 	if (FActiveList is TBoard) and (TBoard(ActiveList) = Thread.ParentBoard) then begin
-		ListView.Refresh;
+		ListViewUC.Refresh;
 	end;
 end;
 
@@ -8025,65 +8380,66 @@ end;
 //! ListViewのD&D受け取り
 procedure TGikoForm.AcceptDropFiles(var Msg: TMsg);
 var
-    FileName: Array[0..MAX_PATH] of Char;
-    Cnt, K: Integer;
-    Board: TBoard;
-    LogFolder: String;
-    datList: TStringList;
+  FileName: Array[0..MAX_PATH] of Char;
+  Cnt, K: Integer;
+  Board: TBoard;
+  LogFolder: String;
+  datList: TStringList;
 begin
-    // 表示しているの板のとき以外は拒否
-    if GetActiveList is TBoard then begin
-        Board := TBoard(GetActiveList);
-        if MsgBox(Handle, Board.Title
+  // 表示しているの板のとき以外は拒否
+  if GetActiveList is TBoard then begin
+    Board := TBoard(GetActiveList);
+    if MsgBox(Handle, Board.Title
             + ' 板に入れていいですか？', 'ギコナビ', MB_YESNO or MB_ICONQUESTION) = IDYES	then begin
-            // 板の時は、ログフォルダにコピーしてはぐれログ対応と同じ処理？
-            datList := TStringList.Create;
-            try
-                Cnt := DragQueryFile(Msg.WParam, $FFFFFFFF, FileName, SizeOf(FileName));
-                for K := 0 to Cnt - 1 do begin
-                    DragQueryFile(Msg.WParam, K, FileName, SizeOf(FileName));
-                    // FileNameにdropされたファイル名が入っているので、ここで何らかの処理をする。たとえば次の行
-                    // ファイルのチェック
-                    if (isValidFile(FileName)) then begin
-                        LogFolder := ExtractFilePath(Board.FilePath);
-                        if (FileExists( LogFolder + ExtractFileName(FileName))) then begin
-                            GikoUtil.MsgBox(Handle, LogFolder + 'に' + ExtractFileName(FileName) + 'が既に存在します。', 'エラー', MB_ICONSTOP or MB_OK);
-                        end else begin
-                            if (not DirectoryExists(LogFolder)) then begin
-                                if (not GikoSys.ForceDirectoriesEx(LogFolder) ) then begin
-                                    GikoUtil.MsgBox(Handle, LogFolder + 'の生成に失敗しました。', 'エラー', MB_ICONSTOP or MB_OK);
-                                end;
-                            end;
-                            if (not Windows.CopyFile(FileName,  PChar(LogFolder + ExtractFileName(FileName)), true)) then begin
-                                GikoUtil.MsgBox(Handle, FileName + 'のコピーに失敗しました。', 'エラー', MB_ICONSTOP or MB_OK);
-                            end else begin
-                                datList.Add(ExtractFileName(FileName));
-                            end;
-                        end;
-                    end;
-                end;
-                DragFinish(Msg.WParam);
-                if (datList.Count > 0) then begin
-                    GikoSys.AddOutofIndexDat(Board, datList, False);
-                    ShowMessage(IntToStr(datList.Count) + '個のdatファイルがコピーされました。' );
-              		if GikoForm.TreeView.Visible then begin
-            			GikoForm.TreeView.Refresh;
-                    end;
-		            if GikoForm.ListView.Visible then begin
-        		    	UpdateListView();
-                    end;
-                end else begin
-                    ShowMessage('一つもコピーされませんでした。' );
-                end;
-            finally
-                datList.Free;
-            end;
+			// 板の時は、ログフォルダにコピーしてはぐれログ対応と同じ処理？
+			datList := TStringList.Create;
+			try
+				Cnt := DragQueryFile(Msg.WParam, $FFFFFFFF, FileName, SizeOf(FileName));
+				for K := 0 to Cnt - 1 do begin
+					DragQueryFile(Msg.WParam, K, FileName, SizeOf(FileName));
+					// FileNameにdropされたファイル名が入っているので、ここで何らかの処理をする。たとえば次の行
+					// ファイルのチェック
+					if (isValidFile(FileName)) then begin
+						LogFolder := ExtractFilePath(Board.FilePath);
+						if (FileExists( LogFolder + ExtractFileName(FileName))) then begin
+							GikoUtil.MsgBox(Handle, LogFolder + 'に' + ExtractFileName(FileName) + 'が既に存在します。', 'エラー', MB_ICONSTOP or MB_OK);
+						end else begin
+							if (not DirectoryExists(LogFolder)) then begin
+								if (not GikoSys.ForceDirectoriesEx(LogFolder) ) then begin
+									GikoUtil.MsgBox(Handle, LogFolder + 'の生成に失敗しました。', 'エラー', MB_ICONSTOP or MB_OK);
+								end;
+							end;
+							if (not Windows.CopyFile(FileName,  PChar(LogFolder + ExtractFileName(FileName)), true)) then begin
+								GikoUtil.MsgBox(Handle, FileName + 'のコピーに失敗しました。', 'エラー', MB_ICONSTOP or MB_OK);
+							end else begin
+	              datList.Add(ExtractFileName(FileName));
+              end;
+						end;
+					end;
+				end;
+				DragFinish(Msg.WParam);
+				if (datList.Count > 0) then begin
+					GikoSys.AddOutofIndexDat(Board, datList, False);
+					ShowMessage(IntToStr(datList.Count) + '個のdatファイルがコピーされました。' );
+					if TreeViewUC.Visible then begin
+						TreeViewUC.Refresh;
+					end;
+					if ListViewUC.Visible then begin
+						UpdateListView();
+					end;
+				end else begin
+					ShowMessage('一つもコピーされませんでした。' );
+				end;
+			finally
+				datList.Free;
+			end;
 
-        end;
-    end else begin
-        ShowMessage('板を表示してください。');
-    end;
+		end;
+	end else begin
+		ShowMessage('板を表示してください。');
+	end;
 end;
+
 procedure TGikoForm.UpdateListView();
 begin
     //ListViewでこのスレが含まれる板を表示しているときの更新処理
@@ -8093,15 +8449,15 @@ begin
         TBoard(ActiveList).UserThreadCount:= TBoard(ActiveList).GetUserThreadCount;
         //ListViewのアイテムの個数も更新
         case GikoForm.ViewType of
-            gvtAll: ListView.Items.Count := TBoard(ActiveList).Count;
-            gvtLog: ListView.Items.Count := TBoard(ActiveList).LogThreadCount;
-            gvtNew: ListView.Items.Count := TBoard(ActiveList).NewThreadCount;
-            gvtArch: ListView.Items.Count := TBoard(ActiveList).ArchiveThreadCount;
-            gvtLive: ListView.Items.Count := TBoard(ActiveList).LiveThreadCount;
-            gvtUser: ListView.Items.Count := TBoard(ActiveList).UserThreadCount;
+            gvtAll: ListViewUC.Items.Count := TBoard(ActiveList).Count;
+            gvtLog: ListViewUC.Items.Count := TBoard(ActiveList).LogThreadCount;
+            gvtNew: ListViewUC.Items.Count := TBoard(ActiveList).NewThreadCount;
+            gvtArch: ListViewUC.Items.Count := TBoard(ActiveList).ArchiveThreadCount;
+            gvtLive: ListViewUC.Items.Count := TBoard(ActiveList).LiveThreadCount;
+            gvtUser: ListViewUC.Items.Count := TBoard(ActiveList).UserThreadCount;
         end;
     end;
-    ListView.Refresh;
+    ListViewUC.Refresh;
 end;
 //! ファイルチェック
 function TGikoForm.isValidFile(FileName: String) : boolean;
@@ -8192,21 +8548,37 @@ end;
 procedure TGikoForm.UpdateThreadTitle;
 var
 	i: Integer;
-    DspTitle: String;
+	DspTitle: String;
+  WideTitle: WideString;
 begin
-    BrowserTab.Tabs.BeginUpdate;
-    for i := 0 to BrowserTab.Tabs.Count - 1 do begin
-        BrowserTab.Tabs.Strings[i] :=
-            GikoSys.GetShortName(TBrowserRecord(BrowserTab.Tabs.Objects[i]).Thread.Title, 20);
+	BrowserTabUC.Tabs.BeginUpdate;
+	for i := 0 to BrowserTabUC.Tabs.Count - 1 do begin
+  	DspTitle := TBrowserRecord(BrowserTabUC.Tabs.Objects[i]).Thread.Title;
+  	if Pos('&#', DspTitle) < 1 then
+			BrowserTabUC.Tabs.Strings[i] := GikoSys.GetShortName(DspTitle, 20)
+    else begin
+    	WideTitle := EncAnsiToWideString(GikoSys.TrimThreadTitle(DspTitle));
+			BrowserTabUC.Tabs.Strings[i] := GikoSys.GetShortNameW(WideTitle, 20);
     end;
-    BrowserTab.Tabs.EndUpdate;
+  end;
+	BrowserTabUC.Tabs.EndUpdate;
 
-    if (FActiveContent <> nil) and (FActiveContent.Thread <> nil) then begin
-        DspTitle := GikoSys.TrimThreadTitle(FActiveContent.Thread.Title);
-        BrowserNameLabel.Caption := DspTitle;
-        Self.Caption := GikoDataModule.CAPTION_NAME + ' - [' + DspTitle + ']';
-    end;
+	if (FActiveContent <> nil) and (FActiveContent.Thread <> nil) then begin
+		DspTitle := GikoSys.TrimThreadTitle(FActiveContent.Thread.Title);
+		BrowserNameLabelUC.Caption := EncAnsiToWideString(DspTitle);
+		SetFormCaption(DspTitle);
+	end;
 end;
+
+//! フォームキャプション設定
+procedure TGikoForm.SetFormCaption(AThreadTitle: String);
+begin
+	if AThreadTitle = '' then
+		Caption := GikoDataModule.CAPTION_NAME
+	else
+		Caption := EncAnsiToWideString(GikoDataModule.CAPTION_NAME + ' - [' + AThreadTitle + ']');
+end;
+
 
 //! ポップアップメニュー読み込み
 {procedure TGikoForm.LoadPopupMenu();
@@ -8214,6 +8586,7 @@ begin
 
 
 end;}
+
 
 initialization
 				OleInitialize(nil);

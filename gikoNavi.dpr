@@ -36,7 +36,6 @@ uses
   Preview in 'Preview.pas',
   HTMLDocumentEvent in 'HTMLDocumentEvent.pas',
   Kotehan in 'Kotehan.pas' {KotehanDialog},
-  HintWindow in 'HintWindow.pas',
   GikoUtil in 'GikoUtil.pas',
   ToolBarSetting in 'ToolBarSetting.pas' {ToolBarSettingDialog},
   ToolBarUtil in 'ToolBarUtil.pas',
@@ -83,7 +82,7 @@ uses
   PopupMenuUtil in 'PopupMenuUtil.pas',
   PopupMenuSetting in 'PopupMenuSetting.pas' {PopupMenuSettingDialog},
   Belib in 'Belib.pas',
-  WideMemo in 'WideMemo.pas',
+  WideCtrls in 'WideCtrls.pas',
   ThreadSearch in 'ThreadSearch.pas' {ThreadSrch},
   uLkJSON in 'lkJSON\uLkJSON.pas',
   ThreadNGEdt in 'ThreadNGEdt.pas' {ThreadNGEdit},
@@ -93,7 +92,8 @@ uses
   RegExpTester in 'RegExpTester.pas' {RegExpTest},
   BbsThrSel in 'BbsThrSel.pas' {BbsThreadSel},
   IndyModule in 'IndyModule.pas' {IndyMdl: TDataModule},
-  DmSession5ch in 'DmSession5ch.pas' {Session5ch: TDataModule};
+  DmSession5ch in 'DmSession5ch.pas' {Session5ch: TDataModule},
+  RangeAbon in 'RangeAbon.pas' {RangeAbonForm};
 
 {$R *.RES}
 {$R gikoResource.res}

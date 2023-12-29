@@ -4,7 +4,7 @@ interface
 
 uses
 	Windows, Messages, SysUtils, Classes, {Graphics,} Controls, {Forms,}
-	ComCtrls, IniFiles, ShellAPI, Math, GikoSystem,
+	ComCtrls, IniFiles, ShellAPI, Math, GikoSystem, StrUtils,
 {$IF Defined(DELPRO) }
 	SHDocVw,
 	MSHTML,
@@ -46,6 +46,7 @@ type
 		{ Private 宣言 }
 		anchorLen			: Integer;
 		pURLCHARs,pURLCHARe : PChar;
+		pURLC5CHs,pURLC5CHe : PChar;
 		pANCHORs, pANCHORe  : PChar;
 		pCTAGLs,  pCTAGLe   : PChar;
 		pCTAGUs,  pCTAGUe   : PChar;
@@ -62,15 +63,15 @@ type
 		procedure separateNumber(var st: String; var et: String; const Text, Separator: String);
 		function checkComma(const s : String; var j : Integer) : boolean;
 		function addResAnchor(PAddRes: PResRec; PResLink : PResLinkRec; dat : boolean;
-		 var s : String; j : Integer; const No: String) : string;
-        function appendResAnchor(PAddRes: PResRec; PResLink : PResLinkRec;
+						var s : String; j : Integer; const No: String) : string;
+		function appendResAnchor(PAddRes: PResRec; PResLink : PResLinkRec;
              dat : boolean;	var s : String) : string;
-        function getNumberString(const str: String;var index :Integer; var dbCharlen: Boolean;
+		function getNumberString(const str: String;var index :Integer; var dbCharlen: Boolean;
              sLen :Integer): String;
-        function isOutsideRange(item: TThreadItem; index: Integer ): Boolean;
-        function getKeywordLink(item: TThreadItem): String;
-        function GetResString(index: Integer; const Line: String; PResLink : PResLinkRec): String;
-        function IsImageExp(const Url: String): Boolean;
+    function isOutsideRange(item: TThreadItem; index: Integer ): Boolean;
+    function getKeywordLink(item: TThreadItem): String;
+    function GetResString(index: Integer; const Line: String; PResLink : PResLinkRec): String;
+    function IsImageExp(const Url: String): Boolean;
 	public
 		{ Public 宣言 }
 		procedure AddAnchorTag(PRes: PResRec);
@@ -89,11 +90,11 @@ type
 		class procedure DivideStrLine(Line: string; PRes: PResRec);
         //HTMLからリンクタグを削除する
 		class function DeleteLink(const s: string): string;
-        //HTMLのボディに許される文字列に置換する
-        class function RepHtml(const s: string): string;
-        //レスエディタのプレビュー用HTMLを作成する
-        class function CreatePreviewHTML(const Title: string; const No: string;
-        	const Mail: string; const Namae: string; const Body: string ) : string;
+		//HTMLのボディに許される文字列に置換する
+		class function RepHtml(const s: string): string;
+		//レスエディタのプレビュー用HTMLを作成する
+		class function CreatePreviewHTML(const Title: string; const No: string;
+							const Mail: string; const Namae: string; const Body: string ) : string;
 	end;
 
 var
@@ -109,6 +110,10 @@ const
 									 + 'abcdefghijklmnopqrstuvwxyz'
 									 + 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 									 + '#$%&()*+,-./:;=?@[]^_`{|}~!''\';
+	URL_CHAR_5CH: string = '0123456789'
+									 + 'abcdefghijklmnopqrstuvwxyz'
+									 + 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+									 + '#$%&*+,-./:;=?@^_';
 	ANCHOR_REF	= 'href=';
 	CLOSE_TAGAL = '</a>';
 	CLOSE_TAGAU = '</A>';
@@ -127,6 +132,8 @@ begin
 	pANCHORe  := pANCHORs + Length(ANCHOR_REF);
 	pURLCHARs := PChar(URL_CHAR);
 	pURLCHARe := pURLCHARs + Length(URL_CHAR);
+  pURLC5CHs := PChar(URL_CHAR_5CH);
+  pURLC5CHe := pURLC5CHs + Length(URL_CHAR_5CH);
 	pCTAGLs	  := PChar(CLOSE_TAGAL);
 	pCTAGLe   := pCTAGLs + 4;
 	pCTAGUs   := PChar(CLOSE_TAGAU);
@@ -277,7 +284,8 @@ var
 	pp, pe : PChar;
 	s : String;
 	len : Integer;
-    urllen: Integer;
+  urllen: Integer;
+  url5ch, ok: Boolean;
 begin
 	s := PRes.FBody;
 	PRes.FBody := '';
@@ -329,9 +337,15 @@ begin
 				Delete(s, 1, idx - 1);
 				b := Length( s ) + 1;
 				pp      := PChar(s);
+        url5ch := GikoSys.Is2chURL(s, True);  // 5chのURLかどうか（プロトコル部の短縮許容）
 				for i := 1 to b do begin
 					//１バイト文字でURLに使えない文字なら
-					if (AnsiStrPosEx(pURLCHARs, pURLCHARe, pp, pp + 1) = nil) then begin
+          if url5ch then begin
+            ok := (AnsiStrPosEx(pURLC5CHs, pURLC5CHe, pp, pp + 1) = nil);
+          end else begin
+            ok := (AnsiStrPosEx(pURLCHARs, pURLCHARe, pp, pp + 1) = nil);
+          end;
+					if ok then begin
 						url := Copy(s, 1, i - 1);
 						Delete(s, 1, i - 1);
             urllen := Length(url);
@@ -1604,32 +1618,50 @@ var
     tripOrigin : string;
     NameWithTrip: string;
     DateTime: string;
+    Start: Integer;
+    Index: Integer;
+    Len: Integer;
 begin
-	Result := '<HTML><HEAD>'#13#10
-			+ '<META http-equiv="Content-Type" content="text/html; charset=Shift_JIS">'#13#10
-			+ '<TITLE>' + title + '</TITLE>'#13#10
-			+ '</HEAD>'#13#10
-			+ '<BODY text="#000000" bgcolor="#EFEFEF" link="#0000FF" alink="#FF0000" vlink="#660099">'#13#10
-			+ '<FONT COLOR="#FF0000">' + title + '</FONT>'#13#10
-			+ '<DL>'#13#10;
+	Result := '<html><head>'#13#10
+			+ '<meta http-equiv="Content-Type" content="text/html; charset=Shift_JIS">'#13#10
+			+ '<title>' + title + '</title>'#13#10
+			+ '</head>'#13#10
+			+ '<body text="#000000" bgcolor="#EFEFEF" link="#0000FF" alink="#FF0000" vlink="#660099">'#13#10
+			+ '<font color="#FF0000">' + title + '</font>'#13#10
+			+ '<dl>'#13#10;
 
    	DateTime := FormatDateTime('yyyy/mm/dd(aaa) hh:nn', Now());
 
     NameWithTrip := Namae;
-    posTrip := AnsiPos( '#', Namae );
+//    posTrip := AnsiPos( '#', Namae );
+    // 数値文字参照とトリップの混同を避ける
+    posTrip := 0;
+    Start := 1;
+    Len := Length(Namae);
+    while Start < Len do begin
+      Index := PosEx('#', Namae, Start);
+      if Index < 1 then
+        Break;
+      if (Index = 1) or (Namae[Index - 1] <> '&') or (PosEx(';', Namae, Index) < 1) then begin
+        posTrip := Index;
+        Break;
+      end;
+      Start := Index + 1;
+    end;
+    //--
     if posTrip > 0 then begin
         tripOrigin := Copy( Namae, posTrip + 1, Length( Namae ) );
-        NameWithTrip := Copy( Namae, 1, posTrip - 1 ) + '</B> ◆' +
-                    get_2ch_trip( PChar( tripOrigin ) ) + '<B>';
+        NameWithTrip := Copy( Namae, 1, posTrip - 1 ) + '</b> ◆' +
+                    get_2ch_trip( PChar( tripOrigin ) ) + '<b>';
     end;
     if Mail = '' then begin
-        Result := Result + '<DT>' + No + ' ： <FONT color="forestgreen"><B>' + NameWithTrip
-                 + '</B></FONT> ： ' + DateTime+ '<BR><DD>' + Body + '<BR><BR><BR>' + #13#10
+        Result := Result + '<dt>' + No + ' ： <font color="forestgreen"><b>' + NameWithTrip
+                 + '</b></font> ： ' + DateTime+ '<br><dd>' + Body + '<br><br><br>' + #13#10
     end else begin
-		Result := Result + '<DT>' + No + ' ： <A href="mailto:' + Mail + '"><B>' + NameWithTrip
-                 + '</B></A> [' + Mail + ']： ' + DateTime+ '<BR><DD>' + Body + '<BR><BR><BR>' + #13#10;
+		Result := Result + '<dt>' + No + ' ： <a href="mailto:' + Mail + '"><b>' + NameWithTrip
+                 + '</b></a> [' + Mail + ']： ' + DateTime+ '<br><dd>' + Body + '<br><br><br>' + #13#10;
     end;
-	Result := Result + '</BODY></HTML>';
+	Result := Result + '</body></html>';
 
 end;
 {

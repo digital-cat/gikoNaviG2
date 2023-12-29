@@ -106,6 +106,7 @@ type
 	procedure IndividualAbon(var ResString : String; SetResNumFile : String; ResNumber : Integer); overload;
 	procedure AddIndividualAbon( ResNum : Integer ; option : Integer; SetResNumFile : String);
 	function CheckIndividualAbonList(ResNum : Integer) : Boolean;
+	procedure AddRangeAbon( ResFrom : Integer ; ResTo : Integer ; option : Integer; SetResNumFile : String);
 
 	function EditNGwords(Owner: TForm): Boolean;  //NGword.txtを開く。
 	function ShowAllTokens() : String;  //デバッグ用
@@ -910,6 +911,47 @@ begin
 
 		end else begin
 			IndividualFile.Add(IntToStr(ResNum) + '-' + IntToStr(option));
+		end;
+		IndividualFile.SaveToFile(SetResNumFile);
+	finally
+		IndividualFile.Free;
+	end;
+end;
+//範囲指定で個別あぼ～んファイルに追加
+procedure TAbon.AddRangeAbon( ResFrom : Integer ; ResTo : Integer ; option : Integer; SetResNumFile : String);
+var
+	IndividualFile : TStringList;
+	j : Integer;
+  hit : Boolean;
+  resNo : Integer;
+  resNoPfix : String;
+  abonType : String;
+  count : Integer;
+begin
+	IndividualFile := TStringList.Create;
+	try
+		if FileExists(SetResNumFile) then
+			IndividualFile.LoadFromFile(SetResNumFile);
+    count := IndividualFile.Count;  // 既存の行数
+    abonType := IntToStr(option);
+
+    for resNo := ResFrom to ResTo do begin
+      resNoPfix := IntToStr(ResNo) + '-';
+      hit := False;
+
+      // 既存行のみ同じレス番号を探して上書き
+      if count > 0 then begin
+        for j := 0 to count - 1 do begin
+          if AnsiPos(resNoPfix, IndividualFile[j]) = 1 then begin
+            IndividualFile[j] := resNoPfix + abonType;
+            hit := True;
+            Break;
+          end;
+        end;
+      end;
+      // 既存でなければ追加
+      if hit = False then
+        IndividualFile.Add(resNoPfix + abonType);
 		end;
 		IndividualFile.SaveToFile(SetResNumFile);
 	finally

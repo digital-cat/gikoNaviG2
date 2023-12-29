@@ -48,7 +48,6 @@ type
         function CheckDeleteItem(ini: TMemIniFile): Boolean;
 	public
 		{ Public êÈåæ }
-        class procedure InitHTTPClient(client : TIdHTTP);
 	end;
 
 var
@@ -125,9 +124,8 @@ var
 	s: string;
 	i: Integer;
 begin
-    InitHTTPClient( Indy );
+  TIndyMdl.InitHTTP(Indy);
 
-	Indy.Request.UserAgent := GikoSys.GetUserAgent;
 	Indy.Request.Referer := '';
 	Indy.Request.AcceptEncoding := 'gzip';
 
@@ -515,36 +513,4 @@ begin
 	end;
 end;
 
-class procedure TNewBoardDialog.InitHTTPClient(client : TIdHTTP);
-begin
-	client.Request.Clear;
-    client.Request.CustomHeaders.Clear;
-	client.Request.UserAgent := GikoSys.GetUserAgent;
-	//client.RecvBufferSize := Gikosys.Setting.RecvBufferSize;  for Indy10
-	client.ProxyParams.BasicAuthentication := False;
-	client.ReadTimeout := GikoSys.Setting.ReadTimeOut;
-    client.ConnectTimeout := GikoSys.Setting.ReadTimeOut;
-
-	if GikoSys.Setting.ReadProxy then begin
-		if GikoSys.Setting.ProxyProtocol then
-			client.ProtocolVersion := pv1_1
-		else
-			client.ProtocolVersion := pv1_0;
-		client.ProxyParams.ProxyServer := GikoSys.Setting.ReadProxyAddress;
-		client.ProxyParams.ProxyPort := GikoSys.Setting.ReadProxyPort;
-		client.ProxyParams.ProxyUsername := GikoSys.Setting.ReadProxyUserID;
-		client.ProxyParams.ProxyPassword := GikoSys.Setting.ReadProxyPassword;
-		if GikoSys.Setting.ReadProxyUserID <> '' then
-			client.ProxyParams.BasicAuthentication := True;
-	end else begin
-		if GikoSys.Setting.Protocol then
-			client.ProtocolVersion := pv1_1
-		else
-			client.ProtocolVersion := pv1_0;
-		client.ProxyParams.ProxyServer := '';
-		client.ProxyParams.ProxyPort := 80;
-		client.ProxyParams.ProxyUsername := '';
-		client.ProxyParams.ProxyPassword := '';
-	end;
-end;
 end.

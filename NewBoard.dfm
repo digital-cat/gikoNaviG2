@@ -78,7 +78,7 @@ object NewBoardDialog: TNewBoardDialog
     Top = 261
     Width = 417
     Height = 20
-    ItemHeight = 0
+    ItemHeight = 12
     TabOrder = 4
     Text = 'BoardURLComboBox'
   end

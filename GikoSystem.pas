@@ -189,6 +189,7 @@ type
 		function GetTokenIndex(s: string; delimiter: string; index: Integer): string;
 
 		function GetShortName(const LongName: string; ALength: integer): string;
+		function GetShortNameW(const LongName: WideString; ALength: integer): WideString;
 		function TrimThreadTitle(const SrcTitle: string): string;
 		function BoolToInt(b: Boolean): Integer;
 		function IntToBool(i: Integer): Boolean;
@@ -275,7 +276,7 @@ type
     //! 2ch/5chのURLを実際に呼べる形にする
     procedure Regulate2chURL(var url: String);
     //! 2ch/5chのURLかどうか
-    function Is2chURL(url: String): Boolean;
+    function Is2chURL(url: String; shortening: Boolean = False): Boolean;
     //! したらばのURLかどうか
     function IsShitarabaURL(url: String): Boolean;
 	end;
@@ -287,7 +288,7 @@ const
 	ZERO_DATE: Integer	= 25569;
 	BETA_VERSION_NAME_E = 'beta';
 	BETA_VERSION_NAME_J = 'ﾊﾞﾀ';
-	BETA_VERSION				= 73;
+	BETA_VERSION				= 74;
 	BETA_VERSION_BUILD	= '';				//!< debug版など
 	APP_NAME						= 'gikoNavi';
 	BE_PHP_URL = 'https://be.5ch.net/test/p.php?i=';
@@ -297,7 +298,7 @@ implementation
 
 uses
 	Giko, RoundData, Favorite, Registry, HTMLCreate, MojuUtils, Sort, YofUtils,
-	IniFiles, DateUtils, SkinFiles;
+	IniFiles, DateUtils, SkinFiles, WideCtrls;
 
 const
 	FOLDER_INDEX_VERSION					= '1.01';
@@ -1516,6 +1517,64 @@ begin
         Result := SrcTitle;
     end;
 end;
+
+function TGikoSys.GetShortNameW(const LongName: WideString; ALength: integer): WideString;
+const
+	ERASECHAR : array [1..39] of WideString =
+		('☆','★','■','□','◆','◇','＿','＃','▲','▼',
+		 '△','▽','●','○','◎','【','】','♪','《','》',
+		 '“','”','〔','〕','‘','’','＜','＞','≪','≫',
+		 '｛','｝','〈','〉','『','』','〓','…', '　');
+  DIS = $FEE0;
+var
+	s : UTF8String;
+  w : WideString;
+  tmp1: WideString;
+  tmp2: WideString;
+	i : integer;
+  idx: Integer;
+  len: Integer;
+  code: Integer;
+  size: Integer;
+begin
+	s := LongName;
+	if (Length(s) <= ALength) then begin
+		Result := LongName;
+	end else begin
+  	w := LongName;
+		for i := Low(ERASECHAR)	to	High(ERASECHAR) do	begin
+    	while True do begin
+        idx := Pos(ERASECHAR[i], w);
+        if idx < 1 then
+        	Break;
+        Delete(w, idx, 1);
+      end;
+		end;
+    s := w;
+		if (Length(s) <= ALength) then begin
+			Result := w;
+		end else begin
+    	len := Length(w);
+      for i := 1 to len do begin
+        code := Ord(w[i]);
+        if (code >= $FF10) and (code <= $FF5A) then
+	        w[i] := WideChar(code - DIS)
+				else if (code >= $30A1) and (code <= $30FA) then begin
+        	tmp1 := w[i];
+					size := LCMapStringW(LOCALE_SYSTEM_DEFAULT, LCMAP_HALFWIDTH,
+          										PWideChar(tmp1), Length(tmp1), nil, 0);
+					SetLength(tmp2, size);
+					LCMapStringW(LOCALE_SYSTEM_DEFAULT, LCMAP_HALFWIDTH,
+                          PWideChar(tmp1), Length(tmp1), PWideChar(tmp2), size);
+          w[i] := tmp2[1];
+        end;
+      end;
+      Result := WideTrimLength(w, ALength);
+		end;
+	end;
+end;
+
+
 
 {!
 \brief Boolean を Integer に変換
@@ -3585,13 +3644,18 @@ const
   DOMAIN_5CH = '5ch.net';
   DOMAIN_PNK = 'bbspink.com';
 var
-  idx: Integer;
+  idx1: Integer;
+  idx2: Integer;
   start: Integer;
   len: Integer;
   domain: String;
   path: String;
   dir: String;
   dirList: TStringList;
+  param: String;
+  termSlash: Boolean;
+  board: TBoard;
+  server: String;
 begin
   if not Is2chURL(url) then
     Exit;
@@ -3599,12 +3663,13 @@ begin
   if url[5] = ':' then
     Insert('s', url, 5);  // http:// -> https://
 
-  idx := Pos('.2ch.net/', url);
-  if idx > 0 then
-    url[idx + 1] := '5';  // 2ch.net -> 5ch.net
+  idx1 := Pos('.2ch.net/', url);
+  if idx1 > 0 then
+    url[idx1 + 1] := '5'; // 2ch.net -> 5ch.net
 
-  { スマホURL -> PCURL
+  { スマホURL -> PC-URL
   https://itest.5ch.net/egg/test/read.cgi/software/1689155355
+  https://itest.5ch.net/test/read.cgi/software/1689155355				鯖名がない形式
     ↓
   https://egg.5ch.net/test/read.cgi/software/1689155355
   }
@@ -3619,28 +3684,66 @@ begin
 
   // パス部のみ取り出し
   path := Copy(url, start, Length(url) - start + 1);
-  idx := Pos('?', path);
-  if idx > 0 then
-    SetLength(path, idx - 1);
-  idx := Pos('#', path);
-  if idx > 0 then
-    SetLength(path, idx - 1);
+  idx1 := Pos('?', path);
+  idx2 := Pos('#', path);
+  if (idx2 > 0) and ((idx1 < 1) or (idx2 < idx1)) then
+    idx1 := idx2;
+  if idx1 > 0 then begin
+    param := Copy(path, idx1, Length(path) - idx1 + 1);
+    SetLength(path, idx1 - 1);
+  end;
 
   dirList := TStringList.Create;
   try
+  	termSlash := True;	// パスの終端がスラッシュか
     start := 2;   // ルート'/'の次から
     len := Length(path);
     while start < len do begin
-      idx := PosEx('/', path, start);
-      if idx < 1 then
-        Break;
-      dir := Copy(path, start, idx - start);
-      start := idx + 1;
+      idx1 := PosEx('/', path, start);
+      if idx1 < 1 then begin
+	      dir := Copy(path, start, len - start + 1);
+        start := len + 1;
+      	termSlash := False;		// スラッシュで終わってない
+      end else begin
+      	dir := Copy(path, start, idx1 - start);
+      	start := idx1 + 1;
+      end;
       dirList.Add(dir);
     end;
 
-    if dirList.Count = 5 then begin
-      url := Format('https://%s.%s/test/read.cgi/%s/%s/', [dirList[0], domain, dirList[3], dirList[4]]);
+    if dirList.Count >= 1 then begin
+      // 鯖名がないパターン
+      if dirList[0] = 'test' then begin
+		    if dirList.Count < 3 then
+          Exit;		// 板名がないから変換不可
+        board := BBSs[0].FindBBSID(dirList[2]);
+        if board = nil then
+          Exit;		// 板名から板情報を取得できなかった
+        if board.URL = '' then
+          Exit;		// 板のURLを取得できなかった
+      	idx1 := Pos('://', board.URL);
+        if idx1 < 1 then
+          Exit;		// 板のURLが変
+        idx1 := idx1 + 3;	// 鯖名の開始位置
+        idx2 := PosEx('.', board.URL, idx1);
+        if idx2 < 1 then
+          Exit;		// 板のURLが変
+				server := Copy(board.URL, idx1, idx2 - idx1);	// 鯖名取得
+        start := 0;
+      end else begin
+			// 鯖名があるパターン
+        server := dirList[0];
+        start := 1;
+      end;
+
+      url := Format('https://%s.%s', [server, domain]);
+	    if dirList.Count > start then
+  	  	for idx1 := start to dirList.Count - 1 do
+    	    url := url + '/' + dirList[idx1];
+    	if termSlash then
+      	url := url + '/';
+      if param <> '' then
+        url := url + param;
     end;
   finally
     dirList.Free;
@@ -3648,23 +3751,32 @@ begin
 end;
 
 //! 2ch/5chのURLかどうか
-function TGikoSys.Is2chURL(url: String): Boolean;
+function TGikoSys.Is2chURL(url: String; shortening: Boolean = False): Boolean;
 const
   PROTOCOL2CH: array [0..1] of String = ('http://', 'https://');
+  PROTOCOL2CH_SH = '://';
+  PROTOCOL2CH_SH_MAX = 6;
   DOMAIN2CH: array [0..2] of String = ('.2ch.net/', '.5ch.net/', '.bbspink.com/');
 var
   idx: Integer;
   start: Integer;
   first: Integer;
   i: Integer;
+  p: Integer;
 begin
   Result := False;
   start := 0;
 
-  for i := Low(PROTOCOL2CH) to High(PROTOCOL2CH) do begin
-    if Pos(PROTOCOL2CH[i], url) = 1 then begin
-      start := Length(PROTOCOL2CH[i]) + 1;
-      Break;
+  if shortening then begin
+    p := Pos(PROTOCOL2CH_SH, url);
+    if (p > 0) and (p <= PROTOCOL2CH_SH_MAX) then
+      start := p + Length(PROTOCOL2CH_SH);
+  end else begin
+    for i := Low(PROTOCOL2CH) to High(PROTOCOL2CH) do begin
+      if Pos(PROTOCOL2CH[i], url) = 1 then begin
+        start := Length(PROTOCOL2CH[i]) + 1;
+        Break;
+      end;
     end;
   end;
 

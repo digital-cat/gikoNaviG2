@@ -62,6 +62,7 @@ type
       Shift: TShiftState);
 	private
 		{ Private 宣言 }
+    function IsExtKey(ShortCut: TShortCut): Boolean;
 	public
 		{ Public 宣言 }
 		EditorForm: TEditorForm;
@@ -85,7 +86,7 @@ var
 	i: Integer;
 	ListItem: TListItem;
 	KeyItem: TKeySettingItem;
-    CenterForm: TCustomForm;
+	CenterForm: TCustomForm;
 
 begin
 	//for i := 0 to GikoForm.ActionList.ActionCount - 1 do begin
@@ -184,8 +185,23 @@ begin
 	if TObject(Item.Data) is TKeySettingItem then begin
 		KeyItem := TKeySettingItem(Item.Data);
 		HotKey.HotKey := KeyItem.ShortCut;
+    if IsExtKey(KeyItem.ShortCut) then
+			HotKey.Modifiers := HotKey.Modifiers + [hkExt]
+    else
+      HotKey.Modifiers := HotKey.Modifiers - [hkExt];
 		GestureEdit.Text := KeyItem.Gesture;
 	end;
+end;
+
+function TKeySettingForm.IsExtKey(ShortCut: TShortCut): Boolean;
+begin
+  case WordRec(ShortCut).Lo of
+    VK_TAB, VK_RETURN, VK_SPACE, VK_PRIOR, VK_NEXT, VK_END, VK_HOME,
+    VK_LEFT, VK_UP, VK_RIGHT, VK_DOWN, VK_INSERT, VK_DELETE:
+    	Result := True;
+  else
+    Result := False;
+  end;
 end;
 
 procedure TKeySettingForm.HotKeyEnter(Sender: TObject);
@@ -218,12 +234,12 @@ var
 	i: Integer;
 	Item: TListItem;
 	KeyItem: TKeySettingItem;
-    ActiveListView: TListView;
+	ActiveListView: TListView;
 begin
-		if PageControl1.ActivePage.TabIndex <> 0 then
-    	ActiveListView := ListView1
-    else
-    	ActiveListView := ListView;
+	if PageControl1.ActivePage.TabIndex <> 0 then
+		ActiveListView := ListView1
+	else
+		ActiveListView := ListView;
 
 	if ActiveListView.Selected = nil then Exit;
 	if HotKey.HotKey = 13 then begin
@@ -232,20 +248,23 @@ begin
 		Exit;
 	end;
 
-	//現在選択されているAction以外で同じショートカットがあればエラーとする
-	for i := 0 to ActiveListView.Items.Count - 1 do begin
-		if ActiveListView.Selected = ActiveListView.Items[i] then
-			Continue;
-		Item := ActiveListView.Items[i];
-		if TObject(Item.Data) is TKeySettingItem then begin
-			KeyItem := TKeySettingItem(Item.Data);
-			if (HotKey.HotKey <> 0) and (KeyItem.ShortCut = HotKey.HotKey) then begin
-				MsgBox(Handle, ERR_MSG, ERR_TITLE, MB_OK or MB_ICONSTOP);
-				HotKey.SetFocus;
-				Exit;
-			end;
-		end;
-	end;
+  if (HotKey.HotKey <> 0) then begin
+    //現在選択されているAction以外で同じショートカットがあればエラーとする
+    for i := 0 to ActiveListView.Items.Count - 1 do begin
+      if ActiveListView.Selected = ActiveListView.Items[i] then
+        Continue;
+      Item := ActiveListView.Items[i];
+      if TObject(Item.Data) is TKeySettingItem then begin
+        KeyItem := TKeySettingItem(Item.Data);
+        if KeyItem.ShortCut = HotKey.HotKey then begin
+          MsgBox(Handle, ERR_MSG, ERR_TITLE, MB_OK or MB_ICONSTOP);
+          HotKey.SetFocus;
+          Exit;
+        end;
+      end;
+    end;
+  end;
+
 	//ショートカット設定
 	if TObject(ActiveListView.Selected.Data) is TKeySettingItem then begin
 		KeyItem := TKeySettingItem(ActiveListView.Selected.Data);

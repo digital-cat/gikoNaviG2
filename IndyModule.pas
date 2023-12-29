@@ -3,7 +3,7 @@ unit IndyModule;
 interface
 
 uses
-  SysUtils, Classes, IdBaseComponent, IdAntiFreezeBase, IdAntiFreeze, Windows;
+  SysUtils, Classes, Windows, IdBaseComponent, IdAntiFreezeBase, IdAntiFreeze, IdHTTP;
 
 type
   TIndyMdl = class(TDataModule)
@@ -20,12 +20,18 @@ type
     function GetIndyVersion: String;
     function GetOpenSSLVersion: String;
     //function GetOpenSSLInfo: String;
+
+    class procedure InitHTTP(IdHTTP: TIdHTTP; WriteMethod: Boolean = False); static;
+    class procedure ClearHTTP(idHTTP: TIdHTTP); static;
   end;
 
 var
   IndyMdl: TIndyMdl;
 
 implementation
+
+uses
+  GikoSystem;
 
 {$R *.dfm}
 
@@ -121,6 +127,85 @@ end;
 function TIndyMdl.GetOpenSSLVersion: String;
 begin
   Result := GetFileVersion('ssleay32.dll');
+end;
+
+{ TIdHTTPコンポーネントクリア }
+class procedure TIndyMdl.ClearHTTP(IdHTTP: TIdHTTP);
+begin
+  IdHTTP.Request.CustomHeaders.Clear;
+  IdHTTP.Request.RawHeaders.Clear;
+  IdHTTP.Request.Clear;
+  IdHTTP.Response.CustomHeaders.Clear;
+  IdHTTP.Response.RawHeaders.Clear;
+  IdHTTP.Response.Clear;
+  IdHTTP.ProxyParams.Clear;
+  IdHTTP.ProxyParams.BasicAuthentication := False;
+end;
+
+{ TIdHTTPコンポーネント初期化 }
+class procedure TIndyMdl.InitHTTP(IdHTTP: TIdHTTP; WriteMethod: Boolean = False);
+begin
+  IdHTTP.Disconnect;
+  ClearHTTP(IdHTTP);
+
+	IdHTTP.Request.UserAgent := GikoSys.GetUserAgent;
+  IdHTTP.ReadTimeout       := GikoSys.Setting.ReadTimeOut;
+  IdHTTP.ConnectTimeout    := GikoSys.Setting.ReadTimeOut;
+
+	{$IFDEF DEBUG}
+	Writeln('------------------------------------------------------------');
+	{$ENDIF}
+
+  if WriteMethod and GikoSys.Setting.WriteProxy then begin
+    if GikoSys.Setting.ProxyProtocol then
+      IdHTTP.ProtocolVersion := pv1_1
+    else
+      IdHTTP.ProtocolVersion := pv1_0;
+    IdHTTP.ProxyParams.ProxyServer   := GikoSys.Setting.WriteProxyAddress;
+    IdHTTP.ProxyParams.ProxyPort     := GikoSys.Setting.WriteProxyPort;
+    IdHTTP.ProxyParams.ProxyUsername := GikoSys.Setting.WriteProxyUserID;
+    IdHTTP.ProxyParams.ProxyPassword := GikoSys.Setting.WriteProxyPassword;
+    if GikoSys.Setting.ReadProxyUserID <> '' then
+      IdHTTP.ProxyParams.BasicAuthentication := True;
+
+		{$IFDEF DEBUG}
+		Writeln('書き込み用プロキシ設定あり');
+		Writeln('ホスト: ' + GikoSys.Setting.WriteProxyAddress);
+		Writeln('ポート: ' + IntToStr(GikoSys.Setting.WriteProxyPort));
+		{$ENDIF}
+
+  end else if not WriteMethod and GikoSys.Setting.ReadProxy then begin
+    if GikoSys.Setting.ProxyProtocol then
+      IdHTTP.ProtocolVersion := pv1_1
+    else
+      IdHTTP.ProtocolVersion := pv1_0;
+    IdHTTP.ProxyParams.ProxyServer   := GikoSys.Setting.ReadProxyAddress;
+    IdHTTP.ProxyParams.ProxyPort     := GikoSys.Setting.ReadProxyPort;
+    IdHTTP.ProxyParams.ProxyUsername := GikoSys.Setting.ReadProxyUserID;
+    IdHTTP.ProxyParams.ProxyPassword := GikoSys.Setting.ReadProxyPassword;
+    if GikoSys.Setting.ReadProxyUserID <> '' then
+      IdHTTP.ProxyParams.BasicAuthentication := True;
+
+		{$IFDEF DEBUG}
+		Writeln('ダウンロード用プロキシ設定あり');
+		Writeln('ホスト: ' + GikoSys.Setting.ReadProxyAddress);
+		Writeln('ポート: ' + IntToStr(GikoSys.Setting.ReadProxyPort));
+		{$ENDIF}
+
+  end else begin
+    if GikoSys.Setting.Protocol then
+      IdHTTP.ProtocolVersion := pv1_1
+    else
+      IdHTTP.ProtocolVersion := pv1_0;
+    IdHTTP.ProxyParams.ProxyServer   := '';
+    IdHTTP.ProxyParams.ProxyPort     := 80;
+    IdHTTP.ProxyParams.ProxyUsername := '';
+    IdHTTP.ProxyParams.ProxyPassword := '';
+
+		{$IFDEF DEBUG}
+		Writeln('プロキシ設定なし');
+		{$ENDIF}
+  end;
 end;
 
 end.

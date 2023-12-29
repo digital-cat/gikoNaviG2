@@ -1,0 +1,111 @@
+/*
+ギコナビ用のスタイルシートファイルです。
+このファイルは変更しないでください。
+変更するときには、ファイルをコピーし、そのファイルを変更してください。
+*/
+
+/* ***** タイトル ***** */
+.title {
+  font-size: 13pt;
+  color: #FF8080;
+  margin-bottom : 20px;
+}
+
+/* ***** ヘッダ（レス番号・名前・日付） ***** */
+.header {
+}
+
+/* ***** レス番号 ***** */
+.no a {
+  color: #FFFFFF;
+}
+.no a:visited {
+  color: #FFFFFF;
+}
+
+/* ***** 名前の前の文字列（名前：） ***** */
+.name_label {
+}
+
+/* ***** 書いた人の名前欄（リンクなし） ***** */
+.name {
+  /*font-weight: bold; */
+  color: #228B22;
+}
+
+/* ***** 書いた人の名前欄（e-mailあり） ***** */
+.name_mail {
+  /*font-weight: bold; */
+  color: #8080FF;
+}
+
+/* ***** 書いた人のメール欄 ***** */
+.mail {
+  font-weight: bold;
+  color: #B080FF;
+}
+
+/* ***** 投稿日の前の文字列（投稿日：） ***** */
+.date_label {
+}
+
+/* ***** 投稿日 ***** */
+.date {
+}
+
+/* ***** 本文 ***** */
+.mes {
+  margin-left : 40px;
+  margin-bottom : 20px;
+}
+
+/* ***** 新着 ***** */
+.new {
+  font-size: 8pt;
+  font-weight: bold;
+  text-align: center;
+  color: #FFFFFF;
+  background-color: #6666FF;
+  border: 1px solid #3333CC;
+  width: 100%;
+  margin-bottom : 30px;
+}
+
+/* ***** 新着の日時部分 ***** */
+.newdate {
+  font-size: 8pt;
+  letter-spacing: 1px;
+}
+
+/* ***** ココまで読んだ ***** */
+.koko {
+  font-size: 8pt;
+  font-weight: bold;
+  text-align: center;
+  color: #80FF80;
+  background-color: #404040;
+  border: 1px solid #77CC77;
+  width: 100%;
+  margin-bottom : 30px;
+}
+
+/* ***** <body> ***** */
+BODY {
+  font-size: 12pt;
+  color: #FFFFFF;
+  background-color: #202020;
+  margin-bottom : 30px;
+  /* white-space: nowrap; */
+  scrollbar-arrow-color:808080;
+  scrollbar-face-color:#606060;
+  scrollbar-3dlight-color:#404040;
+  scrollbar-darkshadow-color:#404040;
+  scrollbar-highlight-color:#404040;
+  scrollbar-shadow-color:#404040;
+  scrollbar-track-color:#404040;
+}
+
+/* ***** リンク ***** */
+a {
+  color: #40FF40;
+}

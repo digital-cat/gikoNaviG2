@@ -69,22 +69,17 @@ const
 	G_STR: array[0..3] of string = ('Å™', 'Å©', 'Å´', 'Å®');
 var
 	i: Integer;
-	j: Integer;
-	c: Boolean;
+  len: Integer;
+  max: Integer;
 begin
 	Result := False;
-	if Length(Gesture) = 0 then
+  len := Length(Gesture);
+	if (len = 0) or (len mod 2 = 1) then
 		Exit;
-	for i := 0 to (Length(Gesture) div 2) - 1 do begin
-		c := False;
-		for j := 0 to Length(G_STR) - 1 do begin
-			if MidStr(Gesture, i + 1, 1) = G_STR[j] then begin
-				c := True;
-				Break;
-			end;
-		end;
-		if not c then
-			Exit;
+	max := (len div 2) - 1;
+	for i := 0 to max do begin
+    if MatchStr(Copy(Gesture, 1 + (i * 2), 2), G_STR) = False then
+      Exit;
 	end;
 	Result := True;
 end;

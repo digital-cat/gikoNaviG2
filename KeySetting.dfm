@@ -1,12 +1,12 @@
 object KeySettingForm: TKeySettingForm
   Left = 258
   Top = 263
-  Width = 688
-  Height = 360
   HorzScrollBar.Visible = False
   VertScrollBar.Visible = False
   BorderIcons = [biSystemMenu]
   Caption = #12461#12540#35373#23450
+  ClientHeight = 321
+  ClientWidth = 672
   Color = clBtnFace
   Constraints.MinHeight = 270
   Constraints.MinWidth = 600
@@ -25,7 +25,7 @@ object KeySettingForm: TKeySettingForm
   TextHeight = 12
   object Panel1: TPanel
     Left = 0
-    Top = 244
+    Top = 243
     Width = 672
     Height = 78
     Align = alBottom
@@ -164,7 +164,7 @@ object KeySettingForm: TKeySettingForm
     Left = 0
     Top = 0
     Width = 672
-    Height = 244
+    Height = 243
     Align = alClient
     BevelOuter = bvNone
     BorderWidth = 4
@@ -173,7 +173,7 @@ object KeySettingForm: TKeySettingForm
       Left = 4
       Top = 4
       Width = 664
-      Height = 236
+      Height = 235
       ActivePage = TabSheet1
       Align = alClient
       TabOrder = 0
@@ -183,7 +183,7 @@ object KeySettingForm: TKeySettingForm
           Left = 0
           Top = 0
           Width = 656
-          Height = 209
+          Height = 207
           Align = alClient
           Columns = <
             item
@@ -217,11 +217,15 @@ object KeySettingForm: TKeySettingForm
       object TabSheet2: TTabSheet
         Caption = #12456#12487#12451#12479
         ImageIndex = 1
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object ListView1: TListView
           Left = 0
           Top = 0
-          Width = 664
-          Height = 220
+          Width = 656
+          Height = 207
           Align = alClient
           Columns = <
             item
