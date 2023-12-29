@@ -226,7 +226,6 @@ type
 		BoukenDelButton: TButton;
 		BoukenEdit: TEdit;
 		GroupBox26: TGroupBox;
-		UseUnicodeCB: TCheckBox;
 		DispImageCheckBox: TCheckBox;
 		GroupBox27: TGroupBox;
 		ThreadTitleTrimCheckBox: TCheckBox;
@@ -234,6 +233,7 @@ type
 		NGTextEditCheckBox: TCheckBox;
 		BoardInfCheckBox: TCheckBox;
 		PreviewStyleCheckBox: TCheckBox;
+    OekakiCheckBox: TCheckBox;
 		procedure FormCreate(Sender: TObject);
 		procedure FormDestroy(Sender: TObject);
 		procedure ApplyButtonClick(Sender: TObject);
@@ -914,6 +914,8 @@ begin
   //UseUnicodeCB.Checked := Gikosys.Setting.UseUnicode;
 	// プレビュー表示にCSSまたはスキンを適用する
   PreviewStyleCheckBox.Checked := Gikosys.Setting.PreviewStyle;
+  // お絵描き（画像添付）を有効にする
+	OekakiCheckBox.Checked := Gikosys.Setting.Oekaki;
   // スレタイ特定文字列除去
   ThreadTitleTrimCheckBox.Checked := GikoSys.Setting.ThreadTitleTrim;
 
@@ -1240,6 +1242,8 @@ begin
 	//Gikosys.Setting.UseUnicode := UseUnicodeCB.Checked;
 	// プレビュー表示にCSSまたはスキンを適用する
 	Gikosys.Setting.PreviewStyle := PreviewStyleCheckBox.Checked;
+  // お絵描き（画像添付）を有効にする
+	Gikosys.Setting.Oekaki := OekakiCheckBox.Checked;
 	// スレタイ特定文字列除去
 	GikoSys.Setting.ThreadTitleTrim := ThreadTitleTrimCheckBox.Checked;
 

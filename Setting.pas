@@ -492,6 +492,8 @@ type
     FUseUnicode: Boolean;
     //! プレビュー表示にCSSまたはスキンを適用する
     FPreviewStyle: Boolean;
+    //! お絵描き（画像添付）を有効にする
+    FOekaki: Boolean;
     //! 削除要請板を特別扱い
     FSakuBoard: Boolean;
 
@@ -912,6 +914,8 @@ type
     property UseUnicode: Boolean read FUseUnicode write FUseUnicode;
     //! プレビュー表示にCSSまたはスキンを適用する
     property PreviewStyle: Boolean read FPreviewStyle write FPreviewStyle;
+    //! お絵描き（画像添付）を有効にする
+    property Oekaki: Boolean read FOekaki write FOekaki;
     //! 削除要請板を特別扱い
     property SakuBoard: Boolean read FSakuBoard write FSakuBoard;
 		//! スレタイ検索ウィンドウ
@@ -1389,6 +1393,7 @@ begin
 		FUseGobakuCheck := ini.ReadBool( 'Editor', 'UseGobakuCheck', True );
 		FUseUnicode     := True;//ini.ReadBool( 'Editor', 'UseUnicode', False );
     FPreviewStyle   := ini.ReadBool( 'Editor', 'PreviewStyle', False );
+    FOekaki         := ini.ReadBool( 'Editor', 'Oekaki', True );
 
 		//Tab自動保存、読み込み
 		FTabAutoLoadSave    := ini.ReadBool('TabAuto', 'TabAutoLoadSave', False);
@@ -1860,6 +1865,7 @@ begin
 		ini.WriteBool( 'Editor', 'UseGobakuCheck', FUseGobakuCheck );
 		//ini.WriteBool( 'Editor', 'UseUnicode',     FUseUnicode );
     ini.WriteBool( 'Editor', 'PreviewStyle',   FPreviewStyle );
+    ini.WriteBool( 'Editor', 'Oekaki',         FOekaki );
 
     //! 削除要請板を特別扱い
     ini.WriteBool('NewBoard', 'SakuSpecial', FSakuBoard);

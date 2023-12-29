@@ -151,6 +151,7 @@ type
     OekakiButton: TButton;
     OekakiOpenDialog: TOpenDialog;
     OekakiClearButton: TButton;
+    OekakiRightPanel: TPanel;
 
 		procedure EditorPageChange(Sender: TObject);
 		procedure FormCreate(Sender: TObject);
@@ -217,6 +218,7 @@ type
 			var ABuffer: TIdBytes);
     procedure OekakiButtonClick(Sender: TObject);
     procedure OekakiClearButtonClick(Sender: TObject);
+    procedure OekakiPanelResize(Sender: TObject);
 	private
 		FThreadItem: TThreadItem;
 		FBoard: TBoard;
@@ -547,7 +549,8 @@ begin
 	SetMailText(FThreadItem.ParentBoard.KotehanMail);
 	SageCheckBox.Checked := AnsiPos('sage', GetMailText) <> 0;
 	TitlePanel.Visible := False;
-  OekakiPanel.Visible := GikoSys.Is2chURL(FThreadItem.URL);		// ‚T‚¿‚á‚ñ‚Ì‚Ý‚¨ŠG•`‚«—LŒø
+  OekakiPanel.Visible := (Gikosys.Setting.Oekaki                // ƒIƒvƒVƒ‡ƒ“‚Å‚¨ŠG•`‚«—LŒø
+                      and GikoSys.Is2chURL(FThreadItem.URL));		// ‚T‚¿‚á‚ñ‚Ì‚Ý‚¨ŠG•`‚«—LŒø
 
 	if (FSambaTimer.SetBoard(FThreadItem.ParentBoard) >= 0) then begin
 		UpdateSambaStatus;
@@ -2428,6 +2431,16 @@ procedure TEditorForm.OekakiClearButtonClick(Sender: TObject);
 begin
 	FOekaki := '';
 	OekakiEdit.Text := '';
+end;
+
+procedure TEditorForm.OekakiPanelResize(Sender: TObject);
+var
+	editw: Integer;
+begin
+	editw := OekakiRightPanel.Left - OekakiEdit.Left - 6;
+  if editw < 20 then
+  	editw := 20;
+	OekakiEdit.Width := editw;
 end;
 
 procedure TEditorForm.OnGestureEnd(Sender: TObject);
