@@ -15,7 +15,7 @@ SourceDir=D:\giko\Setup\Release74-878
 OutputDir=D:\giko\Setup\Output
 SetupIconFile=D:\giko\Setup\GikoSetup.ico
 ; ギコナビのバージョンにあわせてください
-VersionInfoVersion=1.74.0.878
+VersionInfoVersion=1.74.1.878
 OutputBaseFilename=gikoNavi_b74_setup
 
 
