@@ -190,15 +190,15 @@ begin
 		MakeError(FSession, GetLastError())
 	else begin
 		hConnect := InternetConnect(hSession, BELIB_LOGIN_HOST,
-			INTERNET_DEFAULT_HTTP_PORT, nil, nil,
-			INTERNET_SERVICE_HTTP, 0, 0);
+			INTERNET_DEFAULT_HTTPS_PORT, nil, nil,
+			INTERNET_SERVICE_HTTP, INTERNET_FLAG_SECURE, 0);
 		if not Assigned(hConnect) then
 			MakeError(FSession, GetLastError())
 		else begin
 			hRequest := HttpOpenRequest(hConnect, 'POST', BELIB_LOGIN_URL,
 				nil, nil, nil,
 				INTERNET_FLAG_NO_CACHE_WRITE or INTERNET_FLAG_NO_COOKIES or
-				INTERNET_FLAG_NO_UI, 0);
+				INTERNET_FLAG_NO_UI or INTERNET_FLAG_SECURE, 0);
 			if not Assigned(hRequest) then
 				MakeError(FSession, GetLastError())
 			else begin
