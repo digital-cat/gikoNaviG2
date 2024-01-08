@@ -198,7 +198,7 @@ begin
 			hRequest := HttpOpenRequest(hConnect, 'POST', BELIB_LOGIN_URL,
 				nil, nil, nil,
 				INTERNET_FLAG_NO_CACHE_WRITE or INTERNET_FLAG_NO_COOKIES or
-				INTERNET_FLAG_NO_UI or INTERNET_FLAG_SECURE, 0);
+				INTERNET_FLAG_NO_UI or INTERNET_FLAG_SECURE or INTERNET_FLAG_NO_AUTO_REDIRECT, 0);
 			if not Assigned(hRequest) then
 				MakeError(FSession, GetLastError())
 			else begin
