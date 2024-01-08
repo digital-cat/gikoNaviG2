@@ -1354,6 +1354,8 @@ begin
 			CoolSet.FCoolID := ini.ReadInteger('MainCoolBar', 'ID' + IntToStr(i), -1);
 			CoolSet.FCoolWidth := ini.ReadInteger('MainCoolBar', 'Width' + IntToStr(i), -1);
 			CoolSet.FCoolBreak := ini.ReadBool('MainCoolBar', 'Break' + IntToStr(i), False);
+    	if CoolSet.FCoolID = 3 then		// Shift-JI版お気に入りツールバー（リンクバー）
+      	CoolSet.FCoolID := 4;				// Unicode版に差し替え
 			MainCoolSet[i] := CoolSet;
 		end;
 		FSelectComboBoxWidth := ini.ReadInteger( 'ListCoolBar', 'SelectWidth', 127 );

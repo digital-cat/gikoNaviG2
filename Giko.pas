@@ -948,6 +948,7 @@ var
 	i: Integer;
 	wp: TWindowPlacement;
   msgCol: TTntListColumn;
+	CoolBand: TCoolBand;
 begin
 {$IFDEF DEBUG}
 	AllocConsole;
@@ -1031,6 +1032,20 @@ begin
 	LinkToolBarUC.OnDragOver   := LinkToolBar.OnDragOver;
 	LinkToolBarUC.OnResize     := LinkToolBar.OnResize;
 	LinkToolBar.Visible        := False;
+	// Shift-JIS版お気に入りツールバーをCoolBandごと削除
+  try
+    for i := 0 to MainCoolBar.Bands.Count - 1 do begin
+      if MainCoolBar.Bands[i].Control = LinkToolBar then begin
+        MainCoolBar.Bands.Delete(i);
+        Break;
+      end;
+    end;
+    // Unicode版お気に入りツールバーのバンドに名称表示
+		CoolBand := GetCoolBand(MainCoolBar, LinkToolBarUC);
+    if CoolBand <> nil then
+    	CoolBand.Text := 'リンク';
+  except
+  end;
 	// カテゴリツリービューをUnicode版に差し替え
 	TreeViewUC := TTntTreeView.Create(Self);
 	TreeViewUC.Parent           := TreeView.Parent;
@@ -7598,6 +7613,7 @@ var
 	band					: TCoolBand;
 	affectedBand	: TCoolBand;
 	i							: Integer;
+  count         : Integer;
 begin
 	if (FOldFormWidth = Width) and not IsIconic( Handle ) and (FIsIgnoreResize = rtNone) then begin
 		FIsIgnoreResize := rtResizing;
@@ -7605,7 +7621,11 @@ begin
 		band := nil;
 		// 変更されたクールバーの値を保存
 		if CoolBar = MainCoolBar then begin
-			for i := 0 to MAIN_COOLBAND_COUNT - 1 do begin
+    	count := CoolBar.Bands.Count;			// FormDestroyより後のタイミングで呼ばれるとUnicode版お気に入りツールバーのバンドは消去済み（INI保存済みなので影響なし）
+      if count > MAIN_COOLBAND_COUNT then
+      	count := MAIN_COOLBAND_COUNT;
+			//for i := 0 to MAIN_COOLBAND_COUNT - 1 do begin
+			for i := 0 to count - 1 do begin
 				CoolSet.FCoolID := CoolBar.Bands[i].ID;
 				CoolSet.FCoolWidth := CoolBar.Bands[i].Width;
 				CoolSet.FCoolBreak := CoolBar.Bands[i].Break;
