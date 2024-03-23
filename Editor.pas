@@ -1154,6 +1154,7 @@ var
 	is2ch: Boolean;   // for 5ch
 	referer: String;  // for 5ch
 	isUTF8: Boolean;
+	url2: string;
 //{$IFDEF DEBUG}
 //  debug: String;
 //{$ENDIF}
@@ -1224,7 +1225,9 @@ begin
 				end;
 			end;
 
-			GetSendData(Source, isUTF8, (is2ch = False));
+			GetSendData(Source, isUTF8, {(is2ch =} False{)});
+
+			url2 := GikoSys.GetActualURL(URL);
 
 //{$IFDEF DEBUG}
 //      debug := 'Send() FirstWriting:';
@@ -1237,7 +1240,7 @@ begin
 
 			IndyMdl.StartAntiFreeze(100);
 			try
-				Indy.Post(URL, Source, TextStream);
+				Indy.Post(url2, Source, TextStream);
 			finally
 				IndyMdl.EndAntiFreeze;
 			end;
@@ -2180,7 +2183,11 @@ end;
 }
 procedure TEditorForm.GetWebData(const URL: string; const RefURL: string;
 			Modified: TDateTime; stream: TStream);
+var
+	url2: String;
 begin
+	url2 := GikoSys.GetActualURL(URL);
+
 	TIndyMdl.InitHTTP(Indy);
 	Indy.Request.AcceptEncoding := '';
 	Indy.Request.Referer := RefURL;
@@ -2189,7 +2196,7 @@ begin
 	//IdAntiFreeze.Active := True;
 	IndyMdl.StartAntiFreeze(100); // for Indy10
 	try
-		Indy.Get(URL, stream);
+		Indy.Get(url2, stream);
 	finally
 		//IdAntiFreeze.Active := False;
 		IndyMdl.EndAntiFreeze;    // for Indy10

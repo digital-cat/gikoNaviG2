@@ -3,7 +3,7 @@ unit IndyModule;
 interface
 
 uses
-  SysUtils, Classes, Windows, IdBaseComponent, IdAntiFreezeBase, IdAntiFreeze, IdHTTP;
+  SysUtils, Classes, Windows, IdBaseComponent, IdAntiFreezeBase, IdAntiFreeze, IdHTTP, IdGlobal;
 
 type
   TIndyMdl = class(TDataModule)
@@ -156,11 +156,12 @@ begin
 	Writeln('------------------------------------------------------------');
 	{$ENDIF}
 
+  if GikoSys.Setting.ProxyProtocol then
+    IdHTTP.ProtocolVersion := pv1_1
+  else
+    IdHTTP.ProtocolVersion := pv1_0;
+
   if WriteMethod and GikoSys.Setting.WriteProxy then begin
-    if GikoSys.Setting.ProxyProtocol then
-      IdHTTP.ProtocolVersion := pv1_1
-    else
-      IdHTTP.ProtocolVersion := pv1_0;
     IdHTTP.ProxyParams.ProxyServer   := GikoSys.Setting.WriteProxyAddress;
     IdHTTP.ProxyParams.ProxyPort     := GikoSys.Setting.WriteProxyPort;
     IdHTTP.ProxyParams.ProxyUsername := GikoSys.Setting.WriteProxyUserID;
@@ -175,10 +176,6 @@ begin
 		{$ENDIF}
 
   end else if not WriteMethod and GikoSys.Setting.ReadProxy then begin
-    if GikoSys.Setting.ProxyProtocol then
-      IdHTTP.ProtocolVersion := pv1_1
-    else
-      IdHTTP.ProtocolVersion := pv1_0;
     IdHTTP.ProxyParams.ProxyServer   := GikoSys.Setting.ReadProxyAddress;
     IdHTTP.ProxyParams.ProxyPort     := GikoSys.Setting.ReadProxyPort;
     IdHTTP.ProxyParams.ProxyUsername := GikoSys.Setting.ReadProxyUserID;
@@ -193,10 +190,6 @@ begin
 		{$ENDIF}
 
   end else begin
-    if GikoSys.Setting.Protocol then
-      IdHTTP.ProtocolVersion := pv1_1
-    else
-      IdHTTP.ProtocolVersion := pv1_0;
     IdHTTP.ProxyParams.ProxyServer   := '';
     IdHTTP.ProxyParams.ProxyPort     := 80;
     IdHTTP.ProxyParams.ProxyUsername := '';

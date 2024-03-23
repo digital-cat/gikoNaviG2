@@ -279,6 +279,10 @@ type
     function Is2chURL(url: String; shortening: Boolean = False): Boolean;
     //! したらばのURLかどうか
     function IsShitarabaURL(url: String): Boolean;
+    //! 実際に使うURL取得（IPv6/v4確認と変換）
+    function GetActualURL(url: String): String;
+    //! 実際に使うホスト名取得（IPv6/v4確認と変換）
+    function GetActualHost(host: String; var modified: Boolean): String;
 	end;
 
 var
@@ -3803,6 +3807,76 @@ begin
             (AnsiPos('https://jbbs.shitaraba.net/', url) = 1);
 end;
 
+//! 実際に使うURL取得（IPv6/v4確認と変換）
+function TGikoSys.GetActualURL(url: String): String;
+var
+  idx: Integer;
+  lenDmn: Integer;
+  urlTmp: String;
+  protocol: String;
+  domain: String;
+  path: String;
+  modified: Boolean;
+begin
+  Result := url;
+
+  if not Setting.IPv6 then
+    Exit;
+
+  urlTmp := url;
+
+  idx := Pos('://', urlTmp);
+  if idx < 1 then
+    Exit;
+  protocol := Copy(urlTmp, 1, idx + 2);
+  Delete(urlTmp, 1, idx + 2);
+
+  idx := Pos('/', urlTmp);
+  if idx < 2 then
+    Exit;
+  lenDmn := idx - 1;
+  domain := Copy(urlTmp, 1, lenDmn);
+  path := Copy(urlTmp, idx, Length(urlTmp) - lenDmn);
+
+	domain := GetActualHost(domain, modified);
+  if modified = False then
+  	Exit;
+
+  Result := Format('%s%s%s', [protocol, domain, path]);
+end;
+
+//! 実際に使うホスト名取得（IPv6/v4確認と変換）
+function TGikoSys.GetActualHost(host: String; var modified: Boolean): String;
+var
+	i:Integer;
+  idx: Integer;
+  lenDmn: Integer;
+  lenV4: Integer;
+  v4Dmn: String;
+begin
+	modified := False;
+	Result := host;
+
+  if not Setting.IPv6 then
+    Exit;
+
+	lenDmn := Length(host);
+
+  for i := 0 to Setting.IPv4List.Count - 1 do begin
+    v4dmn := Setting.IPv4List[i];
+    lenV4 := Length(v4dmn);
+    if lenV4 > lenDmn then
+      Continue;
+    if (lenV4 = lenDmn) and (v4dmn = host) then
+      Exit;
+    idx := lenDmn - lenV4 + 1;
+    if (Copy(host, idx, lenV4) = v4dmn) and (host[idx - 1] = '.') then
+      Exit;
+  end;
+
+	modified := True;
+	Result := Format('[%s]', [host]);
+end;
 
 initialization
 	GikoSys := TGikoSys.Create;

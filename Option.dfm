@@ -60,7 +60,7 @@ object OptionDialog: TOptionDialog
     Top = 4
     Width = 509
     Height = 389
-    ActivePage = TabSheet4
+    ActivePage = NGwordSheet
     MultiLine = True
     TabOrder = 3
     OnChange = OptionTabChange
@@ -1521,7 +1521,7 @@ object OptionDialog: TOptionDialog
         Left = 12
         Top = 8
         Width = 477
-        Height = 193
+        Height = 202
         Caption = #12354#12412#65374#12435
         TabOrder = 0
         object RloCheckBox: TCheckBox
@@ -1534,7 +1534,7 @@ object OptionDialog: TOptionDialog
         end
         object ReplaceulCheckBox: TCheckBox
           Left = 12
-          Top = 66
+          Top = 64
           Width = 221
           Height = 17
           Caption = '<ul>'#12479#12464#12434'<br>'#12479#12464#12395#32622#25563#12377#12427'(&R)'
@@ -1542,7 +1542,7 @@ object OptionDialog: TOptionDialog
         end
         object PopUpAbonCheckBox: TCheckBox
           Left = 12
-          Top = 88
+          Top = 86
           Width = 221
           Height = 17
           Caption = #12524#12473#12509#12483#12503#12450#12483#12503#26178#12398#12354#12412#65374#12435#26377#21177'(&P)'
@@ -1550,7 +1550,7 @@ object OptionDialog: TOptionDialog
         end
         object ShowNGLineCheckBox: TCheckBox
           Left = 12
-          Top = 110
+          Top = 108
           Width = 181
           Height = 17
           Caption = 'NG'#12501#12449#12452#12523#12398#34892#25968#12434#34920#31034'(&N)'
@@ -1558,7 +1558,7 @@ object OptionDialog: TOptionDialog
         end
         object AddResAnchorCheckBox: TCheckBox
           Left = 12
-          Top = 132
+          Top = 130
           Width = 205
           Height = 17
           Caption = #65326#65319#12524#12473#12408#12398#12524#12473#12450#12531#12459#12540#12398#36861#21152'(&A)'
@@ -1566,32 +1566,40 @@ object OptionDialog: TOptionDialog
         end
         object DeleteSyriaCheckBox: TCheckBox
           Left = 12
-          Top = 44
+          Top = 42
           Width = 205
           Height = 17
-          Caption = #12471#12522#12450#35486#12502#12521#12463#12521#23550#31574#12434#12377#12427
+          Caption = #12471#12522#12450#35486#12502#12521#12463#12521#23550#31574#12434#12377#12427'(&S)'
           TabOrder = 5
         end
         object IgnoreKanaCheckBox: TCheckBox
           Left = 12
-          Top = 156
-          Width = 253
+          Top = 152
+          Width = 332
           Height = 17
-          Caption = #20840#35282#21322#35282#12402#12425#12364#12394#12459#12479#12459#12490#12398#36949#12356#12434#28961#35222#12377#12427
+          Caption = #20840#35282#21322#35282#12402#12425#12364#12394#12459#12479#12459#12490#12398#36949#12356#12434#28961#35222#12377#12427'(&K)'
           TabOrder = 6
+        end
+        object KeepNgFileCheckBox: TCheckBox
+          Left = 12
+          Top = 174
+          Width = 462
+          Height = 17
+          Caption = #12473#12524#20840#20307#20877#21462#24471#26178#12395#25163#21205#12354#12412#65374#12435#24773#22577#12434#12463#12522#12450#12375#12394#12356'(&E) '#65288#12354#12412#65374#12435#26908#20986#12539#24375#21046#20877#21462#24471#65289
+          TabOrder = 7
         end
       end
       object SpamFilterGroupBox: TGroupBox
         Left = 12
-        Top = 264
+        Top = 291
         Width = 477
-        Height = 57
+        Height = 49
         Caption = #12473#12497#12512#12501#12451#12523#12479
         TabOrder = 2
         Visible = False
         object SpamFilterAlgorithmComboBox: TComboBox
           Left = 12
-          Top = 23
+          Top = 18
           Width = 145
           Height = 20
           Style = csDropDownList
@@ -1606,7 +1614,7 @@ object OptionDialog: TOptionDialog
       end
       object GroupBox28: TGroupBox
         Left = 12
-        Top = 208
+        Top = 218
         Width = 477
         Height = 49
         Caption = 'NG'#12527#12540#12489#32232#38598

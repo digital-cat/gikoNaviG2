@@ -114,6 +114,7 @@ begin
                         //IdHTTP.Get(URLs[i], ResStream);
                         tmpURL := URLs[i];
                         GikoSys.Regulate2chURL(tmpURL);
+                        tmpURL := GikoSys.GetActualURL(tmpURL);
                         IdHTTP.Get(tmpURL, ResStream);
                         // for 5ch
                         value := GikoSys.GzipDecompress(ResStream,

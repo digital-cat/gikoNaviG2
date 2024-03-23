@@ -214,6 +214,7 @@ var
 	content						: string;
 //const
 //	LIVEDOOR_URL = 'http://jbbs.shitaraba.net/';
+	url: String;
 begin
 
 
@@ -237,23 +238,25 @@ begin
 			socket.Request.AcceptEncoding := '';
 		socket.Request.Accept := 'text/html';
 
+    url := GikoSys.GetActualURL(inURL);
+
 		resStream := TMemoryStream.Create;
 		try
 			try
 				resStream.Clear;
 				{$IFDEF DEBUG}
-				Writeln('URL: ' + inURL);
+				Writeln('URL: ' + url);
 				{$ENDIF}
                 //AntiFreezeをDL時のみ有効にすることで、ココでのチェック不要
-				socket.Get( inURL, resStream );
+				socket.Get( url, resStream );
 				{$IFDEF DEBUG}
 				Writeln('取得で例外なし');
 				{$ENDIF}
-				content			:= GikoSys.GzipDecompress( resStream, socket.Response.ContentEncoding );
-                // 置換する
-                if GikoSys.Setting.ReplaceDat then begin
-                    content := ReplaceDM.Replace(content);
-                end;
+				content := GikoSys.GzipDecompress( resStream, socket.Response.ContentEncoding );
+				// 置換する
+				if GikoSys.Setting.ReplaceDat then begin
+					content := ReplaceDM.Replace(content);
+				end;
 
 				ioModified	:= socket.Response.LastModified;
 

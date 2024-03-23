@@ -152,14 +152,15 @@ end;
 procedure TUpdateCheckForm.CheckButtonClick(Sender: TObject);
 const
 {$IFDEF DEBUG}
-	CHECK_URL = 'https://digital-cat.github.io/gikog2/updater/debug.txt';
+	CHECK_URL   = 'https://digital-cat.github.io/gikog2/updater/debug.txt';
 {$ELSE}
-	CHECK_URL = 'https://digital-cat.github.io/gikog2/updater/latest.txt';
+	CHECK_URL   = 'https://digital-cat.github.io/gikog2/updater/latest.txt';
 {$ENDIF}
 var
   value: string;
   ResStream: TMemoryStream;
   downResult: TStringList;
+  url: string;
 begin
   FExecPath := '';
   FExecArgs := '';
@@ -180,6 +181,8 @@ begin
 
   try
     ResStream := TMemoryStream.Create;
+		url := GikoSys.GetActualURL(CHECK_URL);
+
     try
       TIndyMdl.InitHTTP(IdHTTP);
       IdHTTP.Request.Referer := '';
@@ -196,7 +199,7 @@ begin
           ResStream.Clear;
           FCanceled := False;
           CancelBitBtn.Enabled := True;
-          IdHTTP.Get(CHECK_URL, ResStream);
+          IdHTTP.Get(url, ResStream);
           CancelBitBtn.Enabled := False;
           if (FCanceled) then begin
             raise Exception.Create('ダウンロードがキャンセルされました。');
@@ -303,6 +306,7 @@ function TUpdateCheckForm.DonwloadUpdate(url: String): Boolean;
 var
   filename : String;
   fileStrem: TFileStream;
+  url2: String;
   msg: String;
   ok: Boolean;
 begin
@@ -315,9 +319,12 @@ begin
   try
   	ok := False;
     CancelBitBtn.Enabled := True;
+
+		url2 := GikoSys.GetActualURL(url);
+
 		IndyMdl.StartAntiFreeze(250);
     try
-	    IdHTTP.Get(url, fileStrem);
+	    IdHTTP.Get(url2, fileStrem);
       ok := True;
     except
 			on e: Exception do begin

@@ -51,6 +51,7 @@ uses
 
 const
   LOGIN_5CH_URL     = 'https://uplift.5ch.net/log';
+  LOGIN_5CH_URLV6   = 'https://[uplift.5ch.net]/log';
   LOGIN_5CH_REFERER = 'https://uplift.5ch.net/login';
   LOGIN_5GH_ACCEPT  = 'text/html,image/gif,image/x-xbitmap,image/jpeg,image/pjpeg,*/*';
   LOGIN_5CH_CNTTYPE = 'application/x-www-form-urlencoded';
@@ -114,10 +115,16 @@ var
   Idx: Integer;
   Sep: Integer;
   Cookie: TIdCookie;
+  url: String;
 begin
   Result := False;
 
   try
+    if GikoSys.Setting.IPv6 then
+      url := LOGIN_5CH_URLV6
+    else
+      url := LOGIN_5CH_URL;
+
     FormData := Format(LOGIN_5CH_FORMFMT, [HttpEncode(GikoSys.Setting.UserID),
                                            HttpEncode(GikoSys.Setting.Password)]);
     SrcContent := TStringStream.Create(FormData);
@@ -136,7 +143,7 @@ begin
 
     IndyMdl.StartAntiFreeze(100);
     try
-      IdHTTP.Post(LOGIN_5CH_URL, SrcContent, ResContent);
+      IdHTTP.Post(url, SrcContent, ResContent);
       OK := True;
     except
       FErrorString := IdHTTP.ResponseText;

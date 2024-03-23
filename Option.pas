@@ -234,6 +234,7 @@ type
 		BoardInfCheckBox: TCheckBox;
 		PreviewStyleCheckBox: TCheckBox;
     OekakiCheckBox: TCheckBox;
+    KeepNgFileCheckBox: TCheckBox;
 		procedure FormCreate(Sender: TObject);
 		procedure FormDestroy(Sender: TObject);
 		procedure ApplyButtonClick(Sender: TObject);
@@ -889,6 +890,7 @@ begin
 	AddResAnchorCheckBox.Checked := GikoSys.Setting.AddResAnchor;
 	DeleteSyriaCheckBox.Checked := GikoSys.Setting.DeleteSyria;
 	IgnoreKanaCheckBox.Checked := GikoSys.Setting.IgnoreKana;
+  KeepNgFileCheckBox.Checked := GikoSys.Setting.KeepNgFile;
     //NGワード編集
     NGTextEditCheckBox.Checked := GikoSys.Setting.NGTextEditor;
 {$IFDEF SPAM_FILTER_ENABLED}
@@ -1213,6 +1215,7 @@ begin
 	GikoSys.Setting.AddResAnchor := AddResAnchorCheckBox.Checked;
 	GikoSys.Setting.DeleteSyria := DeleteSyriaCheckBox.Checked;
 	GikoSys.Setting.IgnoreKana := IgnoreKanaCheckBox.Checked;
+  GikoSys.Setting.KeepNgFile := KeepNgFileCheckBox.Checked;
 	GikoSys.FAbon.IgnoreKana := GikoSys.Setting.IgnoreKana;
   //NGワード編集
   GikoSys.Setting.NGTextEditor := NGTextEditCheckBox.Checked;

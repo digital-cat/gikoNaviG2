@@ -55,6 +55,9 @@ type
 	end;
 
 implementation
+uses
+	GikoSystem;
+
 const
 	BELIB_LOGIN_UA      = 'BELIB/1.00';
 	BELIB_LOGIN_HOST    = 'be.5ch.net';
@@ -175,7 +178,9 @@ var
 	cb: DWORD;
 	Index: DWORD;
 //	Delim: Integer;
-    body: string;
+	body: string;
+  host: String;
+  modified: Boolean;
 begin
 	FSession := TBelibSession.Create;
 
@@ -189,7 +194,8 @@ begin
 	if not Assigned(hSession) then
 		MakeError(FSession, GetLastError())
 	else begin
-		hConnect := InternetConnect(hSession, BELIB_LOGIN_HOST,
+		host := GikoSys.GetActualHost(BELIB_LOGIN_HOST, modified);
+		hConnect := InternetConnect(hSession, PChar(host),
 			INTERNET_DEFAULT_HTTPS_PORT, nil, nil,
 			INTERNET_SERVICE_HTTP, INTERNET_FLAG_SECURE, 0);
 		if not Assigned(hConnect) then

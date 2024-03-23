@@ -28,7 +28,7 @@ object NewBoardURLForm: TNewBoardURLForm
     Top = 13
     Width = 145
     Height = 20
-    ItemHeight = 0
+    ItemHeight = 12
     TabOrder = 0
     Text = 'CategoryComboBox'
   end

@@ -105,11 +105,14 @@ type
 	TSetting = class(TObject)
 	private
 		//受信バッファサイズ
-		FRecvBufferSize: Integer;
+		//FRecvBufferSize: Integer;
 		//HTTP1.1使用
 		FProtocol: Boolean;
 		//プロキシ接続HTTP1.1使用
 		FProxyProtocol: Boolean;
+  	//IPv6使用
+    FIPv6: Boolean;
+    FIPv4List: TStringList;
 
 		//プロキシ（読込用）
 		FReadProxy: Boolean;
@@ -362,6 +365,7 @@ type
 		FAddResAnchor : Boolean; //NGレスへのレスアンカーを追加する
 		FDeleteSyria : Boolean;	//シリア語ブラクラ対策
 		FIgnoreKana	: Boolean;	//全半角ひらカナの違いを無視するか
+    FKeepNgFile : Boolean;	//スレ全体再取得時に手動あぼ～ん情報をクリアしない
 
 		//NGワード編集
 		FNGTextEditor: Boolean; //編集にテキストエディタを使用するか
@@ -601,11 +605,14 @@ type
     }
     procedure SetMoveHistorySize(AVal : Integer);
 		//受信バッファサイズ   ※Indy10で使わなくなった
-		property RecvBufferSize: Integer read FRecvBufferSize write FRecvBufferSize;
+		//property RecvBufferSize: Integer read FRecvBufferSize write FRecvBufferSize;
 		//HTTP1.1使用
 		property Protocol: Boolean read FProtocol write FProtocol;
 		//プロキシ接続HTTP1.1使用
 		property ProxyProtocol: Boolean read FProxyProtocol write FProxyProtocol;
+  	// IPv6使用
+  	property IPv6: Boolean read FIPv6 write FIPv6;
+    property IPv4List: TStringList read FIPv4List write FIPv4List;
 
 		property ReadProxy: Boolean read FReadProxy write FReadProxy;
 		property ReadProxyAddress: string read FReadProxyAddress write FReadProxyAddress;
@@ -806,6 +813,7 @@ type
 		property AddResAnchor : Boolean read FAddResAnchor write FAddResAnchor;
 		property DeleteSyria : Boolean read FDeleteSyria write FDeleteSyria;
 		property IgnoreKana : Boolean read FIgnoreKana write FIgnoreKana;
+    property KeepNgFile : Boolean read FKeepNgFile write FKeepNgFile;
 
 		//NGワード編集
 		property NGTextEditor: Boolean read FNGTextEditor write FNGTextEditor;
@@ -1087,13 +1095,14 @@ begin
 	FCategoryColumnOrder := TGikoCategoryColumnList.Create;
 	FBoardColumnOrder := TGikoBoardColumnList.Create;
 	FGestures := TGestureModel.Create;
-    FSkinFiles := TSkinFiles.Create;
+	FSkinFiles := TSkinFiles.Create;
 	FNameList.Duplicates := dupIgnore;
 	FMailList.Duplicates := dupIgnore;
 	FBoardURLs.Duplicates := dupIgnore;
 	FSelectTextList.Duplicates := dupIgnore;
-    FThrdSrchHistory := TStringList.Create;
-    FBoukenCookieList := TStringList.Create;
+  FThrdSrchHistory := TStringList.Create;
+  FBoukenCookieList := TStringList.Create;
+	FIPv4List := TStringList.Create;
 	ReadSettingFile();
 	ReadBoardURLsFile();
 end;
@@ -1101,8 +1110,8 @@ end;
 //デストラクタ
 destructor TSetting.Destroy();
 begin
-    FThrdSrchHistory.Free;
-    FBoukenCookieList.Free;
+  FThrdSrchHistory.Free;
+  FBoukenCookieList.Free;
  	FBoardColumnOrder.Free;
  	FCategoryColumnOrder.Free;
  	FBBSColumnOrder.Free;
@@ -1111,7 +1120,8 @@ begin
  	FMailList.Free;
  	FNameList.Free;
  	FGestures.Free;
-    FSkinFiles.Free;
+	FSkinFiles.Free;
+	FIPv4List.Free;
 	inherited;
 end;
 
@@ -1129,31 +1139,48 @@ end;
 
 //設定ファイル読込
 procedure TSetting.ReadSettingFile();
+const
+	PRIVATE_GIKO_BBS = 'flounder.s27.xrea.com';		// 非公式ギコナビ板
 var
 	ini: TMemIniFile;
 	i: Integer;
 	Exists: Boolean;
 	s: string;
 	CoolSet: TCoolSet;
-    msg: String;
-    hostList: TStringList;
-    Cnt: Integer;
+  msg: String;
+  hostList: TStringList;
+  Cnt: Integer;
+  key: String;
 begin
 	Exists := FileExists(GetFileName);
 	ini := TMemIniFile.Create(GetFileName);
 	try
 		//受信バッファサイズ
-		FRecvBufferSize := ini.ReadInteger('HTTP', 'RecvBufferSize', 4096);
+		//FRecvBufferSize := ini.ReadInteger('HTTP', 'RecvBufferSize', 4096);
 		//HTTP1.1使用
 		FProtocol := ini.ReadBool('HTTP', 'Protocol', True);
 		//プロキシ接続HTTP1.1使用
 		FProxyProtocol := ini.ReadBool('HTTP', 'ProxyProtocol', False);
+  	// IPv6
+    FIPv6 := ini.ReadBool('HTTP', 'IPv6', False);
+    Cnt := ini.ReadInteger('HTTP', 'IPv4DomainCount', -9999);
+    if Cnt = -9999 then
+    	FIpv4List.Add(PRIVATE_GIKO_BBS)
+    else begin
+      for i := 1 to Cnt do begin
+        key := Format('IPv4Domain%d', [i]);
+        s := Trim(ini.ReadString('HTTP', key, ''));
+        if s <> '' then
+          FIpv4List.Add(s);
+      end;
+    end;
 
-        // プロキシ設定読み込み
-        ReadProxySettings( ini );
 
-        // 各種ウィンドウの設定読み込み
-        ReadWindowSettings( ini );
+    // プロキシ設定読み込み
+    ReadProxySettings( ini );
+
+    // 各種ウィンドウの設定読み込み
+    ReadWindowSettings( ini );
 
 		FWindowTop := ini.ReadInteger('WindowSize', 'Top', -1);
 		FWindowLeft := ini.ReadInteger('WindowSize', 'Left', -1);
@@ -1380,6 +1407,7 @@ begin
 		FAddResAnchor := ini.ReadBool('Abon','AddResAnchor',false);
 		FDeleteSyria :=  ini.ReadBool('Abon','DeleteSyria',false);
 		FIgnoreKana  :=  ini.ReadBool('Abon','IgnoreKana',false);
+    FKeepNgFile  :=  ini.ReadBool('Abon','KeepNgFile',false);
 
         //NGワード編集
         FNGTextEditor   := ini.ReadBool('NGWordEditor', 'NGTextEditor', False);
@@ -1529,15 +1557,25 @@ end;
 procedure TSetting.WriteSystemSettingFile();
 var
 	ini: TMemIniFile;
+  i: Integer;
+  key: String;
 begin
 	ini := TMemIniFile.Create(GetFileName());
 	try
 		//受信バッファサイズ
-		ini.WriteInteger('HTTP', 'RecvBufferSize', FRecvBufferSize);
+		//ini.WriteInteger('HTTP', 'RecvBufferSize', FRecvBufferSize);
 		//HTTP1.1使用
 		ini.WriteBool('HTTP', 'Protocol', FProtocol);
 		//プロキシ接続HTTP1.1使用
 		ini.WriteBool('HTTP', 'ProxyProtocol', FProxyProtocol);
+  	// IPv
+    ini.WriteBool('HTTP', 'IPv6', IPv6);
+    ini.WriteInteger('HTTP', 'IPv4DomainCount', FIpv4List.Count);
+    for i := 1 to FIpv4List.Count do begin
+    	key := Format('IPv4Domain%d', [i]);
+    	if i <= FIpv4List.Count then
+      	ini.WriteString('HTTP', key, FIPv4List[i-1])
+    end;
 
 		ini.WriteBool('ReadProxy', 'Proxy', FReadProxy);
 		ini.WriteString('ReadProxy', 'Address', FReadProxyAddress);
@@ -1852,6 +1890,7 @@ begin
 		ini.WriteBool('Abon','AddResAnchor',FAddResAnchor);
 		ini.WriteBool('Abon','DeleteSyria',FDeleteSyria);
 		ini.WriteBool('Abon','IgnoreKana', FIgnoreKana);
+    ini.WriteBool('Abon','KeepNgFile', FKeepNgFile);
 
 		//NGワード編集
 		ini.WriteBool('NGWordEditor', 'NGTextEditor', FNGTextEditor);
