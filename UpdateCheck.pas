@@ -320,7 +320,9 @@ begin
   	ok := False;
     CancelBitBtn.Enabled := True;
 
-		url2 := GikoSys.GetActualURL(url);
+  	// IPv6Ç≈ github.com Ç…ê⁄ë±Ç∑ÇÈÇ∆ÅuSocket Error # 11001 Host not found.ÅvÇ…Ç»ÇÈÇÃÇ≈Ç±Ç±ÇÕv4ÇÃÇ›
+		//url2 := GikoSys.GetActualURL(url);
+		url2 := url;
 
 		IndyMdl.StartAntiFreeze(250);
     try
