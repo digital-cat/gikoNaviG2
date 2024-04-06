@@ -60,7 +60,7 @@ object OptionDialog: TOptionDialog
     Top = 4
     Width = 509
     Height = 389
-    ActivePage = NGwordSheet
+    ActivePage = UserIDSheet
     MultiLine = True
     TabOrder = 3
     OnChange = OptionTabChange
@@ -1634,14 +1634,14 @@ object OptionDialog: TOptionDialog
       ImageIndex = 9
       object GroupBox3: TGroupBox
         Left = 12
-        Top = 8
+        Top = 6
         Width = 477
-        Height = 145
+        Height = 92
         Caption = #35469#35388
         TabOrder = 0
         object Label9: TLabel
           Left = 12
-          Top = 24
+          Top = 22
           Width = 63
           Height = 12
           Caption = #12518#12540#12470'ID(&U)'
@@ -1649,23 +1649,15 @@ object OptionDialog: TOptionDialog
         end
         object Label10: TLabel
           Left = 12
-          Top = 52
+          Top = 47
           Width = 69
           Height = 12
           Caption = #12497#12473#12527#12540#12489'(&P)'
           FocusControl = PasswordEdit
         end
-        object ForcedLoginLabel: TLabel
-          Left = 136
-          Top = 97
-          Width = 89
-          Height = 12
-          Caption = 'ForcedLoginLabel'
-          Enabled = False
-        end
         object Tora3URLLabel: TLabel
           Left = 329
-          Top = 126
+          Top = 70
           Width = 110
           Height = 12
           Caption = 'https://uplift.5ch.net/'
@@ -1679,21 +1671,21 @@ object OptionDialog: TOptionDialog
         end
         object Label12: TLabel
           Left = 237
-          Top = 126
+          Top = 70
           Width = 83
           Height = 12
           Caption = #12518#12540#12470'ID'#12398#21462#24471
         end
         object UserIDEdit: TEdit
           Left = 88
-          Top = 20
+          Top = 18
           Width = 377
           Height = 20
           TabOrder = 0
         end
         object PasswordEdit: TEdit
           Left = 88
-          Top = 48
+          Top = 43
           Width = 377
           Height = 20
           PasswordChar = '*'
@@ -1701,32 +1693,23 @@ object OptionDialog: TOptionDialog
         end
         object AutoLoginCheckBox: TCheckBox
           Left = 12
-          Top = 73
+          Top = 68
           Width = 193
           Height = 17
           Caption = #36215#21205#26178#12395#33258#21205#12525#12464#12452#12531#12377#12427'(&S)'
           TabOrder = 2
         end
-        object ForcedLoginCheckBox: TCheckBox
-          Left = 12
-          Top = 95
-          Width = 125
-          Height = 19
-          Caption = #24375#21046#12525#12464#12452#12531#12514#12540#12489
-          Enabled = False
-          TabOrder = 3
-        end
       end
       object GroupBox11: TGroupBox
         Left = 12
-        Top = 157
+        Top = 170
         Width = 477
-        Height = 94
+        Height = 90
         Caption = 'Be 2ch'
-        TabOrder = 1
+        TabOrder = 2
         object Label7: TLabel
           Left = 8
-          Top = 24
+          Top = 22
           Width = 90
           Height = 12
           Caption = #12513#12540#12523#12450#12489#12524#12473'(&M)'
@@ -1734,7 +1717,7 @@ object OptionDialog: TOptionDialog
         end
         object Label8: TLabel
           Left = 18
-          Top = 48
+          Top = 46
           Width = 71
           Height = 12
           Caption = #12497#12473#12527#12540#12489'(&W)'
@@ -1742,14 +1725,14 @@ object OptionDialog: TOptionDialog
         end
         object BeUserIDEdit: TEdit
           Left = 104
-          Top = 20
+          Top = 18
           Width = 353
           Height = 20
           TabOrder = 0
         end
         object BeCodeEdit: TEdit
           Left = 104
-          Top = 45
+          Top = 43
           Width = 353
           Height = 20
           PasswordChar = '*'
@@ -1757,7 +1740,7 @@ object OptionDialog: TOptionDialog
         end
         object BeAutoLoginCheckBox: TCheckBox
           Left = 12
-          Top = 71
+          Top = 68
           Width = 193
           Height = 17
           Caption = #36215#21205#26178#12395#33258#21205#12525#12464#12452#12531#12377#12427'(&T)'
@@ -1766,21 +1749,21 @@ object OptionDialog: TOptionDialog
       end
       object GroupBox25: TGroupBox
         Left = 12
-        Top = 256
+        Top = 265
         Width = 477
-        Height = 81
+        Height = 72
         Caption = #24525#27861#24086
-        TabOrder = 2
+        TabOrder = 3
         object Label25: TLabel
           Left = 40
-          Top = 24
+          Top = 20
           Width = 37
           Height = 12
           Caption = #12489#12513#12452#12531
         end
         object BoukenComboBox: TComboBox
           Left = 88
-          Top = 20
+          Top = 16
           Width = 140
           Height = 20
           ItemHeight = 12
@@ -1790,7 +1773,7 @@ object OptionDialog: TOptionDialog
         end
         object BoukenModButton: TButton
           Left = 231
-          Top = 42
+          Top = 38
           Width = 50
           Height = 25
           Caption = #22793#26356
@@ -1799,7 +1782,7 @@ object OptionDialog: TOptionDialog
         end
         object BoukenDelButton: TButton
           Left = 88
-          Top = 43
+          Top = 38
           Width = 50
           Height = 25
           Caption = #21066#38500
@@ -1808,8 +1791,46 @@ object OptionDialog: TOptionDialog
         end
         object BoukenEdit: TEdit
           Left = 230
-          Top = 19
+          Top = 15
           Width = 227
+          Height = 20
+          TabOrder = 1
+        end
+      end
+      object GroupBox29: TGroupBox
+        Left = 12
+        Top = 102
+        Width = 477
+        Height = 64
+        Caption = #12393#12435#12368#12426
+        TabOrder = 1
+        object Label27: TLabel
+          Left = 12
+          Top = 20
+          Width = 51
+          Height = 12
+          Caption = 'Cookie(&C)'
+          FocusControl = DonguriCookieEdit
+        end
+        object Label28: TLabel
+          Left = 12
+          Top = 40
+          Width = 39
+          Height = 12
+          Caption = #26399#38480'(&E)'
+          FocusControl = DonguriExpiresEdit
+        end
+        object DonguriCookieEdit: TEdit
+          Left = 88
+          Top = 16
+          Width = 377
+          Height = 20
+          TabOrder = 0
+        end
+        object DonguriExpiresEdit: TEdit
+          Left = 88
+          Top = 36
+          Width = 377
           Height = 20
           TabOrder = 1
         end

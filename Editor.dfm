@@ -96,6 +96,7 @@ object EditorForm: TEditorForm
           DropDownCount = 20
           ItemHeight = 12
           TabOrder = 0
+          OnChange = NameComboBoxChange
         end
         object MailComboBox: TComboBox
           Left = 284
@@ -124,14 +125,14 @@ object EditorForm: TEditorForm
           Caption = #12495#12531#12489#12523#20445#23384'(&H)'
           TabOrder = 3
         end
-        object UCInfoPanel: TPanel
-          Left = 616
-          Top = 4
-          Width = 105
-          Height = 20
-          BevelOuter = bvLowered
+        object DonguriCheckBox: TCheckBox
+          Left = 615
+          Top = 6
+          Width = 70
+          Height = 17
+          Caption = '!donguri'
           TabOrder = 4
-          Visible = False
+          OnClick = DonguriCheckBoxClick
         end
       end
       object TitlePanel: TPanel
@@ -228,10 +229,6 @@ object EditorForm: TEditorForm
     object PreviewTab: TTabSheet
       Caption = #12503#12524#12499#12517#12540
       ImageIndex = 1
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Browser: TWebBrowser
         Left = 0
         Top = 0
@@ -253,10 +250,6 @@ object EditorForm: TEditorForm
     object BoardInformationTab: TTabSheet
       Caption = #26495#24773#22577
       ImageIndex = 2
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object BoardInformationMemo: TMemo
         Left = 0
         Top = 0
@@ -271,10 +264,6 @@ object EditorForm: TEditorForm
     object BoardtopTab: TTabSheet
       Caption = #26495#12488#12483#12503#30011#20687
       ImageIndex = 3
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object TitlePictureBrowser: TWebBrowser
         Left = 0
         Top = 0
@@ -295,10 +284,6 @@ object EditorForm: TEditorForm
     object RocalRuleTab: TTabSheet
       Caption = #12525#12540#12459#12523#12523#12540#12523
       ImageIndex = 4
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object WebBrowser1: TWebBrowser
         Left = 352
         Top = 208
@@ -595,7 +580,7 @@ object EditorForm: TEditorForm
     Left = 72
     Top = 124
     Bitmap = {
-      494C01010D000E00AC0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01010D000E00B00010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000004000000001002000000000000040
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -1134,7 +1119,7 @@ object EditorForm: TEditorForm
     Left = 104
     Top = 124
     Bitmap = {
-      494C01010D000E00AC0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01010D000E00B00010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000004000000001002000000000000040
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000

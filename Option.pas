@@ -168,11 +168,9 @@ type
 		GroupBox3: TGroupBox;
 		Label9: TLabel;
 		Label10: TLabel;
-		ForcedLoginLabel: TLabel;
 		UserIDEdit: TEdit;
 		PasswordEdit: TEdit;
 		AutoLoginCheckBox: TCheckBox;
-		ForcedLoginCheckBox: TCheckBox;
 		GroupBox4: TGroupBox;
 		Label13: TLabel;
 		BoardURLComboBox: TComboBox;
@@ -235,6 +233,11 @@ type
 		PreviewStyleCheckBox: TCheckBox;
     OekakiCheckBox: TCheckBox;
     KeepNgFileCheckBox: TCheckBox;
+    GroupBox29: TGroupBox;
+    Label27: TLabel;
+    DonguriCookieEdit: TEdit;
+    Label28: TLabel;
+    DonguriExpiresEdit: TEdit;
 		procedure FormCreate(Sender: TObject);
 		procedure FormDestroy(Sender: TObject);
 		procedure ApplyButtonClick(Sender: TObject);
@@ -368,8 +371,8 @@ begin
 										+ 'スレッド表示エリアのフォント変更は、'#13#10
 										+ '「CSS とスキン」タブで設定出来ます';
 
-	ForcedLoginLabel.Caption := '- チェックを入れるのはセキュリティ上好ましくありません。' + #13#10
-										+ '　やむを得ない時だけにしてください。';
+//	ForcedLoginLabel.Caption := '- チェックを入れるのはセキュリティ上好ましくありません。' + #13#10
+//										+ '　やむを得ない時だけにしてください。';
 	CSSCheckBoxClick(Sender);
 	BrowserMaxLabel.Caption :=
 		'ブラウザが最小化されているときに以下の操作でブラウザを最大化します。'#13#10 +
@@ -777,6 +780,10 @@ begin
 	PasswordEdit.Text := GikoSys.Setting.Password;
 	AutoLoginCheckBox.Checked := GikoSys.Setting.AutoLogin;
 //	ForcedLoginCheckBox.Checked := GikoSys.Setting.ForcedLogin;
+	//どんぐり
+  DonguriCookieEdit.Text := GikoSys.Setting.DonguriCookie;
+  DonguriExpiresEdit.Text := GikoSys.Setting.DonguriExpires;
+
 	//ログフォルダ
 	if GikoSys.Setting.NewLogFolder = '' then
 		LogFolderEdit.Text := GikoSys.Setting.LogFolder
@@ -1090,6 +1097,9 @@ begin
 	GikoSys.Setting.Password := PasswordEdit.Text;
 	GikoSys.Setting.AutoLogin := AutoLoginCheckBox.Checked;
 //	GikoSys.Setting.ForcedLogin := ForcedLoginCheckBox.Checked;
+  GikoSys.Setting.DonguriCookie := DonguriCookieEdit.Text;
+  GikoSys.Setting.DonguriExpires := DonguriExpiresEdit.Text;
+
 	GikoSys.Setting.URLApp := URLAppCheckBox.Checked;
 	GikoSys.Setting.URLAppFile := AppFolderEdit.Text;
 
