@@ -338,6 +338,7 @@ begin
   IPv4EdtButton.Enabled := enb;
   IPv4DelButton.Enabled := enb;
   IPv4ListBox.Enabled := enb;
+  IPv4ResetButton.Enabled := enb;
 end;
 
 procedure TKuroutOption.IPv4AddButtonClick(Sender: TObject);

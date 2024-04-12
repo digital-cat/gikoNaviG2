@@ -25,6 +25,10 @@ object KuroutOption: TKuroutOption
     TabOrder = 0
     object TabSheet1: TTabSheet
       Caption = #35443#32048#35373#23450#65297
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object GroupBox11: TGroupBox
         Left = 12
         Top = 8
@@ -231,6 +235,10 @@ object KuroutOption: TKuroutOption
     object ColumnTabSheet: TTabSheet
       Caption = #35443#32048#35373#23450'2'
       ImageIndex = 1
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object CategoryColumnGroupBox: TGroupBox
         Left = 8
         Top = 16
@@ -383,6 +391,10 @@ object KuroutOption: TKuroutOption
     object KakikomiTabSheet: TTabSheet
       Caption = #35443#32048#35373#23450'3'
       ImageIndex = 2
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object CookieGroupBox: TGroupBox
         Left = 16
         Top = 16
@@ -690,6 +702,10 @@ object KuroutOption: TKuroutOption
     object RespopupTabSheet: TTabSheet
       Caption = #35443#32048#35373#23450'5'
       ImageIndex = 4
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object RespopuGroupBox: TGroupBox
         Left = 8
         Top = 16
