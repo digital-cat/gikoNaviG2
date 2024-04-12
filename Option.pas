@@ -238,6 +238,7 @@ type
     DonguriCookieEdit: TEdit;
     Label28: TLabel;
     DonguriExpiresEdit: TEdit;
+    DonClearButton: TButton;
 		procedure FormCreate(Sender: TObject);
 		procedure FormDestroy(Sender: TObject);
 		procedure ApplyButtonClick(Sender: TObject);
@@ -290,6 +291,7 @@ type
 		procedure BoukenDelButtonClick(Sender: TObject);
 		procedure BoukenComboBoxChange(Sender: TObject);
 		procedure BoukenModButtonClick(Sender: TObject);
+    procedure DonClearButtonClick(Sender: TObject);
 	private
 		{ Private êÈåæ }
 		FClose: Boolean;
@@ -1797,6 +1799,12 @@ begin
         end;
         BoukenComboBox.OnChange(nil);
     end;
+end;
+
+procedure TOptionDialog.DonClearButtonClick(Sender: TObject);
+begin
+  DonguriCookieEdit.Text := '';
+  DonguriExpiresEdit.Text := '';
 end;
 
 end.

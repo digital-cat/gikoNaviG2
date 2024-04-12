@@ -433,6 +433,8 @@ type
 		ThrNGEdit: TMenuItem;
 		RangeBon: TMenuItem;
 		N87: TMenuItem;
+    DongriMenu: TMenuItem;
+    N88: TMenuItem;
 		procedure FormCreate(Sender: TObject);
 		procedure FormDestroy(Sender: TObject);
 		procedure SaveSettingAll();
@@ -1534,12 +1536,13 @@ begin
 	//2ch言語読み出し
 	GikoSys.SetGikoMessage;
 
-	//オートログイン
-	if GikoSys.Setting.AutoLogin then
-		GikoDM.LoginAction.Execute;
-
-	if GikoSys.Setting.BeAutoLogin then
-		GikoDM.BeLogInOutAction.Execute;
+	// FormShowへ移動
+	////オートログイン
+	//if GikoSys.Setting.AutoLogin then
+	//	GikoDM.LoginAction.Execute;
+  ///
+	//if GikoSys.Setting.BeAutoLogin then
+	//	GikoDM.BeLogInOutAction.Execute;
 
 	//キャプションが上書きされてしまうので、ここで再設定
 	FavoriteAddToolButton.Caption := '追加...';
@@ -1809,6 +1812,28 @@ begin
 				//ShowWindow(Self.Handle, SW_SHOW);
 			end;
 		end;
+    //オートログイン
+    if GikoSys.Setting.AutoLogin then begin
+    	try
+      	GikoDM.LoginAction.Execute;
+      except
+		    on e: Exception do begin
+					MsgBox(Self.Handle, '自動ログインに失敗しました。' + #13#10 + e.Message,
+          				'ログイン', MB_OK or MB_ICONERROR);
+        end;
+      end;
+    end;
+
+    if GikoSys.Setting.BeAutoLogin then begin
+    	try
+	      GikoDM.BeLogInOutAction.Execute;
+      except
+		    on e: Exception do begin
+					MsgBox(Self.Handle, 'Beの自動ログインに失敗しました。' + #13#10 + e.Message,
+          				'ログイン', MB_OK or MB_ICONERROR);
+        end;
+      end;
+    end;
 
 //===== マルチモニタ環境でFormCreateではフォーム位置が正しく反映されない場合
 //===== があるためFormShow初回で座標設定を行う

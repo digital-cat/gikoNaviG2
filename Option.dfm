@@ -1830,9 +1830,18 @@ object OptionDialog: TOptionDialog
         object DonguriExpiresEdit: TEdit
           Left = 88
           Top = 36
-          Width = 377
+          Width = 175
           Height = 20
           TabOrder = 1
+        end
+        object DonClearButton: TButton
+          Left = 368
+          Top = 36
+          Width = 96
+          Height = 24
+          Caption = #12463#12522#12450'(&L)'
+          TabOrder = 2
+          OnClick = DonClearButtonClick
         end
       end
     end

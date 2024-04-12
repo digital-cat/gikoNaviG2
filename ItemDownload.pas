@@ -979,6 +979,8 @@ begin
 			Writeln('URL: ' + url2);
 			{$ENDIF}
 			FIndy.Get(url2, ResStream);
+			IndyMdl.SaveCookies(FIndy);
+      
 			Item.Content := GikoSys.GzipDecompress(ResStream, FIndy.Response.ContentEncoding);
 			Item.ContentLength := Length(Item.Content) + AdjustLen;
 			// íuä∑Ç∑ÇÈ

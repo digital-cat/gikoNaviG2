@@ -94,7 +94,8 @@ uses
   IndyModule in 'IndyModule.pas' {IndyMdl: TDataModule},
   DmSession5ch in 'DmSession5ch.pas' {Session5ch: TDataModule},
   RangeAbon in 'RangeAbon.pas' {RangeAbonForm},
-  GikoInputBoxForm in 'GikoInputBoxForm.pas' {GikoInputBox};
+  GikoInputBoxForm in 'GikoInputBoxForm.pas' {GikoInputBox},
+  DonguriBase in 'DonguriBase.pas' {DonguriForm};
 
 {$R *.RES}
 {$R gikoResource.res}
@@ -149,14 +150,14 @@ begin
   Application.CreateForm(TMainWindow, MainWindow);
   Application.CreateForm(TFavoriteDM, FavoriteDM);
   Application.CreateForm(TAddressHistoryDM, AddressHistoryDM);
+  Application.CreateForm(TIndyMdl, IndyMdl);
+  Application.CreateForm(TSession5ch, Session5ch);
   Application.CreateForm(TGikoDM, GikoDM);
   Application.CreateForm(TInputAssistDM, InputAssistDM);
   Application.CreateForm(TReplaceDM, ReplaceDM);
   Application.CreateForm(TExtPreviewDM, ExtPreviewDM);
   Application.CreateForm(TGikoForm, GikoForm);
   Application.CreateForm(TUpdateCheckForm, UpdateCheckForm);
-  Application.CreateForm(TIndyMdl, IndyMdl);
-  Application.CreateForm(TSession5ch, Session5ch);
   Application.Run;
 	ReleaseMutex(hMutex);
 end.

@@ -260,6 +260,7 @@ type
     ThreadNgEditAction: TAction;
     RangeAbonAction: TAction;
     ThreadRangeAbonAction: TAction;
+    DonguriAction: TAction;
 	procedure EditNGActionExecute(Sender: TObject);
 	procedure ReloadActionExecute(Sender: TObject);
 	procedure GoFowardActionExecute(Sender: TObject);
@@ -482,6 +483,8 @@ type
     procedure ThreadNgEditActionExecute(Sender: TObject);
     procedure RangeAbonActionExecute(Sender: TObject);
     procedure ThreadRangeAbonActionExecute(Sender: TObject);
+    procedure DonguriActionExecute(Sender: TObject);
+    procedure DonguriActionUpdate(Sender: TObject);
   private
 	{ Private 宣言 }
 	procedure ClearResFilter;
@@ -539,7 +542,7 @@ uses
 	RoundName, RoundData, Menus, ListViewUtils,
 	ThreadControl, GikoMessage, InputAssist,
   DefaultFileManager, Forms, NewBoardURL, UpdateCheck,
-  PopupMenuSetting, ThreadSearch, ThreadNGEdt, DmSession5ch;
+  PopupMenuSetting, ThreadSearch, ThreadNGEdt, DmSession5ch, DonguriBase;
 
 const
 	MSG_ERROR : string = 'エラー';
@@ -1951,6 +1954,9 @@ var
 	TmpCursor: TCursor;
 //	msg : String;
 begin
+  if Session5ch = nil then
+		Exit;
+
 	if Session5ch.Connected then begin
 		//ログアウト
 		Session5ch.Disconnect;
@@ -3626,6 +3632,7 @@ begin
 	GikoForm.ListViewUC.ViewStyle := vsReport;
 	DetailIconAction.Checked := True;
 end;
+
 // *************************************************************************
 //! ダウンロードを中止する
 // *************************************************************************
@@ -4734,6 +4741,23 @@ begin
     end;
     ThreadNGEdit.Free;
     ThreadNGEdit := nil;
+end;
+
+procedure TGikoDM.DonguriActionExecute(Sender: TObject);
+var
+  dlg: TDonguriForm;
+begin
+	dlg := TDonguriForm.Create(GikoForm);
+	try
+		dlg.ShowModal;
+	finally
+		dlg.Release;
+	end;
+end;
+
+procedure TGikoDM.DonguriActionUpdate(Sender: TObject);
+begin
+//
 end;
 
 end.

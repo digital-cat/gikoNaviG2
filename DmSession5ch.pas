@@ -5,7 +5,7 @@ interface
 uses
   SysUtils, Classes, IdIOHandler, IdIOHandlerSocket, IdIOHandlerStack, IdSSL,
   IdSSLOpenSSL, IdBaseComponent, IdComponent, IdTCPConnection, IdTCPClient,
-  IdHTTP, IdCookieManager, IdCookie;
+  IdHTTP, IdCookieManager, IdCookie, IdURI;
 
 type
   TSession5ch = class(TDataModule)
@@ -18,6 +18,7 @@ type
 		FErrorCode:   Integer;
 		FErrorString: string;
 		FUserAgent:   string;
+    FIsExpired:		Boolean;
 
 		function GetSessionID: string;
 		function GetUserAgent: string;
@@ -37,6 +38,7 @@ type
 		property  UserAgent: string  read  GetUserAgent;
 		property  ErrorCode: Integer read  GetErrorCode;
 		property  ErrorMsg:  string  read  GetErrorMsg;
+    property	IsExpired: Boolean read  FIsExpired write FIsExpired;
   end;
 
 var
@@ -58,6 +60,7 @@ const
   LOGIN_5CH_FORMFMT = 'usr=%s&pwd=%s&log=';
   LOGIN_5CH_SID     = 'sid';
   LOGIN_5CH_ERRMSG  = 'Error: ログインできませんでした。';
+  ROOT_5CH_URL			= 'https://5ch.net/';
 
 
 { コンストラクタ }
@@ -83,6 +86,7 @@ begin
   FErrorCode   := 0;
   FErrorString := '';
   FUserAgent   := '';
+  FIsExpired	 := False;
 end;
 
 { ログイン }
@@ -102,6 +106,7 @@ end;
 function TSession5ch.Disconnect: Boolean;
 begin
   Clear;
+  IndyMdl.DelCookie(LOGIN_5CH_SID, ROOT_5CH_URL);
 	Result := True;
 end;
 
@@ -116,6 +121,8 @@ var
   Sep: Integer;
   Cookie: TIdCookie;
   url: String;
+	uri: TIdURI;
+  sendCookies: String;
 begin
   Result := False;
 
@@ -130,6 +137,13 @@ begin
     SrcContent := TStringStream.Create(FormData);
     ResContent := TMemoryStream.Create;
 
+		uri := TIdURI.Create(LOGIN_5CH_URL);
+  	try
+	    sendCookies := IndyMdl.GetCookieString(uri);
+    finally
+		  uri.Free;
+    end;
+
     TIndyMdl.InitHTTP(IdHTTP);
 
     IdHTTP.AllowCookies           := True;
@@ -138,6 +152,8 @@ begin
     IdHTTP.Request.Accept         := LOGIN_5GH_ACCEPT;
     IdHTTP.Request.ContentType    := LOGIN_5CH_CNTTYPE;
     IdHTTP.Request.Referer        := LOGIN_5CH_REFERER;
+  	if sendCookies <> '' then
+	    IdHTTP.Request.CustomHeaders.Add('Cookie: ' + sendCookies);
 
     OK := False;
 
@@ -150,6 +166,7 @@ begin
       FErrorCode   := IdHTTP.ResponseCode;
     end;
     IndyMdl.EndAntiFreeze;
+		IndyMdl.SaveCookies(IdHTTP);
 
     if SrcContent <> nil then
       SrcContent.Free;
