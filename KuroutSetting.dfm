@@ -21,7 +21,7 @@ object KuroutOption: TKuroutOption
     Top = 0
     Width = 517
     Height = 393
-    ActivePage = TabSheet1
+    ActivePage = TabSheet2
     TabOrder = 0
     object TabSheet1: TTabSheet
       Caption = #35443#32048#35373#23450#65297
@@ -383,10 +383,6 @@ object KuroutOption: TKuroutOption
     object KakikomiTabSheet: TTabSheet
       Caption = #35443#32048#35373#23450'3'
       ImageIndex = 2
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object CookieGroupBox: TGroupBox
         Left = 16
         Top = 16
@@ -546,7 +542,7 @@ object KuroutOption: TKuroutOption
         Left = 16
         Top = 16
         Width = 473
-        Height = 161
+        Height = 154
         Caption = #12475#12461#12517#12522#12486#12451
         TabOrder = 0
         object Label12: TLabel
@@ -599,9 +595,9 @@ object KuroutOption: TKuroutOption
       end
       object LogGroupBox: TGroupBox
         Left = 16
-        Top = 179
+        Top = 176
         Width = 473
-        Height = 49
+        Height = 46
         Caption = #12525#12464
         TabOrder = 1
         object CheckDatFileCheckBox: TCheckBox
@@ -615,9 +611,9 @@ object KuroutOption: TKuroutOption
       end
       object GroupBox5: TGroupBox
         Left = 16
-        Top = 234
+        Top = 228
         Width = 473
-        Height = 119
+        Height = 125
         Caption = #25509#32154#35373#23450'2'
         TabOrder = 2
         object IPv4Label: TLabel
@@ -649,13 +645,13 @@ object KuroutOption: TKuroutOption
           Left = 160
           Top = 32
           Width = 214
-          Height = 73
+          Height = 84
           ItemHeight = 12
           TabOrder = 1
         end
         object IPv4AddButton: TButton
           Left = 378
-          Top = 30
+          Top = 38
           Width = 75
           Height = 25
           Caption = #36861#21152'(&A)'
@@ -664,7 +660,7 @@ object KuroutOption: TKuroutOption
         end
         object IPv4EdtButton: TButton
           Left = 378
-          Top = 56
+          Top = 64
           Width = 75
           Height = 25
           Caption = #32232#38598'(&E)'
@@ -673,12 +669,21 @@ object KuroutOption: TKuroutOption
         end
         object IPv4DelButton: TButton
           Left = 378
-          Top = 82
+          Top = 90
           Width = 75
           Height = 25
           Caption = #21066#38500'(&D)'
           TabOrder = 4
           OnClick = IPv4DelButtonClick
+        end
+        object IPv4ResetButton: TButton
+          Left = 378
+          Top = 10
+          Width = 75
+          Height = 25
+          Caption = #12522#12475#12483#12488'(&R)'
+          TabOrder = 5
+          OnClick = IPv4ResetButtonClick
         end
       end
     end

@@ -105,6 +105,7 @@ type
     IPv4EdtButton: TButton;
     IPv4DelButton: TButton;
     IPv6Label: TLabel;
+    IPv4ResetButton: TButton;
 	procedure OkBottonClick(Sender: TObject);
 	procedure FormCreate(Sender: TObject);
 	procedure CDeleteButtonClick(Sender: TObject);
@@ -126,6 +127,7 @@ type
     procedure IPv4EdtButtonClick(Sender: TObject);
     procedure IPv4DelButtonClick(Sender: TObject);
     procedure IPv6CheckBoxClick(Sender: TObject);
+    procedure IPv4ResetButtonClick(Sender: TObject);
   private
 	{ Private 宣言 }
 	procedure SetValue;
@@ -400,6 +402,13 @@ begin
   	if MessageBox(Handle, PChar(msg), '除外ドメイン', MB_YESNO) = IDYES then
     	IPv4ListBox.Items.Delete(idx);
   end;
+end;
+
+procedure TKuroutOption.IPv4ResetButtonClick(Sender: TObject);
+begin
+	if MessageBox(Handle, '除外ドメインのリストを初期設定に戻します。' + #10 +
+  											'よろしいですか？', '除外ドメイン', MB_YESNO or MB_ICONWARNING) = IDYES then
+    GikoSys.Setting.GetDefaultIPv4Domain(IPv4ListBox.Items);
 end;
 
 procedure TKuroutOption.SetColumnData();

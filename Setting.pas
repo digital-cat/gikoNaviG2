@@ -5,7 +5,7 @@ interface
 
 uses
 	SysUtils, Classes, Graphics, Forms, {Math, IniFiles, UCryptAuto, UBase64,}
-	ComCtrls, GestureModel, IniFiles, SkinFiles;
+	ComCtrls, GestureModel, IniFiles, SkinFiles, Belib;
 
 const
 	MAIN_COOLBAND_COUNT = 4;		//メインCoolBandの数
@@ -603,6 +603,7 @@ type
     function GetBoukenCookie(AHostName: String): String;
     procedure SetBoukenCookie(ACookieValue, AHostName: String);
     procedure GetBouken(AHostName: String; var Domain:String; var Cookie:String);
+    procedure GetDefaultIPv4Domain(dest: TStrings);
     {
     \brief  リンク履歴の保持サイズのsetter
     \param  AVal    設定するサイズ( >0)
@@ -1005,6 +1006,15 @@ const
 	DEFAULT_2CH_BOARD_URL1:  string = 'https://menu.5ch.net/bbsmenu.html';
 	GIKO_ENCRYPT_TEXT:       string = 'gikoNaviEncryptText';
 
+  // IPv6で接続しないドメイン
+  DEFAULT_IPV4_DOMAIN: array [0..4] of string = (
+  	'flounder.s27.xrea.com',	// 非公式ギコナビ板
+    'be.5ch.net',							// beログインホスト
+    'shitaraba.com',					// したらばJBBS
+    'shitaraba.net',					// したらばJBBS
+    'machi.to'                // まちBBS
+  );
+
 var
 	SOUND_NAME: array[0..4] of TSoundName = (
 		(Name: 'New';				ViewName: '取得成功';					 FileName: ''),
@@ -1145,8 +1155,6 @@ end;
 
 //設定ファイル読込
 procedure TSetting.ReadSettingFile();
-const
-	PRIVATE_GIKO_BBS = 'flounder.s27.xrea.com';		// 非公式ギコナビ板
 var
 	ini: TMemIniFile;
 	i: Integer;
@@ -1170,9 +1178,10 @@ begin
   	// IPv6
     FIPv6 := ini.ReadBool('HTTP', 'IPv6', False);
     Cnt := ini.ReadInteger('HTTP', 'IPv4DomainCount', -9999);
-    if Cnt = -9999 then
-    	FIpv4List.Add(PRIVATE_GIKO_BBS)
-    else begin
+    if Cnt = -9999 then begin
+    	for i := Low(DEFAULT_IPV4_DOMAIN) to High(DEFAULT_IPV4_DOMAIN) do
+	    	FIpv4List.Add(DEFAULT_IPV4_DOMAIN[i]);
+    end else begin
       for i := 1 to Cnt do begin
         key := Format('IPv4Domain%d', [i]);
         s := Trim(ini.ReadString('HTTP', key, ''));
@@ -2756,6 +2765,15 @@ begin
             Break;
         end;
     end;
+end;
+
+procedure TSetting.GetDefaultIPv4Domain(dest: TStrings);
+var
+	i: Integer;
+begin
+  dest.Clear;
+	for i := Low(DEFAULT_IPV4_DOMAIN) to High(DEFAULT_IPV4_DOMAIN) do
+		dest.Add(DEFAULT_IPV4_DOMAIN[i]);
 end;
 
 end.
