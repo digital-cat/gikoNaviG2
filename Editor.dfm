@@ -64,6 +64,10 @@ object EditorForm: TEditorForm
     OnChange = EditorPageChange
     object EditorTab: TTabSheet
       Caption = #32232#38598
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object NameBasePanel: TPanel
         Left = 0
         Top = 29
@@ -94,7 +98,7 @@ object EditorForm: TEditorForm
           Width = 149
           Height = 20
           DropDownCount = 20
-          ItemHeight = 12
+          ItemHeight = 0
           TabOrder = 0
           OnChange = NameComboBoxChange
         end
@@ -104,7 +108,7 @@ object EditorForm: TEditorForm
           Width = 149
           Height = 20
           DropDownCount = 20
-          ItemHeight = 12
+          ItemHeight = 0
           TabOrder = 1
           OnChange = MailComboBoxChange
         end
@@ -596,7 +600,7 @@ object EditorForm: TEditorForm
     Left = 72
     Top = 124
     Bitmap = {
-      494C01010D000E00BC0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01010D000E00C40010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000004000000001002000000000000040
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -1135,7 +1139,7 @@ object EditorForm: TEditorForm
     Left = 104
     Top = 124
     Bitmap = {
-      494C01010D000E00BC0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01010D000E00C40010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000004000000001002000000000000040
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000

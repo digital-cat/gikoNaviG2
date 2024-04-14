@@ -16,7 +16,7 @@ uses
 	{HttpApp,} URLMon, IdGlobal, IdURI, {Masks,}
 	Setting, BoardGroup, gzip, {Dolib,} bmRegExp, AbonUnit,
 	ExternalBoardManager, ExternalBoardPlugInMain,
-	GikoBayesian, GikoMessage, Belib;
+	GikoBayesian, GikoMessage, Belib, DonguriSystem;
 
 type
 	TVerResourceKey = (
@@ -113,11 +113,12 @@ type
 		FBayesian	: TGikoBayesian;	//!< ベイジアンフィルタ
 		FVersion : String;		      //!< ファイルバージョン
 		FGikoMessage: TGikoMessage;
-        FBelib: TBelib;
+    FBelib: TBelib;
+    FDonguriSys: TDonguriSys;
 		//! あるセパレータで区切られた文字列からｎ番目の文字列を取り出す
 		function ChooseString(const Text, Separator: string; Index: integer): string;
-        //! 一時ファイルからの復旧
-        procedure RestoreThreadData(Board: TBoard);
+    //! 一時ファイルからの復旧
+    procedure RestoreThreadData(Board: TBoard);
 	public
 		{ Public 宣言 }
 		FAbon : TAbon;
@@ -141,7 +142,7 @@ type
 		function GetTempFolder: string;
 		function GetSentFileName: string;
 		function GetConfigDir: string;
-        function GetNGWordsDir: string;
+    function GetNGWordsDir: string;
 		function GetSkinDir: string;
 		function GetSkinHeaderFileName: string;
 		function GetSkinFooterFileName: string;
@@ -152,7 +153,7 @@ type
 		function GetStyleSheetDir: string;
 		function GetOutBoxFileName: string;
 		function GetUserAgent: string;
-				function GetSambaFileName : string;
+		function GetSambaFileName : string;
 
 		function GetMainKeyFileName : String;
 		function GetEditorKeyFileName: String;
@@ -169,6 +170,7 @@ type
 		property Setting: TSetting read FSetting write FSetting;
 //		property Dolib: TDolib read FDolib write FDolib;
 		property Belib: TBelib read FBelib write FBelib;
+    property DonguriSys: TDonguriSys read FDonguriSys;
 
 		function UrlToID(url: string): string;
 		function UrlToServer(url: string): string;
@@ -219,11 +221,11 @@ type
 		procedure GetPopupResNumber(URL : string; var stRes, endRes : Int64);
 
 		property Bayesian : TGikoBayesian read FBayesian write FBayesian;
-        function CreateResAnchor(var Numbers: TStringList; ThreadItem: TThreadItem; limited: Integer):string;
+    function CreateResAnchor(var Numbers: TStringList; ThreadItem: TThreadItem; limited: Integer):string;
 		procedure GetSameIDRes(const AID : string; ThreadItem: TThreadItem;var body: TStringList); overload;
 		procedure GetSameIDRes(AIDNum : Integer; ThreadItem: TThreadItem;var body: TStringList); overload;
-        function GetResID(AIDNum: Integer; ThreadItem: TThreadItem): String;
-        function ExtructResID(ADateStr: String): String;
+    function GetResID(AIDNum: Integer; ThreadItem: TThreadItem): String;
+    function ExtructResID(ADateStr: String): String;
 		//! 単語解析
 		procedure SpamCountWord( const text : string; wordCount : TWordCount );
 		//! 学習クリア
@@ -248,29 +250,29 @@ type
 		function GetGikoMessage(MesType: TGikoMessageListType): String;
 		//! GMTの時刻をTDateTimeに変換する
 		function  DateStrToDateTime(const DateStr: string): TDateTime;
-        //! User32.dllが利用できるか
-        function CanUser32DLL: Boolean;
-        //! OE引用符取得
-        function GetOEIndentChar : string;
-        //! 置換設定ファイル取得
-        function GetReplaceFileName: String;
-        //! インデックスにないdat（はぐれdat）の追加
-        procedure AddOutofIndexDat(Board: TBoard; DatList: TStringList; AllCreate: boolean = True);
-        //! ファイル名からのスレッド作成日の取得
-        function GetCreateDateFromName(FileName: String): TDateTime;
-        function GetExtpreviewFileName: String;
+    //! User32.dllが利用できるか
+    function CanUser32DLL: Boolean;
+    //! OE引用符取得
+    function GetOEIndentChar : string;
+    //! 置換設定ファイル取得
+    function GetReplaceFileName: String;
+    //! インデックスにないdat（はぐれdat）の追加
+    procedure AddOutofIndexDat(Board: TBoard; DatList: TStringList; AllCreate: boolean = True);
+    //! ファイル名からのスレッド作成日の取得
+    function GetCreateDateFromName(FileName: String): TDateTime;
+    function GetExtpreviewFileName: String;
 
-        procedure ShowRefCount(msg: String; unk: IUnknown);
-        //! 冒険の書Cookie取得
-        function GetBoukenCookie(AURL: String): String;
-        //! 冒険の書Cookie設定
-        procedure SetBoukenCookie(ACookieValue, ADomain: String);
-        //! 冒険の書Cookie削除
-        procedure DelBoukenCookie(ADomain: String);
-        //! 冒険の書Domain一覧取得
-        procedure GetBoukenDomain(var ADomain: TStringList);
-        //! 冒険の書ドメイン名Cookie取得
-        function GetBouken(AURL: String; var Domain: String): String;
+    procedure ShowRefCount(msg: String; unk: IUnknown);
+    //! 冒険の書Cookie取得
+    function GetBoukenCookie(AURL: String): String;
+    //! 冒険の書Cookie設定
+    procedure SetBoukenCookie(ACookieValue, ADomain: String);
+    //! 冒険の書Cookie削除
+    procedure DelBoukenCookie(ADomain: String);
+    //! 冒険の書Domain一覧取得
+    procedure GetBoukenDomain(var ADomain: TStringList);
+    //! 冒険の書ドメイン名Cookie取得
+    function GetBouken(AURL: String; var Domain: String): String;
     //! 指定文字列削除
     procedure DelString(del: String; var str: String);
     //! 2ch/5chのURLを実際に呼べる形にする
@@ -283,6 +285,8 @@ type
     function GetActualURL(url: String): String;
     //! 実際に使うホスト名取得（IPv6/v4確認と変換）
     function GetActualHost(host: String; var modified: Boolean): String;
+  	//! UTF-8文字列をShift-JIS文字列へ変換
+    function UTF8toSJIS(pUtf8: PChar): String;
 	end;
 
 var
@@ -365,6 +369,7 @@ begin
 	//FBoardURLList := TStringList.Create;
 	//メッセージの作成
 	FGikoMessage := TGikoMessage.Create;
+  FDonguriSys := TDonguriSys.Create;
 end;
 
 // *************************************************************************
@@ -3878,9 +3883,37 @@ begin
 	Result := Format('[%s]', [host]);
 end;
 
+//! UTF-8文字列をShift-JIS文字列へ変換
+function TGikoSys.UTF8toSJIS(pUtf8: PChar): String;
+const
+  CP_UTF8 = 65001;
+  CP_SJIS = 932;
+var
+  lenU16: Integer;
+  utf16: WideString;
+  lenSjis: Integer;
+  sjis: AnsiString;
+begin
+  lenU16 := MultiByteToWideChar(CP_UTF8, 0, pUtf8, -1, nil, 0);
+  if lenU16 > 0 then begin
+    SetLength(utf16, lenU16);
+    MultiByteToWideChar(CP_UTF8, 0, pUtf8, -1, PWideChar(utf16), lenU16);
+
+    lenSjis := WideCharToMultiByte(CP_SJIS, 0, PWideChar(utf16), -1, nil, 0, nil, nil);
+    if lenSjis > 0 then begin
+      SetLength(sjis, lenSjis);
+      WideCharToMultiByte(CP_SJIS, 0, PWideChar(utf16), -1, PChar(sjis), lenSjis, nil, nil);
+    end;
+  end;
+  Result := sjis;
+end;
+
+
+///////////
 initialization
 	GikoSys := TGikoSys.Create;
 
+///////////
 finalization
 	if GikoSys <> nil then begin
 		FreeAndNil(GikoSys);

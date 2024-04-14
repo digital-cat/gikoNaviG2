@@ -95,7 +95,8 @@ uses
   DmSession5ch in 'DmSession5ch.pas' {Session5ch: TDataModule},
   RangeAbon in 'RangeAbon.pas' {RangeAbonForm},
   GikoInputBoxForm in 'GikoInputBoxForm.pas' {GikoInputBox},
-  DonguriBase in 'DonguriBase.pas' {DonguriForm};
+  DonguriBase in 'DonguriBase.pas' {DonguriForm},
+  DonguriSystem in 'DonguriSystem.pas';
 
 {$R *.RES}
 {$R gikoResource.res}

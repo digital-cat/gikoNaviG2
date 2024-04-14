@@ -435,6 +435,7 @@ type
 		N87: TMenuItem;
     DongriMenu: TMenuItem;
     N88: TMenuItem;
+    DonguriCannonMenu: TMenuItem;
 		procedure FormCreate(Sender: TObject);
 		procedure FormDestroy(Sender: TObject);
 		procedure SaveSettingAll();

@@ -4,37 +4,36 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, ExtCtrls, IdIOHandler, IdIOHandlerSocket, IdIOHandlerStack,
-  IdSSL, IdSSLOpenSSL, IdBaseComponent, IdComponent, IdTCPConnection, IdGlobal,
-  IdTCPClient, IdHTTP, IdURI, Grids, StrUtils;
+  Dialogs, StdCtrls, ExtCtrls, Grids, StrUtils;
 
 type
   TDonguriForm = class(TForm)
     TimerInit: TTimer;
-    IdHTTP: TIdHTTP;
-    IdSSLIOHandlerSocketOpenSSL: TIdSSLIOHandlerSocketOpenSSL;
     InfoGrid: TStringGrid;
     AuthButton: TButton;
     LogoutButton: TButton;
     UplLoginButton: TButton;
     UplLogoutButton: TButton;
+    LoginButton: TButton;
+    Panel1: TPanel;
     procedure FormShow(Sender: TObject);
     procedure TimerInitTimer(Sender: TObject);
     procedure AuthButtonClick(Sender: TObject);
     procedure LogoutButtonClick(Sender: TObject);
     procedure UplLoginButtonClick(Sender: TObject);
     procedure UplLogoutButtonClick(Sender: TObject);
+    procedure LoginButtonClick(Sender: TObject);
   private
     { Private declarations }
     FHunter: Boolean;
     FUplift: Boolean;
 
     procedure ClearInfoValue;
-    procedure GetDonguri(url: String; var reload: Boolean);
+    procedure ShowRoot;
     function Parsing(html: String): Boolean;
     function Extract(html, kws, kwe: String; var dest: String): Boolean;
-    function UTF8toSJIS(pUtf8: PChar): String;
     procedure EnableUpliftButton;
+    procedure ShowHttpError;
   public
     { Public declarations }
   end;
@@ -54,27 +53,37 @@ type
     idxDonguri   = 2,
     idxNumWood   = 3,
     idxNumIron   = 4,
-    idxLevel     = 5,
-    idxNumKills  = 6,
-    idxNumDamage = 7,
-    idxPeriod    = 8,
-    idxMining    = 9,
-    idxFelling   = 10,
-    idxArmsWork  = 11,
-    idxProtector = 12,
-    idxMessage   = 13,
-    idxRowCount  = 14);
+    idxIronKey   = 5,
+    idxLevel     = 6,
+    idxNumKills  = 7,
+    idxNumDamage = 8,
+    idxPeriod    = 9,
+    idxExplrtn   = 10,
+    idxMining    = 11,
+    idxFelling   = 12,
+    idxArmsWork  = 13,
+    idxProtector = 14,
+    idxMessage   = 15,
+    idxRowCount  = 16);
 
 const
-	URL_DONGURI = 'https://donguri.5ch.net/';
-  URL_AUTH    = 'https://donguri.5ch.net/auth';
-  URL_LOGOUT  = 'https://donguri.5ch.net/logout';
-  URL_CANNON  = 'https://donguri.5ch.net/cannon';
-
-  COL_NAME: array [0..13] of string  = ('種別', 'ハンターID', 'ドングリ残高',
-  																			'木材の数', '鉄の数', 'レベル', 'K', 'D', '期',
-                                        '採掘', '木こり', '武器製作', '防具製作',
-                                        'メッセージ');
+  COL_NAME: array [0..15] of string  = (
+  	'　種別',
+    '　ハンターID',
+    '　ドングリ残高',
+  	'　木材の数',
+    '　鉄の数',
+    '　鉄のキー',
+    '　レベル',
+    '　K',
+    '　D',
+    '　期',
+    '　探検',
+    '　採掘',
+    '　木こり',
+    '　武器製作',
+    '　防具製作',
+    '　メッセージ');
 
 {$R *.dfm}
 
@@ -105,12 +114,9 @@ begin
 end;
 
 procedure TDonguriForm.TimerInitTimer(Sender: TObject);
-var
-	reload: Boolean;
 begin
-	reload := False;
 	TimerInit.Enabled := False;
-	GetDonguri(URL_DONGURI, reload);
+  ShowRoot;
 end;
 
 procedure TDonguriForm.ClearInfoValue;
@@ -121,85 +127,16 @@ begin
 	  InfoGrid.Cells[1, i] := '';
 end;
 
-procedure TDonguriForm.GetDonguri(url: String; var reload: Boolean);
+procedure TDonguriForm.ShowRoot;
 var
-  ok: Boolean;
-	uri: TIdURI;
-  sendCookies: String;
-  html: String;
-  ErrorText: String;
-  ErrorCode: Integer;
-  msg: String;
-  //dbg: TStringList;
-  u8: UTF8String;
-  res: TMemoryStream;
+  res: String;
 begin
-	reload := False;
-	ErrorCode := 0;
-  res := TMemoryStream.Create;
-
-	try
-		uri := TIdURI.Create(url);
-  	try
-	    sendCookies := IndyMdl.GetCookieString(uri);
-    finally
-		  uri.Free;
-    end;
-
-    TIndyMdl.InitHTTP(IdHTTP);
-
-    IdHTTP.AllowCookies           := True;
-    IdHTTP.HandleRedirects				:= True;
-    IdHTTP.Request.AcceptLanguage := 'ja';
-    IdHTTP.Request.AcceptEncoding := 'gzip';
-    IdHTTP.Request.Accept := 'text/html';
-  	if sendCookies <> '' then
-	    IdHTTP.Request.CustomHeaders.Add('Cookie: ' + sendCookies);
-
-    ok := False;
-
-    IndyMdl.StartAntiFreeze(100);
-    Screen.Cursor := crHourGlass;
-    try
-      IdHTTP.Get(url, res);
-      OK := True;
-    except
-      ErrorText := IdHTTP.ResponseText;
-      ErrorCode := IdHTTP.ResponseCode;
-    end;
-    Screen.Cursor := crDefault;
-    IndyMdl.EndAntiFreeze;
-		IndyMdl.SaveCookies(IdHTTP);
-
-    if ok then begin
-    	if res.Size = 0 then begin
-				reload := True;
-        Exit;
-      end;
-
-    	u8 := GikoSys.GzipDecompress(res, IdHTTP.Response.ContentEncoding);
-      html := UTF8toSJIS(PChar(u8));
-
-      //dbg := TStringList.Create;
-      //try
-      //  dbg.Text := html;
-      //  dbg.SaveToFile('d:\don.html');
-      //finally
-      //  dbg.Free;
-      //end;
-
-    	if Parsing(html) = False then
-	      MessageBox(Handle, 'ドングリシステムのページ解析に失敗しました',
-        					'ドングリシステム', MB_OK or MB_ICONERROR);
-    end else begin
-    	msg := 'ドングリシステムのページ取得に失敗しました。' + #10
-							+ ErrorText + #10 + 'HTTP ' + IntToStr(ErrorCode);
-      MessageBox(Handle, PChar(msg), 'ドングリシステム', MB_OK or MB_ICONERROR);
-    end;
-
-  finally
-  	res.Free;
-  end;
+  if GikoSys.DonguriSys.Root(res) then begin
+  	if Parsing(res) = False then
+      MessageBox(Handle, 'ドングリシステムのページ解析に失敗しました',
+								'ドングリシステム', MB_OK or MB_ICONERROR);
+  end else
+  	ShowHttpError;
 end;
 
 function TDonguriForm.Parsing(html: String): Boolean;
@@ -214,7 +151,9 @@ const
   TAG_NWD_S = '<span>木材の数:';
   TAG_NWD_E = '<br>';
   TAG_NIR_S = '鉄の数:';
-  TAG_NIR_E = '</span>';
+  TAG_NIR_E = '<br>';
+  TAG_IRK_S = '<br>鉄のキー:';
+  TAG_IRK_E = '</span>';
   TAG_LVL_S = '<h4>レベル:';
   TAG_LVL_E = '<br>';
   TAG_NKL_S = '<br>K:';
@@ -223,6 +162,8 @@ const
   TAG_NDM_E = '</h4>';
   TAG_PRD_S = '<span>第';
   TAG_PRD_E = '期</span>';
+  TAG_EXP_S = '<a href="/focus/exploration">探検:';
+  TAG_EXP_E = '</a>';
   TAG_MNG_S = '<a href="/focus/mining">採掘:';
   TAG_MNG_E = '</a>';
   TAG_FLL_S = '<a href="/focus/woodcutting">木こり:';
@@ -266,10 +207,10 @@ begin
       InfoGrid.Cells[1, Integer(idxHunterID)] := Trim(tmp);
 
     if Extract(html, TAG_DNG_S, TAG_DNG_E, tmp) then begin					// たぶんハンター
-      InfoGrid.Cells[0, Integer(idxDonguri)] := 'ドングリ残高';
+      InfoGrid.Cells[0, Integer(idxDonguri)] := '　ドングリ残高';
       InfoGrid.Cells[1, Integer(idxDonguri)] := Trim(tmp);
     end else if Extract(html, TAG_DN2_S, TAG_DNG_E, tmp) then begin	// たぶん警備員
-      InfoGrid.Cells[0, Integer(idxDonguri)] := '種子残高';
+      InfoGrid.Cells[0, Integer(idxDonguri)] := '　種子残高';
       InfoGrid.Cells[1, Integer(idxDonguri)] := Trim(tmp);
     end;
 
@@ -278,6 +219,9 @@ begin
 
     if Extract(html, TAG_NIR_S, TAG_NIR_E, tmp) then
       InfoGrid.Cells[1, Integer(idxNumIron)] := Trim(tmp);
+
+    if Extract(html, TAG_IRK_S, TAG_IRK_E, tmp) then
+      InfoGrid.Cells[1, Integer(idxIronKey)] := Trim(tmp);
 
     if Extract(html, TAG_LVL_S, TAG_LVL_E, tmp) then begin
       tmp := Trim(tmp);
@@ -300,6 +244,9 @@ begin
 
     if Extract(html, TAG_PRD_S, TAG_PRD_E, tmp) then
       InfoGrid.Cells[1, Integer(idxPeriod)] := '第' + tmp + '期';
+
+    if Extract(html, TAG_EXP_S, TAG_EXP_E, tmp) then
+      InfoGrid.Cells[1, Integer(idxExplrtn)] := Trim(tmp);
 
     if Extract(html, TAG_MNG_S, TAG_MNG_E, tmp) then
       InfoGrid.Cells[1, Integer(idxMining)] := Trim(tmp);
@@ -352,48 +299,57 @@ begin
   Result := True;
 end;
 
-function TDonguriForm.UTF8toSJIS(pUtf8: PChar): String;
-const
-  CP_UTF8 = 65001;
-  CP_SJIS = 932;
-var
-  lenU16: Integer;
-  utf16: WideString;
-  lenSjis: Integer;
-  sjis: AnsiString;
-begin
-  lenU16 := MultiByteToWideChar(CP_UTF8, 0, pUtf8, -1, nil, 0);
-  if lenU16 > 0 then begin
-    SetLength(utf16, lenU16);
-    MultiByteToWideChar(CP_UTF8, 0, pUtf8, -1, PWideChar(utf16), lenU16);
 
-    lenSjis := WideCharToMultiByte(CP_SJIS, 0, PWideChar(utf16), -1, nil, 0, nil, nil);
-    if lenSjis > 0 then begin
-      SetLength(sjis, lenSjis);
-      WideCharToMultiByte(CP_SJIS, 0, PWideChar(utf16), -1, PChar(sjis), lenSjis, nil, nil);
-    end;
-  end;
-  Result := sjis;
+procedure TDonguriForm.ShowHttpError;
+var
+  msg: String;
+begin
+  msg := 'エラーが発生しました。' + #10 +
+         'HTTP ' + IntToStr(GikoSys.DonguriSys.ResponseCode) + #10 +
+         GikoSys.DonguriSys.ResponseText;
+  MessageBox(Handle, PChar(msg), 'ドングリシステム', MB_OK or MB_ICONERROR);
 end;
 
 procedure TDonguriForm.AuthButtonClick(Sender: TObject);
 var
-	reload: Boolean;
+  res: String;
 begin
-	reload := False;
-	GetDonguri(URL_AUTH, reload);
-  if reload then
-		GetDonguri(URL_DONGURI, reload);
+  if GikoSys.DonguriSys.Auth(res) then begin
+  	if Parsing(res) = False then
+      MessageBox(Handle, 'ドングリシステムのページ解析に失敗しました',
+								'ドングリシステム', MB_OK or MB_ICONERROR);
+  end else
+  	ShowHttpError;
+end;
+
+procedure TDonguriForm.LoginButtonClick(Sender: TObject);
+var
+  res: String;
+begin
+  if GikoSys.DonguriSys.Login(res) then begin
+  	if Parsing(res) = False then
+      MessageBox(Handle, 'ドングリシステムのページ解析に失敗しました',
+								'ドングリシステム', MB_OK or MB_ICONERROR)
+    else if Pos('NG<>まずはUPLIFTでログイン', res) = 1 then
+      MessageBox(Handle, PChar('UPLIFTでのログインを要求されました。' + #10 +
+      						'UPLIFTでログインしない場合は書き込みでどんぐりを埋めてください。'),
+								'ドングリシステム', MB_OK or MB_ICONWARNING);
+  end else
+  	ShowHttpError;
 end;
 
 procedure TDonguriForm.LogoutButtonClick(Sender: TObject);
+var
+  res: String;
 begin
-	//GetDonguri(URL_LOGOUT, reload);
-	GikoSys.Setting.DonguriCookie := '';
-	GikoSys.Setting.DonguriExpires := '';
-	IndyMdl.DelCookie('acorn', 'https://5ch.net/');
-	IndyMdl.DelCookie('fp',    'https://5ch.net/');		// 受け取ってないけどクリア要求？？？
-	MessageBox(Handle, 'ログアウトしました。', 'ドングリシステム', MB_OK or MB_ICONINFORMATION);
+  if GikoSys.DonguriSys.Logout(res) then begin
+	  MessageBox(Handle, 'ログアウトしました。',
+    						'ドングリシステム', MB_OK or MB_ICONINFORMATION);
+  	if Parsing(res) = False then
+      MessageBox(Handle, 'ドングリシステムのページ解析に失敗しました',
+								'ドングリシステム', MB_OK or MB_ICONERROR);
+  end else
+  	ShowHttpError;
 end;
 
 

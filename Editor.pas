@@ -1171,6 +1171,9 @@ var
 	url2: string;
   backup1: String;
   backup2: String;
+  tmp: String;
+  idx1: Integer;
+  idx2: Integer;
 //{$IFDEF DEBUG}
 //  debug: String;
 //{$ENDIF}
@@ -1385,14 +1388,27 @@ begin
 				CancelSend( Board, SysMenu );
 				Exit;
 			end else if ResultType = grtDngBroken then begin
-        MsgBox( Handle,
-            'どんぐりが枯れてしまいました。[broken_acorn]' + #13#10 +
-            'どんぐりのCookieを削除します。',
-            'どんぐり',
-            MB_OK or MB_ICONERROR);
-        GikoSys.Setting.DonguriCookie := '';
-        GikoSys.Setting.DonguriExpires := '';
-      	IndyMdl.DelCookie('acorn', URL);
+      	tmp := '';
+        idx1 := Pos('<b>ERROR:', ResponseText);
+        if idx1 > 0 then begin
+        	idx1 := idx1 + 3;		// +3で'<b>'を除外する
+	        idx2 := PosEx('[broken_acorn]</b>', ResponseText, idx1);
+          if idx2 > 0 then begin
+            idx2 := idx2 - idx1 + 14;	// +14で'[broken_acorn]'まで範囲に入れる
+          	tmp := Copy(ResponseText, idx1, idx2);
+          end;
+        end;
+        if tmp = '' then
+        	tmp := 'どんぐりが枯れてしまいました。[broken_acorn]';
+        if MsgBox( Handle,
+              tmp + #13#10 +
+              'どんぐりのCookieを削除しますか？',
+              'どんぐり',
+              MB_YESNO or MB_ICONQUESTION) = IDYES then begin
+          GikoSys.Setting.DonguriCookie := '';
+          GikoSys.Setting.DonguriExpires := '';
+          IndyMdl.DelCookie('acorn', URL);
+        end;
 				CancelSend( Board, SysMenu );
 				Exit;
 			end else begin

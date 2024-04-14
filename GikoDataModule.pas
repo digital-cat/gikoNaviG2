@@ -11,7 +11,7 @@ uses
 	SHDocVw_TLB,
 	MSHTML_TLB,
 {$IFEND}
-  ComCtrls, BrowserRecord, Graphics, Messages, Setting, Dialogs,
+  ComCtrls, BrowserRecord, Graphics, Messages, Setting, Dialogs, StrUtils,
   ActiveX, GikoSystem, MoveHistoryItem, HistoryList, TntComCtrls, WideCtrls;
 
 const
@@ -261,6 +261,7 @@ type
     RangeAbonAction: TAction;
     ThreadRangeAbonAction: TAction;
     DonguriAction: TAction;
+    DonguriCannonAction: TAction;
 	procedure EditNGActionExecute(Sender: TObject);
 	procedure ReloadActionExecute(Sender: TObject);
 	procedure GoFowardActionExecute(Sender: TObject);
@@ -485,6 +486,8 @@ type
     procedure ThreadRangeAbonActionExecute(Sender: TObject);
     procedure DonguriActionExecute(Sender: TObject);
     procedure DonguriActionUpdate(Sender: TObject);
+    procedure DonguriCannonActionExecute(Sender: TObject);
+    procedure DonguriCannonActionUpdate(Sender: TObject);
   private
 	{ Private 宣言 }
 	procedure ClearResFilter;
@@ -4758,6 +4761,62 @@ end;
 procedure TGikoDM.DonguriActionUpdate(Sender: TObject);
 begin
 //
+end;
+
+procedure TGikoDM.DonguriCannonActionUpdate(Sender: TObject);
+var
+	ThreadItem : TThreadItem;
+begin
+	try
+		ThreadItem := GikoForm.GetActiveContent(True);
+		TAction(Sender).Enabled := (ThreadItem <> nil) and
+																ThreadItem.ParentBoard.Is2ch and		// ５ちゃんのみ
+                                (Pos('.bbspink.com/', ThreadItem.URL) < 1) and	// BBSPINKは現在非対応
+																(GikoSys.Setting.UserID <> '') and	// ハンターのみ
+																(GikoSys.Setting.Password <> '');		// （とりあえずUPLIFTのログイン設定がある場合のみ）
+  except
+  end;
+end;
+
+procedure TGikoDM.DonguriCannonActionExecute(Sender: TObject);
+var
+	No : Integer;
+	ThreadItem : TThreadItem;
+	URL, Protocol, Host, Path, Document, Port, Bookmark : String;
+  tmp: String;
+  date: String;
+  idx1: Integer;
+  idx2: Integer;
+	Res: TResRec;
+begin
+	try
+    No := GikoForm.KokoPopupMenu.Tag;
+    if No = 0 then
+    	Exit;
+    ThreadItem := GikoForm.KokoPopupThreadItem;
+    if (not ThreadItem.ParentBoard.Is2ch) or (Pos('.bbspink.com/', ThreadItem.URL) > 0) then
+    	Exit;
+
+    GikoSys.ParseURI(ThreadItem.URL, Protocol, Host, Path, Document, Port, Bookmark);
+    URL := Protocol + '://' + Host + Path + IntToStr(No);
+
+		tmp := GikoSys.ReadThreadFile(ThreadItem.FilePath, No);
+		if tmp = '' then
+    	Exit;
+
+    THTMLCreate.DivideStrLine(tmp, @Res);
+    date := Res.FDateTime;
+    idx1 := Pos(' ', date);
+    if idx1 > 1 then begin
+      idx2 := PosEx(' ', date, idx1 + 1);
+      if idx2 > 0 then
+        SetLength(date, idx2 - 1);
+    end;
+
+    GikoSys.DonguriSys.Cannon(url, date);
+
+  except
+  end;
 end;
 
 end.
