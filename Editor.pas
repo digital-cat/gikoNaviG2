@@ -332,8 +332,10 @@ type
 		function GetTitleUTF8: UTF8String;
     //! 添付画像チェック
 		function ChkPNG(var pngStream: TMemoryStream): Boolean;
-  	//! Cookie文字列からどんぐりのCookie項目を削除する
-    function DelDonguriCookie(src: String): String;
+    //! どんぐりのCokkieが無効化されたかどうか
+    function IsBrokenAcorn(ResponseText: string): Boolean;
+    //! 無効化されたどんぐりCokkieクリア
+  	procedure ClearBrokenAcorn(ResponseText: string);
 	protected
 		procedure CreateParams(var Params: TCreateParams); override;
 	public
@@ -1169,11 +1171,6 @@ var
 	referer: String;  // for 5ch
 	isUTF8: Boolean;
 	url2: string;
-  backup1: String;
-  backup2: String;
-  tmp: String;
-  idx1: Integer;
-  idx2: Integer;
 //{$IFDEF DEBUG}
 //  debug: String;
 //{$ENDIF}
@@ -1275,7 +1272,7 @@ begin
 				begin
 					FSambaTimer.WriteSambaTime(Now());
 				end;
-				GetCookie(Indy.CookieManager, Board);
+// 20240421				GetCookie(Indy.CookieManager, Board);
 				State := gdsComplete;
 			end else if ResultType = grtCookie then begin
 				//ループ防止
@@ -1290,7 +1287,7 @@ begin
 								MB_YESNO or MB_ICONQUESTION);
 
 				if MsgResult = IDYES then begin
-					GetCookie(Indy.CookieManager, Board);
+// 20240421					GetCookie(Indy.CookieManager, Board);
 					if (Board.Is2ch) then begin
 						GetHiddenParameter(ResponseText, Board);
 					end;
@@ -1320,7 +1317,7 @@ begin
 						MB_YESNO or MB_ICONQUESTION);
 
 				if MsgResult = IDYES then begin
-					GetCookie(Indy.CookieManager, Board);
+// 20240421					GetCookie(Indy.CookieManager, Board);
 					if (Board.Is2ch) then begin
 						GetHiddenParameter(ResponseText, Board);
 					end;
@@ -1347,7 +1344,7 @@ begin
 				Board.PON  := '';
 				Board.SPID := '';
 				Board.Cookie := '';
-				GetCookie(Indy.CookieManager, Board);
+// 20240421				GetCookie(Indy.CookieManager, Board);
 				Exit;
 			end else if ResultType = grtSuiton then begin
 				MsgBox( Handle,
@@ -1363,53 +1360,26 @@ begin
 				Board.Cookie := '';
 				Exit;
 			end else if ResultType = grtDonguri then begin
-      	backup1 := GikoSys.Setting.DonguriCookie;
-        backup2 := GikoSys.Setting.DonguriExpires;
-        GikoSys.Setting.DonguriCookie := '';
-        GikoSys.Setting.DonguriExpires := '';
-      	try
-					GetCookie(Indy.CookieManager, Board);
-				except
-        end;
-        if GikoSys.Setting.DonguriCookie = '' then begin
-          GikoSys.Setting.DonguriCookie := backup1;
-          GikoSys.Setting.DonguriExpires := backup2;
+// 20240421      	try
+// 20240421					GetCookie(Indy.CookieManager, Board);
+// 20240421				except
+// 20240421        end;
+        if IndyMdl.GetDonguriCookieValue = '' then
 					MsgBox( Handle,
               'どんぐりのCookieを取得できませんでした。',
               'どんぐり',
-              MB_OK or MB_ICONERROR);
-        end else begin
+              MB_OK or MB_ICONERROR)
+        else
 					MsgBox( Handle,
               'どんぐりを埋めました。芽が出るまで数分待ってから投稿してください。' + #13#10 +
               '今回の投稿は書き込まれていません。',
               'どんぐり',
               MB_OK or MB_ICONINFORMATION);
-        end;
 				CancelSend( Board, SysMenu );
 				Exit;
 			end else if ResultType = grtDngBroken then begin
-      	tmp := '';
-        idx1 := Pos('<b>ERROR:', ResponseText);
-        if idx1 > 0 then begin
-        	idx1 := idx1 + 3;		// +3で'<b>'を除外する
-	        idx2 := PosEx('[broken_acorn]</b>', ResponseText, idx1);
-          if idx2 > 0 then begin
-            idx2 := idx2 - idx1 + 14;	// +14で'[broken_acorn]'まで範囲に入れる
-          	tmp := Copy(ResponseText, idx1, idx2);
-          end;
-        end;
-        if tmp = '' then
-        	tmp := 'どんぐりが枯れてしまいました。[broken_acorn]';
-        if MsgBox( Handle,
-              tmp + #13#10 +
-              'どんぐりのCookieを削除しますか？',
-              'どんぐり',
-              MB_YESNO or MB_ICONQUESTION) = IDYES then begin
-          GikoSys.Setting.DonguriCookie := '';
-          GikoSys.Setting.DonguriExpires := '';
-          IndyMdl.DelCookie('acorn', URL);
-        end;
 				CancelSend( Board, SysMenu );
+      	ClearBrokenAcorn(ResponseText);
 				Exit;
 			end else begin
 				if (GikoSys.Setting.UseSamba)  and  (FSambaTimer.Enabled) then
@@ -1418,7 +1388,7 @@ begin
 				end;
 				// 忍法帖巻物エラーはCookieを更新する
 				if ResultType = grtNinpouErr then begin
-					GetCookie(Indy.CookieManager, Board);
+// 20240421					GetCookie(Indy.CookieManager, Board);
 				end;
 				State := gdsError;
 				raise Exception.Create('');
@@ -1513,8 +1483,7 @@ begin
 	else if Is2ch and  //5ch
 					(AnsiPos('<b>ERROR: どんぐりを埋めました。芽が出るまで数分待ってから投稿してください。</b>', ResponseText) > 0) then
 		Result := grtDonguri
-	else if Is2ch and  //5ch
-					(AnsiPos('<b>ERROR:', ResponseText) > 0) and (AnsiPos('[broken_acorn]</b>', ResponseText) > 0) then // 表現が変わるかもしれないから2分割で確認
+	else if Is2ch and IsBrokenAcorn(ResponseText) then
 		Result := grtDngBroken
 	else if ( (AnsiPos('<b>ようこそ：貴方の忍法帖を作成します。２分後に再度書き込むか、お帰りください', ResponseText) > 0) or
 				(AnsiPos('ＥＲＲＯＲ：貴方の冒険の書を作成中です', ResponseText) > 0) )
@@ -1545,6 +1514,63 @@ begin
 		Result := grtCookie
 	else
 		Result := grtError;
+end;
+
+//! どんぐりのCokkieが無効化されたかどうか
+function TEditorForm.IsBrokenAcorn(ResponseText: string): Boolean;
+var
+  idx: Integer;
+begin
+  idx := Pos('<b>ERROR:', ResponseText);
+  if idx < 1 then
+		Result := False
+  else
+    Result := (PosEx('[broken_acorn]</b>',						 ResponseText, idx) > 0) or
+              (PosEx('[1044]</b>',										 ResponseText, idx) > 0) or
+              (PosEx('[1045]</b>',										 ResponseText, idx) > 0) or
+              (PosEx('どんぐりが枯れてしまいました。', ResponseText, idx) > 0);
+end;
+
+//! 無効化されたどんぐりCokkieクリア
+procedure TEditorForm.ClearBrokenAcorn(ResponseText: string);
+var
+  idx1: Integer;
+  idx2: Integer;
+  ret: Integer;
+  msg: String;
+  res: String;
+begin
+  idx1 := Pos('<b>ERROR:', ResponseText);
+  if idx1 > 0 then begin
+    idx1 := idx1 + 3;
+    idx2 := PosEx('</b>', ResponseText, idx1);
+	  if idx2 > 0 then
+      msg := Copy(ResponseText, idx1, idx2 - idx1);
+  end;
+	if msg = '' then
+  	msg := 'ERROR: どんぐりが枯れてしまいました。';
+
+	msg := msg + #10 + '処理を選択してください。' + #10 +
+        ' → はい：ドングリシステムをログアウト' + #10 +
+        ' → いいえ：どんぐりCookieを削除' + #10 +
+        ' → キャンセル：何もしない';
+
+	ret := MsgBox(Handle, msg, 'どんぐり', MB_YESNOCANCEL or MB_ICONQUESTION);
+
+  case ret of
+    IDYES:
+      begin
+      	if GikoSys.DonguriSys.Logout(res) then
+					MsgBox(Handle, 'ドングリシステムをログアウトしました。', 'どんぐり', MB_OK or MB_ICONINFORMATION)
+        else
+					MsgBox(Handle, 'ログアウトに失敗しました。' + #10 + res, 'どんぐり', MB_OK or MB_ICONWARNING);
+      end;
+    IDNO:
+      begin
+        IndyMdl.DelDonguriCookie;
+				MsgBox(Handle, 'どんぐりのCookieを削除しました。', 'どんぐり', MB_OK or MB_ICONINFORMATION);
+      end;
+	end;
 end;
 
 
@@ -2625,7 +2651,6 @@ const
 	VAL_SPID	= 'SPID';
 	VAL_PON		= 'PON';
 	VAL_HAP		= 'HAP';
-  VAL_DONGRI= 'acorn';
 var
 	i : Integer;
 	//Cookie : TIdCookieRFC2109;
@@ -2658,13 +2683,6 @@ begin
 					// 冒険の書の保存
 					GikoSys.Setting.WriteBoukenSettingFile;
 				end;
-			end else if ( Cookie.CookieName = VAL_DONGRI ) then begin
-        GikoSys.Setting.DonguriCookie := Cookie.CookieName + '=' + Cookie.Value;
-        try
-      		GikoSys.Setting.DonguriExpires := FormatDateTime('yyyy/mm/dd hh:nn:ss', Cookie.Expires);
-        Except
-        	GikoSys.Setting.DonguriExpires := '';
-        end;
 			end else begin
 				if Length( curCookies.Values[ Cookie.CookieName ] ) > 0 then begin
 					// 既存値の付け替え
@@ -3236,25 +3254,8 @@ end;
 }
 function TEditorForm.getHeaderStr(const ACOOKIE: string; const SPID : string;
 				const PON : string; const HAP : string; Board : TBoard) : string;
-var
-  is2ch: Boolean;
-  delDon: Boolean;
-  donguri: String;
-  tmp: String;
 begin
-	delDon := True;
-	is2ch := Board.Is2ch;
-
-  if is2ch then begin
-		donguri := GikoSys.Setting.DonguriCookie;
-  	delDon := (donguri <> '');
-	end;
-
-  // 板のCookie
-	if delDon then
-  	Result := DelDonguriCookie(ACOOKIE)
-  else
-		Result := ACOOKIE;
+	Result := ACOOKIE;
 
 	if SPID <> '' then
 		Result := Result + 'SPID=' + SPID + '; ';
@@ -3268,20 +3269,12 @@ begin
 		// 固定のクッキーがあれば食わせる
 		if Length(GikoSys.Setting.FixedCookie) > 0 then begin
 			// ホストが2chの場合，固定のクッキーを食わせる
-			if delDon then
-    	  tmp := TrimRight(DelDonguriCookie(GikoSys.Setting.FixedCookie))
-      else
-    	  tmp := GikoSys.Setting.FixedCookie;
-      if Length(tmp) > 0 then
-				Result := Result + tmp + '; ';
+			Result := Result + GikoSys.Setting.FixedCookie + '; ';
 		end;
 		if (GikoSys.Belib.Connected) then begin
 			Result := Result + 'MDMD=' + GikoSys.Belib.MDMD + '; '
 											+ 'DMDM=' + GikoSys.Belib.DMDM + '; ';
 		end;
-    if Length(donguri) > 0 then begin
-    	Result := Result + donguri + '; ';
-    end;
 	end;
 
 	//Result := 'Cookie: ' + Result + 'NAME=' + NameComboBox.Text + '; MAIL=' + MailComboBox.Text;
@@ -3291,7 +3284,7 @@ begin
 
 	if HAP <> '' then
     	Result := Result + '; HAP=' + HAP + '; ';
-//MsgBox(Handle, Result, 'debug', MB_OK);
+
 end;
 
 function TEditorForm.getHeaderStr2(const ACOOKIE: string; const SPID : string;
@@ -3352,24 +3345,26 @@ begin
 	try
     IndyMdl.GetCookieList(uri, names, values);
 
-    if ACOOKIE <> '' then	// 板のCookie
-	  	SetCookiesList(ACOOKIE, names, values);
-    if SPID <> '' then
-      SetCookieList('SPID', SPID, names, values);
-    if PON <> '' then
-      SetCookieList('PON', PON, names, values);
+// 20240421    if ACOOKIE <> '' then	// 板のCookie
+// 20240421	  	SetCookiesList(ACOOKIE, names, values);
+// 20240421    if SPID <> '' then
+// 20240421      SetCookieList('SPID', SPID, names, values);
+// 20240421    if PON <> '' then
+// 20240421      SetCookieList('PON', PON, names, values);
 
     // ホストが2chの場合
     if Board.Is2ch then begin
-      // どんぐり
-      tmp := GikoSys.Setting.DonguriCookie;
-      if Pos('acorn=', tmp) = 1 then begin
-      	Delete(tmp, 1, 6);
-        SetCookieList('acorn', tmp, names, values);
-      end;
+      // どんぐり（板のCookieにゴミが残っていた場合に備えて上書きする）
+// 20240421      tmp := IndyMdl.GetDonguriCookieValue;
+// 20240421      if tmp <> '' then begin
+// 20240421        SetCookieList('acorn', tmp, names, values);
+// 20240421      end;
       // 固定のクッキー
       if Length(GikoSys.Setting.FixedCookie) > 0 then
 		  	SetCookiesList(GikoSys.Setting.FixedCookie, names, values);
+    	// UPLIFTログイン済み
+			if Session5ch.Connected then
+	      SetCookieList('sid', Session5ch.SessionID, names, values);
     	// Beログイン済み
       if (GikoSys.Belib.Connected) then begin
 	      SetCookieList('MDMD', GikoSys.Belib.MDMD, names, values);
@@ -3381,8 +3376,8 @@ begin
       SetCookieList('MAIL', GetMailText, names, values);
     end;
 
-    if HAP <> '' then
-      SetCookieList('HAP', HAP, names, values);
+// 20240421    if HAP <> '' then
+// 20240421      SetCookieList('HAP', HAP, names, values);
 
   	if names.Count < 1 then
     	Result := ''
@@ -3402,40 +3397,6 @@ begin
     values.Free;
     uri.Free;
   end;
-end;
-
-//! Cookie文字列からどんぐりのCookie項目を削除する
-function TEditorForm.DelDonguriCookie(src: String): String;
-const
-  HDR_DONGURI = 'acorn=';
-var
-	idx1: Integer;
-	idx2: Integer;
-  len:  Integer;
-  dst:  String;
-  tmp:  String;
-begin
-  dst := src;
-
-  while True do begin
-    idx1 := Pos(HDR_DONGURI, dst);
-    if idx1 < 1 then
-      Break;
-    idx2 := PosEx(';', dst, idx1);
-
-  	tmp := '';
-    if idx1 > 1 then
-      tmp := Copy(dst, 1, idx1 - 1);
-
-    if idx2 > 1 then begin
-      len := Length(dst) - idx2;
-      tmp := tmp + Copy(dst, idx2 + 1, len);
-    end;
-
-    dst := tmp;
-	end;
-
-	Result := dst;
 end;
 
 {
