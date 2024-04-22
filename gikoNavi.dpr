@@ -96,7 +96,8 @@ uses
   RangeAbon in 'RangeAbon.pas' {RangeAbonForm},
   GikoInputBoxForm in 'GikoInputBoxForm.pas' {GikoInputBox},
   DonguriBase in 'DonguriBase.pas' {DonguriForm},
-  DonguriSystem in 'DonguriSystem.pas';
+  DonguriSystem in 'DonguriSystem.pas',
+  CookieManager in 'CookieManager.pas' {CookieForm};
 
 {$R *.RES}
 {$R gikoResource.res}
