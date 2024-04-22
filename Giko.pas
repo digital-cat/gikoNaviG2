@@ -436,6 +436,7 @@ type
     DongriMenu: TMenuItem;
     N88: TMenuItem;
     DonguriCannonMenu: TMenuItem;
+    CookieMngMenu: TMenuItem;
 		procedure FormCreate(Sender: TObject);
 		procedure FormDestroy(Sender: TObject);
 		procedure SaveSettingAll();
