@@ -308,10 +308,6 @@ type
 		FForcedLogin: Boolean;
 //		FDolibURL: string;
 
-  	//どんぐり
-    FDonguriCookie: String;
-    FDonguriExpires: String;
-
 		//URLクリック時起動アプリ
 		FURLApp: Boolean;
 		FURLAppFile: string;
@@ -775,8 +771,6 @@ type
 		property AutoLogin: Boolean read FAutoLogin write FAutoLogin;
 		property ForcedLogin: Boolean read FForcedLogin write FForcedLogin;
 //		property DolibURL: string read FDolibURL write FDolibURL;
-    property DonguriCookie: String read FDonguriCookie write FDonguriCookie;
-    property DonguriExpires: String read FDonguriExpires write FDonguriExpires;
 
 		property URLApp: Boolean read FURLApp write FURLApp;
 		property URLAppFile: string read FURLAppFile write FURLAppFile;
@@ -1314,9 +1308,6 @@ begin
 		FAutoLogin := ini.ReadBool('Attestation', 'AutoLogin', False);
 		FForcedLogin := ini.ReadBool('Attestation', 'FForcedLogin', False);
 //		FDolibURL	:= ini.ReadString('Attestation', 'FDolibURL', DOLIB_LOGIN_URL);
-  	//どんぐり
-    FDonguriCookie := ini.ReadString('Donguri', 'Cookie', '');
-    FDonguriExpires := ini.ReadString('Donguri', 'Expires', '');
 
 		//URLクリック時起動アプリ
 		FURLApp := ini.ReadBool('URLApp', 'Select', False);
@@ -1782,9 +1773,6 @@ begin
 		ini.WriteBool('Attestation', 'AutoLogin', FAutoLogin);
 		ini.WriteBool('Attestation', 'FForcedLogin', FForcedLogin);
 //		ini.WriteString('Attestation', 'FDolibURL', FDolibURL);
-  	//どんぐり
-    ini.WriteString('Donguri', 'Cookie', FDonguriCookie);
-    ini.WriteString('Donguri', 'Expires', FDonguriExpires);
 
 		//URLクリック時起動アプリ
 		ini.WriteBool('URLApp', 'Select', FURLApp);
