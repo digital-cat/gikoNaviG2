@@ -56,7 +56,7 @@ type
 
 implementation
 uses
-	GikoSystem;
+	GikoSystem, IndyModule;
 
 const
 	BELIB_LOGIN_UA      = 'BELIB/1.00';
@@ -107,6 +107,7 @@ begin
   if FSession <> nil then
     FreeAndNil(FSession);
   FConnected := False;
+  IndyMdl.DelBeCookie;
 end;
 
 function TBelib.GetMDMD : string;
