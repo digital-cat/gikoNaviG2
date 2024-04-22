@@ -106,7 +106,7 @@ end;
 function TSession5ch.Disconnect: Boolean;
 begin
   Clear;
-  IndyMdl.DelCookie(LOGIN_5CH_SID, ROOT_5CH_URL);
+  IndyMdl.DelUpliftCookie;
 	Result := True;
 end;
 
