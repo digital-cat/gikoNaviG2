@@ -25,8 +25,10 @@ type
 		function CheckFormAction(html, url: String): Boolean;
 		function CheckCannon(html: String; var resMsg: String): Boolean;
     function CheckConfirm(html: String; var resMsg: String): Boolean;
-    procedure ShowCannonError(msg: String);
+    procedure ShowCannonError(msg: String; httperr: Boolean = False);
+    function  ShowCannonMessage(msg: String; mbType: Cardinal): Integer;
 
+    //procedure DebugLog(text: String);
   public
 
 		constructor Create;
@@ -36,8 +38,13 @@ type
 		function Auth(var response: String): Boolean;
 		function Login(var response: String): Boolean;
 		function Logout(var response: String): Boolean;
+    function Exploration(var response: String): Boolean;
+    function Mining(var response: String): Boolean;
+    function WoodCutting(var response: String): Boolean;
+    function WeaponCraft(var response: String): Boolean;
+    function ArmorCraft(var response: String): Boolean;
 
-		function Cannon(urlRes, date: String): Boolean;
+		function Cannon(urlRes, date: String; no: Integer): Boolean;
 
     // HTTPレスポンステキスト
     property ResponseText: String  read FResponseText;
@@ -56,23 +63,30 @@ const
   URL_DNG_AUTH    = 'https://donguri.5ch.net/auth';
   URL_DNG_LOGIN   = 'https://donguri.5ch.net/login';
   URL_DNG_LOGOUT  = 'https://donguri.5ch.net/logout';
+  URL_DNG_EXPLOR  = 'https://donguri.5ch.net/focus/exploration';    // 探検
+  URL_DNG_MINING  = 'https://donguri.5ch.net/focus/mining';         // 採掘
+  URL_DNG_WOODCT  = 'https://donguri.5ch.net/focus/woodcutting';    // 木こり
+  URL_DNG_WEAPON  = 'https://donguri.5ch.net/focus/weaponcraft';    // 武器製作
+  URL_DNG_ARMORC  = 'https://donguri.5ch.net/focus/armorcraft';     // 防具製作
   URL_DNG_CANNON  = 'https://donguri.5ch.net/cannon';
   URL_DNG_CANNON2 = 'https://donguri.5ch.net/confirm';
   URL_DNG_CANNON3 = 'https://donguri.5ch.net/fire';
+	URL_5CH_ROOT    = 'https://5ch.net/';
 
 
 implementation
 
 uses
-  GikoSystem, IndyModule, YofUtils, Giko;
+  GikoSystem, IndyModule, YofUtils, Giko, GikoUtil;
 
 
+// コンストラクタ
 constructor TDonguriSys.Create;
 begin
 	Inherited;
 
   FResponseCode := 0;
-  
+
   try
     FHTTP := TIdHttp.Create(nil);
     FSSL := TIdSSLIOHandlerSocketOpenSSL.Create(nil);
@@ -80,13 +94,13 @@ begin
     FSSL.SSLOptions.Method := sslvTLSv1_2;
     FHTTP.IOHandler := FSSL;
   except
-    on e: Exception do begin
-      MessageBox(0, PChar(e.Message), 'TDonguriSys.Create', MB_OK);
-    end;
+    //on e: Exception do begin
+    //  MessageBox(0, PChar(e.Message), 'TDonguriSys.Create', MB_OK);
+    //end;
   end;
-
 end;
 
+// デストラクタ
 destructor TDonguriSys.Destroy;
 begin
   try
@@ -99,7 +113,7 @@ begin
 	Inherited;
 end;
 
-
+// HTTPレスポンス情報クリア
 procedure TDonguriSys.ClearResponse;
 begin
 	FErroeMessage := '';
@@ -217,10 +231,8 @@ begin
 			ok := HttpGet(url, ref, gzip, res, red);
 
       if ok and (url = URL_DNG_LOGOUT) then begin
-        GikoSys.Setting.DonguriCookie := '';
-        GikoSys.Setting.DonguriExpires := '';
-        IndyMdl.DelCookie('acorn', 'https://5ch.net/');		// Cookie保存時に消してくれているとは思うけど
-        IndyMdl.DelCookie('fp',    'https://5ch.net/');		// 受け取ってないけどクリア要求？？？
+        IndyMdl.DelCookie('acorn', URL_5CH_ROOT);	// Cookie保存時に消してくれているとは思うけど
+        IndyMdl.DelCookie('fp',    URL_5CH_ROOT);	// 受け取ってないけどクリア要求？？？
       end;
 
       if red = False then begin
@@ -230,6 +242,12 @@ begin
 
       if res[1] = '/' then
         res := URL_DNG_BASE + res;
+
+      if res = url then begin
+        FErroeMessage := '異常なリダイレクトを検出しました。一度ログアウトしてみてください。';
+        ok := False;
+        Break;
+      end;
 
       ref := url;
 			url := res;
@@ -318,8 +336,100 @@ begin
   end;
 end;
 
+// 探検
+function TDonguriSys.Exploration(var response: String): Boolean;
+begin
+	Result := False;
+  response := '';
 
-function TDonguriSys.Cannon(urlRes, date: String): Boolean;
+	try
+	  ClearResponse;
+
+  	Result := HttpGetCall(URL_DNG_EXPLOR, response);
+
+  except
+    on e: Exception do begin
+      FErroeMessage := e.Message;
+    end;
+  end;
+end;
+
+// 採掘
+function TDonguriSys.Mining(var response: String): Boolean;
+begin
+	Result := False;
+  response := '';
+
+	try
+	  ClearResponse;
+
+  	Result := HttpGetCall(URL_DNG_MINING, response);
+
+  except
+    on e: Exception do begin
+      FErroeMessage := e.Message;
+    end;
+  end;
+end;
+
+// 木こり
+function TDonguriSys.WoodCutting(var response: String): Boolean;
+begin
+	Result := False;
+  response := '';
+
+	try
+	  ClearResponse;
+
+  	Result := HttpGetCall(URL_DNG_WOODCT, response);
+
+  except
+    on e: Exception do begin
+      FErroeMessage := e.Message;
+    end;
+  end;
+end;
+
+// 武器製作
+function TDonguriSys.WeaponCraft(var response: String): Boolean;
+begin
+	Result := False;
+  response := '';
+
+	try
+	  ClearResponse;
+
+  	Result := HttpGetCall(URL_DNG_WEAPON, response);
+
+  except
+    on e: Exception do begin
+      FErroeMessage := e.Message;
+    end;
+  end;
+end;
+
+// 防具製作
+function TDonguriSys.ArmorCraft(var response: String): Boolean;
+begin
+	Result := False;
+  response := '';
+
+	try
+	  ClearResponse;
+
+  	Result := HttpGetCall(URL_DNG_ARMORC, response);
+
+  except
+    on e: Exception do begin
+      FErroeMessage := e.Message;
+    end;
+  end;
+end;
+
+// どんぐり大砲
+function TDonguriSys.Cannon(urlRes, date: String; no: Integer): Boolean;
+//const
+//  DBG_SEP = #39 + ',' + #39;
 var
 	ok: Boolean;
   res: String;
@@ -328,6 +438,9 @@ var
   param: String;
   resMsg: String;
 	redirect: Boolean;
+  resNo: String;
+  mbType: Cardinal;
+  //debug: String;
 begin
 	Result := False;
 
@@ -340,11 +453,13 @@ begin
 
     if ok = False then begin
     	if resMsg = '' then
-				ShowCannonError('どんぐり大砲を使用できません。')
+				ShowCannonError('どんぐり大砲を使用できません。', True)
       else
 		    ShowCannonError(resMsg);
     	Exit;
     end;
+
+  	resNo := Format('%d: ', [no]);
 
     param := Format('?url=%s&date=%s', [
 											HttpEncode(UTF8Encode(urlRes)),
@@ -357,41 +472,59 @@ begin
 
     if ok = False then begin
     	if resMsg = '' then
-		    ShowCannonError('どんぐり大砲を使用できません。')
+		    ShowCannonError('どんぐり大砲を使用できません。', True)
       else
-		    ShowCannonError(resMsg);
+		    ShowCannonError(resNo + resMsg);
     	Exit;
     end;
 
-    if MessageBox(GikoForm.Handle, PChar(resMsg + #10 + 'どんぐり大砲を撃ちますか？'),
-    								'どんぐり大砲', MB_YESNO or MB_ICONQUESTION) <> IDYES then begin
+    //debug := #39 + urlRes + DBG_SEP + date + DBG_SEP + resMsg + DBG_SEP;
+
+    if Pos('当たる確率が99%です', resMsg) > 0 then
+	  	mbType := MB_YESNO or MB_ICONQUESTION
+    else
+	  	mbType := MB_YESNO or MB_ICONWARNING;
+
+    if ShowCannonMessage(resNo + resMsg + #10 + 'どんぐり大砲を撃ちますか？',
+    											mbType) <> IDYES then begin
 			Result := True;
+      //DebugLog(debug + 'Cancel' + #39);
     	Exit;
     end;
 
+    res := '';
   	url3 := URL_DNG_CANNON3 + param;
   	ok := HttpGet(url3, url2, True, res, redirect);
 
+		//DebugLog(debug + res + #39);
+
     if ok then begin
-      if (res <> '') and (Pos('<html', res) < 1) then
-				 MessageBox(GikoForm.Handle, PChar(res), 'どんぐり大砲', MB_OK or MB_ICONINFORMATION)
-      else
-				 MessageBox(GikoForm.Handle, PChar('どんぐり大砲を発射しましたが結果不明です。' + #10#10 + res),
-         						'どんぐり大砲', MB_OK or MB_ICONWARNING);
+      if (res <> '') and (Pos('<html', res) < 1) then begin
+        if Pos('どんぐり大砲が直撃しました', res) > 0 then
+          mbType := MB_OK or MB_ICONINFORMATION
+        else if Pos('どんぐり大砲が誤射しました', res) > 0 then
+          mbType := MB_OK or MB_ICONERROR
+        else
+          mbType := MB_OK or MB_ICONWARNING;
+				ShowCannonMessage(resNo + res, mbType);
+      end else
+				ShowCannonMessage(resNo + 'どんぐり大砲を発射しましたが結果不明です。' + #10#10 + res,
+         												MB_OK or MB_ICONWARNING);
     end else
-	    ShowCannonError('どんぐり大砲の発射に失敗しました。');
+	    ShowCannonError(resNo + 'どんぐり大砲の発射に失敗しました。', True);
 
     Result := ok;
 
   except
     on e: Exception do begin
       FErroeMessage := e.Message;
-	    ShowCannonError('どんぐり大砲の発射でエラーが発生しました。');
+	    ShowCannonError('どんぐり大砲の発射でエラーが発生しました。', True);
     end;
   end;
 
 end;
 
+// formタグのaction属性が特定のURLであるかを確認
 function TDonguriSys.CheckFormAction(html, url: String): Boolean;
 var
 	idx1: Integer;
@@ -414,18 +547,18 @@ begin
 	Result := (Pos(tmp2, tmp1) > 0);
 end;
 
-// cannon
+// /cannonのレスポンスチェック
 function TDonguriSys.CheckCannon(html: String; var resMsg: String): Boolean;
 begin
-	Result := False;
+	//Result := False;
 
-  if Pos('<h1>どんぐり大砲</h1>', html) < 1 then
-  	Exit;
+  //if Pos('<h1>どんぐり大砲</h1>', html) < 1 then
+  //	Exit;
 
-	Result := CheckFormAction(html, URL_DNG_CANNON2);
+	Result := CheckFormAction(html, URL_DNG_CANNON2);		// 次のURL確認
 end;
 
-// cannon -> confirm
+// /confirmのレスポンスチェック
 function TDonguriSys.CheckConfirm(html: String; var resMsg: String): Boolean;
 var
 	idx1: Integer;
@@ -436,7 +569,7 @@ begin
   resMsg := '';
 
   if Pos('<html', html) < 1 then begin
-	  resMsg := html;
+	  resMsg := html;		// プレーンテキスト
     Exit;
   end;
 
@@ -451,15 +584,53 @@ begin
 	idx3 := PosEx('</p>', html, idx2);
   if idx3 < 1 then
   	Exit;
-  resMsg := Copy(html, idx2, idx3 - idx2);
+  resMsg := Copy(html, idx2, idx3 - idx2);	// メッセージ文らしきものを取り出し
 
-	Result := CheckFormAction(html, URL_DNG_CANNON3);
+	Result := CheckFormAction(html, URL_DNG_CANNON3);		// 次のURL確認
 end;
 
-procedure TDonguriSys.ShowCannonError(msg: String);
+// どんぐり大砲用エラーメッセージ表示
+procedure TDonguriSys.ShowCannonError(msg: String; httperr: Boolean = False);
 begin
-	MessageBox(GikoForm.Handle, PChar(msg), 'どんぐり大砲', MB_OK or MB_ICONERROR);
+	if httperr then
+  	msg := msg + #10 +
+					 FErroeMessage + #10 +
+        	 'HTTP ' + IntToStr(FResponseCode) + #10 +
+           FResponseText;
+
+  ShowCannonMessage(msg, MB_OK or MB_ICONERROR);
 end;
 
+// どんぐり大砲用メッセージ表示
+// ※どんぐり大砲はメイン画面からの操作を前提とし、メッセージボックスもメイン画面を親とする
+function TDonguriSys.ShowCannonMessage(msg: String; mbType: Cardinal): Integer;
+begin
+	Result := MsgBox(GikoForm.Handle, PChar(msg), 'どんぐり大砲', mbType);
+end;
+
+
+
+{
+procedure TDonguriSys.DebugLog(text: String);
+var
+  dst: TextFile;
+  path: String;
+begin
+	path := ChangeFileExt(Application.ExeName, '.cannon.log');
+
+  try
+    AssignFile(dst, path);
+    if FileExists(path) then
+      Append(dst)
+    else
+      Rewrite(dst);
+
+		Writeln(dst, text);
+
+  finally
+		CloseFile(dst);
+  end;
+end;
+}
 
 end.
