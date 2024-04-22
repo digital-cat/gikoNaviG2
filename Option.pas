@@ -233,12 +233,6 @@ type
 		PreviewStyleCheckBox: TCheckBox;
     OekakiCheckBox: TCheckBox;
     KeepNgFileCheckBox: TCheckBox;
-    GroupBox29: TGroupBox;
-    Label27: TLabel;
-    DonguriCookieEdit: TEdit;
-    Label28: TLabel;
-    DonguriExpiresEdit: TEdit;
-    DonClearButton: TButton;
 		procedure FormCreate(Sender: TObject);
 		procedure FormDestroy(Sender: TObject);
 		procedure ApplyButtonClick(Sender: TObject);
@@ -291,7 +285,6 @@ type
 		procedure BoukenDelButtonClick(Sender: TObject);
 		procedure BoukenComboBoxChange(Sender: TObject);
 		procedure BoukenModButtonClick(Sender: TObject);
-    procedure DonClearButtonClick(Sender: TObject);
 	private
 		{ Private 宣言 }
 		FClose: Boolean;
@@ -782,9 +775,6 @@ begin
 	PasswordEdit.Text := GikoSys.Setting.Password;
 	AutoLoginCheckBox.Checked := GikoSys.Setting.AutoLogin;
 //	ForcedLoginCheckBox.Checked := GikoSys.Setting.ForcedLogin;
-	//どんぐり
-  DonguriCookieEdit.Text := GikoSys.Setting.DonguriCookie;
-  DonguriExpiresEdit.Text := GikoSys.Setting.DonguriExpires;
 
 	//ログフォルダ
 	if GikoSys.Setting.NewLogFolder = '' then
@@ -1099,8 +1089,6 @@ begin
 	GikoSys.Setting.Password := PasswordEdit.Text;
 	GikoSys.Setting.AutoLogin := AutoLoginCheckBox.Checked;
 //	GikoSys.Setting.ForcedLogin := ForcedLoginCheckBox.Checked;
-  GikoSys.Setting.DonguriCookie := DonguriCookieEdit.Text;
-  GikoSys.Setting.DonguriExpires := DonguriExpiresEdit.Text;
 
 	GikoSys.Setting.URLApp := URLAppCheckBox.Checked;
 	GikoSys.Setting.URLAppFile := AppFolderEdit.Text;
@@ -1799,12 +1787,6 @@ begin
         end;
         BoukenComboBox.OnChange(nil);
     end;
-end;
-
-procedure TOptionDialog.DonClearButtonClick(Sender: TObject);
-begin
-  DonguriCookieEdit.Text := '';
-  DonguriExpiresEdit.Text := '';
 end;
 
 end.

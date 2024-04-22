@@ -1702,11 +1702,11 @@ object OptionDialog: TOptionDialog
       end
       object GroupBox11: TGroupBox
         Left = 12
-        Top = 170
+        Top = 102
         Width = 477
         Height = 90
         Caption = 'Be 2ch'
-        TabOrder = 2
+        TabOrder = 1
         object Label7: TLabel
           Left = 8
           Top = 22
@@ -1749,11 +1749,11 @@ object OptionDialog: TOptionDialog
       end
       object GroupBox25: TGroupBox
         Left = 12
-        Top = 265
+        Top = 197
         Width = 477
         Height = 72
         Caption = #24525#27861#24086
-        TabOrder = 3
+        TabOrder = 2
         object Label25: TLabel
           Left = 40
           Top = 20
@@ -1795,53 +1795,6 @@ object OptionDialog: TOptionDialog
           Width = 227
           Height = 20
           TabOrder = 1
-        end
-      end
-      object GroupBox29: TGroupBox
-        Left = 12
-        Top = 102
-        Width = 477
-        Height = 64
-        Caption = #12393#12435#12368#12426
-        TabOrder = 1
-        object Label27: TLabel
-          Left = 12
-          Top = 20
-          Width = 51
-          Height = 12
-          Caption = 'Cookie(&C)'
-          FocusControl = DonguriCookieEdit
-        end
-        object Label28: TLabel
-          Left = 12
-          Top = 40
-          Width = 39
-          Height = 12
-          Caption = #26399#38480'(&E)'
-          FocusControl = DonguriExpiresEdit
-        end
-        object DonguriCookieEdit: TEdit
-          Left = 88
-          Top = 16
-          Width = 377
-          Height = 20
-          TabOrder = 0
-        end
-        object DonguriExpiresEdit: TEdit
-          Left = 88
-          Top = 36
-          Width = 175
-          Height = 20
-          TabOrder = 1
-        end
-        object DonClearButton: TButton
-          Left = 368
-          Top = 36
-          Width = 96
-          Height = 24
-          Caption = #12463#12522#12450'(&L)'
-          TabOrder = 2
-          OnClick = DonClearButtonClick
         end
       end
     end
