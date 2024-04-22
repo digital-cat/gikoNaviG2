@@ -16,6 +16,11 @@ type
     UplLogoutButton: TButton;
     LoginButton: TButton;
     Panel1: TPanel;
+    ExplorButton: TButton;
+    MiningButton: TButton;
+    WoodctButton: TButton;
+    WeaponButton: TButton;
+    ArmorcButton: TButton;
     procedure FormShow(Sender: TObject);
     procedure TimerInitTimer(Sender: TObject);
     procedure AuthButtonClick(Sender: TObject);
@@ -23,6 +28,11 @@ type
     procedure UplLoginButtonClick(Sender: TObject);
     procedure UplLogoutButtonClick(Sender: TObject);
     procedure LoginButtonClick(Sender: TObject);
+    procedure ExplorButtonClick(Sender: TObject);
+    procedure MiningButtonClick(Sender: TObject);
+    procedure WoodctButtonClick(Sender: TObject);
+    procedure WeaponButtonClick(Sender: TObject);
+    procedure ArmorcButtonClick(Sender: TObject);
   private
     { Private declarations }
     FHunter: Boolean;
@@ -44,36 +54,42 @@ var
 implementation
 
 uses
-	GikoSystem, IndyModule, DmSession5ch, GikoDataModule;
+	GikoSystem, IndyModule, DmSession5ch, GikoDataModule, GikoUtil;
 
 type
   ColIndex = (
     idxUserType  = 0,
-    idxHunterID  = 1,
-    idxDonguri   = 2,
-    idxNumWood   = 3,
-    idxNumIron   = 4,
-    idxIronKey   = 5,
-    idxLevel     = 6,
-    idxNumKills  = 7,
-    idxNumDamage = 8,
-    idxPeriod    = 9,
-    idxExplrtn   = 10,
-    idxMining    = 11,
-    idxFelling   = 12,
-    idxArmsWork  = 13,
-    idxProtector = 14,
-    idxMessage   = 15,
-    idxRowCount  = 16);
+    idAliasName  = 1,
+    idxHunterID  = 2,
+    idxDonguri   = 3,
+    idxNumWood   = 4,
+    idxNumIron   = 5,
+    idxIronKey   = 6,
+    idxWdCnBall  = 7,
+    idxIrCnBall  = 8,
+    idxLevel     = 9,
+    idxNumKills  = 10,
+    idxNumDamage = 11,
+    idxPeriod    = 12,
+    idxExplrtn   = 13,
+    idxMining    = 14,
+    idxFelling   = 15,
+    idxArmsWork  = 16,
+    idxProtector = 17,
+    idxMessage   = 18,
+    idxRowCount  = 19);
 
 const
-  COL_NAME: array [0..15] of string  = (
+  COL_NAME: array [0..18] of string  = (
   	'　種別',
+    '　呼び名',
     '　ハンターID',
     '　ドングリ残高',
   	'　木材の数',
     '　鉄の数',
     '　鉄のキー',
+    '　木製の大砲の玉',
+    '　鉄の大砲の玉',
     '　レベル',
     '　K',
     '　D',
@@ -133,7 +149,7 @@ var
 begin
   if GikoSys.DonguriSys.Root(res) then begin
   	if Parsing(res) = False then
-      MessageBox(Handle, 'ドングリシステムのページ解析に失敗しました',
+      MsgBox(Handle, 'ドングリシステムのページ解析に失敗しました',
 								'ドングリシステム', MB_OK or MB_ICONERROR);
   end else
   	ShowHttpError;
@@ -143,8 +159,12 @@ function TDonguriForm.Parsing(html: String): Boolean;
 const
   TAG_USR_S = '<p>あなたは';
   TAG_USR_E = 'です。</p>';
+  TAG_ANM_S = '<span>呼び名:';
+  TAG_ANM_E = '<br>';
 	TAG_HID_S = '<span>ハンターID:';
   TAG_HID_E = '<br>';
+	TAG_GID_S = '<span>警備員ID:';
+  TAG_GID_E = '<br>';
 	TAG_DNG_S = '<span>ドングリ残高:';
 	TAG_DN2_S = '<span>種子残高:';
   TAG_DNG_E = '</span>';
@@ -153,7 +173,11 @@ const
   TAG_NIR_S = '鉄の数:';
   TAG_NIR_E = '<br>';
   TAG_IRK_S = '<br>鉄のキー:';
-  TAG_IRK_E = '</span>';
+  TAG_IRK_E = '<br>';
+  TAG_WCB_S = '<br>木製の大砲の玉:';
+  TAG_WCB_E = '<br>';
+  TAG_ICB_S = '<br>鉄の大砲の玉:';
+  TAG_ICB_E = '</span>';
   TAG_LVL_S = '<h4>レベル:';
   TAG_LVL_E = '<br>';
   TAG_NKL_S = '<br>K:';
@@ -189,6 +213,8 @@ begin
   	ClearInfoValue;
     FHunter := False;
 
+//    MsgBox(Handle, html, 'debug');
+
     // HTMLではなくエラーメッセージのテキストのみ
     if Pos('NG<>', html) = 1 then begin
       tmp := Copy(html, 5, Length(html) - 4);
@@ -203,8 +229,18 @@ begin
 			FHunter := (tmp = 'ハンター');
     end;
 
-    if FHunter and Extract(html, TAG_HID_S, TAG_HID_E, tmp) then
-      InfoGrid.Cells[1, Integer(idxHunterID)] := Trim(tmp);
+    if Extract(html, TAG_ANM_S, TAG_ANM_E, tmp) then
+      InfoGrid.Cells[1, Integer(idAliasName)] := Trim(tmp);
+
+    if FHunter then begin
+			InfoGrid.Cells[0, Integer(idxHunterID)] := '　ハンターID';
+    	if Extract(html, TAG_HID_S, TAG_HID_E, tmp) then
+  	    InfoGrid.Cells[1, Integer(idxHunterID)] := Trim(tmp);
+    end else begin
+			InfoGrid.Cells[0, Integer(idxHunterID)] := '　警備員ID';
+	    if Extract(html, TAG_GID_S, TAG_GID_E, tmp) then
+  	    InfoGrid.Cells[1, Integer(idxHunterID)] := Trim(tmp);
+    end;
 
     if Extract(html, TAG_DNG_S, TAG_DNG_E, tmp) then begin					// たぶんハンター
       InfoGrid.Cells[0, Integer(idxDonguri)] := '　ドングリ残高';
@@ -222,6 +258,12 @@ begin
 
     if Extract(html, TAG_IRK_S, TAG_IRK_E, tmp) then
       InfoGrid.Cells[1, Integer(idxIronKey)] := Trim(tmp);
+
+    if Extract(html, TAG_WCB_S, TAG_WCB_E, tmp) then
+      InfoGrid.Cells[1, Integer(idxWdCnBall)] := Trim(tmp);
+
+    if Extract(html, TAG_ICB_S, TAG_ICB_E, tmp) then
+      InfoGrid.Cells[1, Integer(idxIrCnBall)] := Trim(tmp);
 
     if Extract(html, TAG_LVL_S, TAG_LVL_E, tmp) then begin
       tmp := Trim(tmp);
@@ -305,9 +347,10 @@ var
   msg: String;
 begin
   msg := 'エラーが発生しました。' + #10 +
+         GikoSys.DonguriSys.ErroeMessage + #10 +
          'HTTP ' + IntToStr(GikoSys.DonguriSys.ResponseCode) + #10 +
          GikoSys.DonguriSys.ResponseText;
-  MessageBox(Handle, PChar(msg), 'ドングリシステム', MB_OK or MB_ICONERROR);
+  MsgBox(Handle, PChar(msg), 'ドングリシステム', MB_OK or MB_ICONERROR);
 end;
 
 procedure TDonguriForm.AuthButtonClick(Sender: TObject);
@@ -316,7 +359,7 @@ var
 begin
   if GikoSys.DonguriSys.Auth(res) then begin
   	if Parsing(res) = False then
-      MessageBox(Handle, 'ドングリシステムのページ解析に失敗しました',
+      MsgBox(Handle, 'ドングリシステムのページ解析に失敗しました',
 								'ドングリシステム', MB_OK or MB_ICONERROR);
   end else
   	ShowHttpError;
@@ -328,10 +371,10 @@ var
 begin
   if GikoSys.DonguriSys.Login(res) then begin
   	if Parsing(res) = False then
-      MessageBox(Handle, 'ドングリシステムのページ解析に失敗しました',
+      MsgBox(Handle, 'ドングリシステムのページ解析に失敗しました',
 								'ドングリシステム', MB_OK or MB_ICONERROR)
     else if Pos('NG<>まずはUPLIFTでログイン', res) = 1 then
-      MessageBox(Handle, PChar('UPLIFTでのログインを要求されました。' + #10 +
+      MsgBox(Handle, PChar('UPLIFTでのログインを要求されました。' + #10 +
       						'UPLIFTでログインしない場合は書き込みでどんぐりを埋めてください。'),
 								'ドングリシステム', MB_OK or MB_ICONWARNING);
   end else
@@ -343,15 +386,14 @@ var
   res: String;
 begin
   if GikoSys.DonguriSys.Logout(res) then begin
-	  MessageBox(Handle, 'ログアウトしました。',
+	  MsgBox(Handle, 'ログアウトしました。',
     						'ドングリシステム', MB_OK or MB_ICONINFORMATION);
   	if Parsing(res) = False then
-      MessageBox(Handle, 'ドングリシステムのページ解析に失敗しました',
+      MsgBox(Handle, 'ドングリシステムのページ解析に失敗しました',
 								'ドングリシステム', MB_OK or MB_ICONERROR);
   end else
   	ShowHttpError;
 end;
-
 
 procedure TDonguriForm.UplLoginButtonClick(Sender: TObject);
 begin
@@ -360,7 +402,7 @@ begin
 	  	GikoDM.LoginActionExecute(nil);
   except
 	  on e: Exception do begin
-      MessageBox(Handle, PChar(e.Message), 'UPLIFTログイン', MB_OK or MB_ICONERROR);
+      MsgBox(Handle, PChar(e.Message), 'UPLIFTログイン', MB_OK or MB_ICONERROR);
     end;
   end;
 	EnableUpliftButton;
@@ -373,11 +415,73 @@ begin
 	  	GikoDM.LoginActionExecute(nil);
   except
 	  on e: Exception do begin
-      MessageBox(Handle, PChar(e.Message), 'UPLIFTログアウト', MB_OK or MB_ICONERROR);
+      MsgBox(Handle, PChar(e.Message), 'UPLIFTログアウト', MB_OK or MB_ICONERROR);
     end;
   end;
 	EnableUpliftButton;
+end;
 
+procedure TDonguriForm.ExplorButtonClick(Sender: TObject);
+var
+  res: String;
+begin
+  if GikoSys.DonguriSys.Exploration(res) then begin
+  	if Parsing(res) = False then
+      MsgBox(Handle, 'ドングリシステムのページ解析に失敗しました',
+								'ドングリシステム', MB_OK or MB_ICONERROR);
+  end else
+  	ShowHttpError;
+end;
+
+
+procedure TDonguriForm.MiningButtonClick(Sender: TObject);
+var
+  res: String;
+begin
+  if GikoSys.DonguriSys.Mining(res) then begin
+  	if Parsing(res) = False then
+      MsgBox(Handle, 'ドングリシステムのページ解析に失敗しました',
+								'ドングリシステム', MB_OK or MB_ICONERROR);
+  end else
+  	ShowHttpError;
+end;
+
+procedure TDonguriForm.WoodctButtonClick(Sender: TObject);
+var
+  res: String;
+begin
+  if GikoSys.DonguriSys.WoodCutting(res) then begin
+  	if Parsing(res) = False then
+      MsgBox(Handle, 'ドングリシステムのページ解析に失敗しました',
+								'ドングリシステム', MB_OK or MB_ICONERROR);
+  end else
+  	ShowHttpError;
+end;
+
+
+procedure TDonguriForm.WeaponButtonClick(Sender: TObject);
+var
+  res: String;
+begin
+  if GikoSys.DonguriSys.WeaponCraft(res) then begin
+  	if Parsing(res) = False then
+      MsgBox(Handle, 'ドングリシステムのページ解析に失敗しました',
+								'ドングリシステム', MB_OK or MB_ICONERROR);
+  end else
+  	ShowHttpError;
+end;
+
+
+procedure TDonguriForm.ArmorcButtonClick(Sender: TObject);
+var
+  res: String;
+begin
+  if GikoSys.DonguriSys.ArmorCraft(res) then begin
+  	if Parsing(res) = False then
+      MsgBox(Handle, 'ドングリシステムのページ解析に失敗しました',
+								'ドングリシステム', MB_OK or MB_ICONERROR);
+  end else
+  	ShowHttpError;
 end;
 
 end.
