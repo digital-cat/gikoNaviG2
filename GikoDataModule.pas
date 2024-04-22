@@ -262,6 +262,7 @@ type
     ThreadRangeAbonAction: TAction;
     DonguriAction: TAction;
     DonguriCannonAction: TAction;
+    CookieMngAction: TAction;
 	procedure EditNGActionExecute(Sender: TObject);
 	procedure ReloadActionExecute(Sender: TObject);
 	procedure GoFowardActionExecute(Sender: TObject);
@@ -488,6 +489,7 @@ type
     procedure DonguriActionUpdate(Sender: TObject);
     procedure DonguriCannonActionExecute(Sender: TObject);
     procedure DonguriCannonActionUpdate(Sender: TObject);
+    procedure CookieMngActionExecute(Sender: TObject);
   private
 	{ Private 宣言 }
 	procedure ClearResFilter;
@@ -545,7 +547,8 @@ uses
 	RoundName, RoundData, Menus, ListViewUtils,
 	ThreadControl, GikoMessage, InputAssist,
   DefaultFileManager, Forms, NewBoardURL, UpdateCheck,
-  PopupMenuSetting, ThreadSearch, ThreadNGEdt, DmSession5ch, DonguriBase;
+  PopupMenuSetting, ThreadSearch, ThreadNGEdt, DmSession5ch, DonguriBase,
+  CookieManager;
 
 const
 	MSG_ERROR : string = 'エラー';
@@ -4094,6 +4097,7 @@ begin
         TAction(Sender).Enabled := EditorFormExists;
     end;
 end;
+
 // *************************************************************************
 //! スクリーン上にEditorFormがいるか
 // *************************************************************************
@@ -4746,6 +4750,7 @@ begin
     ThreadNGEdit := nil;
 end;
 
+// ドングリシステム画面表示
 procedure TGikoDM.DonguriActionExecute(Sender: TObject);
 var
   dlg: TDonguriForm;
@@ -4763,6 +4768,7 @@ begin
 //
 end;
 
+// どんぐり大砲有効無効更新
 procedure TGikoDM.DonguriCannonActionUpdate(Sender: TObject);
 var
 	ThreadItem : TThreadItem;
@@ -4778,6 +4784,7 @@ begin
   end;
 end;
 
+// どんぐり大砲
 procedure TGikoDM.DonguriCannonActionExecute(Sender: TObject);
 var
 	No : Integer;
@@ -4813,10 +4820,23 @@ begin
         SetLength(date, idx2 - 1);
     end;
 
-    GikoSys.DonguriSys.Cannon(url, date);
+    GikoSys.DonguriSys.Cannon(url, date, No);
 
   except
   end;
+end;
+
+// Cookie管理画面表示
+procedure TGikoDM.CookieMngActionExecute(Sender: TObject);
+var
+  dlg: TCookieForm;
+begin
+	dlg := TCookieForm.Create(GikoForm);
+	try
+		dlg.ShowModal;
+	finally
+		dlg.Release;
+	end;
 end;
 
 end.
