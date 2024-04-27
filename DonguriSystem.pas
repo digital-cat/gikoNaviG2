@@ -1,5 +1,7 @@
 unit DonguriSystem;
 
+//{$DEFINE _DEBUG_MODE}
+
 interface
 
 uses
@@ -21,12 +23,16 @@ type
     procedure ClearResponse;
 		function HttpGet(url, referer: String; gzip: Boolean; var response: String; var redirect: Boolean): Boolean;
 		function HttpGetCall(urlStart: String; var response: String): Boolean;
+		function HttpPost(url, referer: String; postParam: TStringList; gzip: Boolean; var response: String; var redirect: Boolean): Boolean;
 
 		function CheckFormAction(html, url: String): Boolean;
+  	function CheckResurrect(html: String; var resMsg: String; var nextUrl: String; var post: Boolean): Boolean;
 		function CheckCannon(html: String; var resMsg: String): Boolean;
     function CheckConfirm(html: String; var resMsg: String): Boolean;
     procedure ShowCannonError(msg: String; httperr: Boolean = False);
     function  ShowCannonMessage(msg: String; mbType: Cardinal): Integer;
+
+    function Extract(kw1, kw2, text: String; var val: String): Boolean;
 
     //procedure DebugLog(text: String);
   public
@@ -38,11 +44,17 @@ type
 		function Auth(var response: String): Boolean;
 		function Login(var response: String): Boolean;
 		function Logout(var response: String): Boolean;
+
     function Exploration(var response: String): Boolean;
     function Mining(var response: String): Boolean;
     function WoodCutting(var response: String): Boolean;
     function WeaponCraft(var response: String): Boolean;
     function ArmorCraft(var response: String): Boolean;
+
+    function Rename(var response: String): Boolean;
+    function Resurrect(var response: String; var cancel: Boolean; handle: HWND): Boolean;
+    function Transfer(var response: String): Boolean;
+    function Craft(var response: String): Boolean;
 
 		function Cannon(urlRes, date: String; no: Integer): Boolean;
 
@@ -68,6 +80,10 @@ const
   URL_DNG_WOODCT  = 'https://donguri.5ch.net/focus/woodcutting';    // 木こり
   URL_DNG_WEAPON  = 'https://donguri.5ch.net/focus/weaponcraft';    // 武器製作
   URL_DNG_ARMORC  = 'https://donguri.5ch.net/focus/armorcraft';     // 防具製作
+  URL_DNG_RENAME  = 'https://donguri.5ch.net/rename';								// ハンター呼び名変更サービス
+  URL_DNG_RESRRCT = 'https://donguri.5ch.net/resurrect';						// 復活サービス
+  URL_DNG_TRNSFR  = 'https://donguri.5ch.net/transfer';							// ドングリ転送サービス
+  URL_DNG_CRAFT   = 'https://donguri.5ch.net/craft';								// 工作センター
   URL_DNG_CANNON  = 'https://donguri.5ch.net/cannon';
   URL_DNG_CANNON2 = 'https://donguri.5ch.net/confirm';
   URL_DNG_CANNON3 = 'https://donguri.5ch.net/fire';
@@ -77,7 +93,7 @@ const
 implementation
 
 uses
-  GikoSystem, IndyModule, YofUtils, Giko, GikoUtil;
+  GikoSystem, IndyModule, YofUtils, Giko, GikoUtil, MojuUtils;
 
 
 // コンストラクタ
@@ -131,6 +147,11 @@ var
   res: TMemoryStream;
   enc: String;
   u8: UTF8String;
+{$IFDEF _DEBUG_MODE}
+  dbg: TMemoryStream;
+  dbgpath: String;
+  dbgcnt: Integer;
+{$ENDIF}
 begin
 	Result := False;
   redirect := False;
@@ -192,7 +213,122 @@ begin
         if gzip then
           enc := FHTTP.Response.ContentEncoding;
         u8 := GikoSys.GzipDecompress(res, enc);
-        response := GikoSys.UTF8toSJIS(PChar(u8))
+        response := GikoSys.UTF8toSJIS(PChar(u8));
+{$IFDEF _DEBUG_MODE}
+        for dbgcnt := 0 to 99 do begin
+					dbgpath := 'D:\Log\Donguri\' + FormatDateTime('yyyymmdd_hhnnss_zzz', Now) + Format('_%.2d.html', [dbgcnt]);
+          if not FileExists(dbgpath) then
+          	Break;
+        end;
+			  dbg := TMemoryStream.Create;
+        try
+        	dbg.Write(PChar(u8)^,Length(u8));
+          dbg.SaveToFile(dbgpath);
+        finally
+          dbg.Free;
+        end;
+{$ENDIF}
+      end;
+    end;
+
+    Result := ok;
+
+  finally
+  	res.Free;
+  end;
+end;
+
+// HTTP-POST処理
+function TDonguriSys.HttpPost(url, referer: String; postParam: TStringList; gzip: Boolean; var response: String; var redirect: Boolean): Boolean;
+var
+  ok: Boolean;
+	uri: TIdURI;
+  url2: String;
+  sendCookies: String;
+  res: TMemoryStream;
+  enc: String;
+  u8: UTF8String;
+{$IFDEF _DEBUG_MODE}
+  dbg: TMemoryStream;
+  dbgpath: String;
+  dbgcnt: Integer;
+{$ENDIF}
+begin
+	Result := False;
+  redirect := False;
+  response := '';
+  ClearResponse;
+
+  res := TMemoryStream.Create;
+
+	try
+		uri := TIdURI.Create(url);
+  	try
+	    sendCookies := IndyMdl.GetCookieString(uri);
+    finally
+		  uri.Free;
+    end;
+
+    url2 := GikoSys.GetActualURL(url);
+
+    TIndyMdl.InitHTTP(FHTTP);
+
+    FHTTP.AllowCookies    := True;
+    FHTTP.Request.Referer := referer;
+    FHTTP.Request.Accept  := 'text/html';
+    FHTTP.Request.AcceptLanguage := 'ja';
+    if gzip then
+	    FHTTP.Request.AcceptEncoding := 'gzip'
+    else
+  	  FHTTP.Request.AcceptEncoding := '';
+  	if sendCookies <> '' then
+	    FHTTP.Request.CustomHeaders.Add('Cookie: ' + sendCookies);
+
+    ok := False;
+
+    IndyMdl.StartAntiFreeze(100);
+    Screen.Cursor := crHourGlass;
+    try
+      FHTTP.Post(url2, postParam, res);
+      ok := True;
+    except
+      on e: Exception do begin
+      	if FHTTP.ResponseCode = 302 then
+		      ok := True
+        else
+	        FErroeMessage := e.Message;
+      end;
+    end;
+    FResponseText := FHTTP.ResponseText;
+		FResponseCode := FHTTP.ResponseCode;
+
+    Screen.Cursor := crDefault;
+    IndyMdl.EndAntiFreeze;
+		IndyMdl.SaveCookies(FHTTP);
+
+    if ok then begin
+      if FResponseCode = 302 then begin
+        response := FHTTP.Response.Location;
+        redirect := True;
+      end else if res.Size > 0 then begin
+        if gzip then
+          enc := FHTTP.Response.ContentEncoding;
+        u8 := GikoSys.GzipDecompress(res, enc);
+        response := GikoSys.UTF8toSJIS(PChar(u8));
+{$IFDEF _DEBUG_MODE}
+        for dbgcnt := 0 to 99 do begin
+					dbgpath := 'D:\Log\Donguri\' + FormatDateTime('yyyymmdd_hhnnss_zzz', Now) + Format('_%.2d.html', [dbgcnt]);
+          if not FileExists(dbgpath) then
+          	Break;
+        end;
+			  dbg := TMemoryStream.Create;
+        try
+        	dbg.Write(PChar(u8)^,Length(u8));
+          dbg.SaveToFile(dbgpath);
+        finally
+          dbg.Free;
+        end;
+{$ENDIF}
       end;
     end;
 
@@ -244,7 +380,7 @@ begin
         res := URL_DNG_BASE + res;
 
       if res = url then begin
-        FErroeMessage := '異常なリダイレクトを検出しました。一度ログアウトしてみてください。';
+        FErroeMessage := '異常なリダイレクトを検出しました。' + #10 + 'どんぐりシステム画面を一度閉じると解消するかもしれません。';
         ok := False;
         Break;
       end;
@@ -260,6 +396,27 @@ begin
       FErroeMessage := e.Message;
     end;
   end;
+end;
+
+function TDonguriSys.Extract(kw1, kw2, text: String; var val: String): Boolean;
+var
+	idx1: Integer;
+	idx2: Integer;
+begin
+	Result := False;
+  val := '';
+
+  idx1 := Pos(kw1, text);
+  if idx1 < 1 then
+  	Exit;
+	idx1 := idx1 + Length(kw1);
+  idx2 := PosEx(kw2, text, idx1);
+  if idx2 < 1 then
+  	Exit;
+
+	val := Copy(text, idx1, idx2 - idx1);
+
+	Result := True;
 end;
 
 // ルート（メインページ）
@@ -425,6 +582,215 @@ begin
     end;
   end;
 end;
+
+// ハンター呼び名変更サービス
+function TDonguriSys.Rename(var response: String): Boolean;
+{begin
+	Result := False;
+  response := '';
+
+	try
+	  ClearResponse;
+
+  	Result := HttpGetCall(URL_DNG_RENAME, response);
+
+  except
+    on e: Exception do begin
+      FErroeMessage := e.Message;
+    end;
+  end;
+}
+var
+	redirect: Boolean;
+begin
+	Result := False;
+  response := '';
+
+	try
+	  ClearResponse;
+
+  	Result := HttpGet(URL_DNG_RENAME, '', True, response, redirect);
+
+  except
+    on e: Exception do begin
+      FErroeMessage := e.Message;
+    end;
+  end;
+end;
+
+// 復活サービス
+function TDonguriSys.Resurrect(var response: String; var cancel: Boolean; handle: HWND): Boolean;
+var
+	redirect: Boolean;
+  post: Boolean;
+  ok: Boolean;
+  res: String;
+  nextUrl: String;
+  resMsg: String;
+  param: TStringList;
+  mbFlag: Integer;
+begin
+	Result := False;
+  cancel := False;
+  response := '';
+
+	try
+	  ClearResponse;
+
+  	if HttpGet(URL_DNG_RESRRCT, '', True, res, redirect) = False then
+      Exit;
+
+  	ok := CheckResurrect(res, resMsg, nextUrl, post);
+		if resMsg <> '' then
+	    resMsg := UnSanitize(resMsg);
+
+		if ok = False then begin
+      response := resMsg;
+      Exit;
+    end;
+
+    if (resMsg <> '') and (Pos('Error', resMsg) < 1) then
+	  	mbFlag := MB_ICONQUESTION
+    else
+    	mbFlag := MB_ICONWARNING;
+
+    if MsgBox(handle, resMsg + #10#10 + 'レベル復活を実行しますか？',
+    					'レベル復活', MB_YESNO or mbFlag) <> IDYES then begin
+    	cancel := True;
+      Exit;
+    end;
+
+    if post then begin
+		  param := TStringList.Create;
+      try
+      	Result := HttpPost(nextUrl, URL_DNG_RESRRCT, param, False, response, redirect);
+      finally
+      	param.Free;
+      end;
+    end else begin
+    	Result := HttpGet(nextUrl, URL_DNG_RESRRCT, False, response, redirect);
+    end;
+
+    if Result then
+	    response := UnSanitize(response);
+
+  except
+    on e: Exception do begin
+      FErroeMessage := e.Message;
+    end;
+  end;
+end;
+
+function TDonguriSys.CheckResurrect(html: String; var resMsg: String; var nextUrl: String; var post: Boolean): Boolean;
+var
+	form: String;
+  temp: String;
+begin
+	Result  := False;
+  resMsg  := '';
+  nextUrl := '';
+  post    := True;
+
+  try
+    if Pos('<html', html) < 1 then begin
+		  resMsg  := html;
+    	Exit;
+    end;
+
+  	if Extract('<form ', '</form>', html, form) = False then
+    	Exit;
+
+  	if Extract('action="', '"', form, nextUrl) = False then
+    	Exit;
+
+    if nextUrl = '' then
+    	Exit;
+
+  	Extract('method="', '"', form, temp);
+    post := (temp = 'post');
+
+  	if Extract('>お知らせ：', '</p>', form, resMsg) then
+    	resMsg := 'お知らせ：' + resMsg;
+
+    Result := True;
+
+  except
+  end;
+end;
+
+
+// ドングリ転送サービス
+function TDonguriSys.Transfer(var response: String): Boolean;
+{begin
+	Result := False;
+  response := '';
+
+	try
+	  ClearResponse;
+
+  	Result := HttpGetCall(URL_DNG_TRNSFR, response);
+
+  except
+    on e: Exception do begin
+      FErroeMessage := e.Message;
+    end;
+  end;
+}
+var
+	redirect: Boolean;
+begin
+	Result := False;
+  response := '';
+
+	try
+	  ClearResponse;
+
+  	Result := HttpGet(URL_DNG_TRNSFR, '', True, response, redirect);
+
+  except
+    on e: Exception do begin
+      FErroeMessage := e.Message;
+    end;
+  end;
+end;
+
+// 工作センター
+function TDonguriSys.Craft(var response: String): Boolean;
+{begin
+	Result := False;
+  response := '';
+
+	try
+	  ClearResponse;
+
+  	Result := HttpGetCall(URL_DNG_CRAFT, response);
+
+  except
+    on e: Exception do begin
+      FErroeMessage := e.Message;
+    end;
+  end;
+}
+var
+	redirect: Boolean;
+begin
+	Result := False;
+  response := '';
+
+	try
+	  ClearResponse;
+
+  	Result := HttpGet(URL_DNG_CRAFT, '', True, response, redirect);
+
+  except
+    on e: Exception do begin
+      FErroeMessage := e.Message;
+    end;
+  end;
+end;
+
+//----------
+//----------
 
 // どんぐり大砲
 function TDonguriSys.Cannon(urlRes, date: String; no: Integer): Boolean;
