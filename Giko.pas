@@ -913,7 +913,8 @@ uses
 	About, Option, Round, Splash, Sort, ListSelect, Imm,
 	NewBoard, MojuUtils, Clipbrd, GikoBayesian,Y_TextConverter,
 	HTMLCreate, ListViewUtils, GikoDataModule, GikoMessage,
-	InputAssistDataModule, Types, ReplaceDataModule, PopupMenuUtil, RangeAbon;
+	InputAssistDataModule, Types, ReplaceDataModule, PopupMenuUtil, RangeAbon,
+  DonguriBase;
 
 const
 	BLANK_HTML: string = 'about:blank';
@@ -1883,41 +1884,48 @@ begin
 	if ( GikoSys.Setting.ShowDialogForEnd ) and
 			(MessageDlg('ギコナビを終了してよろしいですか？', mtConfirmation,[mbOk, mbCancel], 0) = mrCancel ) then begin
 		CanClose := false;
-			Exit;
+		Exit;
 	end;
 
-    g_AppTerminated := True;
+	g_AppTerminated := True;
 
-    GikoSys.Setting.LastCloseTabURL := '';
+	GikoSys.Setting.LastCloseTabURL := '';
 	if GikoSys.Setting.TabAutoLoadSave then begin
 		GikoDM.TabsSaveAction.Execute;
-        if (GetActiveContent <> nil) and
-            (GetActiveContent.IsLogFile) then begin
-            GikoSys.Setting.LastCloseTabURL := GetActiveContent.URL;
-        end;
+		if (GetActiveContent <> nil) and
+				(GetActiveContent.IsLogFile) then begin
+			GikoSys.Setting.LastCloseTabURL := GetActiveContent.URL;
+		end;
 	end;
 
 	if (SearchDialog <> nil) then begin
 		if (SearchDialog.Visible) then begin
 			SearchDialog.Close;
 		end;
-        try
-            SearchDialog.Release;
-        except
-        end;
-        SearchDialog := nil;
+		try
+			SearchDialog.Release;
+		except
+		end;
+		SearchDialog := nil;
 	end;
 
-   	//スクリーン上の全てのフォームから、EditorFormを閉じる
-    GikoDM.CloseAllEditorAction.Execute;
+	// どんぐり
+	try
+  	if DonguriForm <> nil then
+    	DonguriForm.Close;	// 自力でFreeとnilセットする
+  except
+  end;
+
+	//スクリーン上の全てのフォームから、EditorFormを閉じる
+	GikoDM.CloseAllEditorAction.Execute;
 
 	Application.UnhookMainWindow(Hook);
-    //アプリケーション終了の前にダウンロードスレッドに正常終了を促す
-    FControlThread.DownloadAbort;
-    FControlThread.Terminate;
+  //アプリケーション終了の前にダウンロードスレッドに正常終了を促す
+  FControlThread.DownloadAbort;
+  FControlThread.Terminate;
 
-    //OnDestoryだと再起動をかけたときなどに保存されないのでOnCloseQueryで設定保存
-    SaveSettingAll();
+  //OnDestoryだと再起動をかけたときなどに保存されないのでOnCloseQueryで設定保存
+  SaveSettingAll();
 
 	Application.Terminate;
 end;
@@ -1938,8 +1946,8 @@ begin
 	end;
 
 	try
-        WindowPlacement.length := SizeOf(TWindowPlacement);
-        GetWindowPlacement(Self.Handle, @WindowPlacement);
+    WindowPlacement.length := SizeOf(TWindowPlacement);
+    GetWindowPlacement(Self.Handle, @WindowPlacement);
 
 		//最大化・ウィンドウ位置保存
 		wp.length := sizeof(wp);

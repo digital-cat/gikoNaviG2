@@ -517,6 +517,14 @@ type
     //! 冒険の書用Cookie
     FBoukenCookieList: TStringList;
 
+		//! どんぐりシステムウィンドウ
+		FDonguriTop: Integer;
+		FDonguriLeft: Integer;
+		FDonguriWidth: Integer;
+		FDonguriHeight: Integer;
+		FDonguriStay: Boolean;
+
+
 		function GetMainCoolSet(Index: Integer): TCoolSet;
 		function GetBoardCoolSet(Index: Integer): TCoolSet;
 		function GetBrowserCoolSet(Index: Integer): TCoolSet;
@@ -942,6 +950,12 @@ type
     property ThrdSrchHistory: TStringList read FThrdSrchHistory write FThrdSrchHistory;
     //! 冒険の書
     property BoukenCookieList: TStringList read FBoukenCookieList write FBoukenCookieList;
+		//! どんぐりシステムウィンドウ
+		property DonguriTop: Integer read FDonguriTop write FDonguriTop;
+		property DonguriLeft: Integer read FDonguriLeft write FDonguriLeft;
+		property DonguriWidth: Integer read FDonguriWidth write FDonguriWidth;
+		property DonguriHeight: Integer read FDonguriHeight write FDonguriHeight;
+		property DonguriStay: Boolean read FDonguriStay write FDonguriStay;
 	end;
 
 
@@ -1493,6 +1507,13 @@ begin
             end;
         end;
 
+		//! スレタイ検索ウィンドウ
+		FDonguriTop    := ini.ReadInteger('DonguriSystem', 'Top',    0);
+		FDonguriLeft   := ini.ReadInteger('DonguriSystem', 'Left',   0);
+		FDonguriWidth  := ini.ReadInteger('DonguriSystem', 'Width',  296);
+		FDonguriHeight := ini.ReadInteger('DonguriSystem', 'Height', 610);
+		FDonguriStay   := ini.ReadBool(   'DonguriSystem', 'Stay',   False);
+
 		// Cookieに付加する固定コード
 		FFixedCookie := ini.ReadString('Cookie', 'fixedString', FIXED_COOKIE);
 
@@ -1981,6 +2002,13 @@ begin
 				ini.WriteString('ThreadSearch', 'History' + IntToStr(i), FThrdSrchHistory.Strings[i-1]);
 			end;
     end;
+
+		//! スどんぐりシステムウィンドウ
+		ini.WriteInteger('DonguriSystem', 'Top',    FDonguriTop);
+		ini.WriteInteger('DonguriSystem', 'Left',   FDonguriLeft);
+		ini.WriteInteger('DonguriSystem', 'Width',  FDonguriWidth);
+		ini.WriteInteger('DonguriSystem', 'Height', FDonguriHeight);
+		ini.WriteBool(   'DonguriSystem', 'Stay',   FDonguriStay);
 
 
 		ini.UpdateFile;

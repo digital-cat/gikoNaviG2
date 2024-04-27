@@ -4752,15 +4752,20 @@ end;
 
 // ドングリシステム画面表示
 procedure TGikoDM.DonguriActionExecute(Sender: TObject);
-var
-  dlg: TDonguriForm;
 begin
-	dlg := TDonguriForm.Create(GikoForm);
 	try
-		dlg.ShowModal;
-	finally
-		dlg.Release;
-	end;
+    if DonguriForm = nil then begin
+      DonguriForm := TDonguriForm.Create(GikoForm);
+    end;
+
+  	if DonguriForm.Visible = False then
+      DonguriForm.Show;
+
+  	if DonguriForm.WindowState = wsMinimized then
+      DonguriForm.WindowState := wsNormal;
+
+	except
+  end;
 end;
 
 procedure TGikoDM.DonguriActionUpdate(Sender: TObject);
