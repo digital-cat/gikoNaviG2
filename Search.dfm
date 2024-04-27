@@ -1,11 +1,11 @@
 object SearchDialog: TSearchDialog
   Left = 357
   Top = 115
-  Width = 458
-  Height = 330
   HorzScrollBar.Visible = False
   VertScrollBar.Visible = False
   Caption = #12525#12464#26908#32034
+  ClientHeight = 291
+  ClientWidth = 442
   Color = clBtnFace
   Constraints.MinHeight = 315
   Constraints.MinWidth = 458
@@ -20,7 +20,7 @@ object SearchDialog: TSearchDialog
   OnDestroy = FormDestroy
   DesignSize = (
     442
-    292)
+    291)
   PixelsPerInch = 96
   TextHeight = 12
   object BoardLabel: TLabel
