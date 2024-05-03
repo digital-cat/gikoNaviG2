@@ -437,6 +437,8 @@ type
     N88: TMenuItem;
     DonguriCannonMenu: TMenuItem;
     CookieMngMenu: TMenuItem;
+    DonguriCannonTopMenu: TMenuItem;
+    DonguriSeparatorTopMenu: TMenuItem;
 		procedure FormCreate(Sender: TObject);
 		procedure FormDestroy(Sender: TObject);
 		procedure SaveSettingAll();
@@ -874,6 +876,8 @@ type
 		procedure SetFontAndColor(ACreate: Boolean);
 		//! アドレスコンボボックスリスト件数超過項目削除
 		procedure AddressItemsSetCount;
+    //! レス番号ポップアップメニュー先頭の「どんぐり大砲」表示切替
+    procedure ShowDonguriCannonTopMenu;
 	published
 		property EnabledCloseButton: Boolean read FEnabledCloseButton write SetEnabledCloseButton;
 	end;
@@ -1566,6 +1570,9 @@ begin
 	// ツールバーの初期化の影響？でコンボボックスが初期化される(？)ため上からここへ移動 for D2007
 	// 絞込検索履歴
 	SelectComboBoxUC.Items_Assign( GikoSys.Setting.SelectTextList );
+
+	//! レス番号ポップアップメニュー先頭の「どんぐり大砲」表示切替
+	ShowDonguriCannonTopMenu;
 
 	// 初期化に失敗したモジュールチェック
 	if (FavoriteDM.AbEnd) then begin
@@ -8632,6 +8639,16 @@ begin
 		Caption := GikoDataModule.CAPTION_NAME
 	else
 		Caption := EncAnsiToWideString(GikoDataModule.CAPTION_NAME + ' - [' + AThreadTitle + ']');
+end;
+
+//! レス番号ポップアップメニュー先頭の「どんぐり大砲」表示切替
+procedure TGikoForm.ShowDonguriCannonTopMenu;
+begin
+	try
+    DonguriCannonTopMenu.Visible    := GikoSys.Setting.DonguriMenuTop;
+    DonguriSeparatorTopMenu.Visible := GikoSys.Setting.DonguriMenuTop;
+  except
+  end;
 end;
 
 
