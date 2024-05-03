@@ -103,6 +103,12 @@ type
 		FNoParam: Boolean;  //!< レス番パラメータなし
 	end;
 
+  //! User-Agentバージョン固定情報
+  TUAVer = record
+    BetaVer: Integer;		//! BETA_VERSION						74
+    FileVer: String;		//! ファイルバージョン番号		1.75.0.887
+  end;
+
 	TGikoSys = class(TObject)
 	private
 		{ Private 宣言 }
@@ -153,6 +159,7 @@ type
 		function GetStyleSheetDir: string;
 		function GetOutBoxFileName: string;
 		function GetUserAgent: string;
+		procedure GetUAVerList(list: TStrings);
 		function GetSambaFileName : string;
 
 		function GetMainKeyFileName : String;
@@ -333,6 +340,16 @@ const
 		  'ProductName',
 		  'ProductVersion',
 		  'SpecialBuild');
+
+	UAVers: array[0..6] of TUAVer = (
+      (BetaVer:  0; FileVer: ''),
+      (BetaVer: 74; FileVer: '1.75.0.881'),
+      (BetaVer: 74; FileVer: '1.75.0.883'),
+      (BetaVer: 74; FileVer: '1.75.0.884'),
+      (BetaVer: 74; FileVer: '1.75.0.885'),
+      (BetaVer: 74; FileVer: '1.75.0.886'),
+      (BetaVer: 74; FileVer: '1.75.0.887')
+	);	// 当面リリースの度にバージョン情報を追加していく
 
 // *************************************************************************
 //! GikoSysコンストラクタ
@@ -552,6 +569,9 @@ end;
 
 //! UserAgent取得
 function TGikoSys.GetUserAgent: string;
+var
+  betaVer: Integer;
+  fileVer: String;
 begin
 //	if Dolib.Connected then begin
 //		Result := Format('%s %s/%s%d/%s', [
@@ -561,14 +581,46 @@ begin
 //								BETA_VERSION,
 //								Version]);
 //	end else begin
-		Result := Format('%s/%s %s/%s%d/%s', [
-								USER_AGENT,
-								USER_AGENT_VERSION,
-								APP_NAME,
-								BETA_VERSION_NAME_E,
-								BETA_VERSION,
-								Version]);
+
+  if (Setting.UAVersion < 0) or (Setting.UAVersion >= Length(UAVers)) then
+  	Setting.UAVersion := 0;
+
+  if Setting.UAVersion = 0 then begin
+		// UAバージョン固定しない場合は現在のバージョン
+    betaVer := BETA_VERSION;
+    fileVer := Version;
+  end else begin
+		// UAバージョン固定
+    betaVer := UAVers[Setting.UAVersion].BetaVer;
+    fileVer := UAVers[Setting.UAVersion].FileVer;
+  end;
+
+  Result := Format('%s/%s %s/%s%d/%s', [
+              USER_AGENT,
+              USER_AGENT_VERSION,
+              APP_NAME,
+              BETA_VERSION_NAME_E,
+              betaVer,	//BETA_VERSION,
+              fileVer		//Version
+              ]);
 //	end;
+end;
+
+procedure TGikoSys.GetUAVerList(list: TStrings);
+var
+	i:Integer;
+begin
+  if (Setting.UAVersion < 0) or (Setting.UAVersion >= Length(UAVers)) then
+  	Setting.UAVersion := 0;
+
+	list.Clear;
+	for i := Low(UAVers) to High(UAVers) do	begin
+    if i = 0 then
+	  	list.Add('固定しない')
+    else
+	  	list.Add(Format('%s%d(%s)',
+      						[BETA_VERSION_NAME_J, UAVers[i].BetaVer, UAVers[i].FileVer]));
+  end;
 end;
 
 {!
@@ -3652,6 +3704,8 @@ const
   SP_PNKURL  = 'https://itest.bbspink.com/';
   DOMAIN_5CH = '5ch.net';
   DOMAIN_PNK = 'bbspink.com';
+  CLSSC_5CH  = '.5ch.net/test/read.cgi/c/';
+  CLSSC_PNK  = '.bbspink.com/test/read.cgi/c/';
 var
   idx1: Integer;
   idx2: Integer;
@@ -3688,8 +3742,24 @@ begin
   end else if Pos(SP_PNKURL, url) = 1 then begin
     start := Length(SP_PNKURL);
     domain := DOMAIN_PNK;
-  end else
-    Exit;   // スマホURLではない
+  end else begin
+		// スマホURLではない
+
+    // クラシック版の場合通常のPC版URLにする
+  	start := 0;
+    idx1 := Pos(CLSSC_5CH, url);
+    if idx1 > 1 then
+      start := idx1 + Length(CLSSC_5CH) - 2
+    else begin
+	    idx1 := Pos(CLSSC_PNK, url);
+      if idx1 > 1 then
+        start := idx1 + Length(CLSSC_PNK) - 2;
+  	end;
+    if start > 0 then
+    	Delete(url, start, 2);	// c/を削除
+
+    Exit;
+  end;
 
   // パス部のみ取り出し
   path := Copy(url, start, Length(url) - start + 1);
