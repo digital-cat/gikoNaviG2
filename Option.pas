@@ -233,6 +233,9 @@ type
 		PreviewStyleCheckBox: TCheckBox;
     OekakiCheckBox: TCheckBox;
     KeepNgFileCheckBox: TCheckBox;
+    GroupBox29: TGroupBox;
+    UAVerComboBox: TComboBox;
+    Label27: TLabel;
 		procedure FormCreate(Sender: TObject);
 		procedure FormDestroy(Sender: TObject);
 		procedure ApplyButtonClick(Sender: TObject);
@@ -926,24 +929,33 @@ begin
 	BeAutoLoginCheckBox.Checked := GikoSys.Setting.BeAutoLogin;
 	//履歴の最大保存数
 	MaxRecordCountEdit.Text := IntToStr(GikoSys.Setting.MaxRecordCount);
-    // 最小化時にタスクトレイに格納するか
-    StoredTaskTrayCB.Checked := GikoSys.Setting.StoredTaskTray;
-    // ブラウザタブの移動でループを許可するか
-    LoopBrowserTabsCB.Checked := GikoSys.Setting.LoopBrowserTabs;
-    //
-    IgnoreContextCheckBox.Checked := GikoSys.Setting.GestureIgnoreContext;
+  // 最小化時にタスクトレイに格納するか
+  StoredTaskTrayCB.Checked := GikoSys.Setting.StoredTaskTray;
+  // ブラウザタブの移動でループを許可するか
+  LoopBrowserTabsCB.Checked := GikoSys.Setting.LoopBrowserTabs;
+  //
+  IgnoreContextCheckBox.Checked := GikoSys.Setting.GestureIgnoreContext;
 
-    // 冒険の書ドメイン一覧取得
-    BoukenComboBox.Text := '';
-    BoukenComboBox.Items.Clear;
-    DomainList := TStringList.Create;
-    GikoSys.GetBoukenDomain(DomainList);
-    for i := 0 to DomainList.Count - 1 do begin
-        BoukenComboBox.Items.Add( DomainList[i] ) ;
-    end;
-    DomainList.Free;
-    BoukenComboBox.ItemIndex := 0;
-    BoukenComboBox.OnChange(nil);
+  // 冒険の書ドメイン一覧取得
+  BoukenComboBox.Text := '';
+  BoukenComboBox.Items.Clear;
+  DomainList := TStringList.Create;
+  GikoSys.GetBoukenDomain(DomainList);
+  for i := 0 to DomainList.Count - 1 do begin
+      BoukenComboBox.Items.Add( DomainList[i] ) ;
+  end;
+  DomainList.Free;
+  BoukenComboBox.ItemIndex := 0;
+  BoukenComboBox.OnChange(nil);
+
+  // User-Agentバージョン番号固定
+	GikoSys.GetUAVerList(UAVerComboBox.Items);
+  if (GikoSys.Setting.UAVersion >= 0) and
+  	 (GikoSys.Setting.UAVersion < UAVerComboBox.Items.Count) then
+  	UAVerComboBox.ItemIndex := GikoSys.Setting.UAVersion
+  else
+  	UAVerComboBox.ItemIndex := 0;
+
 end;
 
 procedure TOptionDialog.SaveSetting;
@@ -1089,6 +1101,10 @@ begin
 	GikoSys.Setting.Password := PasswordEdit.Text;
 	GikoSys.Setting.AutoLogin := AutoLoginCheckBox.Checked;
 //	GikoSys.Setting.ForcedLogin := ForcedLoginCheckBox.Checked;
+  // User-Agentバージョン番号固定
+	GikoSys.Setting.UAVersion := UAVerComboBox.ItemIndex;
+  if GikoSys.Setting.UAVersion < 0 then
+  	GikoSys.Setting.UAVersion := 0;
 
 	GikoSys.Setting.URLApp := URLAppCheckBox.Checked;
 	GikoSys.Setting.URLAppFile := AppFolderEdit.Text;

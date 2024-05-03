@@ -1749,11 +1749,12 @@ object OptionDialog: TOptionDialog
       end
       object GroupBox25: TGroupBox
         Left = 12
-        Top = 197
+        Top = 268
         Width = 477
         Height = 72
         Caption = #24525#27861#24086
         TabOrder = 2
+        Visible = False
         object Label25: TLabel
           Left = 40
           Top = 20
@@ -1795,6 +1796,31 @@ object OptionDialog: TOptionDialog
           Width = 227
           Height = 20
           TabOrder = 1
+        end
+      end
+      object GroupBox29: TGroupBox
+        Left = 12
+        Top = 198
+        Width = 477
+        Height = 57
+        Caption = #12393#12435#12368#12426
+        TabOrder = 3
+        object Label27: TLabel
+          Left = 12
+          Top = 24
+          Width = 177
+          Height = 12
+          Caption = 'User-Agent'#12496#12540#12472#12519#12531#30058#21495#22266#23450'(&V)'
+          FocusControl = UAVerComboBox
+        end
+        object UAVerComboBox: TComboBox
+          Left = 195
+          Top = 22
+          Width = 270
+          Height = 20
+          Style = csDropDownList
+          ItemHeight = 12
+          TabOrder = 0
         end
       end
     end
