@@ -55,6 +55,7 @@ type
     function Resurrect(var response: String; var cancel: Boolean; handle: HWND): Boolean;
     function Transfer(var response: String): Boolean;
     function Craft(var response: String): Boolean;
+    function CraftCB(amount: Integer; var response: String): Boolean;
 
 		function Cannon(urlRes, date: String; no: Integer): Boolean;
 
@@ -84,6 +85,7 @@ const
   URL_DNG_RESRRCT = 'https://donguri.5ch.net/resurrect';						// 復活サービス
   URL_DNG_TRNSFR  = 'https://donguri.5ch.net/transfer';							// ドングリ転送サービス
   URL_DNG_CRAFT   = 'https://donguri.5ch.net/craft';								// 工作センター
+  URL_DNG_CRAFTCB = 'https://donguri.5ch.net/craft/cannonball';			// 工作センター鉄の大砲の玉作成
   URL_DNG_CANNON  = 'https://donguri.5ch.net/cannon';
   URL_DNG_CANNON2 = 'https://donguri.5ch.net/confirm';
   URL_DNG_CANNON3 = 'https://donguri.5ch.net/fire';
@@ -788,6 +790,25 @@ begin
     end;
   end;
 end;
+
+// 鉄の大砲の玉作成
+function TDonguriSys.CraftCB(amount: Integer; var response: String): Boolean;
+var
+	postParam: TStringList;
+  redirect: Boolean;
+begin
+
+	postParam := TStringList.Create;
+  try
+  	postParam.Add('cannonballamt=' + IntToStr(amount));
+  	Result := HttpPost(URL_DNG_CRAFTCB, URL_DNG_CRAFT, postParam, True, response, redirect);
+  finally
+  	postParam.Free;
+  end;
+
+end;
+
+
 
 //----------
 //----------
