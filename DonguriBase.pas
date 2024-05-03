@@ -11,9 +11,6 @@ type
     TimerInit: TTimer;
     InfoGrid: TStringGrid;
     PanelBottom: TPanel;
-    RenameButton: TButton;
-    TransferButton: TButton;
-    CraftButton: TButton;
     PanelTop: TPanel;
     PageControl: TPageControl;
     TabSheetHome: TTabSheet;
@@ -25,17 +22,6 @@ type
     PageControlHunter: TPageControl;
     TabSheetRename: TTabSheet;
     TabSheetCraft: TTabSheet;
-    AuthSpButton: TSpeedButton;
-    LoginSpButton: TSpeedButton;
-    LogoutSpButton: TSpeedButton;
-    ExplorSpButton: TSpeedButton;
-    MiningSpButton: TSpeedButton;
-    WoodctSpButton: TSpeedButton;
-    WeaponSpButton: TSpeedButton;
-    ArmorcSpButton: TSpeedButton;
-    ResurrectSpButton: TSpeedButton;
-    ChestSpButton: TSpeedButton;
-    BagSpButton: TSpeedButton;
     TabSheetSetting: TTabSheet;
     TabSheetChest: TTabSheet;
     PanelHomeTop: TPanel;
@@ -51,38 +37,79 @@ type
     Label5: TLabel;
     LabelD: TLabel;
     LabelK: TLabel;
-    LabelLevel: TLabel;
-    RootSpButton: TSpeedButton;
+    ColorRadioGroup: TRadioGroup;
+    EditLevel: TEdit;
+    GroupBox1: TGroupBox;
+    GroupBox2: TGroupBox;
+    Label6: TLabel;
+    CBAmountComboBox: TComboBox;
+    Label7: TLabel;
+    CBIronLabel: TLabel;
+    ExplorPnlButton: TPanel;
+    MiningPnlButton: TPanel;
+    WoodctPnlButton: TPanel;
+    WeaponPnlButton: TPanel;
+    ArmorcPnlButton: TPanel;
+    RootPnlButton: TPanel;
+    AuthPnlButton: TPanel;
+    LoginPnlButton: TPanel;
+    LogoutPnlButton: TPanel;
+    ResurrectPnlButton: TPanel;
+    CraftCBPnlButton: TPanel;
+    RenamePnlButton: TPanel;
+    TransferPnlButton: TPanel;
+    BagPnlButton: TPanel;
+    ChestPnlButton: TPanel;
+    CannonGroupBox: TGroupBox;
+    CannonMenuCheckBox: TCheckBox;
     procedure TimerInitTimer(Sender: TObject);
-    procedure RenameButtonClick(Sender: TObject);
-    procedure TransferButtonClick(Sender: TObject);
-    procedure CraftButtonClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure SpeedButtonTopMostClick(Sender: TObject);
-    procedure AuthSpButtonClick(Sender: TObject);
-    procedure LoginSpButtonClick(Sender: TObject);
-    procedure LogoutSpButtonClick(Sender: TObject);
-    procedure ExplorSpButtonClick(Sender: TObject);
-    procedure MiningSpButtonClick(Sender: TObject);
-    procedure WoodctSpButtonClick(Sender: TObject);
-    procedure WeaponSpButtonClick(Sender: TObject);
-    procedure ArmorcSpButtonClick(Sender: TObject);
-    procedure ResurrectSpButtonClick(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure FormResize(Sender: TObject);
-    procedure RootSpButtonClick(Sender: TObject);
+    procedure ColorRadioGroupClick(Sender: TObject);
+    procedure PageControlDrawTab(Control: TCustomTabControl; TabIndex: Integer;
+      const Rect: TRect; Active: Boolean);
+    procedure PageControlHunterDrawTab(Control: TCustomTabControl;
+      TabIndex: Integer; const Rect: TRect; Active: Boolean);
+    procedure CBAmountComboBoxChange(Sender: TObject);
+    procedure ExplorPnlButtonClick(Sender: TObject);
+    procedure PanelButtonMouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
+    procedure PanelButtonMouseUp(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
+    procedure MiningPnlButtonClick(Sender: TObject);
+    procedure WoodctPnlButtonClick(Sender: TObject);
+    procedure WeaponPnlButtonClick(Sender: TObject);
+    procedure ArmorcPnlButtonClick(Sender: TObject);
+    procedure RootPnlButtonClick(Sender: TObject);
+    procedure AuthPnlButtonClick(Sender: TObject);
+    procedure LoginPnlButtonClick(Sender: TObject);
+    procedure LogoutPnlButtonClick(Sender: TObject);
+    procedure ResurrectPnlButtonClick(Sender: TObject);
+    procedure CraftCBPnlButtonClick(Sender: TObject);
+    procedure RenamePnlButtonClick(Sender: TObject);
+    procedure TransferPnlButtonClick(Sender: TObject);
+    procedure CannonMenuCheckBoxClick(Sender: TObject);
   private
     { Private declarations }
     FHunter: Boolean;
 
     procedure SetMode;
+    procedure SetColor;
+    procedure SetButtonColor;
+    procedure SetColors(control: TControl; bkg, txt: TColor);
+    procedure SetButtonColors(button: TPanel; bkg, txt, dtx: TColor);
     procedure ClearInfoValue;
     procedure ShowRoot;
     function Parsing(html: String): Boolean;
     function Extract(html, kws, kwe: String; var dest: String): Boolean;
     procedure ShowHttpError;
     function MsgBox(const hWnd: HWND; const Text, Caption: string; Flags: Longint = MB_OK): Integer;
+    procedure DrawTab(TabCanvas: TCanvas; TabIndex: Integer; TabCaption: String; const Rect: TRect; Active: Boolean);
+    function GetCBAmount: Integer;
+    procedure RedrawControl(h: HWND);
   public
     { Public declarations }
   end;
@@ -93,7 +120,7 @@ var
 implementation
 
 uses
-	GikoSystem, IndyModule, DmSession5ch, GikoDataModule, GikoUtil;
+	GikoSystem, IndyModule, DmSession5ch, GikoDataModule, GikoUtil, Giko;
 
 type
   ColIndex = (
@@ -135,6 +162,14 @@ const
     'ハンターID：'
 	  );
 
+	COL_DARK_BKG1 : TColor = $00202020;
+	COL_DARK_BKG2 : TColor = $00404040;
+	COL_DARK_BKG3 : TColor = $00303030;
+  COL_DARK_TEXT : TColor = $00FFFFFF;
+  COL_DARK_DTXT : TColor = $00808080;//00A0A0A0;
+  COL_LGHT_DTXT : TColor = $00808080;
+  COL_BDWN_TEXT : TColor = clRed;
+
 {$R *.dfm}
 
 procedure TDonguriForm.FormCreate(Sender: TObject);
@@ -157,6 +192,14 @@ begin
 	Top    := GikoSys.Setting.DonguriTop;
   Width  := GikoSys.Setting.DonguriWidth;
 	Height := GikoSys.Setting.DonguriHeight;
+
+	ColorRadioGroup.ItemIndex := GikoSys.Setting.DonguriTheme;
+	SetColor;
+  CannonMenuCheckBox.Checked := GikoSys.Setting.DonguriMenuTop;
+
+  LabelPeriod.Caption := ' ';
+  LabelD.Caption := ' ';
+  LabelK.Caption := ' ';
 
 	TimerInit.Enabled := True;
 end;
@@ -216,8 +259,18 @@ begin
 	LabelID.Caption := NAME_ID[idx];
   InfoGrid.Cells[0, Integer(idxDonguri)] := NAME_DNG[idx];
 
-	PanelHunterTop.Enabled := FHunter;
+  ResurrectPnlButton.Enabled := FHunter;
   PageControlHunter.Enabled := FHunter;
+
+  SetButtonColor;
+end;
+
+procedure TDonguriForm.RedrawControl(h: HWND);
+begin
+  if h <> 0 then begin
+    Windows.InvalidateRect(h, nil, True);
+		Windows.UpdateWindow(h);
+  end;
 end;
 
 procedure TDonguriForm.SpeedButtonTopMostClick(Sender: TObject);
@@ -241,7 +294,7 @@ begin
 	LabelUserType.Caption := ' ';
 	EditName.Text := '';
 	EditID.Text := '';
-	LabelLevel.Caption := '';
+	EditLevel.Text := '';
 	LabelK.Caption := '';
 	LabelD.Caption := '';
 
@@ -375,12 +428,12 @@ begin
       tmp := Trim(tmp);
       idx := Pos('|', tmp);
       if idx < 1 then
-	      LabelLevel.Caption := tmp
+	      EditLevel.Text := tmp
       else begin
         tm2 := Trim(Copy(tmp, 1, idx - 1));
       	Delete(tmp, 1, idx);
 	      tmp := tm2 + ' (' + Trim(tmp) + ')';
-	      LabelLevel.Caption := tmp;
+	      EditLevel.Text := tmp;
       end;
     end;
 
@@ -460,12 +513,7 @@ begin
 end;
 
 
-procedure TDonguriForm.RootSpButtonClick(Sender: TObject);
-begin
-	ShowRoot;
-end;
-
-procedure TDonguriForm.AuthSpButtonClick(Sender: TObject);
+procedure TDonguriForm.AuthPnlButtonClick(Sender: TObject);
 var
   res: String;
 begin
@@ -477,7 +525,7 @@ begin
   	ShowHttpError;
 end;
 
-procedure TDonguriForm.LoginSpButtonClick(Sender: TObject);
+procedure TDonguriForm.LoginPnlButtonClick(Sender: TObject);
 var
   res: String;
 begin
@@ -493,7 +541,7 @@ begin
   	ShowHttpError;
 end;
 
-procedure TDonguriForm.LogoutSpButtonClick(Sender: TObject);
+procedure TDonguriForm.LogoutPnlButtonClick(Sender: TObject);
 var
   res: String;
 begin
@@ -507,7 +555,7 @@ begin
   	ShowHttpError;
 end;
 
-procedure TDonguriForm.ExplorSpButtonClick(Sender: TObject);
+procedure TDonguriForm.ExplorPnlButtonClick(Sender: TObject);
 var
   res: String;
 begin
@@ -519,7 +567,25 @@ begin
   	ShowHttpError;
 end;
 
-procedure TDonguriForm.MiningSpButtonClick(Sender: TObject);
+procedure TDonguriForm.PanelButtonMouseDown(Sender: TObject;
+  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+begin
+  if Sender is TPanel then
+		TPanel(Sender).Font.Color := COL_BDWN_TEXT;
+end;
+
+procedure TDonguriForm.PanelButtonMouseUp(Sender: TObject;
+  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+begin
+  if Sender is TPanel then begin
+    if ColorRadioGroup.ItemIndex = 0 then
+      TPanel(Sender).Font.Color := clWindowText
+    else
+      TPanel(Sender).Font.Color := COL_DARK_TEXT;
+  end;
+end;
+
+procedure TDonguriForm.MiningPnlButtonClick(Sender: TObject);
 var
   res: String;
 begin
@@ -531,7 +597,7 @@ begin
   	ShowHttpError;
 end;
 
-procedure TDonguriForm.WoodctSpButtonClick(Sender: TObject);
+procedure TDonguriForm.WoodctPnlButtonClick(Sender: TObject);
 var
   res: String;
 begin
@@ -543,7 +609,7 @@ begin
   	ShowHttpError;
 end;
 
-procedure TDonguriForm.WeaponSpButtonClick(Sender: TObject);
+procedure TDonguriForm.WeaponPnlButtonClick(Sender: TObject);
 var
   res: String;
 begin
@@ -555,7 +621,7 @@ begin
   	ShowHttpError;
 end;
 
-procedure TDonguriForm.ArmorcSpButtonClick(Sender: TObject);
+procedure TDonguriForm.ArmorcPnlButtonClick(Sender: TObject);
 var
   res: String;
 begin
@@ -569,7 +635,7 @@ end;
 
 //=================
 
-procedure TDonguriForm.RenameButtonClick(Sender: TObject);
+procedure TDonguriForm.RenamePnlButtonClick(Sender: TObject);
 var
   res: String;
 begin
@@ -583,7 +649,7 @@ begin
 end;
 
 // 復活
-procedure TDonguriForm.ResurrectSpButtonClick(Sender: TObject);
+procedure TDonguriForm.ResurrectPnlButtonClick(Sender: TObject);
 var
   res: String;
   cancel: Boolean;
@@ -599,7 +665,12 @@ begin
   end;
 end;
 
-procedure TDonguriForm.TransferButtonClick(Sender: TObject);
+procedure TDonguriForm.RootPnlButtonClick(Sender: TObject);
+begin
+	ShowRoot;
+end;
+
+procedure TDonguriForm.TransferPnlButtonClick(Sender: TObject);
 var
   res: String;
 begin
@@ -612,23 +683,226 @@ begin
   	ShowHttpError;
 end;
 
-procedure TDonguriForm.CraftButtonClick(Sender: TObject);
-var
-  res: String;
-begin
-  if GikoSys.DonguriSys.Craft(res) then begin
-//  	if Parsing(res) = False then
-//      MsgBox(Handle, 'どんぐりシステムのページ解析に失敗しました',
-//								'どんぐりシステム', MB_OK or MB_ICONERROR);
-  	MsgBox(Handle, 'OK', 'debug', MB_OK);
-  end else
-  	ShowHttpError;
-end;
-
 function TDonguriForm.MsgBox(const hWnd: HWND; const Text, Caption: string; Flags: Longint = MB_OK): Integer;
 begin
   //Result := Windows.MessageBox(hwnd, PChar(Text), PChar(Caption), Flags);
   Result := GikoUtil.MsgBox(hwnd, Text, Caption, Flags);
+end;
+
+procedure TDonguriForm.ColorRadioGroupClick(Sender: TObject);
+begin
+	GikoSys.Setting.DonguriTheme := ColorRadioGroup.ItemIndex;
+	SetColor;
+end;
+
+
+procedure TDonguriForm.SetColor;
+begin
+	try
+    case ColorRadioGroup.ItemIndex of
+    	0: begin
+        PageControl.OwnerDraw := False;
+        PageControlHunter.OwnerDraw := False;
+
+        Color := clBtnFace;
+        PanelTop.Color := clBtnFace;
+			  SetColors(PanelBottom,     clBtnFace, clWindowText);
+
+			  SetColors(PanelHomeTop,    clBtnFace, clWindowText);
+			  SetColors(EditName,        clWindow,  clWindowText);
+			  SetColors(EditID,          clWindow,  clWindowText);
+			  SetColors(EditLevel,       clWindow,  clWindowText);
+			  SetColors(InfoGrid,        clWindow,  clWindowText);
+			  SetColors(PanelHome,       clBtnFace, clWindowText);
+
+        TabSheetHunter.Font.Color := clWindowText;
+			  SetColors(PanelHunterTop,   clBtnFace, clWindowText);
+			  SetColors(CBAmountComboBox, clWindow,  clWindowText);
+
+      	TabSheetSetting.Font.Color := clWindowText;
+
+      end;
+      1: begin
+        PageControl.OwnerDraw := True;
+        PageControlHunter.OwnerDraw := True;
+
+        Color := COL_DARK_BKG1;
+        PanelTop.Color := COL_DARK_BKG1;
+			  SetColors(PanelBottom,     COL_DARK_BKG1, COL_DARK_TEXT);
+
+			  SetColors(PanelHomeTop,    COL_DARK_BKG1, COL_DARK_TEXT);
+			  SetColors(EditName,        COL_DARK_BKG2, COL_DARK_TEXT);
+			  SetColors(EditID,          COL_DARK_BKG2, COL_DARK_TEXT);
+			  SetColors(EditLevel,       COL_DARK_BKG2, COL_DARK_TEXT);
+			  SetColors(InfoGrid,        COL_DARK_BKG2, COL_DARK_TEXT);
+			  SetColors(PanelHome,       COL_DARK_BKG1, COL_DARK_TEXT);
+
+        TabSheetHunter.Font.Color := COL_DARK_TEXT;
+			  SetColors(PanelHunterTop,     COL_DARK_BKG1, COL_DARK_TEXT);
+			  SetColors(CBAmountComboBox,   COL_DARK_BKG2, COL_DARK_TEXT);
+
+      	TabSheetSetting.Font.Color := COL_DARK_TEXT;
+
+      end;
+    end;
+
+    SetButtonColor;
+
+	  RedrawControl(PageControl.Handle);
+  except
+  	on e: Exception do
+    	MsgBox(Handle, e.Message, Caption, MB_OK or MB_ICONERROR);
+  end;
+end;
+
+procedure TDonguriForm.SetColors(control: TControl; bkg, txt: TColor);
+begin
+  if control is TPanel then begin
+    TPanel(control).Color := bkg;
+    TPanel(control).Font.Color := txt;
+  end else if control is TEdit then begin
+    TEdit(control).Color := bkg;
+    TEdit(control).Font.Color := txt;
+  end else if control is TComboBox then begin
+    TComboBox(control).Color := bkg;
+    TComboBox(control).Font.Color := txt;
+  end else if control is TStringGrid then begin
+    TStringGrid(control).Color := bkg;
+    TStringGrid(control).Font.Color := txt;
+  end;
+end;
+
+procedure TDonguriForm.SetButtonColor;
+var
+  bkg: TColor;
+  txt: TColor;
+  dtx: TColor;
+begin
+  if ColorRadioGroup.ItemIndex = 0 then begin
+    bkg := clBtnFace;
+    txt := clWindowText;
+    dtx := COL_LGHT_DTXT;
+  end else {if ColorRadioGroup.ItemIndex = 1 then} begin
+    bkg := COL_DARK_BKG3;
+    txt := COL_DARK_TEXT;
+    dtx := COL_DARK_DTXT;
+  end;
+
+  SetButtonColors(RootPnlButton,   bkg, txt, dtx);
+  SetButtonColors(AuthPnlButton,   bkg, txt, dtx);
+  SetButtonColors(LoginPnlButton,  bkg, txt, dtx);
+  SetButtonColors(LogoutPnlButton, bkg, txt, dtx);
+
+  SetButtonColors(ExplorPnlButton, bkg, txt, dtx);
+  SetButtonColors(MiningPnlButton, bkg, txt, dtx);
+  SetButtonColors(WoodctPnlButton, bkg, txt, dtx);
+  SetButtonColors(WeaponPnlButton, bkg, txt, dtx);
+  SetButtonColors(ArmorcPnlButton, bkg, txt, dtx);
+
+  SetButtonColors(ResurrectPnlButton, bkg, txt, dtx);
+  SetButtonColors(RenamePnlButton,    bkg, txt, dtx);
+	SetButtonColors(TransferPnlButton,  bkg, txt, dtx);
+  SetButtonColors(CraftCBPnlButton,   bkg, txt, dtx);
+  SetButtonColors(BagPnlButton,       bkg, txt, dtx);
+  SetButtonColors(ChestPnlButton,     bkg, txt, dtx);
+end;
+
+procedure TDonguriForm.SetButtonColors(button: TPanel; bkg, txt, dtx: TColor);
+begin
+  button.Color := bkg;
+  if button.Enabled then
+	  button.Font.Color := txt
+  else
+	  button.Font.Color := dtx;
+end;
+
+procedure TDonguriForm.PageControlDrawTab(Control: TCustomTabControl;
+  TabIndex: Integer; const Rect: TRect; Active: Boolean);
+var
+	cpt: String;
+begin
+  case TabIndex of
+    0: cpt := TabSheetHome.Caption;
+    1: cpt := TabSheetHunter.Caption;
+    2: cpt := TabSheetSetting.Caption;
+  end;
+  DrawTab(Control.Canvas, TabIndex, cpt, Rect, Active);
+end;
+
+procedure TDonguriForm.PageControlHunterDrawTab(Control: TCustomTabControl;
+  TabIndex: Integer; const Rect: TRect; Active: Boolean);
+var
+	cpt: String;
+begin
+  case TabIndex of
+    0: cpt := TabSheetRename.Caption;
+    1: cpt := TabSheetCraft.Caption;
+    2: cpt := TabSheetChest.Caption;
+  end;
+  DrawTab(Control.Canvas, TabIndex, cpt, Rect, Active);
+end;
+
+procedure TDonguriForm.DrawTab(TabCanvas: TCanvas; TabIndex: Integer; TabCaption: String; const Rect: TRect; Active: Boolean);
+var
+  rct: TRect;
+begin
+	try
+    TabCanvas.Brush.Style := bsSolid;
+    TabCanvas.Brush.Color := COL_DARK_BKG1;
+    TabCanvas.FillRect(Rect);
+
+    rct := Rect;
+  	if not Active then
+      rct.Top  := rct.Top + 3;
+    TabCanvas.Font.Color := COL_DARK_TEXT;
+    Windows.DrawText(TabCanvas.Handle, PChar(TabCaption), Length(TabCaption),
+    								rct, DT_CENTER or DT_SINGLELINE or DT_VCENTER);
+  except
+  end;
+end;
+
+procedure TDonguriForm.CannonMenuCheckBoxClick(Sender: TObject);
+begin
+  GikoSys.Setting.DonguriMenuTop := CannonMenuCheckBox.Checked;
+	GikoForm.ShowDonguriCannonTopMenu;
+end;
+
+function TDonguriForm.GetCBAmount: Integer;
+begin
+	Result := StrToIntDef(Trim(CBAmountComboBox.Text), 0);
+end;
+
+procedure TDonguriForm.CBAmountComboBoxChange(Sender: TObject);
+var
+	amount: Integer;
+  iron: Integer;
+begin
+	try
+  	iron := 0;
+		amount := GetCBAmount;
+    if amount > 0 then
+      iron := amount * 10;
+  	CBIronLabel.Caption := IntToStr(iron);
+  except
+  end;
+end;
+
+procedure TDonguriForm.CraftCBPnlButtonClick(Sender: TObject);
+var
+	amount: Integer;
+  res: String;
+begin
+	amount := GetCBAmount;
+  if amount < 1 then begin
+    MsgBox(Handle, '鉄の大砲の玉の作成数を入力してください。', '工作センター',
+          	MB_OK or MB_ICONINFORMATION);
+    Exit;
+  end;
+
+  if GikoSys.DonguriSys.CraftCB(amount, res) then
+  	MsgBox(Handle, res, '鉄の大砲の玉作成', MB_OK or MB_ICONINFORMATION)
+  else
+  	ShowHttpError;
 end;
 
 end.
