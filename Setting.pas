@@ -308,6 +308,9 @@ type
 		FForcedLogin: Boolean;
 //		FDolibURL: string;
 
+  	// User-Agentバージョン番号固定
+    FUAVersion: Integer;
+
 		//URLクリック時起動アプリ
 		FURLApp: Boolean;
 		FURLAppFile: string;
@@ -523,6 +526,9 @@ type
 		FDonguriWidth: Integer;
 		FDonguriHeight: Integer;
 		FDonguriStay: Boolean;
+    FDonguriTheme: Integer;
+		//! どんぐり関連
+    FDonguriMenuTop: Boolean;
 
 
 		function GetMainCoolSet(Index: Integer): TCoolSet;
@@ -779,6 +785,7 @@ type
 		property AutoLogin: Boolean read FAutoLogin write FAutoLogin;
 		property ForcedLogin: Boolean read FForcedLogin write FForcedLogin;
 //		property DolibURL: string read FDolibURL write FDolibURL;
+    property UAVersion: Integer read FUAVersion write FUAVersion;
 
 		property URLApp: Boolean read FURLApp write FURLApp;
 		property URLAppFile: string read FURLAppFile write FURLAppFile;
@@ -956,6 +963,9 @@ type
 		property DonguriWidth: Integer read FDonguriWidth write FDonguriWidth;
 		property DonguriHeight: Integer read FDonguriHeight write FDonguriHeight;
 		property DonguriStay: Boolean read FDonguriStay write FDonguriStay;
+    property DonguriTheme: Integer read FDonguriTheme write FDonguriTheme;
+		//! どんぐり関連
+    property DonguriMenuTop: Boolean read FDonguriMenuTop write FDonguriMenuTop;
 	end;
 
 
@@ -1322,6 +1332,8 @@ begin
 		FAutoLogin := ini.ReadBool('Attestation', 'AutoLogin', False);
 		FForcedLogin := ini.ReadBool('Attestation', 'FForcedLogin', False);
 //		FDolibURL	:= ini.ReadString('Attestation', 'FDolibURL', DOLIB_LOGIN_URL);
+  	// User-Agentバージョン番号固定
+    FUAVersion := ini.ReadInteger('HTTP', 'UAVersion', 0);
 
 		//URLクリック時起動アプリ
 		FURLApp := ini.ReadBool('URLApp', 'Select', False);
@@ -1513,6 +1525,9 @@ begin
 		FDonguriWidth  := ini.ReadInteger('DonguriSystem', 'Width',  296);
 		FDonguriHeight := ini.ReadInteger('DonguriSystem', 'Height', 610);
 		FDonguriStay   := ini.ReadBool(   'DonguriSystem', 'Stay',   False);
+    FDonguriTheme  := ini.ReadInteger('DonguriSystem', 'Theme',  0);
+		//! どんぐり関連
+    FDonguriMenuTop:= ini.ReadBool(   'Donguri',      'MenuTop', False);
 
 		// Cookieに付加する固定コード
 		FFixedCookie := ini.ReadString('Cookie', 'fixedString', FIXED_COOKIE);
@@ -1794,6 +1809,8 @@ begin
 		ini.WriteBool('Attestation', 'AutoLogin', FAutoLogin);
 		ini.WriteBool('Attestation', 'FForcedLogin', FForcedLogin);
 //		ini.WriteString('Attestation', 'FDolibURL', FDolibURL);
+  	// User-Agentバージョン番号固定
+    ini.WriteInteger('HTTP', 'UAVersion', FUAVersion);
 
 		//URLクリック時起動アプリ
 		ini.WriteBool('URLApp', 'Select', FURLApp);
@@ -2009,6 +2026,9 @@ begin
 		ini.WriteInteger('DonguriSystem', 'Width',  FDonguriWidth);
 		ini.WriteInteger('DonguriSystem', 'Height', FDonguriHeight);
 		ini.WriteBool(   'DonguriSystem', 'Stay',   FDonguriStay);
+    ini.WriteInteger('DonguriSystem', 'Theme',  FDonguriTheme);
+		//! どんぐり関連
+    ini.WriteBool(   'Donguri',      'MenuTop', FDonguriMenuTop);
 
 
 		ini.UpdateFile;
