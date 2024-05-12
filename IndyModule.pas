@@ -30,7 +30,7 @@ type
     function GetIndyVersion: String;
     function GetOpenSSLVersion: String;
     //function GetOpenSSLInfo: String;
-    procedure SaveCookies(idHTTP: TIdHTTP);
+    procedure SaveCookies(idHTTP: TIdHTTP; is2ch: Boolean = False; handle: HWND = 0);
     function GetCookieString(uri: TIdURI): String;
     procedure GetCookieList(uri: TIdURI; names, values: TStringList);
     procedure DelCookie(name: String; url: String);
@@ -43,6 +43,7 @@ type
     function IsUpliftCookie(cookie: TIdCookie): Boolean;
     function IsBeCookie(cookie: TIdCookie): Boolean;
     function IsTakoCookie(cookie: TIdCookie): Boolean;
+    function HasTakoCookie: Boolean;
 
 		function GetDonguriCookieValue: String;
     procedure DelDonguriCookie;
@@ -61,7 +62,7 @@ var
 implementation
 
 uses
-  GikoSystem, DmSession5ch;
+  GikoSystem, DmSession5ch, GikoUtil;
 
 const
 	URL_5CH_ROOT   = 'https://5ch.net/';
@@ -284,7 +285,7 @@ begin
 end;
 
 { レスポンスCookieをリストに保存 }
-procedure TIndyMdl.SaveCookies(idHTTP: TIdHTTP);
+procedure TIndyMdl.SaveCookies(idHTTP: TIdHTTP; is2ch: Boolean = False; handle: HWND = 0);
 var
   //dst: TextFile;	// debug
   //path: String;		// debug
@@ -309,6 +310,15 @@ begin
 
     for i := 0 to idHTTP.CookieManager.CookieCollection.Count - 1 do begin
 			cookie := TIdCookie(idHTTP.CookieManager.CookieCollection.Items[i]);
+
+    	if is2ch and (handle <> 0) and
+         IsTakoCookie(cookie) and							// TAKOを受け取った
+         (HasTakoCookie = False) then begin		// 今までTAKOを持っていなかった
+         if GikoUtil.MsgBox(handle,
+         				Format('%s=%s を受け取りました。', [cookie.CookieName, cookie.Value]) + #10 +
+         				'破棄しますか？', 'Cookie管理', MB_YESNO or MB_ICONWARNING) = IDYES then
+         	Continue;		// 保存しない
+      end;
 
     	AddServerCookie(cookie.CookieText, idHTTP.URL);
 
@@ -518,6 +528,28 @@ begin
 	Result := (cookie.Domain = DOMAIN_5CH) and (cookie.Path = '/') and (cookie.CookieName = COOKIE_TAKO);
 end;
 
+{ TAKOを持っているかどうか（期限切れチェックなし） }
+function TIndyMdl.HasTakoCookie: Boolean;
+var
+	i: Integer;
+	cookie: TIdCookie;
+  uri: TIdURI;
+begin
+	Result := False;
+  uri := TIdURI.Create(URL_5CH_ROOT);
+	try
+    for i := 0 to FCookieCollection.Count - 1 do begin
+			cookie := TIdCookie(FCookieCollection.Items[i]);
+      if IsDomainMatch(uri.Host, cookie.Domain) and
+         (cookie.CookieName = COOKIE_TAKO) then begin
+      	Result := True;
+        Break;
+			end;
+    end;
+  finally
+    uri.Free;
+  end;
+end;
 
 { Cookieファイルパス取得 }
 function TIndyMdl.GetCookieFilePath: String;
