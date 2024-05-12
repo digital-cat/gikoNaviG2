@@ -4764,6 +4764,10 @@ begin
   	if DonguriForm.WindowState = wsMinimized then
       DonguriForm.WindowState := wsNormal;
 
+    if GikoSys.Setting.DonguriStay = False then begin
+	  	SetWindowPos(DonguriForm.Handle, HWND_TOPMOST,   0, 0, 0, 0, SWP_NOMOVE + SWP_NOSIZE);
+	  	SetWindowPos(DonguriForm.Handle, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE + SWP_NOSIZE);
+    end;
 	except
   end;
 end;
