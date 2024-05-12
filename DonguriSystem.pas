@@ -8,8 +8,77 @@ uses
 	Windows, Messages, SysUtils, Classes, Controls, Forms, StrUtils,
   IdIOHandler, IdIOHandlerSocket, IdIOHandlerStack, IdSSL, IdSSLOpenSSL,
   IdBaseComponent, IdComponent, IdTCPConnection, IdGlobal, IdURI, IdTCPClient,
-  IdHTTP;
+  IdHTTP, ComCtrls;
 
+type
+	TDonguriItem = class(TObject)
+  protected
+    procedure SetMarimo(html: String);
+    procedure SetState(html: String);
+    function GetRangeValue(html: String): String;
+  public
+    Rarity: String;		// レアリティ
+    Name:   String;		// 名称
+    CRIT:   String;
+    ELEM:   String;
+    Modify: String;		// MOD
+    Marimo: String;		// マリモ
+    ItemNo: String;		// アイテムNo.
+    Lock:   Boolean;
+    Used:		Boolean;
+
+    procedure Clear; virtual;
+    procedure SetListItem(no: Integer; var item: TListItem); virtual;
+    function IsEmpty: Boolean;
+    function GetImageIndex: Integer;
+  end;
+  TDonguriItemImageIndex = (
+    // アンロック
+    IDX_IMG_N_UNLOCK   = 0,
+    IDX_IMG_R_UNLOCK   = 1,
+    IDX_IMG_SR_UNLOCK  = 2,
+    IDX_IMG_SSR_UNLOCK = 3,
+    IDX_IMG_UR_UNLOCK  = 4,
+    // ロック
+    IDX_IMG_N_LOCK     = 5,
+    IDX_IMG_R_LOCK     = 6,
+    IDX_IMG_SR_LOCK    = 7,
+    IDX_IMG_SSR_LOCK   = 8,
+    IDX_IMG_UR_LOCK    = 9
+  );
+
+  TDonguriWeapon = class(TDonguriItem)
+    ATK:    String;
+    SPD:    String;
+
+    procedure Clear; override;
+    procedure SetListItem(no: Integer; var item: TListItem); override;
+    procedure SetItems(html: String);
+  end;
+
+  TDonguriArmor = class(TDonguriItem)
+    DEF:    String;
+    WT:     String;
+
+    procedure Clear; override;
+    procedure SetListItem(no: Integer; var item: TListItem); override;
+    procedure SetItems(html: String);
+  end;
+
+  TDonguriBag = class(TObject)
+  public
+    Slot:       Integer;
+    UseWeapon:  TDonguriWeapon;
+    UseArmor:   TDonguriArmor;
+    WeaponList: TList;
+    ArmorList:  TList;
+
+		constructor Create;
+		destructor Destroy; override;
+    procedure Clear;
+  end;
+
+//--------------------------------------------------
 type
   TDonguriSys = class(TObject)
 
@@ -19,11 +88,13 @@ type
     FResponseText: String;
     FResponseCode: Integer;
     FErroeMessage: String;
+    FProcessing:   Boolean;
 
     procedure ClearResponse;
 		function HttpGet(url, referer: String; gzip: Boolean; var response: String; var redirect: Boolean): Boolean;
 		function HttpGetCall(urlStart: String; var response: String): Boolean;
 		function HttpPost(url, referer: String; postParam: TStringList; gzip: Boolean; var response: String; var redirect: Boolean): Boolean;
+    function HttpPostCall(urlStart: String; var response: String): Boolean;
 
 		function CheckFormAction(html, url: String): Boolean;
   	function CheckResurrect(html: String; var resMsg: String; var nextUrl: String; var post: Boolean): Boolean;
@@ -31,8 +102,7 @@ type
     function CheckConfirm(html: String; var resMsg: String): Boolean;
     procedure ShowCannonError(msg: String; httperr: Boolean = False);
     function  ShowCannonMessage(msg: String; mbType: Cardinal): Integer;
-
-    function Extract(kw1, kw2, text: String; var val: String): Boolean;
+    function ParceBag(html: String; var itemBag: TDonguriBag): Boolean;
 
     //procedure DebugLog(text: String);
   public
@@ -56,6 +126,15 @@ type
     function Transfer(var response: String): Boolean;
     function Craft(var response: String): Boolean;
     function CraftCB(amount: Integer; var response: String): Boolean;
+    function Bag(var itemBag: TDonguriBag; var denied: Boolean): Boolean;
+    function AddSlots(var itemBag: TDonguriBag; var response: String): Boolean;
+    function Unequip(var itemBag: TDonguriBag; weapon: Boolean): Boolean;
+    function ChestOpen(var itemBag: TDonguriBag; var response: String): Boolean;
+    function RecycleAll(var itemBag: TDonguriBag): Boolean;
+    function Lock(itemNoList: TStringList; var itemBag: TDonguriBag): Boolean;
+    function Unlock(itemNoList: TStringList; var itemBag: TDonguriBag): Boolean;
+    function Equip(itemNo: String; var itemBag: TDonguriBag): Boolean;
+    function Recycle(itemNoList: TStringList; var itemBag: TDonguriBag): Boolean;
 
 		function Cannon(urlRes, date: String; no: Integer): Boolean;
 
@@ -65,7 +144,14 @@ type
     property ResponseCode: Integer read FResponseCode;
     // 例外メッセージ
     property ErroeMessage: String  read FErroeMessage;
+  	// 通信中かどうか
+    property Processing:   Boolean read FProcessing;
   end;
+
+
+function Extract(kw1, kw2, text: String; var val: String): Boolean;
+function Extract2(kw1, kw2: String; var text: String; var val: String): Boolean;
+function TrimTag(html: String): String;
 
 var
 	DonguriSys: TDonguriSys;
@@ -86,11 +172,23 @@ const
   URL_DNG_TRNSFR  = 'https://donguri.5ch.net/transfer';							// ドングリ転送サービス
   URL_DNG_CRAFT   = 'https://donguri.5ch.net/craft';								// 工作センター
   URL_DNG_CRAFTCB = 'https://donguri.5ch.net/craft/cannonball';			// 工作センター鉄の大砲の玉作成
-  URL_DNG_CANNON  = 'https://donguri.5ch.net/cannon';
-  URL_DNG_CANNON2 = 'https://donguri.5ch.net/confirm';
-  URL_DNG_CANNON3 = 'https://donguri.5ch.net/fire';
+  URL_DNG_BAG     = 'https://donguri.5ch.net/bag';									// アイテムバッグ
+  URL_DNG_ADDSLOT = 'https://donguri.5ch.net/addslots';							// スロット追加
+  URL_DNG_UNEQW   = 'https://donguri.5ch.net/unequip/weapon';				// 装備中の武器を外す
+  URL_DNG_UNEQA   = 'https://donguri.5ch.net/unequip/armor';				// 装備中の防具を外す
+  URL_DNG_CHESTOP = 'https://donguri.5ch.net/open';									// 宝箱を開ける
+  URL_DNG_RECYALL = 'https://donguri.5ch.net/recycleunlocked';			// ロックされていない武器防具を全て分解する
+  URL_DNG_LOCK    = 'https://donguri.5ch.net/lock/';								// ロック
+  URL_DNG_UNLOCK  = 'https://donguri.5ch.net/unlock/';							// アンロック
+  URL_DNG_EQUIP   = 'https://donguri.5ch.net/equip/';								// 装備
+  URL_DNG_RECYCLE = 'https://donguri.5ch.net/recycle/';							// 分解
+
+  URL_DNG_CANNON  = 'https://donguri.5ch.net/cannon';								// どんぐり大砲
+  URL_DNG_CANNON2 = 'https://donguri.5ch.net/confirm';							// どんぐり大砲確認
+  URL_DNG_CANNON3 = 'https://donguri.5ch.net/fire';									// どんぐり大砲発射
 	URL_5CH_ROOT    = 'https://5ch.net/';
 
+  // イメージインデックス
 
 implementation
 
@@ -104,6 +202,7 @@ begin
 	Inherited;
 
   FResponseCode := 0;
+  FProcessing := False;
 
   try
     FHTTP := TIdHttp.Create(nil);
@@ -158,6 +257,12 @@ begin
 	Result := False;
   redirect := False;
   response := '';
+
+  if FProcessing then
+    Exit;
+
+  FProcessing := True;
+
   ClearResponse;
 
   res := TMemoryStream.Create;
@@ -237,6 +342,7 @@ begin
 
   finally
   	res.Free;
+	  FProcessing := False;
   end;
 end;
 
@@ -259,6 +365,12 @@ begin
 	Result := False;
   redirect := False;
   response := '';
+
+  if FProcessing then
+    Exit;
+
+  FProcessing := True;
+
   ClearResponse;
 
   res := TMemoryStream.Create;
@@ -338,6 +450,7 @@ begin
 
   finally
   	res.Free;
+	  FProcessing := False;
   end;
 end;
 
@@ -353,6 +466,9 @@ var
 begin
 	Result := False;
   response := '';
+
+  if FProcessing then
+    Exit;
 
 	try
 	  ClearResponse;
@@ -400,25 +516,76 @@ begin
   end;
 end;
 
-function TDonguriSys.Extract(kw1, kw2, text: String; var val: String): Boolean;
+// リダイレクト有りのHTTP-POST（リダイレクトはGET）
+function TDonguriSys.HttpPostCall(urlStart: String; var response: String): Boolean;
 var
-	idx1: Integer;
-	idx2: Integer;
+  url: String;
+  ref: String;
+  res: String;
+  red: Boolean;
+  gzip: Boolean;
+  ok: Boolean;
+  param: TStringList;
+  first: Boolean;
 begin
 	Result := False;
-  val := '';
+  response := '';
 
-  idx1 := Pos(kw1, text);
-  if idx1 < 1 then
-  	Exit;
-	idx1 := idx1 + Length(kw1);
-  idx2 := PosEx(kw2, text, idx1);
-  if idx2 < 1 then
-  	Exit;
+  if FProcessing then
+    Exit;
 
-	val := Copy(text, idx1, idx2 - idx1);
+  param := TStringList.Create;
 
-	Result := True;
+	try
+	  ClearResponse;
+
+    ok := False;
+  	url := urlStart;
+    ref := '';
+    first := True;
+
+  	while True do begin
+    	res := '';
+      red := False;
+      gzip := (url = URL_DNG_ROOT);
+
+    	if first then begin
+	      ok := HttpPost(url, ref, param, gzip, res, red);
+        first := False;
+      end else
+				ok := HttpGet(url, ref, gzip, res, red);
+
+      if ok and (url = URL_DNG_LOGOUT) then begin
+        IndyMdl.DelCookie('acorn', URL_5CH_ROOT);	// Cookie保存時に消してくれているとは思うけど
+        IndyMdl.DelCookie('fp',    URL_5CH_ROOT);	// 受け取ってないけどクリア要求？？？
+      end;
+
+      if red = False then begin
+			  response := res;
+      	Break;
+      end;
+
+      if res[1] = '/' then
+        res := URL_DNG_BASE + res;
+
+      if res = url then begin
+        FErroeMessage := '異常なリダイレクトを検出しました。' + #10 + 'どんぐりシステム画面を一度閉じると解消するかもしれません。';
+        ok := False;
+        Break;
+      end;
+
+      ref := url;
+			url := res;
+    end;
+
+    Result := ok;
+
+  except
+    on e: Exception do begin
+      FErroeMessage := e.Message;
+    end;
+  end;
+  param.Free;
 end;
 
 // ルート（メインページ）
@@ -797,6 +964,8 @@ var
 	postParam: TStringList;
   redirect: Boolean;
 begin
+	Result := False;
+  response := '';
 
 	postParam := TStringList.Create;
   try
@@ -808,12 +977,353 @@ begin
 
 end;
 
+// アイテムバッグ
+function TDonguriSys.Bag(var itemBag: TDonguriBag; var denied: Boolean): Boolean;
+var
+	res: String;
+  ret: Boolean;
+  redirect: Boolean;
+begin
+	Result := False;
+  denied := False;
+  itemBag.Clear;
+
+	try
+	  ClearResponse;
+  	ret := HttpGet(URL_DNG_BAG, URL_DNG_ROOT, True, res, redirect);
+
+    if ret then begin
+    	if redirect then begin
+      	denied := True;
+      end else if Pos('<h1>アイテムバッグ</h1>', res) > 0 then begin
+				Result := ParceBag(res, itemBag);
+      end;
+    end;
+  except
+    on e: Exception do begin
+      FErroeMessage := e.Message;
+    end;
+  end;
+end;
+
+function TDonguriSys.ParceBag(html: String; var itemBag: TDonguriBag): Boolean;
+const
+	KW_SLOT_S = '<h5>アイテムバッグには';
+  KW_SLOT_E = 'スロットがあります。';
+  KW_USEW_S = '<h3>装備している武器: </h3>';
+  KW_USEW_E = '</p>';
+  KW_USEA_S = '<h3>防具装備している: </h3>';
+  KW_USEA_E = '</p>';
+  KW_IBAG_S = '<h3>アイテムバッグ:</h3>';
+  KW_TBDY_S  = '<tbody>';
+  KW_TBDY_E  = '</tbody>';
+  KW_TROW_S = '<tr';
+  KW_TROW_E = '</tr>';
+
+var
+	tmp: String;
+	tmp2: String;
+  idx: Integer;
+  wp: TDonguriWeapon;
+  am: TDonguriArmor;
+begin
+	Result := False;
+
+	try
+		itemBag.Clear;
+
+    // スロット数
+		if Extract2(KW_SLOT_S, KW_SLOT_E, html, tmp) then
+    	itemBag.Slot := StrToIntDef(tmp, 0);
+
+    // 使用中の武器
+		if Extract2(KW_USEW_S, KW_USEW_E, html, tmp) then begin
+    	idx := Pos(KW_TBDY_S, tmp);
+      if idx > 0 then
+      	Delete(tmp, 1, idx + 6);
+      itemBag.UseWeapon.SetItems(tmp);
+    end;
+
+    // 使用中の防具
+		if Extract2(KW_USEA_S, KW_USEA_E, html, tmp) then begin
+    	idx := Pos(KW_TBDY_S, tmp);
+      if idx > 0 then
+      	Delete(tmp, 1, idx + 6);
+      itemBag.UseArmor.SetItems(tmp);
+    end;
+
+    idx := Pos(KW_IBAG_S, html);
+    if idx > 0 then
+    	Delete(html, 1, idx + Length(KW_IBAG_S) - 1);
+
+		// 武器一覧
+		if Extract2(KW_TBDY_S, KW_TBDY_E, html, tmp) then begin
+    	while True do begin
+				if Extract2(KW_TROW_S, KW_TROW_E, tmp, tmp2) = False then
+        	Break;
+				wp := TDonguriWeapon.Create;
+        wp.SetItems(tmp2);
+        itemBag.WeaponList.Add(wp);
+      end;
+  	end;
+
+    // 防具一覧
+		if Extract2(KW_TBDY_S, KW_TBDY_E, html, tmp) then begin
+    	while True do begin
+				if Extract2(KW_TROW_S, KW_TROW_E, tmp, tmp2) = False then
+        	Break;
+			  am := TDonguriArmor.Create;
+        am.SetItems(tmp2);
+        itemBag.ArmorList.Add(am);
+      end;
+  	end;
+
+		Result := True;
+  except
+    on e: Exception do begin
+      FErroeMessage := e.Message;
+    end;
+  end;
+end;
+
+// スロット追加
+function TDonguriSys.AddSlots(var itemBag: TDonguriBag; var response: String): Boolean;
+var
+	res: String;
+begin
+	Result := False;
+  response := '';
+  itemBag.Clear;
+
+	try
+	  ClearResponse;
+		Result := HttpGetCall(URL_DNG_ADDSLOT, response);
+
+    if Result and (Pos('<h1>アイテムバッグ</h1>', response) > 0) then begin
+    	res := response;
+			Result := ParceBag(res, itemBag);
+		end;
+  except
+    on e: Exception do begin
+      FErroeMessage := e.Message;
+    end;
+  end;
+end;
+
+// 装備を外す
+function TDonguriSys.Unequip(var itemBag: TDonguriBag; weapon: Boolean): Boolean;
+var
+	res: String;
+  ret: Boolean;
+begin
+	Result := False;
+	itemBag.Clear;
+
+	try
+	  ClearResponse;
+
+    if weapon then
+			ret := HttpGetCall(URL_DNG_UNEQW, res)		// 武器
+    else
+			ret := HttpGetCall(URL_DNG_UNEQA, res);		// 防具
+
+    if ret and (Pos('<h1>アイテムバッグ</h1>', res) > 0) then
+			Result := ParceBag(res, itemBag);
+  except
+    on e: Exception do begin
+      FErroeMessage := e.Message;
+    end;
+  end;
+end;
+
+// 宝箱を開ける
+function TDonguriSys.ChestOpen(var itemBag: TDonguriBag; var response: String): Boolean;
+var
+  ret: Boolean;
+begin
+	Result := False;
+	itemBag.Clear;
+
+  try
+	  ClearResponse;
+
+		ret := HttpPostCall(URL_DNG_CHESTOP, response);
+
+    if ret and (Pos('<h1>アイテムバッグ</h1>', response) > 0) then
+			Result := ParceBag(response, itemBag)
+  except
+    on e: Exception do begin
+      FErroeMessage := e.Message;
+    end;
+  end;
+end;
+
+// ロックされていない武器防具を全て分解する
+function TDonguriSys.RecycleAll(var itemBag: TDonguriBag): Boolean;
+var
+	res: String;
+  ret: Boolean;
+begin
+	Result := False;
+	itemBag.Clear;
+
+  try
+	  ClearResponse;
+
+		ret := HttpGetCall(URL_DNG_RECYALL, res);
+
+    if ret and (Pos('<h1>アイテムバッグ</h1>', res) > 0) then
+			Result := ParceBag(res, itemBag)
+    else
+    	FErroeMessage := res;
+  except
+    on e: Exception do begin
+      FErroeMessage := e.Message;
+    end;
+  end;
+end;
+
+// ロック
+function TDonguriSys.Lock(itemNoList: TStringList; var itemBag: TDonguriBag): Boolean;
+var
+	i: Integer;
+	res: String;
+  ret: Boolean;
+begin
+  ret := False;
+	itemBag.Clear;
+
+  try
+    for i := 0 to itemNoList.Count - 1 do begin
+      ClearResponse;
+
+      ret := HttpGetCall(URL_DNG_LOCK + itemNoList.Strings[i], res);
+
+      if ret and (Pos('<h1>アイテムバッグ</h1>', res) > 0) then begin
+				itemBag.Clear;
+        ret := ParceBag(res, itemBag)
+      end else begin
+      	ret := False;
+        FErroeMessage := res;
+      end;
+
+      if ret = False then
+      	Break;
+    end;
+  except
+    on e: Exception do begin
+			ret := False;
+      FErroeMessage := e.Message;
+    end;
+  end;
+
+  Result := ret;
+end;
+
+// アンロック
+function TDonguriSys.Unlock(itemNoList: TStringList; var itemBag: TDonguriBag): Boolean;
+var
+	i: Integer;
+	res: String;
+  ret: Boolean;
+begin
+  ret := False;
+	itemBag.Clear;
+
+  try
+    for i := 0 to itemNoList.Count - 1 do begin
+      ClearResponse;
+
+      ret := HttpGetCall(URL_DNG_UNLOCK + itemNoList.Strings[i], res);
+
+      if ret and (Pos('<h1>アイテムバッグ</h1>', res) > 0) then begin
+				itemBag.Clear;
+        ret := ParceBag(res, itemBag)
+      end else begin
+      	ret := False;
+        FErroeMessage := res;
+      end;
+
+      if ret = False then
+      	Break;
+    end;
+  except
+    on e: Exception do begin
+			ret := False;
+      FErroeMessage := e.Message;
+    end;
+  end;
+
+  Result := ret;
+end;
+
+// 装備
+function TDonguriSys.Equip(itemNo: String; var itemBag: TDonguriBag): Boolean;
+var
+	res: String;
+  ret: Boolean;
+begin
+	Result := False;
+	itemBag.Clear;
+
+  try
+	  ClearResponse;
+
+		ret := HttpGetCall(URL_DNG_EQUIP + itemNo, res);
+
+    if ret and (Pos('<h1>アイテムバッグ</h1>', res) > 0) then
+			Result := ParceBag(res, itemBag)
+    else
+    	FErroeMessage := res;
+  except
+    on e: Exception do begin
+      FErroeMessage := e.Message;
+    end;
+  end;
+end;
+
+// 分解
+function TDonguriSys.Recycle(itemNoList: TStringList; var itemBag: TDonguriBag): Boolean;
+var
+	i: Integer;
+	res: String;
+  ret: Boolean;
+begin
+  ret := False;
+	itemBag.Clear;
+
+  try
+    for i := 0 to itemNoList.Count - 1 do begin
+      ClearResponse;
+
+      ret := HttpGetCall(URL_DNG_RECYCLE + itemNoList.Strings[i], res);
+
+      if ret and (Pos('<h1>アイテムバッグ</h1>', res) > 0) then begin
+				itemBag.Clear;
+        ret := ParceBag(res, itemBag)
+      end else begin
+      	ret := False;
+        FErroeMessage := res;
+      end;
+
+      if ret = False then
+      	Break;
+    end;
+  except
+    on e: Exception do begin
+			ret := False;
+      FErroeMessage := e.Message;
+    end;
+  end;
+
+  Result := ret;
+end;
 
 
-//----------
-//----------
-
+//------------------------------------------------------------------------------
 // どんぐり大砲
+//------------------------------------------------------------------------------
+
 function TDonguriSys.Cannon(urlRes, date: String; no: Integer): Boolean;
 //const
 //  DBG_SEP = #39 + ',' + #39;
@@ -956,7 +1466,7 @@ begin
   resMsg := '';
 
   if Pos('<html', html) < 1 then begin
-	  resMsg := html;		// プレーンテキスト
+	  resMsg := TrimTag(html);		// プレーンテキスト
     Exit;
   end;
 
@@ -971,7 +1481,7 @@ begin
 	idx3 := PosEx('</p>', html, idx2);
   if idx3 < 1 then
   	Exit;
-  resMsg := Copy(html, idx2, idx3 - idx2);	// メッセージ文らしきものを取り出し
+  resMsg := TrimTag(Copy(html, idx2, idx3 - idx2));	// メッセージ文らしきものを取り出し
 
 	Result := CheckFormAction(html, URL_DNG_CANNON3);		// 次のURL確認
 end;
@@ -995,6 +1505,338 @@ begin
 	Result := MsgBox(GikoForm.Handle, PChar(msg), 'どんぐり大砲', mbType);
 end;
 
+
+
+//------------------------------------------------------------------------------
+// アイテムバッグ
+//------------------------------------------------------------------------------
+
+procedure TDonguriItem.Clear;
+begin
+  Rarity := '';
+  Name   := '';
+  CRIT   := '';
+  ELEM   := '';
+  Modify := '';
+  Marimo := '';
+  ItemNo := '';
+  Lock   := False;
+  Used   := False;
+end;
+
+procedure TDonguriItem.SetMarimo(html: String);
+var
+	tmp: String;
+  idx: Integer;
+begin
+	tmp := TrimTag(html);
+	idx := Pos('マ', tmp);
+  if idx > 0 then
+  	SetLength(tmp, idx - 1);
+  Marimo := Trim(tmp);
+end;
+
+procedure TDonguriItem.SetState(html: String);
+var
+	tmp: String;
+begin
+  Used := (Pos('[外す]', html) > 0);	// バッグ内アイテムリストの場合は使用中かどうかの情報がない
+  if Used = False then
+    Lock := (Pos('[解錠]', html) > 0);	// 使用中リストにはロック中かどうかの情報がない
+  if Extract2('<a href="https://donguri.5ch.net/equip/', '">', html, tmp) then
+		ItemNo := tmp;	// 使用中リストにはこれがない
+end;
+
+function TDonguriItem.GetRangeValue(html: String): String;
+var
+	tmp: String;
+  idx: Integer;
+begin
+	tmp := Trim(TrimTag(html));
+  idx := Pos('~', tmp);
+  if idx > 0 then
+  	Result := Copy(tmp, 1, idx - 1) + '～' + Copy(tmp, idx + 1, Length(tmp) - idx)
+  else
+  	Result := tmp;
+end;
+
+function TDonguriItem.GetImageIndex: Integer;
+begin
+  if Rarity = 'N' then
+		if Lock then Result := Ord(IDX_IMG_N_LOCK)
+    else         Result := Ord(IDX_IMG_N_UNLOCK)
+  else if Rarity = 'R' then
+		if Lock then Result := Ord(IDX_IMG_R_LOCK)
+    else         Result := Ord(IDX_IMG_R_UNLOCK)
+  else if Rarity = 'SR' then
+		if Lock then Result := Ord(IDX_IMG_SR_LOCK)
+    else         Result := Ord(IDX_IMG_SR_UNLOCK)
+  else if Rarity = 'SSR' then
+		if Lock then Result := Ord(IDX_IMG_SSR_LOCK)
+    else         Result := Ord(IDX_IMG_SSR_UNLOCK)
+  else if Rarity = 'UR' then
+		if Lock then Result := Ord(IDX_IMG_UR_LOCK)
+    else         Result := Ord(IDX_IMG_UR_UNLOCK)
+  else           Result := -1;
+end;
+
+procedure TDonguriItem.SetListItem(no: Integer; var item: TListItem);
+begin
+	if no > 0 then
+	  item.Caption := Format('%3d', [no])
+  else
+	  item.Caption := ' ';
+  item.SubItems.Add(Rarity);
+  item.SubItems.Add(Name);
+  item.SubItems.Add('');
+  item.SubItems.Add('');
+  item.SubItems.Add(CRIT);
+  item.SubItems.Add(ELEM);
+  item.SubItems.Add(Modify);
+  item.SubItems.Add(Marimo);
+  item.Data := Self;
+	item.ImageIndex := GetImageIndex;
+end;
+
+function TDonguriItem.IsEmpty: Boolean;
+begin
+	Result := (Name = '');
+end;
+
+procedure TDonguriWeapon.Clear;
+begin
+	Inherited;
+	ATK := '';
+	SPD := '';
+end;
+
+procedure TDonguriWeapon.SetListItem(no: Integer; var item: TListItem);
+begin
+	Inherited;
+  item.SubItems.Strings[2] := ATK;
+  item.SubItems.Strings[3] := SPD;
+end;
+
+procedure TDonguriWeapon.SetItems(html: String);
+var
+	i: Integer;
+  idx: Integer;
+  tmp1: String;
+  tmp2: String;
+begin
+  for i := 0 to 7 do begin
+    if Extract2('<td ', '</td>', html, tmp1) = False then
+	    Break;
+    idx := Pos('>', tmp1);
+    if idx > 0 then
+      Delete(tmp1, 1, idx);
+
+    case i of
+      0: begin
+        tmp2 := '';
+        idx := Pos('<br>', tmp1);
+        if idx > 0 then begin
+          tmp2 := Copy(tmp1, idx + 4, Length(tmp1) - idx + 3);
+          SetLength(tmp1, idx - 1);
+        end;
+        Name := Trim(TrimTag(tmp1));
+        tmp2 := Trim(TrimTag(tmp2));
+        tmp1 := '';
+        if Extract2('[', ']', tmp2, tmp1) then
+          Rarity := tmp1;
+      end;
+    	1: ATK := GetRangeValue(tmp1);
+      2: SPD := Trim(TrimTag(tmp1));
+      3: CRIT := Trim(TrimTag(tmp1));
+      4: ELEM := Trim(TrimTag(tmp1));
+      5: Modify := Trim(TrimTag(tmp1));
+      6: SetMarimo(tmp1);
+      7: SetState(tmp1);
+    end;
+  end;
+end;
+
+procedure TDonguriArmor.Clear;
+begin
+	Inherited;
+	DEF := '';
+	WT  := '';
+end;
+
+procedure TDonguriArmor.SetListItem(no: Integer; var item: TListItem);
+begin
+	Inherited;
+  item.SubItems.Strings[2] := DEF;
+  item.SubItems.Strings[3] := WT;
+end;
+
+procedure TDonguriArmor.SetItems(html: String);
+var
+	i: Integer;
+  idx: Integer;
+  tmp1: String;
+  tmp2: String;
+begin
+  for i := 0 to 7 do begin
+    if Extract2('<td ', '</td>', html, tmp1) = False then
+	    Break;
+    idx := Pos('>', tmp1);
+    if idx > 0 then
+      Delete(tmp1, 1, idx);
+
+    case i of
+      0: begin
+        tmp2 := '';
+        idx := Pos('<br>', tmp1);
+        if idx > 0 then begin
+          tmp2 := Copy(tmp1, idx + 4, Length(tmp1) - idx + 3);
+          SetLength(tmp1, idx - 1);
+        end;
+        Name := Trim(TrimTag(tmp1));
+        tmp2 := Trim(TrimTag(tmp2));
+        tmp1 := '';
+        if Extract2('[', ']', tmp2, tmp1) then
+          Rarity := tmp1;
+      end;
+    	1: DEF := GetRangeValue(tmp1);
+      2: WT  := Trim(TrimTag(tmp1));
+      3: CRIT := Trim(TrimTag(tmp1));
+      4: ELEM := Trim(TrimTag(tmp1));
+      5: Modify := Trim(TrimTag(tmp1));
+      6: SetMarimo(tmp1);
+      7: SetState(tmp1);
+    end;
+  end;
+end;
+
+
+// コンストラクタ
+constructor TDonguriBag.Create;
+begin
+	Inherited;
+
+  try
+    UseWeapon  := TDonguriWeapon.Create;
+    UseArmor   := TDonguriArmor.Create;
+    WeaponList := TList.Create;
+    ArmorList  := TList.Create;
+    Clear;
+  except
+  end;
+end;
+
+// デストラクタ
+destructor TDonguriBag.Destroy;
+begin
+	try
+    Clear;
+    FreeAndNil(UseWeapon);
+    FreeAndNil(UseArmor);
+    FreeAndNil(WeaponList);
+    FreeAndNil(ArmorList);
+  except
+  end;
+
+	Inherited;
+end;
+
+procedure TDonguriBag.Clear;
+var
+	i: Integer;
+begin
+  try
+    Slot := 0;
+    UseWeapon.Clear;
+    UseArmor.Clear;
+
+    for i := 0 to WeaponList.Count - 1 do
+      TDonguriWeapon(WeaponList.Items[i]).Free;
+    WeaponList.Clear;
+
+    for i := 0 to ArmorList.Count - 1 do
+      TDonguriArmor(ArmorList.Items[i]).Free;
+    ArmorList.Clear;
+  except
+  end;
+end;
+
+
+
+
+
+
+//------------------------------------------------------------------------------
+// 共通関数
+//------------------------------------------------------------------------------
+
+// 削除なしキーワード抽出
+function Extract(kw1, kw2, text: String; var val: String): Boolean;
+var
+	idx1: Integer;
+	idx2: Integer;
+begin
+	Result := False;
+  val := '';
+
+  idx1 := Pos(kw1, text);
+  if idx1 < 1 then
+  	Exit;
+	idx1 := idx1 + Length(kw1);
+  idx2 := PosEx(kw2, text, idx1);
+  if idx2 < 1 then
+  	Exit;
+
+	val := Copy(text, idx1, idx2 - idx1);
+
+	Result := True;
+end;
+
+// 削除ありキーワード抽出
+function Extract2(kw1, kw2: String; var text: String; var val: String): Boolean;
+var
+	idx1: Integer;
+	idx2: Integer;
+begin
+	Result := False;
+  val := '';
+
+  idx1 := Pos(kw1, text);
+  if idx1 < 1 then
+  	Exit;
+	idx1 := idx1 + Length(kw1);
+  idx2 := PosEx(kw2, text, idx1);
+  if idx2 < 1 then
+  	Exit;
+
+	val := Copy(text, idx1, idx2 - idx1);
+
+	Delete(text, 1, idx2 + Length(kw2) - 1);		// 抽出キーワードまで削除
+
+	Result := True;
+end;
+
+// タグ削除
+function TrimTag(html: String): String;
+var
+	idx1: Integer;
+	idx2: Integer;
+  tmp: String;
+begin
+  tmp := html;
+
+  while True do begin
+    idx1 := Pos('<', tmp);
+    if idx1 < 1 then
+      Break;
+    idx2 := PosEx('>', tmp, idx1 + 1);
+    if idx2 < 1 then
+      Break;
+
+    Delete(tmp, idx1, idx2 - idx1 + 1);
+  end;
+
+  Result := tmp;
+end;
 
 
 {
