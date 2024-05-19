@@ -8,7 +8,7 @@ interface
 
 uses
   Messages, Windows, Controls, StdCtrls, Classes, SysUtils, StrUtils, CommCtrl,
-  TntStdCtrls, TntMenus, TntComCtrls, GikoListView;
+  TntStdCtrls, TntMenus, TntComCtrls, GikoListView, WideStrings;
 
 { TWideMemo }
 type
@@ -142,6 +142,9 @@ function WideTrimLength(ASrc: WideString; ALen: Integer): WideString;
 { '&'を'&&'に置換する }
 function ReplaceAmp(ASrc: WideString): WideString;
 
+{ クリップボードからUTF-16文字列をコピー }
+function GetClipboard: WideString;
+
 { クリップボードにUTF-16文字列をコピー }
 function SetClipboard(SrcText: WideString): Boolean;
 
@@ -202,26 +205,42 @@ end;
 { テキストへ引用文字列貼り付け }
 procedure TWideMemo.QuotePaste(QuoteStr: AnsiString);
 const
-  RET_CHAR: WideString = #13#10;
+  RET1_CHAR: WideString = #13#10;
+  RET2_CHAR: WideString = #10;
 var
   TextDst: WideString;
   TextSrc: WideString;
   QuoteUC: WideString;
   Ret: Integer;
+  Ret1: Integer;
+  Ret2: Integer;
+  DelLen: Integer;
 begin
-  TextSrc := Text;
+  TextSrc := GetClipboard;
+  if Length(TextSrc) < 1 then
+  	Exit;
+
   QuoteUC := QuoteStr;
 
   while (Length(TextSrc) > 0) do begin
-    Ret := Pos(RET_CHAR, TextSrc);
-    if (Ret < 1) then begin // 改行なし
+    Ret1 := Pos(RET1_CHAR, TextSrc);
+    Ret2 := Pos(RET2_CHAR, TextSrc);
+    if (Ret1 < 1) and (Ret2 < 1) then begin // 改行なし
       TextDst := TextDst + QuoteUC + TextSrc;
       Break;
     end;
 
     // 改行までの1行
-    TextDst := TextDst + QuoteUC + Copy(TextSrc, 1, Ret + 1);
-    Delete(TextSrc, 1, Ret + 1);
+  	if (Ret1 > 0) and ((Ret1 <= Ret2) or (Ret2 < 1)) then begin
+	    Ret := Ret1;
+      DelLen := Ret1 + 1;
+    end else begin
+	    Ret := Ret2;
+      DelLen := Ret2;
+    end;
+		TextDst := TextDst + QuoteUC + Copy(TextSrc, 1, Ret - 1) + RET1_CHAR;
+
+    Delete(TextSrc, 1, DelLen);
   end;
 
   if (Length(TextDst) > 0) then
@@ -693,6 +712,25 @@ begin
   end;
 
 	Result := Dest;
+end;
+
+{ クリップボードからUTF-16文字列をコピー }
+function GetClipboard: WideString;
+var
+  MemHandle: HGLOBAL;
+begin
+  if OpenClipboard(0) then begin
+  	MemHandle := 0;
+  	try
+      MemHandle := GetClipboardData(CF_UNICODETEXT);
+      if MemHandle <> 0 then
+        Result := PWideChar(GlobalLock(MemHandle));
+    finally
+    	if MemHandle <> 0 then
+        GlobalUnlock(MemHandle);
+			CloseClipboard;
+    end;
+  end;
 end;
 
 { クリップボードにUTF-16文字列をコピー }
