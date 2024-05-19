@@ -126,8 +126,9 @@ type
     function Transfer(var response: String): Boolean;
     function Craft(var response: String): Boolean;
     function CraftCB(amount: Integer; var response: String): Boolean;
-    function Bag(var itemBag: TDonguriBag; var denied: Boolean): Boolean;
-    function AddSlots(var itemBag: TDonguriBag; var response: String): Boolean;
+    function CraftKY(amount: Integer; var response: String): Boolean;
+    function Bag(var itemBag: TDonguriBag; var response: String; var denied: Boolean): Boolean;
+    function AddSlots(var response: String): Boolean;
     function Unequip(var itemBag: TDonguriBag; weapon: Boolean): Boolean;
     function ChestOpen(var itemBag: TDonguriBag; var response: String): Boolean;
     function RecycleAll(var itemBag: TDonguriBag): Boolean;
@@ -172,6 +173,7 @@ const
   URL_DNG_TRNSFR  = 'https://donguri.5ch.net/transfer';							// ドングリ転送サービス
   URL_DNG_CRAFT   = 'https://donguri.5ch.net/craft';								// 工作センター
   URL_DNG_CRAFTCB = 'https://donguri.5ch.net/craft/cannonball';			// 工作センター鉄の大砲の玉作成
+	URL_DNG_CRAFTKY = 'https://donguri.5ch.net/craft/key';						// 工作センター鉄のキー作成
   URL_DNG_BAG     = 'https://donguri.5ch.net/bag';									// アイテムバッグ
   URL_DNG_ADDSLOT = 'https://donguri.5ch.net/addslots';							// スロット追加
   URL_DNG_UNEQW   = 'https://donguri.5ch.net/unequip/weapon';				// 装備中の武器を外す
@@ -334,6 +336,18 @@ begin
         finally
           dbg.Free;
         end;
+//        for dbgcnt := 0 to 99 do begin
+//					dbgpath := 'D:\Log\Donguri\' + FormatDateTime('yyyymmdd_hhnnss_zzz', Now) + Format('_%.2d.sjis.html', [dbgcnt]);
+//          if not FileExists(dbgpath) then
+//          	Break;
+//        end;
+//			  dbg := TMemoryStream.Create;
+//        try
+//        	dbg.Write(PChar(response)^,Length(response));
+//          dbg.SaveToFile(dbgpath);
+//        finally
+//          dbg.Free;
+//        end;
 {$ENDIF}
       end;
     end;
@@ -974,29 +988,46 @@ begin
   finally
   	postParam.Free;
   end;
+end;
 
+// 鉄のキー作成
+function TDonguriSys.CraftKY(amount: Integer; var response: String): Boolean;
+var
+	postParam: TStringList;
+  redirect: Boolean;
+begin
+	Result := False;
+  response := '';
+
+	postParam := TStringList.Create;
+  try
+  	postParam.Add('ironkeyamt=' + IntToStr(amount));
+  	Result := HttpPost(URL_DNG_CRAFTKY, URL_DNG_CRAFT, postParam, True, response, redirect);
+  finally
+  	postParam.Free;
+  end;
 end;
 
 // アイテムバッグ
-function TDonguriSys.Bag(var itemBag: TDonguriBag; var denied: Boolean): Boolean;
+function TDonguriSys.Bag(var itemBag: TDonguriBag; var response: String; var denied: Boolean): Boolean;
 var
-	res: String;
   ret: Boolean;
   redirect: Boolean;
 begin
 	Result := False;
   denied := False;
+  response := '';
   itemBag.Clear;
 
 	try
 	  ClearResponse;
-  	ret := HttpGet(URL_DNG_BAG, URL_DNG_ROOT, True, res, redirect);
+  	ret := HttpGet(URL_DNG_BAG, URL_DNG_ROOT, True, response, redirect);
 
     if ret then begin
     	if redirect then begin
       	denied := True;
-      end else if Pos('<h1>アイテムバッグ</h1>', res) > 0 then begin
-				Result := ParceBag(res, itemBag);
+      end else if Pos('<h1>アイテムバッグ</h1>', response) > 0 then begin
+				Result := ParceBag(response, itemBag);
       end;
     end;
   except
@@ -1087,22 +1118,16 @@ begin
 end;
 
 // スロット追加
-function TDonguriSys.AddSlots(var itemBag: TDonguriBag; var response: String): Boolean;
-var
-	res: String;
+function TDonguriSys.AddSlots(var response: String): Boolean;
 begin
 	Result := False;
   response := '';
-  itemBag.Clear;
 
 	try
 	  ClearResponse;
+
 		Result := HttpGetCall(URL_DNG_ADDSLOT, response);
 
-    if Result and (Pos('<h1>アイテムバッグ</h1>', response) > 0) then begin
-    	res := response;
-			Result := ParceBag(res, itemBag);
-		end;
   except
     on e: Exception do begin
       FErroeMessage := e.Message;

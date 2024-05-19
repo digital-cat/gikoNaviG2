@@ -12,6 +12,7 @@ object DonguriForm: TDonguriForm
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
+  Position = poDefault
   OnClose = FormClose
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
@@ -20,9 +21,9 @@ object DonguriForm: TDonguriForm
   TextHeight = 13
   object PanelBottom: TPanel
     Left = 0
-    Top = 502
+    Top = 516
     Width = 280
-    Height = 64
+    Height = 50
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 0
@@ -30,7 +31,7 @@ object DonguriForm: TDonguriForm
       Left = 4
       Top = 10
       Width = 272
-      Height = 46
+      Height = 36
       AutoSize = False
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
@@ -89,8 +90,8 @@ object DonguriForm: TDonguriForm
     Left = 0
     Top = 33
     Width = 280
-    Height = 469
-    ActivePage = TabSheetHunter
+    Height = 483
+    ActivePage = TabSheetChest
     Align = alClient
     TabOrder = 1
     OnDrawTab = PageControlDrawTab
@@ -100,12 +101,12 @@ object DonguriForm: TDonguriForm
       ExplicitTop = 0
       ExplicitWidth = 0
       ExplicitHeight = 0
-      object PanelHomeTop: TPanel
+      object PanelHome: TPanel
         Left = 0
         Top = 0
         Width = 272
-        Height = 136
-        Align = alTop
+        Height = 455
+        Align = alClient
         BevelOuter = bvNone
         TabOrder = 0
         object Label1: TLabel
@@ -144,11 +145,11 @@ object DonguriForm: TDonguriForm
           Caption = #12524#12505#12523#65306
         end
         object LabelPeriod: TLabel
-          Left = 183
-          Top = 39
-          Width = 81
+          Left = 12
+          Top = 282
+          Width = 254
           Height = 13
-          Alignment = taRightJustify
+          Alignment = taCenter
           AutoSize = False
           Caption = #31532' 100 '#26399
         end
@@ -179,6 +180,83 @@ object DonguriForm: TDonguriForm
           Width = 36
           Height = 13
           Caption = '123456'
+        end
+        object Label12: TLabel
+          Left = 16
+          Top = 300
+          Width = 42
+          Height = 13
+          Caption = #32076#39443#20516#65306
+        end
+        object Label13: TLabel
+          Left = 16
+          Top = 320
+          Width = 54
+          Height = 13
+          Caption = #26178#38291#32076#36942#65306
+        end
+        object ExprValLabel: TLabel
+          Left = 252
+          Top = 300
+          Width = 14
+          Height = 13
+          Alignment = taRightJustify
+          AutoSize = False
+          Caption = '00'
+        end
+        object TimeValLabel: TLabel
+          Left = 252
+          Top = 320
+          Width = 14
+          Height = 13
+          Alignment = taRightJustify
+          AutoSize = False
+          Caption = '00'
+        end
+        object ExplorValLabel: TLabel
+          Left = 252
+          Top = 342
+          Width = 14
+          Height = 13
+          Alignment = taRightJustify
+          AutoSize = False
+          Caption = '00'
+        end
+        object MiningValLabel: TLabel
+          Left = 252
+          Top = 364
+          Width = 14
+          Height = 13
+          Alignment = taRightJustify
+          AutoSize = False
+          Caption = '00'
+        end
+        object WoodctValLabel: TLabel
+          Left = 252
+          Top = 386
+          Width = 14
+          Height = 13
+          Alignment = taRightJustify
+          AutoSize = False
+          Caption = '00'
+        end
+        object WeaponValLabel: TLabel
+          Left = 252
+          Top = 408
+          Width = 14
+          Height = 13
+          Alignment = taRightJustify
+          AutoSize = False
+          Caption = '00'
+        end
+        object ArmorcValLabel: TLabel
+          Left = 252
+          Top = 430
+          Width = 14
+          Height = 13
+          Alignment = taRightJustify
+          AutoSize = False
+          Caption = '00'
         end
         object EditName: TEdit
           Left = 88
@@ -258,96 +336,201 @@ object DonguriForm: TDonguriForm
           OnMouseDown = PanelButtonMouseDown
           OnMouseUp = PanelButtonMouseUp
         end
-      end
-      object InfoGrid: TStringGrid
-        Left = 0
-        Top = 136
-        Width = 272
-        Height = 235
-        Align = alClient
-        BevelInner = bvNone
-        BevelOuter = bvNone
-        ColCount = 2
-        DefaultColWidth = 100
-        DefaultRowHeight = 18
-        FixedCols = 0
-        RowCount = 12
-        FixedRows = 0
-        Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRowSelect]
-        TabOrder = 1
-      end
-      object PanelHome: TPanel
-        Left = 0
-        Top = 371
-        Width = 272
-        Height = 70
-        Align = alBottom
-        BevelOuter = bvNone
-        TabOrder = 2
+        object InfoGrid: TStringGrid
+          Left = 10
+          Top = 136
+          Width = 256
+          Height = 136
+          BevelInner = bvNone
+          BevelOuter = bvNone
+          ColCount = 2
+          DefaultColWidth = 100
+          DefaultRowHeight = 18
+          FixedCols = 0
+          RowCount = 7
+          FixedRows = 0
+          Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRowSelect]
+          ScrollBars = ssNone
+          TabOrder = 7
+        end
         object ExplorPnlButton: TPanel
           Left = 12
-          Top = 8
-          Width = 80
-          Height = 25
+          Top = 340
+          Width = 70
+          Height = 20
           BevelInner = bvRaised
           Caption = #25506#26908
-          TabOrder = 0
+          TabOrder = 8
           OnClick = ExplorPnlButtonClick
           OnMouseDown = PanelButtonMouseDown
           OnMouseUp = PanelButtonMouseUp
         end
         object MiningPnlButton: TPanel
-          Left = 98
-          Top = 8
-          Width = 80
-          Height = 25
+          Left = 12
+          Top = 362
+          Width = 70
+          Height = 20
           BevelInner = bvRaised
           Caption = #25505#25496
-          TabOrder = 1
+          TabOrder = 9
           OnClick = MiningPnlButtonClick
           OnMouseDown = PanelButtonMouseDown
           OnMouseUp = PanelButtonMouseUp
         end
         object WoodctPnlButton: TPanel
-          Left = 184
-          Top = 8
-          Width = 80
-          Height = 25
+          Left = 12
+          Top = 384
+          Width = 70
+          Height = 20
           BevelInner = bvRaised
           Caption = #26408#12371#12426
-          TabOrder = 2
+          TabOrder = 10
           OnClick = WoodctPnlButtonClick
           OnMouseDown = PanelButtonMouseDown
           OnMouseUp = PanelButtonMouseUp
         end
         object WeaponPnlButton: TPanel
           Left = 12
-          Top = 36
-          Width = 80
-          Height = 25
+          Top = 406
+          Width = 70
+          Height = 20
           BevelInner = bvRaised
           Caption = #27494#22120#35069#20316
-          TabOrder = 3
+          TabOrder = 11
           OnClick = WeaponPnlButtonClick
           OnMouseDown = PanelButtonMouseDown
           OnMouseUp = PanelButtonMouseUp
         end
         object ArmorcPnlButton: TPanel
-          Left = 98
-          Top = 36
-          Width = 80
-          Height = 25
+          Left = 12
+          Top = 428
+          Width = 70
+          Height = 20
           BevelInner = bvRaised
           Caption = #38450#20855#35069#20316
-          TabOrder = 4
+          TabOrder = 12
           OnClick = ArmorcPnlButtonClick
           OnMouseDown = PanelButtonMouseDown
           OnMouseUp = PanelButtonMouseUp
         end
+        object ExprProgressBar: TProgressBar
+          Left = 80
+          Top = 302
+          Width = 172
+          Height = 10
+          Max = 17
+          Smooth = True
+          Step = 1
+          TabOrder = 13
+        end
+        object TimeProgressBar: TProgressBar
+          Left = 80
+          Top = 322
+          Width = 172
+          Height = 10
+          Max = 17
+          Smooth = True
+          Step = 1
+          TabOrder = 14
+        end
+        object ExplorProgressBar: TProgressBar
+          Left = 122
+          Top = 344
+          Width = 130
+          Height = 10
+          Max = 17
+          Smooth = True
+          Step = 1
+          TabOrder = 15
+        end
+        object MiningProgressBar: TProgressBar
+          Left = 122
+          Top = 366
+          Width = 130
+          Height = 10
+          Max = 17
+          Smooth = True
+          Step = 1
+          TabOrder = 16
+        end
+        object WoodctProgressBar: TProgressBar
+          Left = 122
+          Top = 388
+          Width = 130
+          Height = 10
+          Max = 17
+          Smooth = True
+          TabOrder = 17
+        end
+        object WeaponProgressBar: TProgressBar
+          Left = 122
+          Top = 410
+          Width = 130
+          Height = 10
+          Max = 17
+          Smooth = True
+          Step = 1
+          TabOrder = 18
+        end
+        object ArmorcProgressBar: TProgressBar
+          Left = 122
+          Top = 432
+          Width = 130
+          Height = 10
+          Max = 17
+          Smooth = True
+          Step = 1
+          TabOrder = 19
+        end
+        object ExplorPanel: TPanel
+          Left = 82
+          Top = 340
+          Width = 36
+          Height = 20
+          BevelOuter = bvLowered
+          Caption = '00000'
+          TabOrder = 20
+        end
+        object MiningPanel: TPanel
+          Left = 82
+          Top = 362
+          Width = 36
+          Height = 20
+          BevelOuter = bvLowered
+          Caption = '00000'
+          TabOrder = 21
+        end
+        object WoodctPanel: TPanel
+          Left = 82
+          Top = 384
+          Width = 36
+          Height = 20
+          BevelOuter = bvLowered
+          Caption = '00000'
+          TabOrder = 22
+        end
+        object WeaponPanel: TPanel
+          Left = 82
+          Top = 406
+          Width = 36
+          Height = 20
+          BevelOuter = bvLowered
+          Caption = '00000'
+          TabOrder = 23
+        end
+        object ArmorcPanel: TPanel
+          Left = 82
+          Top = 428
+          Width = 36
+          Height = 20
+          BevelOuter = bvLowered
+          Caption = '00000'
+          TabOrder = 24
+        end
       end
     end
-    object TabSheetHunter: TTabSheet
-      Caption = #12495#12531#12479#12540#12469#12540#12499#12473
+    object TabSheetService: TTabSheet
+      Caption = #12469#12540#12499#12473
       ImageIndex = 1
       object PanelHunterTop: TPanel
         Left = 0
@@ -356,7 +539,7 @@ object DonguriForm: TDonguriForm
         Height = 48
         Align = alTop
         BevelOuter = bvNone
-        TabOrder = 0
+        TabOrder = 2
         object ResurrectPnlButton: TPanel
           Left = 12
           Top = 12
@@ -370,636 +553,680 @@ object DonguriForm: TDonguriForm
           OnMouseUp = PanelButtonMouseUp
         end
       end
-      object PageControlHunter: TPageControl
-        Left = 0
-        Top = 48
-        Width = 272
-        Height = 393
-        ActivePage = TabSheetChest
-        Align = alClient
-        MultiLine = True
+      object RenamePnlButton: TPanel
+        Left = 94
+        Top = 12
+        Width = 80
+        Height = 25
+        BevelInner = bvRaised
+        Caption = #21628#12403#21517#22793#26356
+        Enabled = False
+        TabOrder = 0
+        OnClick = RenamePnlButtonClick
+        OnMouseDown = PanelButtonMouseDown
+        OnMouseUp = PanelButtonMouseUp
+      end
+      object TransferPnlButton: TPanel
+        Left = 176
+        Top = 12
+        Width = 80
+        Height = 25
+        BevelInner = bvRaised
+        Caption = #12393#12435#12368#12426#36578#36865
+        Enabled = False
+        TabOrder = 3
+        OnClick = TransferPnlButtonClick
+        OnMouseDown = PanelButtonMouseDown
+        OnMouseUp = PanelButtonMouseUp
+      end
+      object GroupBoxCraft: TGroupBox
+        Left = 12
+        Top = 44
+        Width = 244
+        Height = 205
+        Caption = #24037#20316#12475#12531#12479#12540
         TabOrder = 1
-        OnDrawTab = PageControlHunterDrawTab
-        object TabSheetRename: TTabSheet
-          Caption = #21628#12403#21517#22793#26356#12539#12489#12531#12464#12522#36578#36865
-          ExplicitLeft = 0
-          ExplicitTop = 0
-          ExplicitWidth = 0
-          ExplicitHeight = 0
-          object RenamePnlButton: TPanel
-            Left = 12
-            Top = 12
-            Width = 80
-            Height = 25
-            BevelInner = bvRaised
-            Caption = #21628#12403#21517#22793#26356
-            Enabled = False
-            TabOrder = 0
-            OnClick = RenamePnlButtonClick
-            OnMouseDown = PanelButtonMouseDown
-            OnMouseUp = PanelButtonMouseUp
+        object GroupBox1: TGroupBox
+          Left = 12
+          Top = 18
+          Width = 220
+          Height = 85
+          Caption = #37444#12398#12461#12540
+          TabOrder = 0
+          object Label14: TLabel
+            Left = 16
+            Top = 24
+            Width = 52
+            Height = 13
+            Caption = #20316#25104#25968'(&M)'
+            FocusControl = KYAmountComboBox
           end
-          object TransferPnlButton: TPanel
-            Left = 12
-            Top = 100
-            Width = 80
+          object Label15: TLabel
+            Left = 150
+            Top = 24
+            Width = 40
+            Height = 13
+            Caption = #37444#12398#37327#65306
+          end
+          object KYIronLabel: TLabel
+            Left = 192
+            Top = 24
+            Width = 6
+            Height = 13
+            Caption = '0'
+          end
+          object KYAmountComboBox: TComboBox
+            Left = 76
+            Top = 20
+            Width = 60
+            Height = 21
+            ItemHeight = 13
+            TabOrder = 0
+            OnChange = KYAmountComboBoxChange
+            Items.Strings = (
+              '1'
+              '2'
+              '3'
+              '4'
+              '5'
+              '10'
+              '15'
+              '20'
+              '30')
+          end
+          object CraftKYPnlButton: TPanel
+            Left = 120
+            Top = 47
+            Width = 83
             Height = 25
             BevelInner = bvRaised
-            Caption = #12393#12435#12368#12426#36578#36865
-            Enabled = False
+            Caption = #20316#25104
             TabOrder = 1
-            OnClick = TransferPnlButtonClick
+            OnClick = CraftKYPnlButtonClick
             OnMouseDown = PanelButtonMouseDown
             OnMouseUp = PanelButtonMouseUp
           end
         end
-        object TabSheetCraft: TTabSheet
-          Caption = #24037#20316#12475#12531#12479#12540
+        object GroupBox2: TGroupBox
+          Left = 12
+          Top = 110
+          Width = 220
+          Height = 85
+          Caption = #37444#12398#22823#30770#12398#29577
+          TabOrder = 1
+          object Label6: TLabel
+            Left = 16
+            Top = 24
+            Width = 51
+            Height = 13
+            Caption = #20316#25104#25968'(&A)'
+            FocusControl = CBAmountComboBox
+          end
+          object Label7: TLabel
+            Left = 150
+            Top = 24
+            Width = 40
+            Height = 13
+            Caption = #37444#12398#37327#65306
+          end
+          object CBIronLabel: TLabel
+            Left = 192
+            Top = 24
+            Width = 6
+            Height = 13
+            Caption = '0'
+          end
+          object CBAmountComboBox: TComboBox
+            Left = 76
+            Top = 20
+            Width = 60
+            Height = 21
+            ItemHeight = 13
+            MaxLength = 4
+            TabOrder = 0
+            OnChange = CBAmountComboBoxChange
+            Items.Strings = (
+              '1'
+              '2'
+              '3'
+              '4'
+              '5'
+              '10'
+              '15'
+              '20'
+              '30')
+          end
+          object CraftCBPnlButton: TPanel
+            Left = 120
+            Top = 47
+            Width = 83
+            Height = 25
+            BevelInner = bvRaised
+            Caption = #20316#25104
+            TabOrder = 1
+            OnClick = CraftCBPnlButtonClick
+            OnMouseDown = PanelButtonMouseDown
+            OnMouseUp = PanelButtonMouseUp
+          end
+        end
+      end
+    end
+    object TabSheetChest: TTabSheet
+      Caption = #12450#12452#12486#12512#12496#12483#12464
+      ImageIndex = 3
+      object BagTopPanel: TPanel
+        Left = 0
+        Top = 0
+        Width = 272
+        Height = 96
+        Align = alTop
+        BevelOuter = bvNone
+        TabOrder = 0
+        object Label9: TLabel
+          Left = 12
+          Top = 43
+          Width = 51
+          Height = 13
+          Caption = #12473#12525#12483#12488#25968#65306
+        end
+        object SlotLabel: TLabel
+          Left = 76
+          Top = 43
+          Width = 22
+          Height = 13
+          Caption = '0 / 0'
+        end
+        object BagPnlButton: TPanel
+          Left = 12
+          Top = 6
+          Width = 130
+          Height = 25
+          BevelInner = bvRaised
+          Caption = #12450#12452#12486#12512#12496#12483#12464#34920#31034#26356#26032
+          TabOrder = 0
+          OnClick = BagPnlButtonClick
+          OnMouseDown = PanelButtonMouseDown
+          OnMouseUp = PanelButtonMouseUp
+        end
+        object ChestPnlButton: TPanel
+          Left = 162
+          Top = 6
+          Width = 90
+          Height = 25
+          BevelInner = bvRaised
+          Caption = #23453#31665#12434#38283#12369#12427
+          TabOrder = 1
+          OnClick = ChestPnlButtonClick
+          OnMouseDown = PanelButtonMouseDown
+          OnMouseUp = PanelButtonMouseUp
+        end
+        object SlotPnlButton: TPanel
+          Left = 162
+          Top = 36
+          Width = 90
+          Height = 25
+          BevelInner = bvRaised
+          Caption = #12473#12525#12483#12488#36861#21152
+          TabOrder = 2
+          OnClick = SlotPnlButtonClick
+          OnMouseDown = PanelButtonMouseDown
+          OnMouseUp = PanelButtonMouseUp
+        end
+        object RecycleAllPnlButton: TPanel
+          Left = 12
+          Top = 66
+          Width = 240
+          Height = 25
+          BevelInner = bvRaised
+          Caption = #12525#12483#12463#12373#12428#12390#12356#12394#12356#35013#20633#12434#12377#12409#12390#35299#20307
+          TabOrder = 3
+          OnClick = RecycleAllPnlButtonClick
+          OnMouseDown = PanelButtonMouseDown
+          OnMouseUp = PanelButtonMouseUp
+        end
+      end
+      object PageControlItemBag: TPageControl
+        Left = 0
+        Top = 96
+        Width = 272
+        Height = 359
+        ActivePage = TabSheetUsing
+        Align = alClient
+        TabOrder = 1
+        OnDrawTab = PageControlItemBagDrawTab
+        object TabSheetUsing: TTabSheet
+          Caption = #35013#20633#20013
+          OnResize = TabSheetUsingResize
+          object UsingPanel: TPanel
+            Left = 0
+            Top = 0
+            Width = 264
+            Height = 331
+            Align = alClient
+            BevelOuter = bvNone
+            TabOrder = 0
+            object UsingWeaponLabel: TLabel
+              Left = 2
+              Top = 7
+              Width = 24
+              Height = 13
+              Caption = #27494#22120
+            end
+            object UsingArmorLabel: TLabel
+              Left = 2
+              Top = 100
+              Width = 24
+              Height = 13
+              Caption = #38450#20855
+            end
+            object ListViewWeaponUsing: TListView
+              Left = 0
+              Top = 25
+              Width = 250
+              Height = 59
+              BevelInner = bvNone
+              BevelOuter = bvNone
+              Columns = <
+                item
+                  Caption = #12288
+                  Width = 10
+                end
+                item
+                  Alignment = taCenter
+                  Caption = #65434#65393#65432#65411#65384
+                  Width = 36
+                end
+                item
+                  Caption = #21517#31216
+                  Width = 100
+                end
+                item
+                  Alignment = taCenter
+                  Caption = 'ATK'
+                end
+                item
+                  Alignment = taRightJustify
+                  Caption = 'SPD'
+                  Width = 36
+                end
+                item
+                  Alignment = taRightJustify
+                  Caption = 'CRIT'
+                  Width = 40
+                end
+                item
+                  Caption = 'ELEM'
+                end
+                item
+                  Alignment = taRightJustify
+                  Caption = 'MOD'
+                  Width = 30
+                end
+                item
+                  Alignment = taRightJustify
+                  Caption = #12510#12522#12514
+                end>
+              Ctl3D = False
+              FlatScrollBars = True
+              ReadOnly = True
+              RowSelect = True
+              TabOrder = 0
+              ViewStyle = vsReport
+            end
+            object RemWeaponPnlButton: TPanel
+              Left = 48
+              Top = 2
+              Width = 60
+              Height = 22
+              BevelInner = bvRaised
+              Caption = #22806#12377
+              Enabled = False
+              TabOrder = 1
+              OnClick = RemWeaponPnlButtonClick
+              OnMouseDown = PanelButtonMouseDown
+              OnMouseUp = PanelButtonMouseUp
+            end
+            object RemArmorPnlButton: TPanel
+              Left = 48
+              Top = 95
+              Width = 60
+              Height = 22
+              BevelInner = bvRaised
+              Caption = #22806#12377
+              Enabled = False
+              TabOrder = 2
+              OnClick = RemArmorPnlButtonClick
+              OnMouseDown = PanelButtonMouseDown
+              OnMouseUp = PanelButtonMouseUp
+            end
+            object ListViewArmorUsing: TListView
+              Left = 3
+              Top = 120
+              Width = 250
+              Height = 59
+              BevelInner = bvNone
+              BevelOuter = bvNone
+              Columns = <
+                item
+                  Caption = #12288
+                  Width = 10
+                end
+                item
+                  Alignment = taCenter
+                  Caption = #65434#65393#65432#65411#65384
+                  Width = 36
+                end
+                item
+                  Caption = #21517#31216
+                  Width = 100
+                end
+                item
+                  Alignment = taCenter
+                  Caption = 'DEF'
+                end
+                item
+                  Alignment = taRightJustify
+                  Caption = 'WT.'
+                  Width = 36
+                end
+                item
+                  Alignment = taRightJustify
+                  Caption = 'CRIT'
+                  Width = 40
+                end
+                item
+                  Caption = 'ELEM'
+                end
+                item
+                  Alignment = taRightJustify
+                  Caption = 'MOD'
+                  Width = 30
+                end
+                item
+                  Alignment = taRightJustify
+                  Caption = #12510#12522#12514
+                end>
+              Ctl3D = False
+              FlatScrollBars = True
+              ReadOnly = True
+              RowSelect = True
+              TabOrder = 3
+              ViewStyle = vsReport
+            end
+          end
+        end
+        object TabSheetWeapon: TTabSheet
+          Caption = #27494#22120
+          ImageIndex = 1
+          ExplicitLeft = 0
+          ExplicitTop = 0
+          ExplicitWidth = 0
+          ExplicitHeight = 0
+          object WeaponTopPanel: TPanel
+            Left = 0
+            Top = 0
+            Width = 264
+            Height = 30
+            Align = alTop
+            BevelOuter = bvNone
+            TabOrder = 0
+            object WeaponAllCheckBox: TCheckBox
+              Left = 4
+              Top = 12
+              Width = 18
+              Height = 17
+              TabStop = False
+              Caption = #12288
+              TabOrder = 0
+              OnClick = WeaponAllCheckBoxClick
+            end
+            object RecycleWPnlButton: TPanel
+              Left = 138
+              Top = 4
+              Width = 44
+              Height = 22
+              BevelInner = bvRaised
+              Caption = #20998#35299
+              Enabled = False
+              TabOrder = 1
+              OnClick = RecycleWPnlButtonClick
+              OnMouseDown = PanelButtonMouseDown
+              OnMouseUp = PanelButtonMouseUp
+            end
+            object UnlockWPnlButton: TPanel
+              Left = 76
+              Top = 4
+              Width = 60
+              Height = 22
+              BevelInner = bvRaised
+              Caption = #12450#12531#12525#12483#12463
+              Enabled = False
+              TabOrder = 2
+              OnClick = UnlockWPnlButtonClick
+              OnMouseDown = PanelButtonMouseDown
+              OnMouseUp = PanelButtonMouseUp
+            end
+            object LockWPnlButton: TPanel
+              Left = 30
+              Top = 4
+              Width = 44
+              Height = 22
+              BevelInner = bvRaised
+              Caption = #12525#12483#12463
+              Enabled = False
+              TabOrder = 3
+              OnClick = LockWPnlButtonClick
+              OnMouseDown = PanelButtonMouseDown
+              OnMouseUp = PanelButtonMouseUp
+            end
+            object UseWPnlButton: TPanel
+              Left = 184
+              Top = 4
+              Width = 44
+              Height = 22
+              BevelInner = bvRaised
+              Caption = #35013#20633
+              Enabled = False
+              TabOrder = 4
+              OnClick = UseWPnlButtonClick
+              OnMouseDown = PanelButtonMouseDown
+              OnMouseUp = PanelButtonMouseUp
+            end
+          end
+          object ListViewWeapon: TListView
+            Left = 0
+            Top = 30
+            Width = 264
+            Height = 301
+            Align = alClient
+            BevelInner = bvNone
+            BevelOuter = bvNone
+            Checkboxes = True
+            Columns = <
+              item
+                Caption = #65435#65391#65400#29366#24907
+                Width = 60
+              end
+              item
+                Alignment = taCenter
+                Caption = #65434#65393#65432#65411#65384
+                Width = 36
+              end
+              item
+                Caption = #21517#31216
+                Width = 100
+              end
+              item
+                Alignment = taCenter
+                Caption = 'ATK'
+              end
+              item
+                Alignment = taRightJustify
+                Caption = 'SPD'
+                Width = 36
+              end
+              item
+                Alignment = taRightJustify
+                Caption = 'CRIT'
+                Width = 40
+              end
+              item
+                Caption = 'ELEM'
+              end
+              item
+                Alignment = taRightJustify
+                Caption = 'MOD'
+                Width = 30
+              end
+              item
+                Alignment = taRightJustify
+                Caption = #12510#12522#12514
+              end>
+            Ctl3D = False
+            FlatScrollBars = True
+            ReadOnly = True
+            RowSelect = True
+            SmallImages = BagImageList
+            TabOrder = 1
+            ViewStyle = vsReport
+            OnChange = ListViewWeaponChange
+          end
+        end
+        object TabSheetArmor: TTabSheet
+          Caption = #38450#20855
           ImageIndex = 2
           ExplicitLeft = 0
           ExplicitTop = 0
           ExplicitWidth = 0
           ExplicitHeight = 0
-          object GroupBox1: TGroupBox
-            Left = 10
-            Top = 12
-            Width = 242
-            Height = 85
-            Caption = #37444#12398#12461#12540
-            TabOrder = 0
-          end
-          object GroupBox2: TGroupBox
-            Left = 8
-            Top = 103
-            Width = 246
-            Height = 85
-            Caption = #37444#12398#22823#30770#12398#29577
-            TabOrder = 1
-            object Label6: TLabel
-              Left = 16
-              Top = 24
-              Width = 51
-              Height = 13
-              Caption = #20316#25104#25968'(&A)'
-              FocusControl = CBAmountComboBox
-            end
-            object Label7: TLabel
-              Left = 160
-              Top = 24
-              Width = 40
-              Height = 13
-              Caption = #37444#12398#37327#65306
-            end
-            object CBIronLabel: TLabel
-              Left = 202
-              Top = 24
-              Width = 6
-              Height = 13
-              Caption = '0'
-            end
-            object CBAmountComboBox: TComboBox
-              Left = 76
-              Top = 20
-              Width = 70
-              Height = 21
-              ItemHeight = 0
-              MaxLength = 4
-              TabOrder = 0
-              OnChange = CBAmountComboBoxChange
-              Items.Strings = (
-                '1'
-                '2'
-                '3'
-                '4'
-                '5'
-                '10'
-                '15'
-                '20'
-                '30')
-            end
-            object CraftCBPnlButton: TPanel
-              Left = 152
-              Top = 47
-              Width = 83
-              Height = 25
-              BevelInner = bvRaised
-              Caption = #20316#25104
-              TabOrder = 1
-              OnClick = CraftCBPnlButtonClick
-              OnMouseDown = PanelButtonMouseDown
-              OnMouseUp = PanelButtonMouseUp
-            end
-          end
-        end
-        object TabSheetChest: TTabSheet
-          Caption = #12450#12452#12486#12512#12496#12483#12464
-          ImageIndex = 3
-          object BagTopPanel: TPanel
+          object ArmorTopPanel: TPanel
             Left = 0
             Top = 0
             Width = 264
-            Height = 96
+            Height = 30
             Align = alTop
             BevelOuter = bvNone
             TabOrder = 0
-            object Label9: TLabel
-              Left = 12
-              Top = 43
-              Width = 51
-              Height = 13
-              Caption = #12473#12525#12483#12488#25968#65306
-            end
-            object SlotLabel: TLabel
-              Left = 76
-              Top = 43
-              Width = 22
-              Height = 13
-              Caption = '0 / 0'
-            end
-            object BagPnlButton: TPanel
-              Left = 12
-              Top = 6
-              Width = 130
-              Height = 25
-              BevelInner = bvRaised
-              Caption = #12450#12452#12486#12512#12496#12483#12464#34920#31034#26356#26032
+            object ArmorAllCheckBox: TCheckBox
+              Left = 4
+              Top = 12
+              Width = 18
+              Height = 17
+              TabStop = False
+              Caption = #12288
               TabOrder = 0
-              OnClick = BagPnlButtonClick
-              OnMouseDown = PanelButtonMouseDown
-              OnMouseUp = PanelButtonMouseUp
+              OnClick = ArmorAllCheckBoxClick
             end
-            object ChestPnlButton: TPanel
-              Left = 162
-              Top = 6
-              Width = 90
-              Height = 25
+            object LockAPnlButton: TPanel
+              Left = 30
+              Top = 4
+              Width = 44
+              Height = 22
               BevelInner = bvRaised
-              Caption = #23453#31665#12434#38283#12369#12427
+              Caption = #12525#12483#12463
+              Enabled = False
               TabOrder = 1
-              OnClick = ChestPnlButtonClick
+              OnClick = LockAPnlButtonClick
               OnMouseDown = PanelButtonMouseDown
               OnMouseUp = PanelButtonMouseUp
             end
-            object SlotPnlButton: TPanel
-              Left = 162
-              Top = 36
-              Width = 90
-              Height = 25
+            object UnlockAPnlButton: TPanel
+              Left = 76
+              Top = 4
+              Width = 60
+              Height = 22
               BevelInner = bvRaised
-              Caption = #12473#12525#12483#12488#36861#21152
+              Caption = #12450#12531#12525#12483#12463
+              Enabled = False
               TabOrder = 2
-              OnClick = SlotPnlButtonClick
+              OnClick = UnlockAPnlButtonClick
               OnMouseDown = PanelButtonMouseDown
               OnMouseUp = PanelButtonMouseUp
             end
-            object RecycleAllPnlButton: TPanel
-              Left = 12
-              Top = 66
-              Width = 240
-              Height = 25
+            object RecycleAPnlButton: TPanel
+              Left = 138
+              Top = 4
+              Width = 44
+              Height = 22
               BevelInner = bvRaised
-              Caption = #12525#12483#12463#12373#12428#12390#12356#12394#12356#35013#20633#12434#12377#12409#12390#35299#20307
+              Caption = #20998#35299
+              Enabled = False
               TabOrder = 3
-              OnClick = RecycleAllPnlButtonClick
+              OnClick = RecycleAPnlButtonClick
+              OnMouseDown = PanelButtonMouseDown
+              OnMouseUp = PanelButtonMouseUp
+            end
+            object UseAPnlButton: TPanel
+              Left = 184
+              Top = 4
+              Width = 44
+              Height = 22
+              BevelInner = bvRaised
+              Caption = #35013#20633
+              Enabled = False
+              TabOrder = 4
+              OnClick = UseAPnlButtonClick
               OnMouseDown = PanelButtonMouseDown
               OnMouseUp = PanelButtonMouseUp
             end
           end
-          object PageControlItemBag: TPageControl
+          object ListViewArmor: TListView
             Left = 0
-            Top = 96
+            Top = 30
             Width = 264
-            Height = 251
-            ActivePage = TabSheetArmor
+            Height = 301
             Align = alClient
+            BevelInner = bvNone
+            BevelOuter = bvNone
+            Checkboxes = True
+            Columns = <
+              item
+                Caption = #65435#65391#65400#29366#24907
+                Width = 60
+              end
+              item
+                Alignment = taCenter
+                Caption = #65434#65393#65432#65411#65384
+                Width = 36
+              end
+              item
+                Caption = #21517#31216
+                Width = 100
+              end
+              item
+                Alignment = taCenter
+                Caption = 'DEF'
+              end
+              item
+                Alignment = taRightJustify
+                Caption = 'WT.'
+                Width = 36
+              end
+              item
+                Alignment = taRightJustify
+                Caption = 'CRIT'
+                Width = 40
+              end
+              item
+                Caption = 'ELEM'
+              end
+              item
+                Alignment = taRightJustify
+                Caption = 'MOD'
+                Width = 30
+              end
+              item
+                Alignment = taRightJustify
+                Caption = #12510#12522#12514
+              end>
+            Ctl3D = False
+            FlatScrollBars = True
+            ReadOnly = True
+            RowSelect = True
+            SmallImages = BagImageList
             TabOrder = 1
-            OnDrawTab = PageControlItemBagDrawTab
-            object TabSheetUsing: TTabSheet
-              Caption = #35013#20633#20013
-              OnResize = TabSheetUsingResize
-              ExplicitLeft = 0
-              ExplicitTop = 0
-              ExplicitWidth = 0
-              ExplicitHeight = 0
-              object Label10: TLabel
-                Left = 2
-                Top = 7
-                Width = 24
-                Height = 13
-                Caption = #27494#22120
-              end
-              object Label11: TLabel
-                Left = 2
-                Top = 100
-                Width = 24
-                Height = 13
-                Caption = #38450#20855
-              end
-              object ListViewWeaponUsing: TListView
-                Left = 0
-                Top = 25
-                Width = 250
-                Height = 59
-                BevelInner = bvNone
-                BevelOuter = bvNone
-                Columns = <
-                  item
-                    Caption = #12288
-                    Width = 10
-                  end
-                  item
-                    Alignment = taCenter
-                    Caption = #65434#65393#65432#65411#65384
-                    Width = 36
-                  end
-                  item
-                    Caption = #21517#31216
-                    Width = 100
-                  end
-                  item
-                    Alignment = taCenter
-                    Caption = 'ATK'
-                  end
-                  item
-                    Alignment = taRightJustify
-                    Caption = 'SPD'
-                    Width = 36
-                  end
-                  item
-                    Alignment = taRightJustify
-                    Caption = 'CRIT'
-                    Width = 40
-                  end
-                  item
-                    Caption = 'ELEM'
-                  end
-                  item
-                    Alignment = taRightJustify
-                    Caption = 'MOD'
-                    Width = 30
-                  end
-                  item
-                    Alignment = taRightJustify
-                    Caption = #12510#12522#12514
-                  end>
-                Ctl3D = False
-                FlatScrollBars = True
-                ReadOnly = True
-                RowSelect = True
-                TabOrder = 0
-                ViewStyle = vsReport
-              end
-              object RemWeaponPnlButton: TPanel
-                Left = 48
-                Top = 2
-                Width = 60
-                Height = 22
-                BevelInner = bvRaised
-                Caption = #22806#12377
-                Enabled = False
-                TabOrder = 1
-                OnClick = RemWeaponPnlButtonClick
-                OnMouseDown = PanelButtonMouseDown
-                OnMouseUp = PanelButtonMouseUp
-              end
-              object RemArmorPnlButton: TPanel
-                Left = 48
-                Top = 95
-                Width = 60
-                Height = 22
-                BevelInner = bvRaised
-                Caption = #22806#12377
-                Enabled = False
-                TabOrder = 2
-                OnClick = RemArmorPnlButtonClick
-                OnMouseDown = PanelButtonMouseDown
-                OnMouseUp = PanelButtonMouseUp
-              end
-              object ListViewArmorUsing: TListView
-                Left = 3
-                Top = 120
-                Width = 250
-                Height = 59
-                BevelInner = bvNone
-                BevelOuter = bvNone
-                Columns = <
-                  item
-                    Caption = #12288
-                    Width = 10
-                  end
-                  item
-                    Alignment = taCenter
-                    Caption = #65434#65393#65432#65411#65384
-                    Width = 36
-                  end
-                  item
-                    Caption = #21517#31216
-                    Width = 100
-                  end
-                  item
-                    Alignment = taCenter
-                    Caption = 'DEF'
-                  end
-                  item
-                    Alignment = taRightJustify
-                    Caption = 'WT.'
-                    Width = 36
-                  end
-                  item
-                    Alignment = taRightJustify
-                    Caption = 'CRIT'
-                    Width = 40
-                  end
-                  item
-                    Caption = 'ELEM'
-                  end
-                  item
-                    Alignment = taRightJustify
-                    Caption = 'MOD'
-                    Width = 30
-                  end
-                  item
-                    Alignment = taRightJustify
-                    Caption = #12510#12522#12514
-                  end>
-                Ctl3D = False
-                FlatScrollBars = True
-                ReadOnly = True
-                RowSelect = True
-                TabOrder = 3
-                ViewStyle = vsReport
-              end
-            end
-            object TabSheetWeapon: TTabSheet
-              Caption = #27494#22120
-              ImageIndex = 1
-              ExplicitLeft = 0
-              ExplicitTop = 0
-              ExplicitWidth = 0
-              ExplicitHeight = 0
-              object WeaponTopPanel: TPanel
-                Left = 0
-                Top = 0
-                Width = 256
-                Height = 30
-                Align = alTop
-                BevelOuter = bvNone
-                TabOrder = 0
-                object WeaponAllCheckBox: TCheckBox
-                  Left = 4
-                  Top = 12
-                  Width = 18
-                  Height = 17
-                  TabStop = False
-                  Caption = #12288
-                  TabOrder = 0
-                  OnClick = WeaponAllCheckBoxClick
-                end
-                object RecycleWPnlButton: TPanel
-                  Left = 138
-                  Top = 4
-                  Width = 44
-                  Height = 22
-                  BevelInner = bvRaised
-                  Caption = #20998#35299
-                  Enabled = False
-                  TabOrder = 1
-                  OnClick = RecycleWPnlButtonClick
-                  OnMouseDown = PanelButtonMouseDown
-                  OnMouseUp = PanelButtonMouseUp
-                end
-                object UnlockWPnlButton: TPanel
-                  Left = 76
-                  Top = 4
-                  Width = 60
-                  Height = 22
-                  BevelInner = bvRaised
-                  Caption = #12450#12531#12525#12483#12463
-                  Enabled = False
-                  TabOrder = 2
-                  OnClick = UnlockWPnlButtonClick
-                  OnMouseDown = PanelButtonMouseDown
-                  OnMouseUp = PanelButtonMouseUp
-                end
-                object LockWPnlButton: TPanel
-                  Left = 30
-                  Top = 4
-                  Width = 44
-                  Height = 22
-                  BevelInner = bvRaised
-                  Caption = #12525#12483#12463
-                  Enabled = False
-                  TabOrder = 3
-                  OnClick = LockWPnlButtonClick
-                  OnMouseDown = PanelButtonMouseDown
-                  OnMouseUp = PanelButtonMouseUp
-                end
-                object UseWPnlButton: TPanel
-                  Left = 184
-                  Top = 4
-                  Width = 44
-                  Height = 22
-                  BevelInner = bvRaised
-                  Caption = #35013#20633
-                  Enabled = False
-                  TabOrder = 4
-                  OnClick = UseWPnlButtonClick
-                  OnMouseDown = PanelButtonMouseDown
-                  OnMouseUp = PanelButtonMouseUp
-                end
-              end
-              object ListViewWeapon: TListView
-                Left = 0
-                Top = 30
-                Width = 256
-                Height = 193
-                Align = alClient
-                BevelInner = bvNone
-                BevelOuter = bvNone
-                Checkboxes = True
-                Columns = <
-                  item
-                    Caption = #65435#65391#65400#29366#24907
-                    Width = 60
-                  end
-                  item
-                    Alignment = taCenter
-                    Caption = #65434#65393#65432#65411#65384
-                    Width = 36
-                  end
-                  item
-                    Caption = #21517#31216
-                    Width = 100
-                  end
-                  item
-                    Alignment = taCenter
-                    Caption = 'ATK'
-                  end
-                  item
-                    Alignment = taRightJustify
-                    Caption = 'SPD'
-                    Width = 36
-                  end
-                  item
-                    Alignment = taRightJustify
-                    Caption = 'CRIT'
-                    Width = 40
-                  end
-                  item
-                    Caption = 'ELEM'
-                  end
-                  item
-                    Alignment = taRightJustify
-                    Caption = 'MOD'
-                    Width = 30
-                  end
-                  item
-                    Alignment = taRightJustify
-                    Caption = #12510#12522#12514
-                  end>
-                Ctl3D = False
-                FlatScrollBars = True
-                ReadOnly = True
-                RowSelect = True
-                SmallImages = BagImageList
-                TabOrder = 1
-                ViewStyle = vsReport
-                OnChange = ListViewWeaponChange
-              end
-            end
-            object TabSheetArmor: TTabSheet
-              Caption = #38450#20855
-              ImageIndex = 2
-              object ArmorTopPanel: TPanel
-                Left = 0
-                Top = 0
-                Width = 256
-                Height = 30
-                Align = alTop
-                BevelOuter = bvNone
-                TabOrder = 0
-                object ArmorAllCheckBox: TCheckBox
-                  Left = 4
-                  Top = 12
-                  Width = 18
-                  Height = 17
-                  TabStop = False
-                  Caption = #12288
-                  TabOrder = 0
-                  OnClick = ArmorAllCheckBoxClick
-                end
-                object LockAPnlButton: TPanel
-                  Left = 30
-                  Top = 4
-                  Width = 44
-                  Height = 22
-                  BevelInner = bvRaised
-                  Caption = #12525#12483#12463
-                  Enabled = False
-                  TabOrder = 1
-                  OnClick = LockAPnlButtonClick
-                  OnMouseDown = PanelButtonMouseDown
-                  OnMouseUp = PanelButtonMouseUp
-                end
-                object UnlockAPnlButton: TPanel
-                  Left = 76
-                  Top = 4
-                  Width = 60
-                  Height = 22
-                  BevelInner = bvRaised
-                  Caption = #12450#12531#12525#12483#12463
-                  Enabled = False
-                  TabOrder = 2
-                  OnClick = UnlockAPnlButtonClick
-                  OnMouseDown = PanelButtonMouseDown
-                  OnMouseUp = PanelButtonMouseUp
-                end
-                object RecycleAPnlButton: TPanel
-                  Left = 138
-                  Top = 4
-                  Width = 44
-                  Height = 22
-                  BevelInner = bvRaised
-                  Caption = #20998#35299
-                  Enabled = False
-                  TabOrder = 3
-                  OnClick = RecycleAPnlButtonClick
-                  OnMouseDown = PanelButtonMouseDown
-                  OnMouseUp = PanelButtonMouseUp
-                end
-                object UseAPnlButton: TPanel
-                  Left = 184
-                  Top = 4
-                  Width = 44
-                  Height = 22
-                  BevelInner = bvRaised
-                  Caption = #35013#20633
-                  Enabled = False
-                  TabOrder = 4
-                  OnClick = UseAPnlButtonClick
-                  OnMouseDown = PanelButtonMouseDown
-                  OnMouseUp = PanelButtonMouseUp
-                end
-              end
-              object ListViewArmor: TListView
-                Left = 0
-                Top = 30
-                Width = 256
-                Height = 193
-                Align = alClient
-                BevelInner = bvNone
-                BevelOuter = bvNone
-                Checkboxes = True
-                Columns = <
-                  item
-                    Caption = #65435#65391#65400#29366#24907
-                    Width = 60
-                  end
-                  item
-                    Alignment = taCenter
-                    Caption = #65434#65393#65432#65411#65384
-                    Width = 36
-                  end
-                  item
-                    Caption = #21517#31216
-                    Width = 100
-                  end
-                  item
-                    Alignment = taCenter
-                    Caption = 'DEF'
-                  end
-                  item
-                    Alignment = taRightJustify
-                    Caption = 'WT.'
-                    Width = 36
-                  end
-                  item
-                    Alignment = taRightJustify
-                    Caption = 'CRIT'
-                    Width = 40
-                  end
-                  item
-                    Caption = 'ELEM'
-                  end
-                  item
-                    Alignment = taRightJustify
-                    Caption = 'MOD'
-                    Width = 30
-                  end
-                  item
-                    Alignment = taRightJustify
-                    Caption = #12510#12522#12514
-                  end>
-                Ctl3D = False
-                FlatScrollBars = True
-                ReadOnly = True
-                RowSelect = True
-                SmallImages = BagImageList
-                TabOrder = 1
-                ViewStyle = vsReport
-                OnChange = ListViewArmorChange
-              end
-            end
+            ViewStyle = vsReport
+            OnChange = ListViewArmorChange
           end
         end
       end
@@ -1015,7 +1242,7 @@ object DonguriForm: TDonguriForm
         Left = 12
         Top = 12
         Width = 245
-        Height = 118
+        Height = 117
         Caption = #12393#12435#12368#12426#12471#12473#12486#12512
         TabOrder = 0
         object Label8: TLabel
@@ -1051,7 +1278,7 @@ object DonguriForm: TDonguriForm
       end
       object CannonGroupBox: TGroupBox
         Left = 12
-        Top = 142
+        Top = 135
         Width = 245
         Height = 51
         Caption = #12393#12435#12368#12426#22823#30770
@@ -1076,10 +1303,10 @@ object DonguriForm: TDonguriForm
     Top = 24
   end
   object BagImageList: TImageList
-    Left = 200
-    Top = 456
+    Left = 224
+    Top = 288
     Bitmap = {
-      494C01010A001400180010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01010A001400440010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000003000000001002000000000000030
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000

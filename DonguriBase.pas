@@ -15,17 +15,12 @@ type
     PanelTop: TPanel;
     PageControl: TPageControl;
     TabSheetHome: TTabSheet;
-    TabSheetHunter: TTabSheet;
+    TabSheetService: TTabSheet;
     SpeedButtonTopMost: TSpeedButton;
-    PanelHome: TPanel;
     MsgLabel: TLabel;
     PanelHunterTop: TPanel;
-    PageControlHunter: TPageControl;
-    TabSheetRename: TTabSheet;
-    TabSheetCraft: TTabSheet;
     TabSheetSetting: TTabSheet;
-    TabSheetChest: TTabSheet;
-    PanelHomeTop: TPanel;
+    PanelHome: TPanel;
     Label1: TLabel;
     LabelUserType: TLabel;
     Label2: TLabel;
@@ -75,9 +70,9 @@ type
     TabSheetWeapon: TTabSheet;
     TabSheetArmor: TTabSheet;
     BagTopPanel: TPanel;
-    Label10: TLabel;
+    UsingWeaponLabel: TLabel;
     RemWeaponPnlButton: TPanel;
-    Label11: TLabel;
+    UsingArmorLabel: TLabel;
     RemArmorPnlButton: TPanel;
     ListViewArmorUsing: TListView;
     WeaponTopPanel: TPanel;
@@ -96,6 +91,35 @@ type
     RecycleAllPnlButton: TPanel;
     UseAPnlButton: TPanel;
     UseWPnlButton: TPanel;
+    Label12: TLabel;
+    Label13: TLabel;
+    ExprProgressBar: TProgressBar;
+    TimeProgressBar: TProgressBar;
+    ExplorProgressBar: TProgressBar;
+    MiningProgressBar: TProgressBar;
+    WoodctProgressBar: TProgressBar;
+    WeaponProgressBar: TProgressBar;
+    ArmorcProgressBar: TProgressBar;
+    ExprValLabel: TLabel;
+    TimeValLabel: TLabel;
+    ExplorValLabel: TLabel;
+    MiningValLabel: TLabel;
+    WoodctValLabel: TLabel;
+    WeaponValLabel: TLabel;
+    ArmorcValLabel: TLabel;
+    ExplorPanel: TPanel;
+    MiningPanel: TPanel;
+    WoodctPanel: TPanel;
+    WeaponPanel: TPanel;
+    ArmorcPanel: TPanel;
+    Label14: TLabel;
+    KYAmountComboBox: TComboBox;
+    Label15: TLabel;
+    KYIronLabel: TLabel;
+    CraftKYPnlButton: TPanel;
+    TabSheetChest: TTabSheet;
+    GroupBoxCraft: TGroupBox;
+    UsingPanel: TPanel;
     procedure TimerInitTimer(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCreate(Sender: TObject);
@@ -105,8 +129,6 @@ type
     procedure ColorRadioGroupClick(Sender: TObject);
     procedure PageControlDrawTab(Control: TCustomTabControl; TabIndex: Integer;
       const Rect: TRect; Active: Boolean);
-    procedure PageControlHunterDrawTab(Control: TCustomTabControl;
-      TabIndex: Integer; const Rect: TRect; Active: Boolean);
     procedure CBAmountComboBoxChange(Sender: TObject);
     procedure ExplorPnlButtonClick(Sender: TObject);
     procedure PanelButtonMouseDown(Sender: TObject; Button: TMouseButton;
@@ -150,6 +172,8 @@ type
     procedure UseWPnlButtonClick(Sender: TObject);
     procedure UseAPnlButtonClick(Sender: TObject);
     procedure SlotPnlButtonClick(Sender: TObject);
+    procedure CraftKYPnlButtonClick(Sender: TObject);
+    procedure KYAmountComboBoxChange(Sender: TObject);
   private
     { Private declarations }
     FHunter: Boolean;
@@ -160,13 +184,14 @@ type
     procedure SetButtonColor;
     procedure SetColors(control: TControl; bkg, txt: TColor);
     procedure SetButtonColors(button: TPanel; bkg, txt, dtx: TColor);
+    procedure SetBtnCol(button: TPanel);
     procedure ClearInfoValue;
     procedure ShowRoot;
     function Parsing(html: String): Boolean;
     procedure ShowHttpError;
     function MsgBox(const hWnd: HWND; const Text, Caption: string; Flags: Longint = MB_OK): Integer;
     procedure DrawTab(TabCanvas: TCanvas; TabIndex: Integer; TabCaption: String; const Rect: TRect; Active: Boolean);
-    function GetCBAmount: Integer;
+    function GetCmbAmount(cmb: TComboBox): Integer;
     procedure RedrawControl(h: HWND);
     procedure ShowBag;
     procedure CheckCount(list: TListView; var lock, unlock: Integer);
@@ -174,6 +199,7 @@ type
     procedure UnlockItem(list: TListView);
     procedure RecycleItem(list: TListView);
     procedure UseItem(list: TListView);
+    function GetProgressPosition(prg: string): Integer;
 	protected
 		procedure CreateParams(var Params: TCreateParams); override;
   public
@@ -197,32 +223,18 @@ type
     idxWdCnBall  = 4,
     idxIrCnBall  = 5,
     idxMarimo    = 6,
-    idxExplrtn   = 7,
-    idxMining    = 8,
-    idxFelling   = 9,
-    idxArmsWork  = 10,
-    idxProtector = 11,
-    idxRowCount  = 12);
+    idxRowCount  = 7);
 
 const
-  COL_NAME: array [0..11] of string  = (
-    '　種子残高',
+  COL_NAME: array [0..6] of string  = (
+    '　どんぐり残高',
   	'　木材の数',
     '　鉄の数',
     '　鉄のキー',
     '　木製の大砲の玉',
     '　鉄の大砲の玉',
-    '　マリモ',
-    '　探検',
-    '　採掘',
-    '　木こり',
-    '　武器製作',
-    '　防具製作'
+    '　マリモ'
     );
-	NAME_DNG: array [0..1] of string = (
-    '　種子残高',
-    '　どんぐり残高'
-	  );
   NAME_ID: array [0..1] of string = (
     '警備員ID：',
     'ハンターID：'
@@ -252,12 +264,12 @@ end;
 procedure TDonguriForm.FormCreate(Sender: TObject);
 var
 	i: Integer;
+	wp: TWindowPlacement;
 begin
 	FHunter := False;
 	FBag := TDonguriBag.Create;
 
 	PageControl.ActivePageIndex := 0;
-  PageControlHunter.ActivePageIndex := 0;
   PageControlItemBag.ActivePageIndex := 0;
 
   InfoGrid.RowCount := Integer(idxRowCount);
@@ -267,19 +279,20 @@ begin
 
 	SetMode;
 
-	Left   := GikoSys.Setting.DonguriLeft;
-	Top    := GikoSys.Setting.DonguriTop;
-  Width  := GikoSys.Setting.DonguriWidth;
-	Height := GikoSys.Setting.DonguriHeight;
+	wp.length := sizeof(wp);
+	wp.rcNormalPosition.Top    := GikoSys.Setting.DonguriTop;
+	wp.rcNormalPosition.Left   := GikoSys.Setting.DonguriLeft;
+	wp.rcNormalPosition.Bottom := GikoSys.Setting.DonguriTop + GikoSys.Setting.DonguriHeight;
+	wp.rcNormalPosition.Right  := GikoSys.Setting.DonguriLeft + GikoSys.Setting.DonguriWidth;
+	wp.showCmd := SW_SHOW;
+	SetWindowPlacement(Handle, @wp);
 
   TaskBarCheckBox.Checked   := GikoSys.Setting.DonguriTaskBar;
 	ColorRadioGroup.ItemIndex := GikoSys.Setting.DonguriTheme;
 	SetColor;
   CannonMenuCheckBox.Checked := GikoSys.Setting.DonguriMenuTop;
 
-  LabelPeriod.Caption := ' ';
-  LabelD.Caption := ' ';
-  LabelK.Caption := ' ';
+  ClearInfoValue;
 
 	TimerInit.Enabled := True;
 end;
@@ -353,10 +366,8 @@ begin
 		idx := 0;
 
 	LabelID.Caption := NAME_ID[idx];
-  InfoGrid.Cells[0, Integer(idxDonguri)] := NAME_DNG[idx];
 
-  ResurrectPnlButton.Enabled := FHunter;
-  PageControlHunter.Enabled := FHunter;
+  //ResurrectPnlButton.Enabled := FHunter;
 
   SetButtonColor;
 end;
@@ -386,16 +397,36 @@ procedure TDonguriForm.ClearInfoValue;
 var
 	i: Integer;
 begin
-	LabelPeriod.Caption := '';
+	LabelPeriod.Caption := ' ';
 	LabelUserType.Caption := ' ';
-	EditName.Text := '';
-	EditID.Text := '';
-	EditLevel.Text := '';
-	LabelK.Caption := '';
-	LabelD.Caption := '';
+	EditName.Text := ' ';
+	EditID.Text := ' ';
+	EditLevel.Text := ' ';
+	LabelK.Caption := ' ';
+	LabelD.Caption := ' ';
+  ExplorPanel.Caption := ' ';
+  MiningPanel.Caption := ' ';
+  WoodctPanel.Caption := ' ';
+  WeaponPanel.Caption := ' ';
+  ArmorcPanel.Caption := ' ';
 
 	for i := 0 to Integer(idxRowCount) - 1 do
 	  InfoGrid.Cells[1, i] := '';
+
+  ExprProgressBar.Position := 0;
+  TimeProgressBar.Position := 0;
+  ExplorProgressBar.Position := 0;
+  MiningProgressBar.Position := 0;
+  WoodctProgressBar.Position := 0;
+  WeaponProgressBar.Position := 0;
+  ArmorcProgressBar.Position := 0;
+  ExprValLabel.Caption := ' ';
+  TimeValLabel.Caption := ' ';
+  ExplorValLabel.Caption := ' ';
+  MiningValLabel.Caption := ' ';
+  WoodctValLabel.Caption := ' ';
+  WeaponValLabel.Caption := ' ';
+  ArmorcValLabel.Caption := ' ';
 end;
 
 procedure TDonguriForm.ShowRoot;
@@ -456,6 +487,15 @@ const
   TAG_ARM_E = '</a>';
   TAG_PRT_S = '<a href="/focus/armorcraft">防具製作:';
   TAG_PRT_E = '</a>';
+  TAG_PRG_S = '<span>[';
+  TAG_PRG_E = '</p>';
+  TAG_PEX_E = '] 経験値';
+  TAG_PTM_E = '] 経過時間';
+  TAG_PEP_E = '] 探検';
+  TAG_PMN_E = '] 採掘';
+  TAG_PWD_E = '] 木こり';
+  TAG_PWP_E = '] 武器製作';
+  TAG_PAR_E = '] 防具製作';
 
   TAG_ERROR = '<p>エラー！</p>';
 	TAG_ECD_S = '<p>NG&lt;&gt;';
@@ -466,6 +506,7 @@ var
   tm2: String;
   ecd: String;
   idx: Integer;
+  prg: Integer;
 begin
 	Result := False;
 
@@ -496,14 +537,13 @@ begin
     if FHunter then begin		// ハンター
     	if DonguriSystem.Extract(TAG_HID_S, TAG_HID_E, html, tmp) then
   	    EditID.Text := Trim(tmp);
-	    if DonguriSystem.Extract(TAG_DNG_S, TAG_DNG_E, html, tmp) then
-	      InfoGrid.Cells[1, Integer(idxDonguri)] := Trim(tmp);
     end else begin					// 警備員
 	    if DonguriSystem.Extract(TAG_GID_S, TAG_GID_E, html, tmp) then
   	    EditID.Text := Trim(tmp);
-			if DonguriSystem.Extract(TAG_DN2_S, TAG_DNG_E, html, tmp) then
-      	InfoGrid.Cells[1, Integer(idxDonguri)] := Trim(tmp);
     end;
+
+    if DonguriSystem.Extract(TAG_DNG_S, TAG_DNG_E, html, tmp) then
+      InfoGrid.Cells[1, Integer(idxDonguri)] := Trim(tmp);
 
     if DonguriSystem.Extract(TAG_NWD_S, TAG_NWD_E, html, tmp) then
       InfoGrid.Cells[1, Integer(idxNumWood)] := Trim(tmp);
@@ -545,20 +585,62 @@ begin
     if DonguriSystem.Extract(TAG_PRD_S, TAG_PRD_E, html, tmp) then
       LabelPeriod.Caption := '第' + tmp + '期';
 
-    if DonguriSystem.Extract(TAG_EXP_S, TAG_EXP_E, html, tmp) then
-      InfoGrid.Cells[1, Integer(idxExplrtn)] := Trim(tmp);
+    if DonguriSystem.Extract2(TAG_EXP_S, TAG_EXP_E, html, tmp) then
+      ExplorPanel.Caption := Trim(tmp);
 
-    if DonguriSystem.Extract(TAG_MNG_S, TAG_MNG_E, html, tmp) then
-      InfoGrid.Cells[1, Integer(idxMining)] := Trim(tmp);
+    if DonguriSystem.Extract2(TAG_MNG_S, TAG_MNG_E, html, tmp) then
+      MiningPanel.Caption := Trim(tmp);
 
-    if DonguriSystem.Extract(TAG_FLL_S, TAG_FLL_E, html, tmp) then
-      InfoGrid.Cells[1, Integer(idxFelling)] := Trim(tmp);
+    if DonguriSystem.Extract2(TAG_FLL_S, TAG_FLL_E, html, tmp) then
+      WoodctPanel.Caption := Trim(tmp);
 
-    if DonguriSystem.Extract(TAG_ARM_S, TAG_ARM_E, html, tmp) then
-      InfoGrid.Cells[1, Integer(idxArmsWork)] := Trim(tmp);
+    if DonguriSystem.Extract2(TAG_ARM_S, TAG_ARM_E, html, tmp) then
+      WeaponPanel.Caption := Trim(tmp);
 
-    if DonguriSystem.Extract(TAG_PRT_S, TAG_PRT_E, html, tmp) then
-      InfoGrid.Cells[1, Integer(idxProtector)] := Trim(tmp);
+    if DonguriSystem.Extract2(TAG_PRT_S, TAG_PRT_E, html, tmp) then
+      ArmorcPanel.Caption := Trim(tmp);
+
+    if DonguriSystem.Extract2(TAG_PRG_S, TAG_PEX_E, html, tmp) then begin
+    	prg := GetProgressPosition(tmp);
+      ExprProgressBar.Position := prg;
+		  ExprValLabel.Caption := IntToStr(prg);
+    end;
+
+    if DonguriSystem.Extract2(TAG_PRG_S, TAG_PTM_E, html, tmp) then begin
+    	prg := GetProgressPosition(tmp);
+      TimeProgressBar.Position := prg;
+		  TimeValLabel.Caption := IntToStr(prg);
+    end;
+
+    if DonguriSystem.Extract2(TAG_PRG_S, TAG_PEP_E, html, tmp) then begin
+    	prg := GetProgressPosition(tmp);
+      ExplorProgressBar.Position := prg;
+		  ExplorValLabel.Caption := IntToStr(prg);
+    end;
+
+    if DonguriSystem.Extract2(TAG_PRG_S, TAG_PMN_E, html, tmp) then begin
+    	prg := GetProgressPosition(tmp);
+      MiningProgressBar.Position := prg;
+		  MiningValLabel.Caption := IntToStr(prg);
+    end;
+
+    if DonguriSystem.Extract2(TAG_PRG_S, TAG_PWD_E, html, tmp) then begin
+    	prg := GetProgressPosition(tmp);
+      WoodctProgressBar.Position := prg;
+		  WoodctValLabel.Caption := IntToStr(prg);
+    end;
+
+    if DonguriSystem.Extract2(TAG_PRG_S, TAG_PWP_E, html, tmp) then begin
+    	prg := GetProgressPosition(tmp);
+      WeaponProgressBar.Position := prg;
+		  WeaponValLabel.Caption := IntToStr(prg);
+    end;
+
+    if DonguriSystem.Extract2(TAG_PRG_S, TAG_PAR_E, html, tmp) then begin
+    	prg := GetProgressPosition(tmp);
+      ArmorcProgressBar.Position := prg;
+			ArmorcValLabel.Caption := IntToStr(prg);
+    end;
 
   	if Pos(TAG_ERROR, html) > 0 then begin
 	    if DonguriSystem.Extract(TAG_ECD_S, TAG_ECD_E, html, tmp) then begin
@@ -573,6 +655,21 @@ begin
 
     Result := True;
   except
+  end;
+end;
+
+function TDonguriForm.GetProgressPosition(prg: string): Integer;
+var
+	len: Integer;
+  i: Integer;
+begin
+	len := Length(prg);
+	Result := len;
+  for i := 1 to len do begin
+    if prg[i] <> '?' then begin
+      Result := i - 1;
+      Break;
+    end;
   end;
 end;
 
@@ -836,28 +933,33 @@ begin
     case ColorRadioGroup.ItemIndex of
     	0: begin
         PageControl.OwnerDraw := False;
-        PageControlHunter.OwnerDraw := False;
         PageControlItemBag.OwnerDraw := False;
 
         Color := clBtnFace;
         PanelTop.Color := clBtnFace;
 			  SetColors(PanelBottom,     clBtnFace, clWindowText);
 
-			  SetColors(PanelHomeTop,    clBtnFace, clWindowText);
+			  SetColors(PanelHome,       clBtnFace, clWindowText);
 			  SetColors(EditName,        clWindow,  clWindowText);
 			  SetColors(EditID,          clWindow,  clWindowText);
 			  SetColors(EditLevel,       clWindow,  clWindowText);
 			  SetColors(InfoGrid,        clWindow,  clWindowText);
-			  SetColors(PanelHome,       clBtnFace, clWindowText);
+        SetColors(ExplorPanel,     clWindow,  clWindowText);
+        SetColors(MiningPanel,     clWindow,  clWindowText);
+        SetColors(WoodctPanel,     clWindow,  clWindowText);
+        SetColors(WeaponPanel,     clWindow,  clWindowText);
+        SetColors(ArmorcPanel,     clWindow,  clWindowText);
 
-        TabSheetHunter.Font.Color := clWindowText;
+        TabSheetService.Font.Color := clWindowText;
         SetColors(ListViewWeaponUsing, clWindow,  clWindowText);
         SetColors(ListViewArmorUsing,  clWindow,  clWindowText);
         SetColors(ListViewWeapon,      clWindow,  clWindowText);
         SetColors(ListViewArmor,       clWindow,  clWindowText);
+      	SetColors(UsingPanel,          clBtnFace, clWindowText);
 			  SetColors(PanelHunterTop,      clBtnFace, clWindowText);
         SetColors(WeaponTopPanel,      clBtnFace, clWindowText);
         SetColors(ArmorTopPanel,       clBtnFace, clWindowText);
+        SetColors(KYAmountComboBox,    clWindow,  clWindowText);
 			  SetColors(CBAmountComboBox,    clWindow,  clWindowText);
         SetColors(BagTopPanel,         clBtnFace, clWindowText);
 
@@ -866,28 +968,33 @@ begin
       end;
       1: begin
         PageControl.OwnerDraw := True;
-        PageControlHunter.OwnerDraw := True;
         PageControlItemBag.OwnerDraw := True;
 
         Color := COL_DARK_BKG1;
         PanelTop.Color := COL_DARK_BKG1;
 			  SetColors(PanelBottom,     COL_DARK_BKG1, COL_DARK_TEXT);
 
-			  SetColors(PanelHomeTop,    COL_DARK_BKG1, COL_DARK_TEXT);
+			  SetColors(PanelHome,       COL_DARK_BKG1, COL_DARK_TEXT);
 			  SetColors(EditName,        COL_DARK_BKG2, COL_DARK_TEXT);
 			  SetColors(EditID,          COL_DARK_BKG2, COL_DARK_TEXT);
 			  SetColors(EditLevel,       COL_DARK_BKG2, COL_DARK_TEXT);
 			  SetColors(InfoGrid,        COL_DARK_BKG2, COL_DARK_TEXT);
-			  SetColors(PanelHome,       COL_DARK_BKG1, COL_DARK_TEXT);
+        SetColors(ExplorPanel,     COL_DARK_BKG2, COL_DARK_TEXT);
+        SetColors(MiningPanel,     COL_DARK_BKG2, COL_DARK_TEXT);
+        SetColors(WoodctPanel,     COL_DARK_BKG2, COL_DARK_TEXT);
+        SetColors(WeaponPanel,     COL_DARK_BKG2, COL_DARK_TEXT);
+        SetColors(ArmorcPanel,     COL_DARK_BKG2, COL_DARK_TEXT);
 
-        TabSheetHunter.Font.Color := COL_DARK_TEXT;
+        TabSheetService.Font.Color := COL_DARK_TEXT;
         SetColors(ListViewWeaponUsing, COL_DARK_BKG2, COL_DARK_TEXT);
         SetColors(ListViewArmorUsing,  COL_DARK_BKG2, COL_DARK_TEXT);
         SetColors(ListViewWeapon,      COL_DARK_BKG2, COL_DARK_TEXT);
         SetColors(ListViewArmor,       COL_DARK_BKG2, COL_DARK_TEXT);
+      	SetColors(UsingPanel,          COL_DARK_BKG1, COL_DARK_TEXT);
 			  SetColors(PanelHunterTop,      COL_DARK_BKG1, COL_DARK_TEXT);
         SetColors(WeaponTopPanel,      COL_DARK_BKG1, COL_DARK_TEXT);
         SetColors(ArmorTopPanel,       COL_DARK_BKG1, COL_DARK_TEXT);
+        SetColors(KYAmountComboBox,    COL_DARK_BKG2, COL_DARK_TEXT);
 			  SetColors(CBAmountComboBox,    COL_DARK_BKG2, COL_DARK_TEXT);
         SetColors(BagTopPanel,         COL_DARK_BKG1, COL_DARK_TEXT);
 
@@ -967,9 +1074,33 @@ begin
   SetButtonColors(ResurrectPnlButton, bkg, txt, dtx);
   SetButtonColors(RenamePnlButton,    bkg, txt, dtx);
 	SetButtonColors(TransferPnlButton,  bkg, txt, dtx);
+  SetButtonColors(CraftKYPnlButton,   bkg, txt, dtx);
   SetButtonColors(CraftCBPnlButton,   bkg, txt, dtx);
   SetButtonColors(BagPnlButton,       bkg, txt, dtx);
   SetButtonColors(ChestPnlButton,     bkg, txt, dtx);
+end;
+
+procedure TDonguriForm.SetBtnCol(button: TPanel);
+var
+  bkg: TColor;
+  txt: TColor;
+  dtx: TColor;
+begin
+  if ColorRadioGroup.ItemIndex = 0 then begin
+    bkg := clBtnFace;
+    txt := clWindowText;
+    dtx := COL_LGHT_DTXT;
+  end else {if ColorRadioGroup.ItemIndex = 1 then} begin
+    bkg := COL_DARK_BKG3;
+    txt := COL_DARK_TEXT;
+    dtx := COL_DARK_DTXT;
+  end;
+
+  button.Color := bkg;
+  if button.Enabled then
+	  button.Font.Color := txt
+  else
+	  button.Font.Color := dtx;
 end;
 
 procedure TDonguriForm.SetButtonColors(button: TPanel; bkg, txt, dtx: TColor);
@@ -988,21 +1119,9 @@ var
 begin
   case TabIndex of
     0: cpt := TabSheetHome.Caption;
-    1: cpt := TabSheetHunter.Caption;
-    2: cpt := TabSheetSetting.Caption;
-  end;
-  DrawTab(Control.Canvas, TabIndex, cpt, Rect, Active);
-end;
-
-procedure TDonguriForm.PageControlHunterDrawTab(Control: TCustomTabControl;
-  TabIndex: Integer; const Rect: TRect; Active: Boolean);
-var
-	cpt: String;
-begin
-  case TabIndex of
-    0: cpt := TabSheetRename.Caption;
-    1: cpt := TabSheetCraft.Caption;
+    1: cpt := TabSheetService.Caption;
     2: cpt := TabSheetChest.Caption;
+    3: cpt := TabSheetSetting.Caption;
   end;
   DrawTab(Control.Canvas, TabIndex, cpt, Rect, Active);
 end;
@@ -1045,9 +1164,9 @@ begin
 	GikoForm.ShowDonguriCannonTopMenu;
 end;
 
-function TDonguriForm.GetCBAmount: Integer;
+function TDonguriForm.GetCmbAmount(cmb: TComboBox): Integer;
 begin
-	Result := StrToIntDef(Trim(CBAmountComboBox.Text), 0);
+	Result := StrToIntDef(Trim(cmb.Text), 0);
 end;
 
 procedure TDonguriForm.CBAmountComboBoxChange(Sender: TObject);
@@ -1057,7 +1176,7 @@ var
 begin
 	try
   	iron := 0;
-		amount := GetCBAmount;
+		amount := GetCmbAmount(CBAmountComboBox);
     if amount > 0 then
       iron := amount * 10;
   	CBIronLabel.Caption := IntToStr(iron);
@@ -1073,7 +1192,7 @@ begin
 	if GikoSys.DonguriSys.Processing then
   	Exit;
 
-	amount := GetCBAmount;
+		amount := GetCmbAmount(CBAmountComboBox);
   if amount < 1 then begin
     MsgBox(Handle, '鉄の大砲の玉の作成数を入力してください。', '工作センター',
           	MB_OK or MB_ICONINFORMATION);
@@ -1086,21 +1205,60 @@ begin
   	ShowHttpError;
 end;
 
+procedure TDonguriForm.KYAmountComboBoxChange(Sender: TObject);
+var
+	amount: Integer;
+  iron: Integer;
+begin
+	try
+  	iron := 0;
+		amount := GetCmbAmount(KYAmountComboBox);
+    if amount > 0 then
+      iron := amount * 15;
+  	KYIronLabel.Caption := IntToStr(iron);
+  except
+  end;
+end;
+
+procedure TDonguriForm.CraftKYPnlButtonClick(Sender: TObject);
+var
+	amount: Integer;
+  res: String;
+begin
+	if GikoSys.DonguriSys.Processing then
+  	Exit;
+
+		amount := GetCmbAmount(KYAmountComboBox);
+  if amount < 1 then begin
+    MsgBox(Handle, '鉄のキーの作成数を入力してください。', '工作センター',
+          	MB_OK or MB_ICONINFORMATION);
+    Exit;
+  end;
+
+  if GikoSys.DonguriSys.CraftKY(amount, res) then
+  	MsgBox(Handle, res, '鉄のキー作成', MB_OK or MB_ICONINFORMATION)
+  else
+  	ShowHttpError;
+end;
+
 procedure TDonguriForm.BagPnlButtonClick(Sender: TObject);
 var
+	res: String;
 	denied: Boolean;
 begin
 	if GikoSys.DonguriSys.Processing then
   	Exit;
 
 	denied := False;
-  if GikoSys.DonguriSys.Bag(FBag, denied) then
+  if GikoSys.DonguriSys.Bag(FBag, res, denied) then
     ShowBag
   else if denied then
     MsgBox(Handle, 'アイテムバッグを参照できませんでした。' + #10 +
                    'どんぐりが枯れたかもしれません。' + #10 +
                    'ログインし直してみてください。',
                    'アイテムバッグ', MB_OK or MB_ICONWARNING)
+  else if Pos('<html', res) < 1 then
+    	MsgBox(Handle, TrimTag(res), 'アイテムバッグ', MB_OK or MB_ICONINFORMATION)
   else
   	ShowHttpError;
 end;
@@ -1162,6 +1320,7 @@ end;
 procedure TDonguriForm.SlotPnlButtonClick(Sender: TObject);
 var
 	res: String;
+	denied: Boolean;
 begin
 
 	if GikoSys.DonguriSys.Processing then
@@ -1172,18 +1331,23 @@ begin
                     MB_OKCANCEL or MB_ICONQUESTION) <> IDOK then
   	Exit;
 
-  if GikoSys.DonguriSys.AddSlots(FBag, res) then begin
-  	if FBag.Slot > 0 then
-			ShowBag
-    else if (Pos('<html', res) < 1) then
-    	MsgBox(Handle, TrimTag(res), 'どんぐりシステム', MB_OK or MB_ICONINFORMATION)
-    else if (Pos('<h1>どんぐりシステム</h1>', res) > 0) then begin
-    	if Parsing(res) = False then
-        MsgBox(Handle, 'どんぐりシステムのページ解析に失敗しました',
-                  'どんぐりシステム', MB_OK or MB_ICONERROR);
+  if GikoSys.DonguriSys.AddSlots(res) then begin
+    if (Pos('<html', res) < 1) then begin
+    	MsgBox(Handle, TrimTag(res), 'アイテムバッグ', MB_OK or MB_ICONINFORMATION);
+
+      // アイテムバッグ再表示
+      res := '';
+      denied := False;
+      if GikoSys.DonguriSys.Bag(FBag, res, denied) then
+        ShowBag
+      else if (Pos('<html', res) < 1) then
+	    	MsgBox(Handle, TrimTag(res), 'アイテムバッグ', MB_OK or MB_ICONINFORMATION)
+			else
+		  	ShowHttpError;
+
   	end else	// 状況不明？？？
-    	MsgBox(Handle, 'アイテムバッグ表示更新を行ってください。',
-			      			'アイテムバッグ', MB_OK or MB_ICONINFORMATION);
+    	MsgBox(Handle, 'アイテムバッグ表示更新を行ってください。', 'アイテムバッグ',
+      							MB_OK or MB_ICONINFORMATION);
   end else
   	ShowHttpError;
 end;
@@ -1263,14 +1427,9 @@ begin
     end;
     if (Pos('<h1>どんぐりシステム</h1>', res) > 0) then begin
     	if Parsing(res) then begin
-      	if FHunter then begin
-          key := StrToIntDef(InfoGrid.Cells[1, Integer(idxIronKey)], -1);
-          if (key >= 0) and (key < 10) then begin
-            MsgBox(Handle, '鉄のキーが不足しています。', 'アイテムバッグ', MB_OK or MB_ICONWARNING);
-            Exit;
-          end;
-        end else begin
-          MsgBox(Handle, 'ハンターアカウントの機能にアクセスできませんでした。', 'アイテムバッグ', MB_OK or MB_ICONWARNING);
+        key := StrToIntDef(InfoGrid.Cells[1, Integer(idxIronKey)], -1);
+        if (key >= 0) and (key < 10) then begin
+          MsgBox(Handle, '鉄のキーが不足しています。', 'アイテムバッグ', MB_OK or MB_ICONWARNING);
           Exit;
         end;
 			end;
@@ -1454,11 +1613,13 @@ end;
 procedure TDonguriForm.UseAPnlButtonClick(Sender: TObject);
 begin
 	UseItem(ListViewArmor);
+  SetBtnCol(TPanel(Sender));
 end;
 
 procedure TDonguriForm.UseWPnlButtonClick(Sender: TObject);
 begin
 	UseItem(ListViewWeapon);
+  SetBtnCol(TPanel(Sender));
 end;
 
 procedure TDonguriForm.UseItem(list: TListView);
