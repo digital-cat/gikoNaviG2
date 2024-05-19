@@ -57,17 +57,13 @@ object EditorForm: TEditorForm
     Top = 30
     Width = 733
     Height = 341
-    ActivePage = EditorTab
+    ActivePage = PreviewTab
     Align = alClient
     MultiLine = True
     TabOrder = 0
     OnChange = EditorPageChange
     object EditorTab: TTabSheet
       Caption = #32232#38598
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object NameBasePanel: TPanel
         Left = 0
         Top = 29
@@ -98,7 +94,7 @@ object EditorForm: TEditorForm
           Width = 149
           Height = 20
           DropDownCount = 20
-          ItemHeight = 0
+          ItemHeight = 12
           TabOrder = 0
           OnChange = NameComboBoxChange
         end
@@ -108,7 +104,7 @@ object EditorForm: TEditorForm
           Width = 149
           Height = 20
           DropDownCount = 20
-          ItemHeight = 0
+          ItemHeight = 12
           TabOrder = 1
           OnChange = MailComboBoxChange
         end
@@ -233,10 +229,6 @@ object EditorForm: TEditorForm
     object PreviewTab: TTabSheet
       Caption = #12503#12524#12499#12517#12540
       ImageIndex = 1
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Browser: TWebBrowser
         Left = 0
         Top = 0
@@ -250,7 +242,7 @@ object EditorForm: TEditorForm
         ControlData = {
           4C000000EE4A0000592000000000000000000000000000000000000000000000
           000000004C000000000000000000000001000000E0D057007335CF11AE690800
-          2B2E126208000000000000004C0000000114020000000000C000000000000046
+          2B2E12620A000000000000004C0000000114020000000000C000000000000046
           8000000000000000000000000000000000000000000000000000000000000000
           00000000000000000100000000000000000000000000000000000000}
       end
@@ -600,7 +592,7 @@ object EditorForm: TEditorForm
     Left = 72
     Top = 124
     Bitmap = {
-      494C01010D000E00D80010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01010D000E00DC0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000004000000001002000000000000040
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -1139,7 +1131,7 @@ object EditorForm: TEditorForm
     Left = 104
     Top = 124
     Bitmap = {
-      494C01010D000E00D80010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01010D000E00DC0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000004000000001002000000000000040
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
