@@ -1043,7 +1043,7 @@ const
   KW_SLOT_E = 'スロットがあります。';
   KW_USEW_S = '<h3>装備している武器: </h3>';
   KW_USEW_E = '</p>';
-  KW_USEA_S = '<h3>防具装備している: </h3>';
+  KW_USEA_S = '<h3>装備している防具: </h3>';
   KW_USEA_E = '</p>';
   KW_IBAG_S = '<h3>アイテムバッグ:</h3>';
   KW_TBDY_S  = '<tbody>';

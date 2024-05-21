@@ -97,10 +97,6 @@ object DonguriForm: TDonguriForm
     OnDrawTab = PageControlDrawTab
     object TabSheetHome: TTabSheet
       Caption = #12507#12540#12512
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object PanelHome: TPanel
         Left = 0
         Top = 0
@@ -117,18 +113,18 @@ object DonguriForm: TDonguriForm
           Caption = #12518#12540#12470#12540#31278#21029#65306
         end
         object LabelUserType: TLabel
-          Left = 88
+          Left = 100
           Top = 44
           Width = 36
           Height = 13
           Caption = #35686#20633#21729
         end
-        object Label2: TLabel
+        object LabelName: TLabel
           Left = 12
           Top = 64
-          Width = 40
+          Width = 76
           Height = 13
-          Caption = #21628#12403#21517#65306
+          Caption = #35686#20633#21729#21628#12403#21517#65306
         end
         object LabelID: TLabel
           Left = 12
@@ -259,9 +255,9 @@ object DonguriForm: TDonguriForm
           Caption = '00'
         end
         object EditName: TEdit
-          Left = 88
+          Left = 100
           Top = 63
-          Width = 176
+          Width = 164
           Height = 17
           TabStop = False
           BorderStyle = bsNone
@@ -269,9 +265,9 @@ object DonguriForm: TDonguriForm
           TabOrder = 0
         end
         object EditID: TEdit
-          Left = 88
+          Left = 100
           Top = 82
-          Width = 176
+          Width = 164
           Height = 17
           TabStop = False
           BorderStyle = bsNone
@@ -279,9 +275,9 @@ object DonguriForm: TDonguriForm
           TabOrder = 1
         end
         object EditLevel: TEdit
-          Left = 88
+          Left = 100
           Top = 101
-          Width = 176
+          Width = 164
           Height = 17
           TabStop = False
           BorderStyle = bsNone
@@ -532,18 +528,18 @@ object DonguriForm: TDonguriForm
     object TabSheetService: TTabSheet
       Caption = #12469#12540#12499#12473
       ImageIndex = 1
-      object PanelHunterTop: TPanel
+      object PanelService: TPanel
         Left = 0
         Top = 0
         Width = 272
-        Height = 48
-        Align = alTop
+        Height = 455
+        Align = alClient
         BevelOuter = bvNone
-        TabOrder = 2
+        TabOrder = 0
         object ResurrectPnlButton: TPanel
           Left = 12
           Top = 12
-          Width = 80
+          Width = 100
           Height = 25
           BevelInner = bvRaised
           Caption = #12524#12505#12523#24489#27963
@@ -552,47 +548,13 @@ object DonguriForm: TDonguriForm
           OnMouseDown = PanelButtonMouseDown
           OnMouseUp = PanelButtonMouseUp
         end
-      end
-      object RenamePnlButton: TPanel
-        Left = 94
-        Top = 12
-        Width = 80
-        Height = 25
-        BevelInner = bvRaised
-        Caption = #21628#12403#21517#22793#26356
-        Enabled = False
-        TabOrder = 0
-        OnClick = RenamePnlButtonClick
-        OnMouseDown = PanelButtonMouseDown
-        OnMouseUp = PanelButtonMouseUp
-      end
-      object TransferPnlButton: TPanel
-        Left = 176
-        Top = 12
-        Width = 80
-        Height = 25
-        BevelInner = bvRaised
-        Caption = #12393#12435#12368#12426#36578#36865
-        Enabled = False
-        TabOrder = 3
-        OnClick = TransferPnlButtonClick
-        OnMouseDown = PanelButtonMouseDown
-        OnMouseUp = PanelButtonMouseUp
-      end
-      object GroupBoxCraft: TGroupBox
-        Left = 12
-        Top = 44
-        Width = 244
-        Height = 205
-        Caption = #24037#20316#12475#12531#12479#12540
-        TabOrder = 1
-        object GroupBox1: TGroupBox
+        object CraftKYGroupBox: TGroupBox
           Left = 12
-          Top = 18
-          Width = 220
+          Top = 42
+          Width = 250
           Height = 85
-          Caption = #37444#12398#12461#12540
-          TabOrder = 0
+          Caption = #37444#12398#12461#12540#20316#25104
+          TabOrder = 1
           object Label14: TLabel
             Left = 16
             Top = 24
@@ -635,7 +597,7 @@ object DonguriForm: TDonguriForm
               '30')
           end
           object CraftKYPnlButton: TPanel
-            Left = 120
+            Left = 150
             Top = 47
             Width = 83
             Height = 25
@@ -647,13 +609,13 @@ object DonguriForm: TDonguriForm
             OnMouseUp = PanelButtonMouseUp
           end
         end
-        object GroupBox2: TGroupBox
+        object CraftCBGroupBox: TGroupBox
           Left = 12
-          Top = 110
-          Width = 220
+          Top = 134
+          Width = 250
           Height = 85
-          Caption = #37444#12398#22823#30770#12398#29577
-          TabOrder = 1
+          Caption = #37444#12398#22823#30770#12398#29577#20316#25104
+          TabOrder = 2
           object Label6: TLabel
             Left = 16
             Top = 24
@@ -697,7 +659,7 @@ object DonguriForm: TDonguriForm
               '30')
           end
           object CraftCBPnlButton: TPanel
-            Left = 120
+            Left = 150
             Top = 47
             Width = 83
             Height = 25
@@ -705,6 +667,48 @@ object DonguriForm: TDonguriForm
             Caption = #20316#25104
             TabOrder = 1
             OnClick = CraftCBPnlButtonClick
+            OnMouseDown = PanelButtonMouseDown
+            OnMouseUp = PanelButtonMouseUp
+          end
+        end
+        object RenameGroupBox: TGroupBox
+          Left = 12
+          Top = 225
+          Width = 250
+          Height = 85
+          Caption = #12495#12531#12479#12540#12493#12540#12512#22793#26356
+          TabOrder = 3
+          object RenamePnlButton: TPanel
+            Left = 12
+            Top = 18
+            Width = 124
+            Height = 25
+            BevelInner = bvRaised
+            Caption = #12495#12531#12479#12540#12493#12540#12512#22793#26356
+            Enabled = False
+            TabOrder = 0
+            OnClick = RenamePnlButtonClick
+            OnMouseDown = PanelButtonMouseDown
+            OnMouseUp = PanelButtonMouseUp
+          end
+        end
+        object TransferGroupBox: TGroupBox
+          Left = 12
+          Top = 316
+          Width = 250
+          Height = 85
+          Caption = #12393#12435#12368#12426#36578#36865
+          TabOrder = 4
+          object TransferPnlButton: TPanel
+            Left = 12
+            Top = 18
+            Width = 80
+            Height = 25
+            BevelInner = bvRaised
+            Caption = #12393#12435#12368#12426#36578#36865
+            Enabled = False
+            TabOrder = 0
+            OnClick = TransferPnlButtonClick
             OnMouseDown = PanelButtonMouseDown
             OnMouseUp = PanelButtonMouseUp
           end
@@ -753,8 +757,11 @@ object DonguriForm: TDonguriForm
           Top = 6
           Width = 90
           Height = 25
+          Hint = #37444#12398#12461#12540'10'#12391#27494#22120'2'#12539#38450#20855'2'#12434#21462#24471
           BevelInner = bvRaised
           Caption = #23453#31665#12434#38283#12369#12427
+          ParentShowHint = False
+          ShowHint = True
           TabOrder = 1
           OnClick = ChestPnlButtonClick
           OnMouseDown = PanelButtonMouseDown
@@ -765,8 +772,11 @@ object DonguriForm: TDonguriForm
           Top = 36
           Width = 90
           Height = 25
+          Hint = #26408#26448'1000'#12391#12473#12525#12483#12488'10'#12434#21462#24471
           BevelInner = bvRaised
           Caption = #12473#12525#12483#12488#36861#21152
+          ParentShowHint = False
+          ShowHint = True
           TabOrder = 2
           OnClick = SlotPnlButtonClick
           OnMouseDown = PanelButtonMouseDown
@@ -790,7 +800,7 @@ object DonguriForm: TDonguriForm
         Top = 96
         Width = 272
         Height = 359
-        ActivePage = TabSheetUsing
+        ActivePage = TabSheetWeapon
         Align = alClient
         TabOrder = 1
         OnDrawTab = PageControlItemBagDrawTab
@@ -878,9 +888,12 @@ object DonguriForm: TDonguriForm
               Top = 2
               Width = 60
               Height = 22
+              Hint = #27494#22120#12398#35013#20633#12434#12420#12417#12427
               BevelInner = bvRaised
               Caption = #22806#12377
               Enabled = False
+              ParentShowHint = False
+              ShowHint = True
               TabOrder = 1
               OnClick = RemWeaponPnlButtonClick
               OnMouseDown = PanelButtonMouseDown
@@ -891,9 +904,12 @@ object DonguriForm: TDonguriForm
               Top = 95
               Width = 60
               Height = 22
+              Hint = #38450#20855#12398#35013#20633#12434#12420#12417#12427
               BevelInner = bvRaised
               Caption = #22806#12377
               Enabled = False
+              ParentShowHint = False
+              ShowHint = True
               TabOrder = 2
               OnClick = RemArmorPnlButtonClick
               OnMouseDown = PanelButtonMouseDown
@@ -958,10 +974,6 @@ object DonguriForm: TDonguriForm
         object TabSheetWeapon: TTabSheet
           Caption = #27494#22120
           ImageIndex = 1
-          ExplicitLeft = 0
-          ExplicitTop = 0
-          ExplicitWidth = 0
-          ExplicitHeight = 0
           object WeaponTopPanel: TPanel
             Left = 0
             Top = 0
@@ -975,8 +987,11 @@ object DonguriForm: TDonguriForm
               Top = 12
               Width = 18
               Height = 17
+              Hint = #20840#34892#12398#12481#12455#12483#12463'ON'#65295'OFF'
               TabStop = False
               Caption = #12288
+              ParentShowHint = False
+              ShowHint = True
               TabOrder = 0
               OnClick = WeaponAllCheckBoxClick
             end
@@ -985,9 +1000,12 @@ object DonguriForm: TDonguriForm
               Top = 4
               Width = 44
               Height = 22
+              Hint = #12481#12455#12483#12463#12375#12383#27494#22120#12434#20998#35299#12377#12427
               BevelInner = bvRaised
               Caption = #20998#35299
               Enabled = False
+              ParentShowHint = False
+              ShowHint = True
               TabOrder = 1
               OnClick = RecycleWPnlButtonClick
               OnMouseDown = PanelButtonMouseDown
@@ -998,9 +1016,12 @@ object DonguriForm: TDonguriForm
               Top = 4
               Width = 60
               Height = 22
+              Hint = #12481#12455#12483#12463#12375#12383#27494#22120#12398#12525#12483#12463#12434#35299#38500#12377#12427
               BevelInner = bvRaised
               Caption = #12450#12531#12525#12483#12463
               Enabled = False
+              ParentShowHint = False
+              ShowHint = True
               TabOrder = 2
               OnClick = UnlockWPnlButtonClick
               OnMouseDown = PanelButtonMouseDown
@@ -1011,9 +1032,12 @@ object DonguriForm: TDonguriForm
               Top = 4
               Width = 44
               Height = 22
+              Hint = #12481#12455#12483#12463#12375#12383#27494#22120#12434#12525#12483#12463#12377#12427
               BevelInner = bvRaised
               Caption = #12525#12483#12463
               Enabled = False
+              ParentShowHint = False
+              ShowHint = True
               TabOrder = 3
               OnClick = LockWPnlButtonClick
               OnMouseDown = PanelButtonMouseDown
@@ -1024,9 +1048,12 @@ object DonguriForm: TDonguriForm
               Top = 4
               Width = 44
               Height = 22
+              Hint = #12481#12455#12483#12463#12375#12383#27494#22120#12434#35013#20633#12377#12427
               BevelInner = bvRaised
               Caption = #35013#20633
               Enabled = False
+              ParentShowHint = False
+              ShowHint = True
               TabOrder = 4
               OnClick = UseWPnlButtonClick
               OnMouseDown = PanelButtonMouseDown
@@ -1095,10 +1122,6 @@ object DonguriForm: TDonguriForm
         object TabSheetArmor: TTabSheet
           Caption = #38450#20855
           ImageIndex = 2
-          ExplicitLeft = 0
-          ExplicitTop = 0
-          ExplicitWidth = 0
-          ExplicitHeight = 0
           object ArmorTopPanel: TPanel
             Left = 0
             Top = 0
@@ -1112,8 +1135,11 @@ object DonguriForm: TDonguriForm
               Top = 12
               Width = 18
               Height = 17
+              Hint = #20840#34892#12398#12481#12455#12483#12463'ON'#65295'OFF'
               TabStop = False
               Caption = #12288
+              ParentShowHint = False
+              ShowHint = True
               TabOrder = 0
               OnClick = ArmorAllCheckBoxClick
             end
@@ -1122,9 +1148,12 @@ object DonguriForm: TDonguriForm
               Top = 4
               Width = 44
               Height = 22
+              Hint = #12481#12455#12483#12463#12375#12383#38450#20855#12434#12525#12483#12463#12377#12427
               BevelInner = bvRaised
               Caption = #12525#12483#12463
               Enabled = False
+              ParentShowHint = False
+              ShowHint = True
               TabOrder = 1
               OnClick = LockAPnlButtonClick
               OnMouseDown = PanelButtonMouseDown
@@ -1135,9 +1164,12 @@ object DonguriForm: TDonguriForm
               Top = 4
               Width = 60
               Height = 22
+              Hint = #12481#12455#12483#12463#12375#12383#38450#20855#12398#12525#12483#12463#12434#35299#38500#12377#12427
               BevelInner = bvRaised
               Caption = #12450#12531#12525#12483#12463
               Enabled = False
+              ParentShowHint = False
+              ShowHint = True
               TabOrder = 2
               OnClick = UnlockAPnlButtonClick
               OnMouseDown = PanelButtonMouseDown
@@ -1148,9 +1180,12 @@ object DonguriForm: TDonguriForm
               Top = 4
               Width = 44
               Height = 22
+              Hint = #12481#12455#12483#12463#12375#12383#38450#20855#12434#20998#35299#12377#12427
               BevelInner = bvRaised
               Caption = #20998#35299
               Enabled = False
+              ParentShowHint = False
+              ShowHint = True
               TabOrder = 3
               OnClick = RecycleAPnlButtonClick
               OnMouseDown = PanelButtonMouseDown
@@ -1161,9 +1196,12 @@ object DonguriForm: TDonguriForm
               Top = 4
               Width = 44
               Height = 22
+              Hint = #12481#12455#12483#12463#12375#12383#38450#20855#12434#35013#20633#12377#12427
               BevelInner = bvRaised
               Caption = #35013#20633
               Enabled = False
+              ParentShowHint = False
+              ShowHint = True
               TabOrder = 4
               OnClick = UseAPnlButtonClick
               OnMouseDown = PanelButtonMouseDown
@@ -1234,10 +1272,6 @@ object DonguriForm: TDonguriForm
     object TabSheetSetting: TTabSheet
       Caption = #35373#23450
       ImageIndex = 2
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object SystemGroupBox: TGroupBox
         Left = 12
         Top = 12
@@ -1306,7 +1340,7 @@ object DonguriForm: TDonguriForm
     Left = 224
     Top = 288
     Bitmap = {
-      494C01010A001400440010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01010A001400600010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000003000000001002000000000000030
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000

@@ -18,12 +18,12 @@ type
     TabSheetService: TTabSheet;
     SpeedButtonTopMost: TSpeedButton;
     MsgLabel: TLabel;
-    PanelHunterTop: TPanel;
+    PanelService: TPanel;
     TabSheetSetting: TTabSheet;
     PanelHome: TPanel;
     Label1: TLabel;
     LabelUserType: TLabel;
-    Label2: TLabel;
+    LabelName: TLabel;
     EditName: TEdit;
     LabelID: TLabel;
     EditID: TEdit;
@@ -35,8 +35,8 @@ type
     LabelK: TLabel;
     ColorRadioGroup: TRadioGroup;
     EditLevel: TEdit;
-    GroupBox1: TGroupBox;
-    GroupBox2: TGroupBox;
+    CraftKYGroupBox: TGroupBox;
+    CraftCBGroupBox: TGroupBox;
     Label6: TLabel;
     CBAmountComboBox: TComboBox;
     Label7: TLabel;
@@ -118,8 +118,9 @@ type
     KYIronLabel: TLabel;
     CraftKYPnlButton: TPanel;
     TabSheetChest: TTabSheet;
-    GroupBoxCraft: TGroupBox;
     UsingPanel: TPanel;
+    RenameGroupBox: TGroupBox;
+    TransferGroupBox: TGroupBox;
     procedure TimerInitTimer(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCreate(Sender: TObject);
@@ -235,10 +236,15 @@ const
     '　鉄の大砲の玉',
     '　マリモ'
     );
+  NAME_NAME: array [0..1] of string = (
+    '警備員呼び名：',
+    'ハンター呼び名：'
+	  );
   NAME_ID: array [0..1] of string = (
     '警備員ID：',
     'ハンターID：'
 	  );
+  COL_NAME_SEED : String = '　種子残高';
 
 	COL_DARK_BKG1 : TColor = $00202020;
 	COL_DARK_BKG2 : TColor = $00404040;
@@ -247,6 +253,14 @@ const
   COL_DARK_DTXT : TColor = $00808080;//00A0A0A0;
   COL_LGHT_DTXT : TColor = $00808080;
   COL_BDWN_TEXT : TColor = clRed;
+
+  RARITY_TABLE: array [0..4, 0..1] of string = (
+    ( ' UR', ' 0.03%'),
+    ( 'SSR', ' 0.17%'),
+    ('  SR', ' 1.5%'),
+    ( '　R', '15%'),
+    ( '　N', '83.3%')
+	  );
 
 {$R *.dfm}
 
@@ -265,6 +279,7 @@ procedure TDonguriForm.FormCreate(Sender: TObject);
 var
 	i: Integer;
 	wp: TWindowPlacement;
+  hintText: String;
 begin
 	FHunter := False;
 	FBag := TDonguriBag.Create;
@@ -293,6 +308,18 @@ begin
   CannonMenuCheckBox.Checked := GikoSys.Setting.DonguriMenuTop;
 
   ClearInfoValue;
+
+  hintText := 'レアリティ出現率';
+  for i := Low(RARITY_TABLE) to High(RARITY_TABLE) do
+    hintText := hintText + #10 + Format(' %s : %s', [RARITY_TABLE[i, 0], RARITY_TABLE[i, 1]]);
+  ListViewWeaponUsing.Hint := hintText;
+  ListViewWeaponUsing.ShowHint := True;
+  ListViewArmorUsing.Hint := hintText;
+  ListViewArmorUsing.ShowHint := True;
+  ListViewWeapon.Hint := hintText;
+  ListViewWeapon.ShowHint := True;
+  ListViewArmor.Hint := hintText;
+  ListViewArmor.ShowHint := True;
 
 	TimerInit.Enabled := True;
 end;
@@ -365,7 +392,8 @@ begin
   else
 		idx := 0;
 
-	LabelID.Caption := NAME_ID[idx];
+	LabelName.Caption := NAME_NAME[idx];
+	LabelID.Caption   := NAME_ID[idx];
 
   //ResurrectPnlButton.Enabled := FHunter;
 
@@ -448,7 +476,8 @@ function TDonguriForm.Parsing(html: String): Boolean;
 const
   TAG_USR_S = '<p>あなたは';
   TAG_USR_E = 'です。</p>';
-  TAG_ANM_S = '<span>呼び名:';
+  TAG_ANM_S = '<span>ハンター呼び名:';
+  TAG_AN2_S = '<span>警備員呼び名:';
   TAG_ANM_E = '<br>';
 	TAG_HID_S = '<span>ハンターID:';
   TAG_HID_E = '<br>';
@@ -531,19 +560,24 @@ begin
 
   	SetMode;
 
-    if DonguriSystem.Extract(TAG_ANM_S, TAG_ANM_E, html, tmp) then
-      EditName.Text := Trim(tmp);
-
     if FHunter then begin		// ハンター
+      if DonguriSystem.Extract(TAG_ANM_S, TAG_ANM_E, html, tmp) then
+        EditName.Text := Trim(tmp);
     	if DonguriSystem.Extract(TAG_HID_S, TAG_HID_E, html, tmp) then
   	    EditID.Text := Trim(tmp);
     end else begin					// 警備員
+      if DonguriSystem.Extract(TAG_AN2_S, TAG_ANM_E, html, tmp) then
+        EditName.Text := Trim(tmp);
 	    if DonguriSystem.Extract(TAG_GID_S, TAG_GID_E, html, tmp) then
   	    EditID.Text := Trim(tmp);
     end;
 
     if DonguriSystem.Extract(TAG_DNG_S, TAG_DNG_E, html, tmp) then
+      InfoGrid.Cells[1, Integer(idxDonguri)] := Trim(tmp)
+    else if DonguriSystem.Extract(TAG_DN2_S, TAG_DNG_E, html, tmp) then begin
+      InfoGrid.Cells[0, Integer(idxDonguri)] := COL_NAME_SEED;
       InfoGrid.Cells[1, Integer(idxDonguri)] := Trim(tmp);
+    end;
 
     if DonguriSystem.Extract(TAG_NWD_S, TAG_NWD_E, html, tmp) then
       InfoGrid.Cells[1, Integer(idxNumWood)] := Trim(tmp);
@@ -951,17 +985,19 @@ begin
         SetColors(ArmorcPanel,     clWindow,  clWindowText);
 
         TabSheetService.Font.Color := clWindowText;
+			  SetColors(PanelService,        clBtnFace, clWindowText);
+        SetColors(KYAmountComboBox,    clWindow,  clWindowText);
+			  SetColors(CBAmountComboBox,    clWindow,  clWindowText);
+
+        TabSheetChest.Font.Color := clWindowText;
+        SetColors(BagTopPanel,         clBtnFace, clWindowText);
+        SetColors(WeaponTopPanel,      clBtnFace, clWindowText);
+        SetColors(ArmorTopPanel,       clBtnFace, clWindowText);
         SetColors(ListViewWeaponUsing, clWindow,  clWindowText);
         SetColors(ListViewArmorUsing,  clWindow,  clWindowText);
         SetColors(ListViewWeapon,      clWindow,  clWindowText);
         SetColors(ListViewArmor,       clWindow,  clWindowText);
       	SetColors(UsingPanel,          clBtnFace, clWindowText);
-			  SetColors(PanelHunterTop,      clBtnFace, clWindowText);
-        SetColors(WeaponTopPanel,      clBtnFace, clWindowText);
-        SetColors(ArmorTopPanel,       clBtnFace, clWindowText);
-        SetColors(KYAmountComboBox,    clWindow,  clWindowText);
-			  SetColors(CBAmountComboBox,    clWindow,  clWindowText);
-        SetColors(BagTopPanel,         clBtnFace, clWindowText);
 
       	TabSheetSetting.Font.Color := clWindowText;
 
@@ -986,17 +1022,19 @@ begin
         SetColors(ArmorcPanel,     COL_DARK_BKG2, COL_DARK_TEXT);
 
         TabSheetService.Font.Color := COL_DARK_TEXT;
+			  SetColors(PanelService,        COL_DARK_BKG1, COL_DARK_TEXT);
+        SetColors(KYAmountComboBox,    COL_DARK_BKG2, COL_DARK_TEXT);
+			  SetColors(CBAmountComboBox,    COL_DARK_BKG2, COL_DARK_TEXT);
+
+        TabSheetChest.Font.Color := COL_DARK_TEXT;
+        SetColors(BagTopPanel,         COL_DARK_BKG1, COL_DARK_TEXT);
+        SetColors(WeaponTopPanel,      COL_DARK_BKG1, COL_DARK_TEXT);
+        SetColors(ArmorTopPanel,       COL_DARK_BKG1, COL_DARK_TEXT);
         SetColors(ListViewWeaponUsing, COL_DARK_BKG2, COL_DARK_TEXT);
         SetColors(ListViewArmorUsing,  COL_DARK_BKG2, COL_DARK_TEXT);
         SetColors(ListViewWeapon,      COL_DARK_BKG2, COL_DARK_TEXT);
         SetColors(ListViewArmor,       COL_DARK_BKG2, COL_DARK_TEXT);
       	SetColors(UsingPanel,          COL_DARK_BKG1, COL_DARK_TEXT);
-			  SetColors(PanelHunterTop,      COL_DARK_BKG1, COL_DARK_TEXT);
-        SetColors(WeaponTopPanel,      COL_DARK_BKG1, COL_DARK_TEXT);
-        SetColors(ArmorTopPanel,       COL_DARK_BKG1, COL_DARK_TEXT);
-        SetColors(KYAmountComboBox,    COL_DARK_BKG2, COL_DARK_TEXT);
-			  SetColors(CBAmountComboBox,    COL_DARK_BKG2, COL_DARK_TEXT);
-        SetColors(BagTopPanel,         COL_DARK_BKG1, COL_DARK_TEXT);
 
       	TabSheetSetting.Font.Color := COL_DARK_TEXT;
 
