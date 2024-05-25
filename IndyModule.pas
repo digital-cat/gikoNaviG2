@@ -62,7 +62,7 @@ var
 implementation
 
 uses
-  GikoSystem, DmSession5ch, GikoUtil;
+  GikoSystem, DmSession5ch, GikoUtil, GikoDataModule;
 
 const
 	URL_5CH_ROOT   = 'https://5ch.net/';
@@ -415,14 +415,14 @@ var
 begin
 	try
   	// UPLIFTログイン済みの場合はセッションID期限切れ確認を行う
-  	uplift := Session5ch.Connected and (Session5ch.IsExpired = False);
+  	uplift := Session5ch.Connected;
 
     for i := FCookieCollection.Count - 1 downto 0 do begin
       if delFlgs[i] then begin
         if uplift then begin
           cookie := TIdCookie(FCookieCollection.Items[i]);
           if (cookie.Domain = DOMAIN_5CH) and (cookie.CookieName = COOKIE_UPLIFT) then begin
-          	Session5ch.IsExpired := True;	// UPLIFTのCookieが削除対象なので期限切れフラグセット
+          	GikoDM.LoginAction.Execute;		// UPLIFTをログアウトさせる
             uplift := False;	// これ以降はUPLIFTチェック不要
           end;
         end;
