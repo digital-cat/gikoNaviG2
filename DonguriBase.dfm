@@ -68,14 +68,12 @@ object DonguriForm: TDonguriForm
     Top = 33
     Width = 280
     Height = 494
-    ActivePage = TabSheetHome
+    ActivePage = TabSheetService
     Align = alClient
     TabOrder = 0
     OnDrawTab = PageControlDrawTab
-    ExplicitHeight = 527
     object TabSheetHome: TTabSheet
       Caption = #12507#12540#12512
-      ExplicitHeight = 513
       object PanelHome: TPanel
         Left = 0
         Top = 0
@@ -531,13 +529,11 @@ object DonguriForm: TDonguriForm
         BevelOuter = bvLowered
         ParentColor = True
         TabOrder = 1
-        ExplicitHeight = 47
       end
     end
     object TabSheetService: TTabSheet
       Caption = #12469#12540#12499#12473
       ImageIndex = 1
-      ExplicitHeight = 513
       object PanelService: TPanel
         Left = 0
         Top = 0
@@ -687,27 +683,27 @@ object DonguriForm: TDonguriForm
           Left = 12
           Top = 225
           Width = 250
-          Height = 85
-          Caption = #12495#12531#12479#12540#21628#12403#21517#22793#26356
+          Height = 107
+          Caption = #12495#12531#12479#12540#12493#12540#12512#22793#26356
           TabOrder = 3
           object Label16: TLabel
             Left = 16
             Top = 24
-            Width = 80
+            Width = 113
             Height = 13
-            Caption = #26032#12375#12356#21628#12403#21517'(&N)'
+            Caption = #26032#12375#12356#12495#12531#12479#12540#12493#12540#12512'(&N)'
             FocusControl = NewNameEdit
           end
           object Label17: TLabel
             Left = 16
-            Top = 56
+            Top = 78
             Width = 108
             Height = 13
             Caption = #25163#25968#26009#65306'0.001 '#12393#12435#12368#12426
           end
           object RenamePnlButton: TPanel
             Left = 150
-            Top = 47
+            Top = 69
             Width = 83
             Height = 25
             BevelInner = bvRaised
@@ -718,16 +714,16 @@ object DonguriForm: TDonguriForm
             OnMouseUp = PanelButtonMouseUp
           end
           object NewNameEdit: TEdit
-            Left = 105
-            Top = 20
-            Width = 128
+            Left = 16
+            Top = 42
+            Width = 217
             Height = 21
             TabOrder = 1
           end
         end
         object TransferGroupBox: TGroupBox
           Left = 12
-          Top = 316
+          Top = 339
           Width = 250
           Height = 110
           Caption = #12393#12435#12368#12426#36578#36865
@@ -800,13 +796,11 @@ object DonguriForm: TDonguriForm
         BevelOuter = bvLowered
         ParentColor = True
         TabOrder = 1
-        ExplicitHeight = 47
       end
     end
     object TabSheetChest: TTabSheet
       Caption = #12450#12452#12486#12512
       ImageIndex = 2
-      ExplicitHeight = 513
       object BagTopPanel: TPanel
         Left = 0
         Top = 0
@@ -908,11 +902,9 @@ object DonguriForm: TDonguriForm
         Align = alClient
         TabOrder = 1
         OnDrawTab = PageControlItemBagDrawTab
-        ExplicitHeight = 387
         object TabSheetUsing: TTabSheet
           Caption = #35013#20633#20013
           OnResize = TabSheetUsingResize
-          ExplicitHeight = 359
           object UsingPanel: TPanel
             Left = 0
             Top = 0
@@ -1085,16 +1077,11 @@ object DonguriForm: TDonguriForm
             BevelOuter = bvLowered
             ParentColor = True
             TabOrder = 1
-            ExplicitHeight = 43
           end
         end
         object TabSheetWeapon: TTabSheet
           Caption = #27494#22120
           ImageIndex = 1
-          ExplicitLeft = 0
-          ExplicitTop = 0
-          ExplicitWidth = 0
-          ExplicitHeight = 0
           object WeaponTopPanel: TPanel
             Left = 0
             Top = 0
@@ -1185,7 +1172,7 @@ object DonguriForm: TDonguriForm
             Left = 0
             Top = 30
             Width = 264
-            Height = 329
+            Height = 282
             Align = alClient
             BevelInner = bvNone
             BevelOuter = bvNone
@@ -1243,10 +1230,6 @@ object DonguriForm: TDonguriForm
         object TabSheetArmor: TTabSheet
           Caption = #38450#20855
           ImageIndex = 2
-          ExplicitLeft = 0
-          ExplicitTop = 0
-          ExplicitWidth = 0
-          ExplicitHeight = 0
           object ArmorTopPanel: TPanel
             Left = 0
             Top = 0
@@ -1337,7 +1320,7 @@ object DonguriForm: TDonguriForm
             Left = 0
             Top = 30
             Width = 264
-            Height = 329
+            Height = 282
             Align = alClient
             BevelInner = bvNone
             BevelOuter = bvNone
@@ -1397,7 +1380,6 @@ object DonguriForm: TDonguriForm
     object TabSheetLink: TTabSheet
       Caption = #12522#12531#12463
       ImageIndex = 3
-      ExplicitHeight = 513
       object LinkPanel: TPanel
         Left = 0
         Top = 0
@@ -1677,13 +1659,11 @@ object DonguriForm: TDonguriForm
         BevelOuter = bvLowered
         ParentColor = True
         TabOrder = 1
-        ExplicitHeight = 47
       end
     end
     object TabSheetSetting: TTabSheet
       Caption = #35373#23450
       ImageIndex = 4
-      ExplicitHeight = 513
       object PanelSetting: TPanel
         Left = 0
         Top = 0
@@ -1758,7 +1738,6 @@ object DonguriForm: TDonguriForm
         BevelOuter = bvLowered
         ParentColor = True
         TabOrder = 1
-        ExplicitHeight = 47
       end
     end
   end
@@ -1773,7 +1752,7 @@ object DonguriForm: TDonguriForm
     Left = 240
     Top = 256
     Bitmap = {
-      494C01010A001400880010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01010A0014008C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000003000000001002000000000000030
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
