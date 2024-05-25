@@ -18,7 +18,6 @@ type
 		FErrorCode:   Integer;
 		FErrorString: string;
 		FUserAgent:   string;
-    FIsExpired:		Boolean;
 
 		function GetSessionID: string;
 		function GetUserAgent: string;
@@ -38,7 +37,6 @@ type
 		property  UserAgent: string  read  GetUserAgent;
 		property  ErrorCode: Integer read  GetErrorCode;
 		property  ErrorMsg:  string  read  GetErrorMsg;
-    property	IsExpired: Boolean read  FIsExpired write FIsExpired;
   end;
 
 var
@@ -86,7 +84,6 @@ begin
   FErrorCode   := 0;
   FErrorString := '';
   FUserAgent   := '';
-  FIsExpired	 := False;
 end;
 
 { ÉçÉOÉCÉì }
