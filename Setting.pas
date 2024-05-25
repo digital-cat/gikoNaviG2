@@ -1525,7 +1525,7 @@ begin
 		FDonguriTop    := ini.ReadInteger('DonguriSystem', 'Top',    0);
 		FDonguriLeft   := ini.ReadInteger('DonguriSystem', 'Left',   0);
 		FDonguriWidth  := ini.ReadInteger('DonguriSystem', 'Width',  296);
-		FDonguriHeight := ini.ReadInteger('DonguriSystem', 'Height', 610);
+		FDonguriHeight := ini.ReadInteger('DonguriSystem', 'Height', 566);
 		FDonguriStay   := ini.ReadBool(   'DonguriSystem', 'Stay',   False);
     FDonguriTheme  := ini.ReadInteger('DonguriSystem', 'Theme',  0);
     FDonguriTaskBar:= ini.ReadBool(   'DonguriSystem', 'TaskBar',False);
