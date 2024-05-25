@@ -1,6 +1,6 @@
 unit DonguriSystem;
 
-//{$DEFINE _DEBUG_MODE}
+{$DEFINE _DEBUG_MODE}
 
 interface
 
@@ -94,7 +94,7 @@ type
 		function HttpGet(url, referer: String; gzip: Boolean; var response: String; var redirect: Boolean): Boolean;
 		function HttpGetCall(urlStart: String; var response: String): Boolean;
 		function HttpPost(url, referer: String; postParam: TStringList; gzip: Boolean; var response: String; var redirect: Boolean): Boolean;
-    function HttpPostCall(urlStart: String; var response: String): Boolean;
+    function HttpPostCall(urlStart: String; postParam: TStringList; var response: String): Boolean;
 
 		function CheckFormAction(html, url: String): Boolean;
   	function CheckResurrect(html: String; var resMsg: String; var nextUrl: String; var post: Boolean): Boolean;
@@ -121,16 +121,15 @@ type
     function WeaponCraft(var response: String): Boolean;
     function ArmorCraft(var response: String): Boolean;
 
-    function Rename(var response: String): Boolean;
+    function Rename(newName: String; var response: String): Boolean;
     function Resurrect(var response: String; var cancel: Boolean; handle: HWND): Boolean;
-    function Transfer(var response: String): Boolean;
-    function Craft(var response: String): Boolean;
+    function Transfer(recipientID, amount: String; var response: String): Boolean;
     function CraftCB(amount: Integer; var response: String): Boolean;
     function CraftKY(amount: Integer; var response: String): Boolean;
     function Bag(var itemBag: TDonguriBag; var response: String; var denied: Boolean): Boolean;
     function AddSlots(var response: String): Boolean;
     function Unequip(var itemBag: TDonguriBag; weapon: Boolean): Boolean;
-    function ChestOpen(var itemBag: TDonguriBag; var response: String): Boolean;
+    function ChestOpen(amount: Integer; var itemBag: TDonguriBag; var response: String): Boolean;
     function RecycleAll(var itemBag: TDonguriBag): Boolean;
     function Lock(itemNoList: TStringList; var itemBag: TDonguriBag): Boolean;
     function Unlock(itemNoList: TStringList; var itemBag: TDonguriBag): Boolean;
@@ -531,7 +530,7 @@ begin
 end;
 
 // リダイレクト有りのHTTP-POST（リダイレクトはGET）
-function TDonguriSys.HttpPostCall(urlStart: String; var response: String): Boolean;
+function TDonguriSys.HttpPostCall(urlStart: String; postParam: TStringList; var response: String): Boolean;
 var
   url: String;
   ref: String;
@@ -539,7 +538,6 @@ var
   red: Boolean;
   gzip: Boolean;
   ok: Boolean;
-  param: TStringList;
   first: Boolean;
 begin
 	Result := False;
@@ -547,8 +545,6 @@ begin
 
   if FProcessing then
     Exit;
-
-  param := TStringList.Create;
 
 	try
 	  ClearResponse;
@@ -564,14 +560,14 @@ begin
       gzip := (url = URL_DNG_ROOT);
 
     	if first then begin
-	      ok := HttpPost(url, ref, param, gzip, res, red);
+	      ok := HttpPost(url, ref, postParam, gzip, res, red);
         first := False;
       end else
 				ok := HttpGet(url, ref, gzip, res, red);
 
       if ok and (url = URL_DNG_LOGOUT) then begin
         IndyMdl.DelCookie('acorn', URL_5CH_ROOT);	// Cookie保存時に消してくれているとは思うけど
-        IndyMdl.DelCookie('fp',    URL_5CH_ROOT);	// 受け取ってないけどクリア要求？？？
+        //IndyMdl.DelCookie('fp',    URL_5CH_ROOT);	// 受け取ってないけどクリア要求？？？
       end;
 
       if red = False then begin
@@ -599,7 +595,6 @@ begin
       FErroeMessage := e.Message;
     end;
   end;
-  param.Free;
 end;
 
 // ルート（メインページ）
@@ -767,32 +762,33 @@ begin
 end;
 
 // ハンター呼び名変更サービス
-function TDonguriSys.Rename(var response: String): Boolean;
-{begin
-	Result := False;
-  response := '';
-
-	try
-	  ClearResponse;
-
-  	Result := HttpGetCall(URL_DNG_RENAME, response);
-
-  except
-    on e: Exception do begin
-      FErroeMessage := e.Message;
-    end;
-  end;
-}
+function TDonguriSys.Rename(newName: String; var response: String): Boolean;
 var
+  name: String;
+  len: Integer;
+	postParam: TStringList;
 	redirect: Boolean;
 begin
 	Result := False;
   response := '';
 
-	try
+  try
 	  ClearResponse;
 
-  	Result := HttpGet(URL_DNG_RENAME, '', True, response, redirect);
+  	name := newName;
+    if name[1] = '[' then
+    	Delete(name, 1, 1);
+  	len := Length(name);
+    if name[len] = ']' then
+    	Delete(name, len, 1);
+
+		postParam := TStringList.Create;
+    try
+  		postParam.Add('name=' + name);
+  		Result := HttpPost(URL_DNG_RENAME, URL_DNG_RENAME, postParam, False, response, redirect);
+    finally
+	  	postParam.Free;
+    end;
 
   except
     on e: Exception do begin
@@ -903,67 +899,34 @@ end;
 
 
 // ドングリ転送サービス
-function TDonguriSys.Transfer(var response: String): Boolean;
-{begin
-	Result := False;
-  response := '';
-
-	try
-	  ClearResponse;
-
-  	Result := HttpGetCall(URL_DNG_TRNSFR, response);
-
-  except
-    on e: Exception do begin
-      FErroeMessage := e.Message;
-    end;
-  end;
-}
+function TDonguriSys.Transfer(recipientID, amount: String; var response: String): Boolean;
 var
+  rid: String;
+  len: Integer;
+	postParam: TStringList;
 	redirect: Boolean;
 begin
 	Result := False;
   response := '';
 
-	try
+  try
 	  ClearResponse;
 
-  	Result := HttpGet(URL_DNG_TRNSFR, '', True, response, redirect);
+  	rid := recipientID;
+    if rid[1] = '[' then
+    	Delete(rid, 1, 1);
+  	len := Length(rid);
+    if rid[len] = ']' then
+    	Delete(rid, len, 1);
 
-  except
-    on e: Exception do begin
-      FErroeMessage := e.Message;
+		postParam := TStringList.Create;
+    try
+  		postParam.Add('recipientid=' + rid);
+  		postParam.Add('transferamt=' + amount);
+  		Result := HttpPost(URL_DNG_TRNSFR, URL_DNG_TRNSFR, postParam, False, response, redirect);
+    finally
+	  	postParam.Free;
     end;
-  end;
-end;
-
-// 工作センター
-function TDonguriSys.Craft(var response: String): Boolean;
-{begin
-	Result := False;
-  response := '';
-
-	try
-	  ClearResponse;
-
-  	Result := HttpGetCall(URL_DNG_CRAFT, response);
-
-  except
-    on e: Exception do begin
-      FErroeMessage := e.Message;
-    end;
-  end;
-}
-var
-	redirect: Boolean;
-begin
-	Result := False;
-  response := '';
-
-	try
-	  ClearResponse;
-
-  	Result := HttpGet(URL_DNG_CRAFT, '', True, response, redirect);
 
   except
     on e: Exception do begin
@@ -1162,25 +1125,37 @@ begin
 end;
 
 // 宝箱を開ける
-function TDonguriSys.ChestOpen(var itemBag: TDonguriBag; var response: String): Boolean;
+function TDonguriSys.ChestOpen(amount: Integer; var itemBag: TDonguriBag; var response: String): Boolean;
 var
   ret: Boolean;
+  param: TStringList;
 begin
 	Result := False;
 	itemBag.Clear;
+	param := TStringList.Create;
 
   try
 	  ClearResponse;
 
-		ret := HttpPostCall(URL_DNG_CHESTOP, response);
+    case amount of
+    10:  param.Add('chestsize=A65');
+    100: param.Add('chestsize=B70');
+    else FErroeMessage := Format('宝箱を開くことができませんでした。%sパラメータ不正：%d', [#10, amount]);
+    end;
 
-    if ret and (Pos('<h1>アイテムバッグ</h1>', response) > 0) then
-			Result := ParceBag(response, itemBag)
+  	if param.Count > 0 then begin
+      ret := HttpPostCall(URL_DNG_CHESTOP, param, response);
+
+      if ret and (Pos('<h1>アイテムバッグ</h1>', response) > 0) then
+        Result := ParceBag(response, itemBag)
+    end;
   except
     on e: Exception do begin
       FErroeMessage := e.Message;
     end;
   end;
+	param.Free;
+  
 end;
 
 // ロックされていない武器防具を全て分解する

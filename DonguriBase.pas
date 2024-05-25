@@ -5,19 +5,17 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, ExtCtrls, Grids, StrUtils, ComCtrls, Buttons, DonguriSystem,
-  ImgList;
+  ImgList, Menus, Clipbrd;
 
 type
   TDonguriForm = class(TForm)
     TimerInit: TTimer;
     InfoGrid: TStringGrid;
-    PanelBottom: TPanel;
     PanelTop: TPanel;
     PageControl: TPageControl;
     TabSheetHome: TTabSheet;
     TabSheetService: TTabSheet;
     SpeedButtonTopMost: TSpeedButton;
-    MsgLabel: TLabel;
     PanelService: TPanel;
     TabSheetSetting: TTabSheet;
     PanelHome: TPanel;
@@ -121,6 +119,52 @@ type
     UsingPanel: TPanel;
     RenameGroupBox: TGroupBox;
     TransferGroupBox: TGroupBox;
+    Label2: TLabel;
+    RIDEdit: TEdit;
+    Label10: TLabel;
+    TAmountEdit: TEdit;
+    Label11: TLabel;
+    Label16: TLabel;
+    NewNameEdit: TEdit;
+    Label17: TLabel;
+    TabSheetLink: TTabSheet;
+    LinkPanel: TPanel;
+    Label18: TLabel;
+    LabelHomeLink: TLabel;
+    Label20: TLabel;
+    Label21: TLabel;
+    LabelFaqLink: TLabel;
+    Label19: TLabel;
+    Label22: TLabel;
+    LabelApiLink: TLabel;
+    Label23: TLabel;
+    LabelRankLink: TLabel;
+    Label25: TLabel;
+    LabelCLogLink: TLabel;
+    Label27: TLabel;
+    LabelFLogLink: TLabel;
+    Label29: TLabel;
+    LabelItemWLink: TLabel;
+    Label31: TLabel;
+    LabelAlertLink: TLabel;
+    Label33: TLabel;
+    LabelUpliftLink: TLabel;
+    PopupMenuLink: TPopupMenu;
+    ManuItemCopy: TMenuItem;
+    ManuItemOpen: TMenuItem;
+    Panel1: TPanel;
+    Panel2: TPanel;
+    Panel3: TPanel;
+    PanelSetting: TPanel;
+    Panel4: TPanel;
+    Panel5: TPanel;
+    ChestB70PnlButton: TPanel;
+    Label24: TLabel;
+    Label26: TLabel;
+    LabelFight: TLabel;
+    Label28: TLabel;
+    LabelShopLink: TLabel;
+    Label32: TLabel;
     procedure TimerInitTimer(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCreate(Sender: TObject);
@@ -175,10 +219,17 @@ type
     procedure SlotPnlButtonClick(Sender: TObject);
     procedure CraftKYPnlButtonClick(Sender: TObject);
     procedure KYAmountComboBoxChange(Sender: TObject);
+    procedure LabelLinkClick(Sender: TObject);
+    procedure ManuItemCopyClick(Sender: TObject);
+    procedure LabelLinkContextPopup(Sender: TObject; MousePos: TPoint;
+      var Handled: Boolean);
+    procedure ManuItemOpenClick(Sender: TObject);
+    procedure ChestB70PnlButtonClick(Sender: TObject);
   private
     { Private declarations }
     FHunter: Boolean;
     FBag: TDonguriBag;
+    FLink: String;
 
     procedure SetMode;
     procedure SetColor;
@@ -186,6 +237,7 @@ type
     procedure SetColors(control: TControl; bkg, txt: TColor);
     procedure SetButtonColors(button: TPanel; bkg, txt, dtx: TColor);
     procedure SetBtnCol(button: TPanel);
+    procedure SetSkillPanelColor(panel: TPanel);
     procedure ClearInfoValue;
     procedure ShowRoot;
     function Parsing(html: String): Boolean;
@@ -200,7 +252,11 @@ type
     procedure UnlockItem(list: TListView);
     procedure RecycleItem(list: TListView);
     procedure UseItem(list: TListView);
-    function GetProgressPosition(prg: string): Integer;
+		procedure SetSkillInfo(var html: String; const kws: String; const kw2: String; const kwe: String;
+												const pbs: String; const pbe: String; panel: TPanel; prgbar: TProgressBar; prglbl: TLabel);
+    function GetProgressPosition(var html: String; const kws: String; const kwe: String): Integer;
+    function IsRootPage(html: String): Boolean;
+    procedure OpenChest(amount: Integer; chestName: String);
 	protected
 		procedure CreateParams(var Params: TCreateParams); override;
   public
@@ -221,9 +277,9 @@ type
     idxNumWood   = 1,
     idxNumIron   = 2,
     idxIronKey   = 3,
-    idxWdCnBall  = 4,
-    idxIrCnBall  = 5,
-    idxMarimo    = 6,
+    idxMarimo    = 4,
+    idxWdCnBall  = 5,
+    idxIrCnBall  = 6,
     idxRowCount  = 7);
 
 const
@@ -232,18 +288,23 @@ const
   	'　木材の数',
     '　鉄の数',
     '　鉄のキー',
+    '　マリモ',
     '　木製の大砲の玉',
-    '　鉄の大砲の玉',
-    '　マリモ'
+    '　鉄の大砲の玉'
     );
+  USER_TYPE: array [0..1] of string = (
+    '警備員',
+    'ハンター'
+	  );
   NAME_NAME: array [0..1] of string = (
-    '警備員呼び名：',
-    'ハンター呼び名：'
+    '警備員ネーム：',
+    'ハンターネーム：'
 	  );
   NAME_ID: array [0..1] of string = (
     '警備員ID：',
     'ハンターID：'
 	  );
+  COL_NAME_ACRN : String = '　どんぐり残高';
   COL_NAME_SEED : String = '　種子残高';
 
 	COL_DARK_BKG1 : TColor = $00202020;
@@ -253,6 +314,10 @@ const
   COL_DARK_DTXT : TColor = $00808080;//00A0A0A0;
   COL_LGHT_DTXT : TColor = $00808080;
   COL_BDWN_TEXT : TColor = clRed;
+  COL_LGHT_LINK : TColor = clBlue;
+  COL_DARK_LINK : TColor = clLime;
+  COL_LGHT_SKIL : TColor = $00f9b3b6;
+  COL_DARK_SKIL : TColor = $008f0c12;
 
   RARITY_TABLE: array [0..4, 0..1] of string = (
     ( ' UR', ' 0.03%'),
@@ -261,6 +326,17 @@ const
     ( '　R', '15%'),
     ( '　N', '83.3%')
 	  );
+
+  URL_ROOT  : String = 'https://donguri.5ch.net/';
+  URL_FAQ   : String = 'https://donguri.5ch.net/faq';
+  URL_API   : String = 'https://donguri.5ch.net/api';
+  URL_RANK  : String = 'https://donguri.5ch.net/rank';
+  URL_CLOGS : String = 'https://donguri.5ch.net/cannonlogs';
+  URL_FLOGS : String = 'https://donguri.5ch.net/fightlogs';
+  URL_ITEMW : String = 'https://donguri.5ch.net/itemwatch';
+  URL_ALERT : String = 'https://donguri.5ch.net/alert';
+  URL_SHOP  : String = 'https://donguri.5ch.net/keyshop';
+  URL_UPLIFT: String = 'https://uplift.5ch.net/';
 
 {$R *.dfm}
 
@@ -320,6 +396,18 @@ begin
   ListViewWeapon.ShowHint := True;
   ListViewArmor.Hint := hintText;
   ListViewArmor.ShowHint := True;
+
+  LabelHomeLink.Caption   := URL_ROOT;
+  LabelFaqLink.Caption    := URL_FAQ;
+  LabelApiLink.Caption    := URL_API;
+  LabelApiLink.Caption    := URL_API;
+  LabelRankLink.Caption   := URL_RANK;
+  LabelCLogLink.Caption   := URL_CLOGS;
+  LabelFLogLink.Caption   := URL_FLOGS;
+  LabelItemWLink.Caption  := URL_ITEMW;
+  LabelAlertLink.Caption  := URL_ALERT;
+  LabelShopLink.Caption   := URL_SHOP;
+  LabelUpliftLink.Caption := URL_UPLIFT;
 
 	TimerInit.Enabled := True;
 end;
@@ -392,8 +480,8 @@ begin
   else
 		idx := 0;
 
-	LabelName.Caption := NAME_NAME[idx];
-	LabelID.Caption   := NAME_ID[idx];
+	LabelUserType.Caption := USER_TYPE[idx];
+	LabelID.Caption       := NAME_ID[idx];
 
   //ResurrectPnlButton.Enabled := FHunter;
 
@@ -432,6 +520,7 @@ begin
 	EditLevel.Text := ' ';
 	LabelK.Caption := ' ';
 	LabelD.Caption := ' ';
+  LabelFight.Caption := ' ';
   ExplorPanel.Caption := ' ';
   MiningPanel.Caption := ' ';
   WoodctPanel.Caption := ' ';
@@ -474,57 +563,58 @@ end;
 
 function TDonguriForm.Parsing(html: String): Boolean;
 const
-  TAG_USR_S = '<p>あなたは';
-  TAG_USR_E = 'です。</p>';
-  TAG_ANM_S = '<span>ハンター呼び名:';
-  TAG_AN2_S = '<span>警備員呼び名:';
-  TAG_ANM_E = '<br>';
-	TAG_HID_S = '<span>ハンターID:';
-  TAG_HID_E = '<br>';
-	TAG_GID_S = '<span>警備員ID:';
-  TAG_GID_E = '<br>';
-	TAG_DNG_S = '<span>どんぐり残高:';
-	TAG_DN2_S = '<span>種子残高:';
-  TAG_DNG_E = '</span>';
-  TAG_NWD_S = '<span>木材の数:';
-  TAG_NWD_E = '<br>';
-  TAG_NIR_S = '鉄の数:';
-  TAG_NIR_E = '<br>';
-  TAG_IRK_S = '<br>鉄のキー:';
-  TAG_IRK_E = '<br>';
-  TAG_WCB_S = '<br>木製の大砲の玉:';
-  TAG_WCB_E = '<br>';
-  TAG_ICB_S = '<br>鉄の大砲の玉:';
-  TAG_ICB_E = '<br>';
-  TAG_MRM_S = '<br>マリモ:';
-  TAG_MRM_E = '</span>';
-  TAG_LVL_S = '<h4>レベル:';
-  TAG_LVL_E = '<br>';
-  TAG_NKL_S = '<br>K:';
-  TAG_NKL_E = '|';
-  TAG_NDM_S = '| D:';
-  TAG_NDM_E = '</h4>';
-  TAG_PRD_S = '<span>第';
-  TAG_PRD_E = '期</span>';
-  TAG_EXP_S = '<a href="/focus/exploration">探検:';
+  TAG_ANM_S = '<div class="header"><h1>';
+  TAG_ANM_E = '</h1>';
+	TAG_HID_S = '<h2>ハンター[ID:';
+  TAG_HID_E = ']</h2>';
+	TAG_GID_S = '<h2>警備員[ID:';
+  TAG_GID_E = ']</h2>';
+	//TAG_GID_R = '<p>あなたは警備員です。</p>';
+  TAG_PRD_S = '<div>第';
+  TAG_PRD_E = '期</div>';
+  TAG_LVL_S = '<div>レベル:';
+  TAG_LVL_E = '</div>';
+	TAG_DNG_S = '<div>どんぐり残高:';
+	TAG_DN2_S = '<div>種子残高:';
+  TAG_DNG_E = '</div>';
+  TAG_NWD_S = '<div>木材の数:';
+  TAG_NWD_E = '</div>';
+  TAG_NIR_S = '<div>鉄の数:';
+  TAG_NIR_E = '</div>';
+  TAG_IRK_S = '<div>鉄のキー:';
+  TAG_IRK_E = '</div>';
+  TAG_MRM_S = '<div>マリモ:';
+  TAG_MRM_E = '</div>';
+  TAG_WCB_S = '<div>木製の大砲の玉:';
+  TAG_WCB_E = '</div>';
+  TAG_ICB_S = '<div>鉄の大砲の玉:';
+  TAG_ICB_E = '</div>';
+  TAG_CNN_S = '<div>K:';
+  TAG_CNN_E = '</div>';
+  TAG_DMG_S = '| D:';
+  TAG_FGT_S = '<label>大乱闘の統計</label><div>';
+  TAG_FGT_E = '</div>';
+  TAG_PEX_S = '<div>経験値:<div class="progress-bar">';
+  TAG_PEX_E = '</div>';
+  TAG_PTM_S = '<div>経過時間:<div class="progress-bar">';
+  TAG_PTM_E = '</div>';
+  TAG_EXP_S = '<div>○<a style="text-decoration:underline;" href="/focus/exploration">探検:';
+  TAG_EX2_S = '<div>●<a style="text-decoration:underline;" href="/focus/exploration">探検:';
   TAG_EXP_E = '</a>';
-  TAG_MNG_S = '<a href="/focus/mining">採掘:';
+  TAG_MNG_S = '<div>○<a style="text-decoration:underline;" href="/focus/mining">採掘:';
+  TAG_MN2_S = '<div>●<a style="text-decoration:underline;" href="/focus/mining">採掘:';
   TAG_MNG_E = '</a>';
-  TAG_FLL_S = '<a href="/focus/woodcutting">木こり:';
+  TAG_FLL_S = '<div>○<a style="text-decoration:underline;" href="/focus/woodcutting">木こり:';
+  TAG_FL2_S = '<div>●<a style="text-decoration:underline;" href="/focus/woodcutting">木こり:';
   TAG_FLL_E = '</a>';
-  TAG_ARM_S = '<a href="/focus/weaponcraft">武器製作:';
+  TAG_ARM_S = '<div>○<a style="text-decoration:underline;" href="/focus/weaponcraft">武器製作:';
+  TAG_AR2_S = '<div>●<a style="text-decoration:underline;" href="/focus/weaponcraft">武器製作:';
   TAG_ARM_E = '</a>';
-  TAG_PRT_S = '<a href="/focus/armorcraft">防具製作:';
+  TAG_PRT_S = '<div>○<a style="text-decoration:underline;" href="/focus/armorcraft">防具製作:';
+  TAG_PR2_S = '<div>●<a style="text-decoration:underline;" href="/focus/armorcraft">防具製作:';
   TAG_PRT_E = '</a>';
-  TAG_PRG_S = '<span>[';
-  TAG_PRG_E = '</p>';
-  TAG_PEX_E = '] 経験値';
-  TAG_PTM_E = '] 経過時間';
-  TAG_PEP_E = '] 探検';
-  TAG_PMN_E = '] 採掘';
-  TAG_PWD_E = '] 木こり';
-  TAG_PWP_E = '] 武器製作';
-  TAG_PAR_E = '] 防具製作';
+  TAG_PRG_S = '<div class="progress-bar">';
+  TAG_PRG_E = '</div>';
 
   TAG_ERROR = '<p>エラー！</p>';
 	TAG_ECD_S = '<p>NG&lt;&gt;';
@@ -532,7 +622,6 @@ const
 	TAG_E_COOKIE_MSG = '<p>ログアウトして、もう一度ログインしてください。</p>';
 var
   tmp: String;
-  tm2: String;
   ecd: String;
   idx: Integer;
   prg: Integer;
@@ -547,34 +636,32 @@ begin
 
     // HTMLではなくエラーメッセージのテキストのみ
     if Pos('NG<>', html) = 1 then begin
-      MsgLabel.Caption := Copy(html, 5, Length(html) - 4);
+    	MsgBox(Handle, Copy(html, 5, Length(html) - 4), Caption, MB_OK or MB_ICONERROR);
       Result := True;
       Exit;
     end;
 
-    if DonguriSystem.Extract(TAG_USR_S, TAG_USR_E, html, tmp) then begin
-    	tmp := Trim(tmp);
-      LabelUserType.Caption := tmp;
-			FHunter := (tmp = 'ハンター');
-    end;
+		if DonguriSystem.Extract(TAG_ANM_S, TAG_ANM_E, html, tmp) then
+			EditName.Text := Trim(tmp);
+
+		if DonguriSystem.Extract(TAG_HID_S, TAG_HID_E, html, tmp) then begin
+			EditID.Text := Trim(tmp);
+    	FHunter := True;
+		end else if DonguriSystem.Extract(TAG_GID_S, TAG_GID_E, html, tmp) then
+			EditID.Text := Trim(tmp);
 
   	SetMode;
 
-    if FHunter then begin		// ハンター
-      if DonguriSystem.Extract(TAG_ANM_S, TAG_ANM_E, html, tmp) then
-        EditName.Text := Trim(tmp);
-    	if DonguriSystem.Extract(TAG_HID_S, TAG_HID_E, html, tmp) then
-  	    EditID.Text := Trim(tmp);
-    end else begin					// 警備員
-      if DonguriSystem.Extract(TAG_AN2_S, TAG_ANM_E, html, tmp) then
-        EditName.Text := Trim(tmp);
-	    if DonguriSystem.Extract(TAG_GID_S, TAG_GID_E, html, tmp) then
-  	    EditID.Text := Trim(tmp);
-    end;
+    if DonguriSystem.Extract(TAG_PRD_S, TAG_PRD_E, html, tmp) then
+      LabelPeriod.Caption := '第' + tmp + '期';
 
-    if DonguriSystem.Extract(TAG_DNG_S, TAG_DNG_E, html, tmp) then
-      InfoGrid.Cells[1, Integer(idxDonguri)] := Trim(tmp)
-    else if DonguriSystem.Extract(TAG_DN2_S, TAG_DNG_E, html, tmp) then begin
+    if DonguriSystem.Extract(TAG_LVL_S, TAG_LVL_E, html, tmp) then
+			EditLevel.Text := Trim(tmp);
+
+    if DonguriSystem.Extract(TAG_DNG_S, TAG_DNG_E, html, tmp) then begin
+      InfoGrid.Cells[0, Integer(idxDonguri)] := COL_NAME_ACRN;
+      InfoGrid.Cells[1, Integer(idxDonguri)] := Trim(tmp);
+    end else if DonguriSystem.Extract(TAG_DN2_S, TAG_DNG_E, html, tmp) then begin
       InfoGrid.Cells[0, Integer(idxDonguri)] := COL_NAME_SEED;
       InfoGrid.Cells[1, Integer(idxDonguri)] := Trim(tmp);
     end;
@@ -588,103 +675,60 @@ begin
     if DonguriSystem.Extract(TAG_IRK_S, TAG_IRK_E, html, tmp) then
       InfoGrid.Cells[1, Integer(idxIronKey)] := Trim(tmp);
 
+    if DonguriSystem.Extract(TAG_MRM_S, TAG_MRM_E, html, tmp) then
+      InfoGrid.Cells[1, Integer(idxMarimo)] := Trim(tmp);
+
     if DonguriSystem.Extract(TAG_WCB_S, TAG_WCB_E, html, tmp) then
       InfoGrid.Cells[1, Integer(idxWdCnBall)] := Trim(tmp);
 
     if DonguriSystem.Extract(TAG_ICB_S, TAG_ICB_E, html, tmp) then
       InfoGrid.Cells[1, Integer(idxIrCnBall)] := Trim(tmp);
 
-    if DonguriSystem.Extract(TAG_MRM_S, TAG_MRM_E, html, tmp) then
-      InfoGrid.Cells[1, Integer(idxMarimo)] := Trim(tmp);
-
-    if DonguriSystem.Extract(TAG_LVL_S, TAG_LVL_E, html, tmp) then begin
-      tmp := Trim(tmp);
-      idx := Pos('|', tmp);
-      if idx < 1 then
-	      EditLevel.Text := tmp
-      else begin
-        tm2 := Trim(Copy(tmp, 1, idx - 1));
-      	Delete(tmp, 1, idx);
-	      tmp := tm2 + ' (' + Trim(tmp) + ')';
-	      EditLevel.Text := tmp;
+    if DonguriSystem.Extract(TAG_CNN_S, TAG_CNN_E, html, tmp) then begin
+    	idx := Pos(TAG_DMG_S, tmp);
+      if idx > 0 then begin
+	      LabelK.Caption := Trim(Copy(tmp, 1, idx - 1));
+        Delete(tmp, 1, idx + Length(TAG_DMG_S) - 1);
+	      LabelD.Caption := Trim(tmp);
       end;
     end;
 
-    if DonguriSystem.Extract(TAG_NKL_S, TAG_NKL_E, html, tmp) then
-      LabelK.Caption := Trim(tmp);
+    if DonguriSystem.Extract(TAG_FGT_S, TAG_FGT_E, html, tmp) then
+	  	LabelFight.Caption := Trim(tmp);
 
-    if DonguriSystem.Extract(TAG_NDM_S, TAG_NDM_E, html, tmp) then
-      LabelD.Caption := Trim(tmp);
+    // 経験値
+		prg := GetProgressPosition(html, TAG_PEX_S, TAG_PEX_E);
+    ExprProgressBar.Position := prg;
+    ExprValLabel.Caption := IntToStr(prg);
+  	// 経過時間
+		prg := GetProgressPosition(html, TAG_PTM_S, TAG_PTM_E);
+    TimeProgressBar.Position := prg;
+    TimeValLabel.Caption := IntToStr(prg);
+    // 探検
+		SetSkillInfo(html, TAG_EXP_S, TAG_EX2_S, TAG_EXP_E, TAG_PRG_S, TAG_PRG_E,
+                	ExplorPanel, ExplorProgressBar, ExplorValLabel);
+  	// 採掘
+		SetSkillInfo(html, TAG_MNG_S, TAG_MN2_S, TAG_MNG_E, TAG_PRG_S, TAG_PRG_E,
+                	MiningPanel, MiningProgressBar, MiningValLabel);
+  	// 木こり
+		SetSkillInfo(html, TAG_FLL_S, TAG_FL2_S, TAG_FLL_E, TAG_PRG_S, TAG_PRG_E,
+                	WoodctPanel, WoodctProgressBar, WoodctValLabel);
+  	// 武器製作
+		SetSkillInfo(html, TAG_ARM_S, TAG_AR2_S, TAG_ARM_E, TAG_PRG_S, TAG_PRG_E,
+                	WeaponPanel, WeaponProgressBar, WeaponValLabel);
+  	// 防具製作
+		SetSkillInfo(html, TAG_PRT_S, TAG_PR2_S, TAG_PRT_E, TAG_PRG_S, TAG_PRG_E,
+                	ArmorcPanel, ArmorcProgressBar, ArmorcValLabel);
 
-    if DonguriSystem.Extract(TAG_PRD_S, TAG_PRD_E, html, tmp) then
-      LabelPeriod.Caption := '第' + tmp + '期';
-
-    if DonguriSystem.Extract2(TAG_EXP_S, TAG_EXP_E, html, tmp) then
-      ExplorPanel.Caption := Trim(tmp);
-
-    if DonguriSystem.Extract2(TAG_MNG_S, TAG_MNG_E, html, tmp) then
-      MiningPanel.Caption := Trim(tmp);
-
-    if DonguriSystem.Extract2(TAG_FLL_S, TAG_FLL_E, html, tmp) then
-      WoodctPanel.Caption := Trim(tmp);
-
-    if DonguriSystem.Extract2(TAG_ARM_S, TAG_ARM_E, html, tmp) then
-      WeaponPanel.Caption := Trim(tmp);
-
-    if DonguriSystem.Extract2(TAG_PRT_S, TAG_PRT_E, html, tmp) then
-      ArmorcPanel.Caption := Trim(tmp);
-
-    if DonguriSystem.Extract2(TAG_PRG_S, TAG_PEX_E, html, tmp) then begin
-    	prg := GetProgressPosition(tmp);
-      ExprProgressBar.Position := prg;
-		  ExprValLabel.Caption := IntToStr(prg);
-    end;
-
-    if DonguriSystem.Extract2(TAG_PRG_S, TAG_PTM_E, html, tmp) then begin
-    	prg := GetProgressPosition(tmp);
-      TimeProgressBar.Position := prg;
-		  TimeValLabel.Caption := IntToStr(prg);
-    end;
-
-    if DonguriSystem.Extract2(TAG_PRG_S, TAG_PEP_E, html, tmp) then begin
-    	prg := GetProgressPosition(tmp);
-      ExplorProgressBar.Position := prg;
-		  ExplorValLabel.Caption := IntToStr(prg);
-    end;
-
-    if DonguriSystem.Extract2(TAG_PRG_S, TAG_PMN_E, html, tmp) then begin
-    	prg := GetProgressPosition(tmp);
-      MiningProgressBar.Position := prg;
-		  MiningValLabel.Caption := IntToStr(prg);
-    end;
-
-    if DonguriSystem.Extract2(TAG_PRG_S, TAG_PWD_E, html, tmp) then begin
-    	prg := GetProgressPosition(tmp);
-      WoodctProgressBar.Position := prg;
-		  WoodctValLabel.Caption := IntToStr(prg);
-    end;
-
-    if DonguriSystem.Extract2(TAG_PRG_S, TAG_PWP_E, html, tmp) then begin
-    	prg := GetProgressPosition(tmp);
-      WeaponProgressBar.Position := prg;
-		  WeaponValLabel.Caption := IntToStr(prg);
-    end;
-
-    if DonguriSystem.Extract2(TAG_PRG_S, TAG_PAR_E, html, tmp) then begin
-    	prg := GetProgressPosition(tmp);
-      ArmorcProgressBar.Position := prg;
-			ArmorcValLabel.Caption := IntToStr(prg);
-    end;
-
+    // これはもうなくなったかも
   	if Pos(TAG_ERROR, html) > 0 then begin
+			ecd := 'エラーが発生しました。';
 	    if DonguriSystem.Extract(TAG_ECD_S, TAG_ECD_E, html, tmp) then begin
-        ecd := 'NG<>' + tmp;
+        ecd := ecd + #10 + tmp;
         if Pos(TAG_E_COOKIE_MSG, html) > 0 then
-		      MsgLabel.Caption := ecd + ' ログアウトして、もう一度ログインしてください。'
-        else
-		      MsgLabel.Caption := 'エラー！ ' + ecd;
-      end else
-        MsgLabel.Caption := 'エラー！';
+		      ecd := ecd + ' ' + TAG_E_COOKIE_MSG;
+      end;
+      MsgBox(Handle, ecd, Caption, MB_OK or MB_ICONERROR);
     end;
 
     Result := True;
@@ -692,19 +736,63 @@ begin
   end;
 end;
 
-function TDonguriForm.GetProgressPosition(prg: string): Integer;
+procedure TDonguriForm.SetSkillInfo(var html: String;
+												const kws: String; const kw2: String; const kwe: String;
+												const pbs: String; const pbe: String;
+                        panel: TPanel; prgbar: TProgressBar; prglbl: TLabel);
 var
-	len: Integer;
-  i: Integer;
+	tmp: String;
+  prg: Integer;
 begin
-	len := Length(prg);
-	Result := len;
-  for i := 1 to len do begin
-    if prg[i] <> '?' then begin
-      Result := i - 1;
-      Break;
-    end;
+	panel.Tag := 0;
+	if DonguriSystem.Extract2(kws, kwe, html, tmp) = False then begin
+		if DonguriSystem.Extract2(kw2, kwe, html, tmp) then
+			panel.Tag := 1;
   end;
+
+  if tmp <> '' then begin
+    panel.Caption := Trim(tmp);
+    prg := GetProgressPosition(html, pbs, pbe);
+    prgbar.Position := prg;
+    prglbl.Caption := IntToStr(prg);
+  end else begin
+    panel.Caption := '';
+    prgbar.Position := 0;
+    prglbl.Caption := '';
+  end;
+
+  panel.ShowHint := (panel.Tag = 1);
+
+  SetSkillPanelColor(panel);
+  
+end;
+
+function TDonguriForm.GetProgressPosition(var html: String; const kws: String; const kwe: String): Integer;
+var
+	tmp: String;
+  idx: Integer;
+begin
+	Result := 0;
+  if DonguriSystem.Extract2(kws, kwe, html, tmp) then begin 	// 削除あり！
+  	tmp := DonguriSystem.TrimTag(tmp);
+    idx := Pos('%', tmp);
+    if idx > 0 then
+      SetLength(tmp, idx - 1);
+	  Result := StrToInt(tmp);
+  end;
+end;
+
+function TDonguriForm.IsRootPage(html: String): Boolean;
+begin
+
+  if Pos('<h1>どんぐりシステム</h1><p>あなたは警備員です。</p>', html) > 0 then	// 未ログイン
+    Result := True
+	else if ((Pos('<h2>ハンター[ID:', html) > 0) or
+					 (Pos('<h2>警備員[ID:',   html) > 0)) and
+					(Pos('<label>能力値</label>', html) > 0) then
+    Result := True
+  else
+    Result := False;
 end;
 
 procedure TDonguriForm.ShowHttpError;
@@ -732,6 +820,22 @@ begin
 								'どんぐりシステム', MB_OK or MB_ICONERROR);
   end else
   	ShowHttpError;
+end;
+
+procedure TDonguriForm.LabelLinkClick(Sender: TObject);
+var
+	url: String;
+begin
+	try
+    if Sender is TLabel then begin
+    	url := TLabel(Sender).Caption;
+      if url <> '' then
+		  	GikoSys.OpenBrowser(url, gbtAuto);
+    end;
+  except
+  	on e: Exception do
+    	MsgBox(Handle, e.Message, Caption, MB_OK or MB_ICONERROR);
+  end;
 end;
 
 procedure TDonguriForm.ListViewArmorChange(Sender: TObject; Item: TListItem;
@@ -891,24 +995,53 @@ end;
 
 //=================
 
+// 呼び名変更
 procedure TDonguriForm.RenamePnlButtonClick(Sender: TObject);
+const
+  CAP_MSG: String = 'ハンター呼び名変更';
 var
   res: String;
+  newName: String;
 begin
 	if GikoSys.DonguriSys.Processing then
   	Exit;
 
-  if GikoSys.DonguriSys.Rename(res) then begin
-//  	if Parsing(res) = False then
-//      MsgBox(Handle, 'どんぐりシステムのページ解析に失敗しました',
-//								'どんぐりシステム', MB_OK or MB_ICONERROR);
-  	MsgBox(Handle, 'OK', 'debug', MB_OK);
-  end else
-  	ShowHttpError;
+  try
+    newName := NewNameEdit.Text;
+    if newName = '' then begin
+			MsgBox(Handle, '新しい呼び名を指定してください。', CAP_MSG, MB_OK or MB_ICONERROR);
+      Exit;
+    end;
+
+		if MsgBox(Handle, 'ハンター呼び名を変更します。' + #10 +
+    									'　受新しい呼び名：' + newName + #10 +
+                      '　手数料どんぐり額：0.001' + #10 +
+                      '実行してよろしいですか？',
+	    						CAP_MSG, MB_OKCANCEL or MB_ICONQUESTION) <> IDOK then
+    	Exit;
+
+	  if GikoSys.DonguriSys.Rename(newName, res) then begin
+      if Pos('<html', res) < 1 then
+	      MsgBox(Handle, TrimTag(res), CAP_MSG, MB_OK or MB_ICONINFORMATION)
+      else if IsRootPage(res) then begin
+        if Parsing(res) = False then
+          MsgBox(Handle, 'どんぐりシステムのページ解析に失敗しました',
+                    CAP_MSG, MB_OK or MB_ICONERROR);
+      end else
+      	MsgBox(Handle, 'ハンター呼び名変更の結果を確認できませんでした。',
+                            CAP_MSG, MB_OK or MB_ICONERROR);
+    end else
+      ShowHttpError;
+  except
+  	on e: Exception do
+    	MsgBox(Handle, e.Message, CAP_MSG, MB_OK or MB_ICONERROR);
+  end;
 end;
 
 // 復活
 procedure TDonguriForm.ResurrectPnlButtonClick(Sender: TObject);
+const
+  CAP_MSG: String = '復活サービス';
 var
   res: String;
   cancel: Boolean;
@@ -916,14 +1049,19 @@ begin
 	if GikoSys.DonguriSys.Processing then
   	Exit;
 
-  if GikoSys.DonguriSys.Resurrect(res, cancel, Handle) then begin
-		MsgBox(Handle, res, 'どんぐりシステム', MB_OK or MB_ICONINFORMATION);
-    ShowRoot;
-  end else if cancel = False then begin
-  	if res <> '' then
-    	MsgBox(Handle, res, 'どんぐりシステム', MB_OK or MB_ICONERROR)
-		else
-  		ShowHttpError;
+	try
+    if GikoSys.DonguriSys.Resurrect(res, cancel, Handle) then begin
+      MsgBox(Handle, TrimTag(res), CAP_MSG, MB_OK or MB_ICONINFORMATION);
+      ShowRoot;
+    end else if cancel = False then begin
+      if res <> '' then
+        MsgBox(Handle, TrimTag(res), CAP_MSG, MB_OK or MB_ICONERROR)
+      else
+        ShowHttpError;
+    end;
+  except
+  	on e: Exception do
+    	MsgBox(Handle, e.Message, CAP_MSG, MB_OK or MB_ICONERROR);
   end;
 end;
 
@@ -932,20 +1070,63 @@ begin
 	ShowRoot;
 end;
 
+// ドングリ転送
 procedure TDonguriForm.TransferPnlButtonClick(Sender: TObject);
+const
+  CAP_MSG: String = 'どんぐり転送';
 var
   res: String;
+  rid: String;
+  amn: String;
+  chkAmn: Double;
 begin
 	if GikoSys.DonguriSys.Processing then
   	Exit;
 
-  if GikoSys.DonguriSys.Transfer(res) then begin
-//  	if Parsing(res) = False then
-//      MsgBox(Handle, 'どんぐりシステムのページ解析に失敗しました',
-//								'どんぐりシステム', MB_OK or MB_ICONERROR);
-  	MsgBox(Handle, 'OK', 'debug', MB_OK);
-  end else
-  	ShowHttpError;
+  try
+    rid := RIDEdit.Text;
+    if rid = '' then begin
+			MsgBox(Handle, '受取人IDを指定してください。', CAP_MSG, MB_OK or MB_ICONERROR);
+      Exit;
+    end;
+
+    amn := TAmountEdit.Text;
+    if amn = '' then begin
+			MsgBox(Handle, '転送するどんぐり額を指定してください。', CAP_MSG, MB_OK or MB_ICONERROR);
+      Exit;
+    end;
+
+    if TryStrToFloat(amn, chkAmn) = False then begin
+			MsgBox(Handle, '転送するどんぐり額が正しくありません。' + #10 +
+      							 '実数（小数点数）で指定してください。'	, CAP_MSG, MB_OK or MB_ICONERROR);
+      Exit;
+    end;
+
+		if MsgBox(Handle, 'どんぐり転送を実行します。' + #10 +
+    									'　受取人ID：' + rid + #10 +
+                      '　転送どんぐり額：' + amn + #10 +
+                      '　手数料どんぐり額：0.001' + #10 +
+                      'どんぐり転送を後から取り消すことはできません。' + #10 +
+                      '実行してよろしいですか？',
+	    						CAP_MSG, MB_OKCANCEL or MB_ICONQUESTION) <> IDOK then
+    	Exit;
+
+	  if GikoSys.DonguriSys.Transfer(rid, amn, res) then begin
+      if Pos('<html', res) < 1 then
+	      MsgBox(Handle, TrimTag(res), CAP_MSG, MB_OK or MB_ICONINFORMATION)
+      else if IsRootPage(res) then begin
+        if Parsing(res) = False then
+          MsgBox(Handle, 'どんぐりシステムのページ解析に失敗しました',
+                    CAP_MSG, MB_OK or MB_ICONERROR);
+      end else
+      	MsgBox(Handle, 'ドングリ転送の結果を確認できませんでした。',
+                            CAP_MSG, MB_OK or MB_ICONERROR);
+    end else
+      ShowHttpError;
+  except
+  	on e: Exception do
+    	MsgBox(Handle, e.Message, CAP_MSG, MB_OK or MB_ICONERROR);
+  end;
 end;
 
 function TDonguriForm.MsgBox(const hWnd: HWND; const Text, Caption: string; Flags: Longint = MB_OK): Integer;
@@ -971,7 +1152,6 @@ begin
 
         Color := clBtnFace;
         PanelTop.Color := clBtnFace;
-			  SetColors(PanelBottom,     clBtnFace, clWindowText);
 
 			  SetColors(PanelHome,       clBtnFace, clWindowText);
 			  SetColors(EditName,        clWindow,  clWindowText);
@@ -988,6 +1168,9 @@ begin
 			  SetColors(PanelService,        clBtnFace, clWindowText);
         SetColors(KYAmountComboBox,    clWindow,  clWindowText);
 			  SetColors(CBAmountComboBox,    clWindow,  clWindowText);
+        SetColors(NewNameEdit,         clWindow,  clWindowText);
+        SetColors(RIDEdit,             clWindow,  clWindowText);
+        SetColors(TAmountEdit,         clWindow,  clWindowText);
 
         TabSheetChest.Font.Color := clWindowText;
         SetColors(BagTopPanel,         clBtnFace, clWindowText);
@@ -1001,6 +1184,20 @@ begin
 
       	TabSheetSetting.Font.Color := clWindowText;
 
+        TabSheetLink.Font.Color := clWindowText;
+      	SetColors(LinkPanel,           clBtnFace, clWindowText);
+        LabelHomeLink.Font.Color   := COL_LGHT_LINK;
+        LabelFaqLink.Font.Color    := COL_LGHT_LINK;
+        LabelApiLink.Font.Color    := COL_LGHT_LINK;
+        LabelApiLink.Font.Color    := COL_LGHT_LINK;
+        LabelRankLink.Font.Color   := COL_LGHT_LINK;
+        LabelCLogLink.Font.Color   := COL_LGHT_LINK;
+        LabelFLogLink.Font.Color   := COL_LGHT_LINK;
+        LabelItemWLink.Font.Color  := COL_LGHT_LINK;
+        LabelAlertLink.Font.Color  := COL_LGHT_LINK;
+        LabelShopLink.Font.Color   := COL_LGHT_LINK;
+        LabelUpliftLink.Font.Color := COL_LGHT_LINK;
+
       end;
       1: begin
         PageControl.OwnerDraw := True;
@@ -1008,7 +1205,6 @@ begin
 
         Color := COL_DARK_BKG1;
         PanelTop.Color := COL_DARK_BKG1;
-			  SetColors(PanelBottom,     COL_DARK_BKG1, COL_DARK_TEXT);
 
 			  SetColors(PanelHome,       COL_DARK_BKG1, COL_DARK_TEXT);
 			  SetColors(EditName,        COL_DARK_BKG2, COL_DARK_TEXT);
@@ -1025,6 +1221,9 @@ begin
 			  SetColors(PanelService,        COL_DARK_BKG1, COL_DARK_TEXT);
         SetColors(KYAmountComboBox,    COL_DARK_BKG2, COL_DARK_TEXT);
 			  SetColors(CBAmountComboBox,    COL_DARK_BKG2, COL_DARK_TEXT);
+        SetColors(NewNameEdit,         COL_DARK_BKG2, COL_DARK_TEXT);
+        SetColors(RIDEdit,             COL_DARK_BKG2, COL_DARK_TEXT);
+        SetColors(TAmountEdit,         COL_DARK_BKG2, COL_DARK_TEXT);
 
         TabSheetChest.Font.Color := COL_DARK_TEXT;
         SetColors(BagTopPanel,         COL_DARK_BKG1, COL_DARK_TEXT);
@@ -1038,8 +1237,27 @@ begin
 
       	TabSheetSetting.Font.Color := COL_DARK_TEXT;
 
+        TabSheetLink.Font.Color := COL_DARK_TEXT;
+      	SetColors(LinkPanel,           COL_DARK_BKG1, COL_DARK_TEXT);
+        LabelHomeLink.Font.Color   := COL_DARK_LINK;
+        LabelFaqLink.Font.Color    := COL_DARK_LINK;
+        LabelApiLink.Font.Color    := COL_DARK_LINK;
+        LabelApiLink.Font.Color    := COL_DARK_LINK;
+        LabelRankLink.Font.Color   := COL_DARK_LINK;
+        LabelCLogLink.Font.Color   := COL_DARK_LINK;
+        LabelFLogLink.Font.Color   := COL_DARK_LINK;
+        LabelItemWLink.Font.Color  := COL_DARK_LINK;
+        LabelAlertLink.Font.Color  := COL_DARK_LINK;
+        LabelShopLink.Font.Color   := COL_DARK_LINK;
+        LabelUpliftLink.Font.Color := COL_DARK_LINK;
       end;
     end;
+
+    SetSkillPanelColor(ExplorPanel);
+    SetSkillPanelColor(MiningPanel);
+    SetSkillPanelColor(WoodctPanel);
+    SetSkillPanelColor(WeaponPanel);
+    SetSkillPanelColor(ArmorcPanel);
 
     SetButtonColor;
 
@@ -1116,6 +1334,7 @@ begin
   SetButtonColors(CraftCBPnlButton,   bkg, txt, dtx);
   SetButtonColors(BagPnlButton,       bkg, txt, dtx);
   SetButtonColors(ChestPnlButton,     bkg, txt, dtx);
+  SetButtonColors(ChestB70PnlButton,  bkg, txt, dtx);
 end;
 
 procedure TDonguriForm.SetBtnCol(button: TPanel);
@@ -1150,6 +1369,28 @@ begin
 	  button.Font.Color := dtx;
 end;
 
+procedure TDonguriForm.SetSkillPanelColor(panel: TPanel);
+var
+  bkg: TColor;
+  txt: TColor;
+begin
+  if ColorRadioGroup.ItemIndex = 0 then begin
+  	if panel.Tag = 1 then
+	    bkg := COL_LGHT_SKIL
+    else
+	    bkg := clWindow;
+    txt := clWindowText;
+  end else {if ColorRadioGroup.ItemIndex = 1 then} begin
+  	if panel.Tag = 1 then
+	    bkg := COL_DARK_SKIL
+    else
+	    bkg := COL_DARK_BKG2;
+    txt := COL_DARK_TEXT;
+  end;
+  panel.Color := bkg;
+  panel.Font.Color := txt;
+end;
+
 procedure TDonguriForm.PageControlDrawTab(Control: TCustomTabControl;
   TabIndex: Integer; const Rect: TRect; Active: Boolean);
 var
@@ -1159,7 +1400,8 @@ begin
     0: cpt := TabSheetHome.Caption;
     1: cpt := TabSheetService.Caption;
     2: cpt := TabSheetChest.Caption;
-    3: cpt := TabSheetSetting.Caption;
+    3: cpt := TabSheetLink.Caption;
+    4: cpt := TabSheetSetting.Caption;
   end;
   DrawTab(Control.Canvas, TabIndex, cpt, Rect, Active);
 end;
@@ -1444,7 +1686,22 @@ begin
   end;
 end;
 
+procedure TDonguriForm.ChestB70PnlButtonClick(Sender: TObject);
+begin
+	if GikoSys.DonguriSys.Processing then
+  	Exit;
+	OpenChest(100, '大型の宝箱');
+end;
+
 procedure TDonguriForm.ChestPnlButtonClick(Sender: TObject);
+begin
+	if GikoSys.DonguriSys.Processing then
+  	Exit;
+	OpenChest(10, '宝箱');
+end;
+
+{ 宝箱を開く }
+procedure TDonguriForm.OpenChest(amount: Integer; chestName: String);
 var
   res: String;
   key: Integer;
@@ -1452,27 +1709,27 @@ begin
 	if GikoSys.DonguriSys.Processing then
   	Exit;
 
-	if MsgBox(Handle, '鉄のキーを10消費します。' + #10 + '宝箱を開けますか？',
+	if MsgBox(Handle, Format('鉄のキーを%d消費します。%s%sを開けますか？', [amount, #10, chestName]),
   					'アイテムバッグ', MB_YESNO or MB_ICONQUESTION) <> IDYES then
     Exit;
 
-  if GikoSys.DonguriSys.ChestOpen(FBag, res) then
+  if GikoSys.DonguriSys.ChestOpen(amount, FBag, res) then
 		ShowBag
   else if res <> ''then begin
   	if Pos('<html', res) < 1 then begin
 			MsgBox(Handle, res, 'アイテムバッグ', MB_OK or MB_ICONWARNING);
 			Exit;
     end;
-    if (Pos('<h1>どんぐりシステム</h1>', res) > 0) then begin
+    if IsRootPage(res) then begin
     	if Parsing(res) then begin
         key := StrToIntDef(InfoGrid.Cells[1, Integer(idxIronKey)], -1);
-        if (key >= 0) and (key < 10) then begin
+        if (key >= 0) and (key < amount) then begin
           MsgBox(Handle, '鉄のキーが不足しています。', 'アイテムバッグ', MB_OK or MB_ICONWARNING);
           Exit;
         end;
 			end;
 		end;
-		MsgBox(Handle, '宝箱を開くことができませんでした。', 'アイテムバッグ', MB_OK or MB_ICONWARNING);
+		MsgBox(Handle, chestName + 'を開くことができませんでした。', 'アイテムバッグ', MB_OK or MB_ICONWARNING);
   end else
   	ShowHttpError;
 end;
@@ -1699,5 +1956,42 @@ begin
   end;
 end;
 
+
+procedure TDonguriForm.LabelLinkContextPopup(Sender: TObject;
+  MousePos: TPoint; var Handled: Boolean);
+begin
+	try
+    if Sender is TLabel then
+      FLink := TLabel(Sender).Caption
+    else
+      FLink := '';
+  except
+  	on e: Exception do
+    	MsgBox(Handle, e.Message, Caption, MB_OK or MB_ICONERROR);
+  end;
+end;
+
+procedure TDonguriForm.ManuItemCopyClick(Sender: TObject);
+begin
+	try
+    if FLink <> '' then
+      Clipboard.AsText := FLink;
+  except
+  	on e: Exception do
+    	MsgBox(Handle, e.Message, Caption, MB_OK or MB_ICONERROR);
+  end;
+end;
+
+
+procedure TDonguriForm.ManuItemOpenClick(Sender: TObject);
+begin
+	try
+    if FLink <> '' then
+			GikoSys.OpenBrowser(FLink, gbtAuto);
+  except
+  	on e: Exception do
+    	MsgBox(Handle, e.Message, Caption, MB_OK or MB_ICONERROR);
+  end;
+end;
 
 end.
