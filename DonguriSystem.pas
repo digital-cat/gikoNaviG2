@@ -1,6 +1,6 @@
 unit DonguriSystem;
 
-{$DEFINE _DEBUG_MODE}
+//{$DEFINE _DEBUG_MODE}
 
 interface
 
