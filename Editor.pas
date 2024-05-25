@@ -358,7 +358,7 @@ implementation
 uses
 	Giko, ItemDownload, MojuUtils, GikoMessage,  Imm,
 	InputAssistDataModule, InputAssist, HTMLCreate, IdCookie, GikoDataModule,
-	Belib, DmSession5ch, UBase64;
+	Belib, DmSession5ch, UBase64, DonguriSystem;
 const
 	CAPTION_NAME_NEW: string = 'ギコナビ スレ立てエディタ';
 	CAPTION_NAME_RES: string = 'ギコナビ レスエディタ';
@@ -1528,7 +1528,9 @@ begin
     Result := (PosEx('[broken_acorn]</b>',						 ResponseText, idx) > 0) or
               (PosEx('[1044]</b>',										 ResponseText, idx) > 0) or
               (PosEx('[1045]</b>',										 ResponseText, idx) > 0) or
-              (PosEx('どんぐりが枯れてしまいました。', ResponseText, idx) > 0);
+              (PosEx('[0088]</b>',										 ResponseText, idx) > 0) or
+              (PosEx('どんぐりが枯れてしまいました。', ResponseText, idx) > 0) or
+              (PosEx('どんぐりCookieが有効期限切れです。', ResponseText, idx) > 0);
 end;
 
 //! 無効化されたどんぐりCokkieクリア
@@ -1548,7 +1550,9 @@ begin
       msg := Copy(ResponseText, idx1, idx2 - idx1);
   end;
 	if msg = '' then
-  	msg := 'ERROR: どんぐりが枯れてしまいました。';
+  	msg := 'ERROR: どんぐりが枯れてしまいました。'
+  else
+    msg := DonguriSystem.TrimTag(msg);
 
 	msg := msg + #10 + '処理を選択してください。' + #10 +
         ' → はい：ドングリシステムをログアウト' + #10 +
@@ -3046,6 +3050,9 @@ begin
 	Board.PON  := '';
 	// 0に巻き戻す
 	Board.Expires := 0;
+
+  MsgBox(Handle, 'メニュー「ツール」の「Cookie管理」を使用してください。',
+  								'ギコナビ', MB_OK or MB_ICONINFORMATION);
 end;
 //! 板情報取得Updateイベント
 procedure TEditorForm.GetSETTINGTXTActionUpdate(Sender: TObject);
