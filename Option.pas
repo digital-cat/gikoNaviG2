@@ -217,12 +217,6 @@ type
 		gppRighBottomRB: TRadioButton;
 		ResAnchorCheckBox: TCheckBox;
 		IgnoreLimitResCountCheckBox: TCheckBox;
-		GroupBox25: TGroupBox;
-		Label25: TLabel;
-		BoukenComboBox: TComboBox;
-		BoukenModButton: TButton;
-		BoukenDelButton: TButton;
-		BoukenEdit: TEdit;
 		GroupBox26: TGroupBox;
 		DispImageCheckBox: TCheckBox;
 		GroupBox27: TGroupBox;
@@ -236,6 +230,15 @@ type
     GroupBox29: TGroupBox;
     UAVerComboBox: TComboBox;
     Label27: TLabel;
+    Label28: TLabel;
+    DonMailEdit: TEdit;
+    Label29: TLabel;
+    DonPwdEdit: TEdit;
+    GroupBox25: TGroupBox;
+    GroupBox30: TGroupBox;
+    RadioButtonDngNone: TRadioButton;
+    RadioButtonDngHmtr: TRadioButton;
+    RadioButtonDngGrdn: TRadioButton;
 		procedure FormCreate(Sender: TObject);
 		procedure FormDestroy(Sender: TObject);
 		procedure ApplyButtonClick(Sender: TObject);
@@ -285,9 +288,6 @@ type
 		procedure ResRangeHoldCheckBoxClick(Sender: TObject);
 		procedure CroutOptionClick(Sender: TObject);
 		procedure MaxRecordCountEditExit(Sender: TObject);
-		procedure BoukenDelButtonClick(Sender: TObject);
-		procedure BoukenComboBoxChange(Sender: TObject);
-		procedure BoukenModButtonClick(Sender: TObject);
 	private
 		{ Private 宣言 }
 		FClose: Boolean;
@@ -605,7 +605,6 @@ var
 //	s: string;
 	idx: Integer;
 	FileList : TStringList;
-	DomainList : TStringList;
 begin
 
 	//読み込み用プロキシ
@@ -936,17 +935,9 @@ begin
   //
   IgnoreContextCheckBox.Checked := GikoSys.Setting.GestureIgnoreContext;
 
-  // 冒険の書ドメイン一覧取得
-  BoukenComboBox.Text := '';
-  BoukenComboBox.Items.Clear;
-  DomainList := TStringList.Create;
-  GikoSys.GetBoukenDomain(DomainList);
-  for i := 0 to DomainList.Count - 1 do begin
-      BoukenComboBox.Items.Add( DomainList[i] ) ;
-  end;
-  DomainList.Free;
-  BoukenComboBox.ItemIndex := 0;
-  BoukenComboBox.OnChange(nil);
+  // 警備員アカウント
+	DonMailEdit.Text := GikoSys.Setting.DonguriMail;
+  DonPwdEdit.Text  := GikoSys.Setting.DonguriPwd;
 
   // User-Agentバージョン番号固定
 	GikoSys.GetUAVerList(UAVerComboBox.Items);
@@ -1101,6 +1092,9 @@ begin
 	GikoSys.Setting.Password := PasswordEdit.Text;
 	GikoSys.Setting.AutoLogin := AutoLoginCheckBox.Checked;
 //	GikoSys.Setting.ForcedLogin := ForcedLoginCheckBox.Checked;
+  // 警備員アカウント
+	GikoSys.Setting.DonguriMail := DonMailEdit.Text;
+  GikoSys.Setting.DonguriPwd  := DonPwdEdit.Text;
   // User-Agentバージョン番号固定
 	GikoSys.Setting.UAVersion := UAVerComboBox.ItemIndex;
   if GikoSys.Setting.UAVersion < 0 then
@@ -1750,59 +1744,6 @@ begin
 		MaxRecordCountEdit.Text := '100'
 	else if StrToIntDef(MaxRecordCountEdit.Text, 100) <= 0 then
         MaxRecordCountEdit.Text := '1';
-end;
-
-procedure TOptionDialog.BoukenDelButtonClick(Sender: TObject);
-begin
-    if ( BoukenComboBox.Items.IndexOf( BoukenComboBox.Text ) <> -1 ) then begin
-        if MsgBox(Self.Handle, BoukenComboBox.Text + ' を削除します。'#13#10 +
-            '削除すると復元できません。よろしいですか？', '忍法帖　ドメイン削除', MB_YESNO or MB_ICONQUESTION) = IDYES	then begin
-            GikoSys.DelBoukenCookie(BoukenComboBox.Text);
-            GikoSys.Setting.WriteBoukenSettingFile;
-            BoukenComboBox.Items.Delete(BoukenComboBox.ItemIndex);
-            if ( BoukenComboBox.Items.Count = 0 ) then begin
-                 BoukenComboBox.Text := '';
-            end;
-            BoukenComboBox.OnChange(nil);
-        end
-    end else begin
-        BoukenComboBox.Text := '';
-    end;
-end;
-
-procedure TOptionDialog.BoukenComboBoxChange(Sender: TObject);
-begin
-    BoukenEdit.Text := GikoSys.GetBoukenCookie('http://*' +BoukenComboBox.Text);
-end;
-
-procedure TOptionDialog.BoukenModButtonClick(Sender: TObject);
-var
-    DomainList : TStringList;
-    i : Integer;
-    s : String;
-begin
-    if ( Length(BoukenComboBox.Text) > 0 ) then begin
-        s := BoukenComboBox.Text;
-        GikoSys.SetBoukenCookie(BoukenEdit.Text, s);
-        GikoSys.Setting.WriteBoukenSettingFile;
-        // 冒険の書ドメイン一覧取得
-        BoukenComboBox.Text := '';
-        BoukenComboBox.Items.Clear;
-        DomainList := TStringList.Create;
-        GikoSys.GetBoukenDomain(DomainList);
-        for i := 0 to DomainList.Count - 1 do begin
-            BoukenComboBox.Items.Add( DomainList[i] ) ;
-        end;
-        DomainList.Free;
-        BoukenComboBox.ItemIndex := 0;
-        for i := 0 to BoukenComboBox.Items.Count - 1 do begin
-            if ( BoukenComboBox.Items[i] = s) then begin
-                BoukenComboBox.ItemIndex := i;
-                Break;
-            end;
-        end;
-        BoukenComboBox.OnChange(nil);
-    end;
 end;
 
 end.

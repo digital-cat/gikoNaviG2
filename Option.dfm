@@ -1636,12 +1636,12 @@ object OptionDialog: TOptionDialog
         Left = 12
         Top = 6
         Width = 477
-        Height = 92
+        Height = 84
         Caption = #35469#35388
         TabOrder = 0
         object Label9: TLabel
           Left = 12
-          Top = 22
+          Top = 18
           Width = 63
           Height = 12
           Caption = #12518#12540#12470'ID(&U)'
@@ -1649,7 +1649,7 @@ object OptionDialog: TOptionDialog
         end
         object Label10: TLabel
           Left = 12
-          Top = 47
+          Top = 40
           Width = 69
           Height = 12
           Caption = #12497#12473#12527#12540#12489'(&P)'
@@ -1657,7 +1657,7 @@ object OptionDialog: TOptionDialog
         end
         object Tora3URLLabel: TLabel
           Left = 329
-          Top = 70
+          Top = 62
           Width = 110
           Height = 12
           Caption = 'https://uplift.5ch.net/'
@@ -1671,21 +1671,21 @@ object OptionDialog: TOptionDialog
         end
         object Label12: TLabel
           Left = 237
-          Top = 70
+          Top = 62
           Width = 83
           Height = 12
           Caption = #12518#12540#12470'ID'#12398#21462#24471
         end
         object UserIDEdit: TEdit
           Left = 88
-          Top = 18
+          Top = 14
           Width = 377
           Height = 20
           TabOrder = 0
         end
         object PasswordEdit: TEdit
           Left = 88
-          Top = 43
+          Top = 36
           Width = 377
           Height = 20
           PasswordChar = '*'
@@ -1693,7 +1693,7 @@ object OptionDialog: TOptionDialog
         end
         object AutoLoginCheckBox: TCheckBox
           Left = 12
-          Top = 68
+          Top = 60
           Width = 193
           Height = 17
           Caption = #36215#21205#26178#12395#33258#21205#12525#12464#12452#12531#12377#12427'(&S)'
@@ -1702,14 +1702,14 @@ object OptionDialog: TOptionDialog
       end
       object GroupBox11: TGroupBox
         Left = 12
-        Top = 102
+        Top = 96
         Width = 477
-        Height = 90
+        Height = 82
         Caption = 'Be 2ch'
         TabOrder = 1
         object Label7: TLabel
           Left = 8
-          Top = 22
+          Top = 18
           Width = 90
           Height = 12
           Caption = #12513#12540#12523#12450#12489#12524#12473'(&M)'
@@ -1717,7 +1717,7 @@ object OptionDialog: TOptionDialog
         end
         object Label8: TLabel
           Left = 18
-          Top = 46
+          Top = 40
           Width = 71
           Height = 12
           Caption = #12497#12473#12527#12540#12489'(&W)'
@@ -1725,14 +1725,14 @@ object OptionDialog: TOptionDialog
         end
         object BeUserIDEdit: TEdit
           Left = 104
-          Top = 18
+          Top = 14
           Width = 353
           Height = 20
           TabOrder = 0
         end
         object BeCodeEdit: TEdit
           Left = 104
-          Top = 43
+          Top = 36
           Width = 353
           Height = 20
           PasswordChar = '*'
@@ -1740,74 +1740,23 @@ object OptionDialog: TOptionDialog
         end
         object BeAutoLoginCheckBox: TCheckBox
           Left = 12
-          Top = 68
+          Top = 60
           Width = 193
           Height = 17
           Caption = #36215#21205#26178#12395#33258#21205#12525#12464#12452#12531#12377#12427'(&T)'
           TabOrder = 2
         end
       end
-      object GroupBox25: TGroupBox
-        Left = 12
-        Top = 268
-        Width = 477
-        Height = 72
-        Caption = #24525#27861#24086
-        TabOrder = 2
-        Visible = False
-        object Label25: TLabel
-          Left = 40
-          Top = 20
-          Width = 37
-          Height = 12
-          Caption = #12489#12513#12452#12531
-        end
-        object BoukenComboBox: TComboBox
-          Left = 88
-          Top = 16
-          Width = 140
-          Height = 20
-          ItemHeight = 12
-          TabOrder = 0
-          Text = 'BoukenComboBox'
-          OnChange = BoukenComboBoxChange
-        end
-        object BoukenModButton: TButton
-          Left = 231
-          Top = 38
-          Width = 50
-          Height = 25
-          Caption = #22793#26356
-          TabOrder = 3
-          OnClick = BoukenModButtonClick
-        end
-        object BoukenDelButton: TButton
-          Left = 88
-          Top = 38
-          Width = 50
-          Height = 25
-          Caption = #21066#38500
-          TabOrder = 2
-          OnClick = BoukenDelButtonClick
-        end
-        object BoukenEdit: TEdit
-          Left = 230
-          Top = 15
-          Width = 227
-          Height = 20
-          TabOrder = 1
-        end
-      end
       object GroupBox29: TGroupBox
         Left = 12
-        Top = 198
+        Top = 186
         Width = 477
-        Height = 57
-        Caption = #12393#12435#12368#12426
-        TabOrder = 3
+        Height = 152
+        Caption = #12393#12435#12368#12426#12471#12473#12486#12512
+        TabOrder = 2
         object Label27: TLabel
           Left = 12
-          Top = 24
+          Top = 130
           Width = 177
           Height = 12
           Caption = 'User-Agent'#12496#12540#12472#12519#12531#30058#21495#22266#23450'(&V)'
@@ -1815,12 +1764,87 @@ object OptionDialog: TOptionDialog
         end
         object UAVerComboBox: TComboBox
           Left = 195
-          Top = 22
+          Top = 126
           Width = 270
           Height = 20
           Style = csDropDownList
           ItemHeight = 12
+          TabOrder = 2
+        end
+        object GroupBox25: TGroupBox
+          Left = 12
+          Top = 54
+          Width = 452
+          Height = 68
+          Caption = #35686#20633#21729#12450#12459#12454#12531#12488
+          TabOrder = 1
+          object Label28: TLabel
+            Left = 12
+            Top = 20
+            Width = 89
+            Height = 12
+            Caption = #12513#12540#12523#12450#12489#12524#12473'(&A)'
+            FocusControl = DonMailEdit
+          end
+          object Label29: TLabel
+            Left = 12
+            Top = 44
+            Width = 70
+            Height = 12
+            Caption = #12497#12473#12527#12540#12489'(&D)'
+            FocusControl = DonPwdEdit
+          end
+          object DonMailEdit: TEdit
+            Left = 107
+            Top = 16
+            Width = 332
+            Height = 20
+            TabOrder = 0
+          end
+          object DonPwdEdit: TEdit
+            Left = 107
+            Top = 40
+            Width = 332
+            Height = 20
+            PasswordChar = '*'
+            TabOrder = 1
+          end
+        end
+        object GroupBox30: TGroupBox
+          Left = 12
+          Top = 14
+          Width = 452
+          Height = 36
+          Caption = #36215#21205#26178#33258#21205#12525#12464#12452#12531
           TabOrder = 0
+          object RadioButtonDngNone: TRadioButton
+            Left = 16
+            Top = 14
+            Width = 73
+            Height = 17
+            Caption = #12375#12394#12356'(&N)'
+            Checked = True
+            TabOrder = 0
+            TabStop = True
+          end
+          object RadioButtonDngHmtr: TRadioButton
+            Left = 109
+            Top = 14
+            Width = 128
+            Height = 17
+            Caption = #12495#12531#12479#12540#12525#12464#12452#12531'(&H)'
+            Enabled = False
+            TabOrder = 1
+          end
+          object RadioButtonDngGrdn: TRadioButton
+            Left = 257
+            Top = 14
+            Width = 113
+            Height = 17
+            Caption = #35686#20633#21729#12525#12464#12452#12531'(&G)'
+            Enabled = False
+            TabOrder = 2
+          end
         end
       end
     end
