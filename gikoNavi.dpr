@@ -97,7 +97,8 @@ uses
   GikoInputBoxForm in 'GikoInputBoxForm.pas' {GikoInputBox},
   DonguriBase in 'DonguriBase.pas' {DonguriForm},
   DonguriSystem in 'DonguriSystem.pas',
-  CookieManager in 'CookieManager.pas' {CookieForm};
+  CookieManager in 'CookieManager.pas' {CookieForm},
+  DonguriRegister in 'DonguriRegister.pas' {DonguriRegForm};
 
 {$R *.RES}
 {$R gikoResource.res}
