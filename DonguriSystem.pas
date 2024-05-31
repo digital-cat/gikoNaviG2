@@ -94,7 +94,7 @@ type
 		function HttpGet(url, referer: String; gzip: Boolean; var response: String; var redirect: Boolean): Boolean;
 		function HttpGetCall(urlStart: String; var response: String): Boolean;
 		function HttpPost(url, referer: String; postParam: TStringList; gzip: Boolean; var response: String; var redirect: Boolean): Boolean;
-    function HttpPostCall(urlStart: String; postParam: TStringList; var response: String): Boolean;
+    function HttpPostCall(urlStart, referer: String; postParam: TStringList; var response: String): Boolean;
 
 		function CheckFormAction(html, url: String): Boolean;
   	function CheckResurrect(html: String; var resMsg: String; var nextUrl: String; var post: Boolean): Boolean;
@@ -113,7 +113,11 @@ type
 		function Root(var response: String): Boolean;
 		function Auth(var response: String): Boolean;
 		function Login(var response: String): Boolean;
+		function MailLogin(mail, pwd: String; var response: String): Boolean;
 		function Logout(var response: String): Boolean;
+    function RegisterPage(var response: String): Boolean;
+    function RegisterSubmit(mail, pwd: String; var response: String): Boolean;
+    function RegisterVerify(link: String; var response: String): Boolean;
 
     function Exploration(var response: String): Boolean;
     function Mining(var response: String): Boolean;
@@ -121,9 +125,12 @@ type
     function WeaponCraft(var response: String): Boolean;
     function ArmorCraft(var response: String): Boolean;
 
+    function RenamePage(var response: String): Boolean;
     function Rename(newName: String; var response: String): Boolean;
     function Resurrect(var response: String; var cancel: Boolean; handle: HWND): Boolean;
+    function TransferPage(var response: String): Boolean;
     function Transfer(recipientID, amount: String; var response: String): Boolean;
+    function Craft(var response: String): Boolean;
     function CraftCB(amount: Integer; var response: String): Boolean;
     function CraftKY(amount: Integer; var response: String): Boolean;
     function Bag(var itemBag: TDonguriBag; var response: String; var denied: Boolean): Boolean;
@@ -146,6 +153,11 @@ type
     property ErroeMessage: String  read FErroeMessage;
   	// 通信中かどうか
     property Processing:   Boolean read FProcessing;
+
+
+  	// ビルドモード
+		function GetBuildMode: String;
+    property BuildMode: String read GetBuildMode;
   end;
 
 
@@ -162,6 +174,7 @@ const
   URL_DNG_AUTH    = 'https://donguri.5ch.net/auth';
   URL_DNG_LOGIN   = 'https://donguri.5ch.net/login';
   URL_DNG_LOGOUT  = 'https://donguri.5ch.net/logout';
+  URL_DNG_REGIST  = 'https://donguri.5ch.net/register';
   URL_DNG_EXPLOR  = 'https://donguri.5ch.net/focus/exploration';    // 探検
   URL_DNG_MINING  = 'https://donguri.5ch.net/focus/mining';         // 採掘
   URL_DNG_WOODCT  = 'https://donguri.5ch.net/focus/woodcutting';    // 木こり
@@ -177,6 +190,7 @@ const
   URL_DNG_ADDSLOT = 'https://donguri.5ch.net/addslots';							// スロット追加
   URL_DNG_UNEQW   = 'https://donguri.5ch.net/unequip/weapon';				// 装備中の武器を外す
   URL_DNG_UNEQA   = 'https://donguri.5ch.net/unequip/armor';				// 装備中の防具を外す
+  URL_DNG_CHEST   = 'https://donguri.5ch.net/chest';								// 宝箱
   URL_DNG_CHESTOP = 'https://donguri.5ch.net/open';									// 宝箱を開ける
   URL_DNG_RECYALL = 'https://donguri.5ch.net/recycleunlocked';			// ロックされていない武器防具を全て分解する
   URL_DNG_LOCK    = 'https://donguri.5ch.net/lock/';								// ロック
@@ -231,7 +245,21 @@ begin
 	Inherited;
 end;
 
-// HTTPレスポンス情報クリア
+// ビルドモード
+function TDonguriSys.GetBuildMode: String;
+var
+	mode: String;
+begin
+{$IFDEF DEBUG}
+	mode := 'Debug Build ';
+{$ENDIF}
+{$IFDEF _DEBUG_MODE}
+  mode := mode + '調査モード';
+{$ENDIF}
+	Result := mode;
+end;
+
+// HTTPレスポンス情報クリア
 procedure TDonguriSys.ClearResponse;
 begin
 	FErroeMessage := '';
@@ -530,7 +558,7 @@ begin
 end;
 
 // リダイレクト有りのHTTP-POST（リダイレクトはGET）
-function TDonguriSys.HttpPostCall(urlStart: String; postParam: TStringList; var response: String): Boolean;
+function TDonguriSys.HttpPostCall(urlStart, referer: String; postParam: TStringList; var response: String): Boolean;
 var
   url: String;
   ref: String;
@@ -551,7 +579,7 @@ begin
 
     ok := False;
   	url := urlStart;
-    ref := '';
+    ref := referer;
     first := True;
 
   	while True do begin
@@ -653,6 +681,30 @@ begin
   end;
 end;
 
+// メールログイン
+function TDonguriSys.MailLogin(mail, pwd: String; var response: String): Boolean;
+var
+  param: TStringList;
+begin
+	Result := False;
+	param := TStringList.Create;
+
+  try
+	  ClearResponse;
+
+    param.Add('email=' + mail);
+    param.Add('pass=' + pwd);
+
+    Result := HttpPostCall(URL_DNG_LOGIN, URL_DNG_ROOT, param, response);
+
+  except
+    on e: Exception do begin
+      FErroeMessage := e.Message;
+    end;
+  end;
+	param.Free;
+end;
+
 // ログアウト
 function TDonguriSys.Logout(var response: String): Boolean;
 begin
@@ -670,6 +722,66 @@ begin
     end;
   end;
 end;
+
+// アカウント登録トップページ
+function TDonguriSys.RegisterPage(var response: String): Boolean;
+begin
+	Result := False;
+  response := '';
+
+	try
+	  ClearResponse;
+
+  	Result := HttpGetCall(URL_DNG_REGIST, response);
+
+  except
+    on e: Exception do begin
+      FErroeMessage := e.Message;
+    end;
+  end;
+end;
+
+// アカウント登録実施
+function TDonguriSys.RegisterSubmit(mail, pwd: String; var response: String): Boolean;
+var
+  param: TStringList;
+begin
+	Result := False;
+	param := TStringList.Create;
+
+  try
+	  ClearResponse;
+
+    param.Add('email=' + mail);
+    param.Add('password=' + pwd);
+
+    Result := HttpPostCall(URL_DNG_REGIST, URL_DNG_REGIST, param, response);
+
+  except
+    on e: Exception do begin
+      FErroeMessage := e.Message;
+    end;
+  end;
+	param.Free;
+end;
+
+function TDonguriSys.RegisterVerify(link: String; var response: String): Boolean;
+begin
+	Result := False;
+  response := '';
+
+	try
+	  ClearResponse;
+
+  	Result := HttpGetCall(link, response);
+
+  except
+    on e: Exception do begin
+      FErroeMessage := e.Message;
+    end;
+  end;
+end;
+
 
 // 探検
 function TDonguriSys.Exploration(var response: String): Boolean;
@@ -754,6 +866,23 @@ begin
 
   	Result := HttpGetCall(URL_DNG_ARMORC, response);
 
+  except
+    on e: Exception do begin
+      FErroeMessage := e.Message;
+    end;
+  end;
+end;
+
+// ハンター呼び名変更サービスページ取得
+function TDonguriSys.RenamePage(var response: String): Boolean;
+var
+  redirect: Boolean;
+begin
+	Result := False;
+  response := '';
+
+  try
+		Result := HttpGet(URL_DNG_RENAME, URL_DNG_ROOT, True, response, redirect);
   except
     on e: Exception do begin
       FErroeMessage := e.Message;
@@ -897,6 +1026,22 @@ begin
   end;
 end;
 
+// ドングリ転送サービスページ取得
+function TDonguriSys.TransferPage(var response: String): Boolean;
+var
+  redirect: Boolean;
+begin
+	Result := False;
+  response := '';
+
+  try
+		Result := HttpGet(URL_DNG_TRNSFR, URL_DNG_ROOT, True, response, redirect);
+  except
+    on e: Exception do begin
+      FErroeMessage := e.Message;
+    end;
+  end;
+end;
 
 // ドングリ転送サービス
 function TDonguriSys.Transfer(recipientID, amount: String; var response: String): Boolean;
@@ -928,6 +1073,23 @@ begin
 	  	postParam.Free;
     end;
 
+  except
+    on e: Exception do begin
+      FErroeMessage := e.Message;
+    end;
+  end;
+end;
+
+// 工作センターページ取得
+function TDonguriSys.Craft(var response: String): Boolean;
+var
+  redirect: Boolean;
+begin
+	Result := False;
+  response := '';
+
+  try
+		Result := HttpGet(URL_DNG_CRAFT, URL_DNG_ROOT, True, response, redirect);
   except
     on e: Exception do begin
       FErroeMessage := e.Message;
@@ -1144,7 +1306,7 @@ begin
     end;
 
   	if param.Count > 0 then begin
-      ret := HttpPostCall(URL_DNG_CHESTOP, param, response);
+      ret := HttpPostCall(URL_DNG_CHESTOP, URL_DNG_CHEST, param, response);
 
       if ret and (Pos('<h1>アイテムバッグ</h1>', response) > 0) then
         Result := ParceBag(response, itemBag)
