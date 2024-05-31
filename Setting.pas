@@ -530,6 +530,12 @@ type
     FDonguriTaskBar: Boolean;
 		//! どんぐり関連
     FDonguriMenuTop: Boolean;
+    FDonguriKYCost: Integer;
+    FDonguriCBCost: Integer;
+    FDonguriRNCost: String;
+    FDonguriTRCost: String;
+    FDonguriMail: String;
+    FDonguriPwd: String;
 
 
 		function GetMainCoolSet(Index: Integer): TCoolSet;
@@ -968,6 +974,12 @@ type
     property DonguriTaskBar: Boolean read FDonguriTaskBar write FDonguriTaskBar;
 		//! どんぐり関連
     property DonguriMenuTop: Boolean read FDonguriMenuTop write FDonguriMenuTop;
+    property DonguriKYCost:  Integer read FDonguriKYCost  write FDonguriKYCost;
+    property DonguriCBCost:  Integer read FDonguriCBCost  write FDonguriCBCost;
+    property DonguriRNCost:  String  read FDonguriRNCost  write FDonguriRNCost;
+    property DonguriTRCost:  String  read FDonguriTRCost  write FDonguriTRCost;
+    property DonguriMail:    String  read FDonguriMail    write FDonguriMail;
+    property DonguriPwd:     String  read FDonguriPwd     write FDonguriPwd;
 	end;
 
 
@@ -1521,7 +1533,7 @@ begin
             end;
         end;
 
-		//! スレタイ検索ウィンドウ
+		//! どんぐりシステムウィンドウ
 		FDonguriTop    := ini.ReadInteger('DonguriSystem', 'Top',    0);
 		FDonguriLeft   := ini.ReadInteger('DonguriSystem', 'Left',   0);
 		FDonguriWidth  := ini.ReadInteger('DonguriSystem', 'Width',  296);
@@ -1531,6 +1543,12 @@ begin
     FDonguriTaskBar:= ini.ReadBool(   'DonguriSystem', 'TaskBar',False);
 		//! どんぐり関連
     FDonguriMenuTop:= ini.ReadBool(   'Donguri',      'MenuTop', False);
+    FDonguriKYCost := ini.ReadInteger('Donguri',      'KYCost',  15);
+    FDonguriCBCost := ini.ReadInteger('Donguri',      'CBCost',  100);
+    FDonguriRNCost := ini.ReadString( 'Donguri',      'RNCost',  '0.001');
+    FDonguriTRCost := ini.ReadString( 'Donguri',      'TRCost',  '0.001');
+    FDonguriMail   := ini.ReadString( 'Donguri',      'Mail',    '');
+    FDonguriPwd    := ini.ReadString( 'Donguri',      'Pwd',     '');
 
 		// Cookieに付加する固定コード
 		FFixedCookie := ini.ReadString('Cookie', 'fixedString', FIXED_COOKIE);
@@ -2023,7 +2041,7 @@ begin
 			end;
     end;
 
-		//! スどんぐりシステムウィンドウ
+		//! どんぐりシステムウィンドウ
 		ini.WriteInteger('DonguriSystem', 'Top',    FDonguriTop);
 		ini.WriteInteger('DonguriSystem', 'Left',   FDonguriLeft);
 		ini.WriteInteger('DonguriSystem', 'Width',  FDonguriWidth);
@@ -2033,6 +2051,12 @@ begin
     ini.WriteBool(   'DonguriSystem', 'TaskBar',FDonguriTaskBar);
 		//! どんぐり関連
     ini.WriteBool(   'Donguri',      'MenuTop', FDonguriMenuTop);
+    ini.WriteInteger('Donguri',      'KYCost',  FDonguriKYCost);
+    ini.WriteInteger('Donguri',      'CBCost',  FDonguriCBCost);
+    ini.WriteString( 'Donguri',      'RNCost',  FDonguriRNCost);
+    ini.WriteString( 'Donguri',      'TRCost',  FDonguriTRCost);
+    ini.WriteString( 'Donguri',      'Mail',    FDonguriMail);
+    ini.WriteString( 'Donguri',      'Pwd',     FDonguriPwd);
 
 
 		ini.UpdateFile;
