@@ -8,6 +8,8 @@ uses
   ImgList, Menus, Clipbrd;
 
 type
+  TColumnType = (ctString, ctInteger);
+
   TDonguriForm = class(TForm)
     TimerInit: TTimer;
     InfoGrid: TStringGrid;
@@ -19,18 +21,12 @@ type
     PanelService: TPanel;
     TabSheetSetting: TTabSheet;
     PanelHome: TPanel;
-    Label1: TLabel;
-    LabelUserType: TLabel;
     LabelName: TLabel;
     EditName: TEdit;
     LabelID: TLabel;
     EditID: TEdit;
     Label3: TLabel;
     LabelPeriod: TLabel;
-    Label4: TLabel;
-    Label5: TLabel;
-    LabelD: TLabel;
-    LabelK: TLabel;
     ColorRadioGroup: TRadioGroup;
     EditLevel: TEdit;
     CraftKYGroupBox: TGroupBox;
@@ -159,12 +155,24 @@ type
     Panel4: TPanel;
     Panel5: TPanel;
     ChestB70PnlButton: TPanel;
-    Label24: TLabel;
-    Label26: TLabel;
-    LabelFight: TLabel;
     Label28: TLabel;
     LabelShopLink: TLabel;
     Label32: TLabel;
+    Label4: TLabel;
+    KYCostLabel: TLabel;
+    Label5: TLabel;
+    CBCostLabel: TLabel;
+    CraftPnlButton: TPanel;
+    StatisticsGrid: TStringGrid;
+    Label24: TLabel;
+    Label1: TLabel;
+    RNCostLabel: TLabel;
+    TRCostLabel: TLabel;
+    NewRegPnlButton: TPanel;
+    PopupMenuLogin: TPopupMenu;
+    MItemLogin: TMenuItem;
+    MItemHntLogin: TMenuItem;
+    MItemGrdLogin: TMenuItem;
     procedure TimerInitTimer(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCreate(Sender: TObject);
@@ -225,11 +233,26 @@ type
       var Handled: Boolean);
     procedure ManuItemOpenClick(Sender: TObject);
     procedure ChestB70PnlButtonClick(Sender: TObject);
+    procedure CraftPnlButtonClick(Sender: TObject);
+    procedure ListViewArmorCompare(Sender: TObject; Item1, Item2: TListItem;
+      Data: Integer; var Compare: Integer);
+    procedure ListViewWeaponCompare(Sender: TObject; Item1, Item2: TListItem;
+      Data: Integer; var Compare: Integer);
+    procedure ListViewWeaponColumnClick(Sender: TObject; Column: TListColumn);
+    procedure ListViewArmorColumnClick(Sender: TObject; Column: TListColumn);
+    procedure NewRegPnlButtonClick(Sender: TObject);
+    procedure MItemLoginClick(Sender: TObject);
+    procedure MItemHntLoginClick(Sender: TObject);
+    procedure MItemGrdLoginClick(Sender: TObject);
   private
     { Private declarations }
     FHunter: Boolean;
     FBag: TDonguriBag;
     FLink: String;
+    FWpnSortIdx: Integer;
+    FArmSortIdx: Integer;
+    FWpnSortAsc: Boolean;
+    FArmSortAsc: Boolean;
 
     procedure SetMode;
     procedure SetColor;
@@ -257,6 +280,10 @@ type
     function GetProgressPosition(var html: String; const kws: String; const kwe: String): Integer;
     function IsRootPage(html: String): Boolean;
     procedure OpenChest(amount: Integer; chestName: String);
+    function NumComp(text1, text2: String): Integer;
+    function atoi(str: String): Integer;
+    procedure Login;
+    procedure MailLogin(mail, pwd: String);
 	protected
 		procedure CreateParams(var Params: TCreateParams); override;
   public
@@ -269,9 +296,14 @@ var
 implementation
 
 uses
-	GikoSystem, IndyModule, DmSession5ch, GikoDataModule, GikoUtil, Giko;
+	GikoSystem, IndyModule, DmSession5ch, GikoDataModule, GikoUtil, Giko, MojuUtils,
+  DonguriRegister;
 
 type
+	StcIndex = (
+  	idxCannon    = 0,
+    idxFight     = 1,
+    idxStcCount  = 2);
   ColIndex = (
     idxDonguri   = 0,
     idxNumWood   = 1,
@@ -283,19 +315,19 @@ type
     idxRowCount  = 7);
 
 const
+	COL_STSC: array [0..1] of string = (
+    '　どんぐり大砲',
+    '　大乱闘'
+  );
   COL_NAME: array [0..6] of string  = (
     '　どんぐり残高',
-  	'　木材の数',
-    '　鉄の数',
+  	'　木材',
+    '　鉄',
     '　鉄のキー',
     '　マリモ',
     '　木製の大砲の玉',
     '　鉄の大砲の玉'
     );
-  USER_TYPE: array [0..1] of string = (
-    '警備員',
-    'ハンター'
-	  );
   NAME_NAME: array [0..1] of string = (
     '警備員ネーム：',
     'ハンターネーム：'
@@ -327,6 +359,29 @@ const
     ( '　N', '83.3%')
 	  );
 
+  COL_TYPE_WPN: array [0..8] of TColumnType = (
+  	ctString,
+  	ctString,
+  	ctString,
+    ctInteger,
+    ctInteger,
+    ctInteger,
+  	ctString,
+    ctInteger,
+    ctInteger
+  );
+  COL_TYPE_ARM: array [0..8] of TColumnType = (
+  	ctString,
+  	ctString,
+  	ctString,
+    ctInteger,
+    ctInteger,
+    ctInteger,
+  	ctString,
+    ctInteger,
+    ctInteger
+  );
+
   URL_ROOT  : String = 'https://donguri.5ch.net/';
   URL_FAQ   : String = 'https://donguri.5ch.net/faq';
   URL_API   : String = 'https://donguri.5ch.net/api';
@@ -356,17 +411,35 @@ var
 	i: Integer;
 	wp: TWindowPlacement;
   hintText: String;
+  mode: String;
+	sel: TGridRect;
 begin
 	FHunter := False;
 	FBag := TDonguriBag.Create;
+  FWpnSortIdx := 0;
+  FArmSortIdx := 0;
+  FWpnSortAsc := True;
+  FArmSortAsc := True;
 
 	PageControl.ActivePageIndex := 0;
   PageControlItemBag.ActivePageIndex := 0;
 
+	sel.Left   := -1;
+	sel.Top    := -1;
+	sel.Right  := -1;
+	sel.Bottom := -1;
+
+	StatisticsGrid.RowCount := Integer(idxStcCount);
+  StatisticsGrid.ColWidths[1] := 152;
+	for i := 0 to Integer(idxStcCount) - 1 do
+	  StatisticsGrid.Cells[0, i] := COL_STSC[i];
+  StatisticsGrid.Selection := sel;
+
   InfoGrid.RowCount := Integer(idxRowCount);
-  InfoGrid.ColWidths[1] := 150;
+  InfoGrid.ColWidths[1] := 152;
 	for i := 0 to Integer(idxRowCount) - 1 do
 	  InfoGrid.Cells[0, i] := COL_NAME[i];
+  InfoGrid.Selection := sel;
 
 	SetMode;
 
@@ -408,6 +481,15 @@ begin
   LabelAlertLink.Caption  := URL_ALERT;
   LabelShopLink.Caption   := URL_SHOP;
   LabelUpliftLink.Caption := URL_UPLIFT;
+
+  KYCostLabel.Caption := IntToStr(GikoSys.Setting.DonguriKYCost);
+  CBCostLabel.Caption := IntToStr(GikoSys.Setting.DonguriCBCost);
+  RNCostLabel.Caption := GikoSys.Setting.DonguriRNCost + ' どんぐり';
+  TRCostLabel.Caption := GikoSys.Setting.DonguriTRCost + ' どんぐり';
+
+	mode := GikoSys.DonguriSys.BuildMode;
+  if mode <> '' then
+  	PanelTop.Caption := mode;
 
 	TimerInit.Enabled := True;
 end;
@@ -480,10 +562,8 @@ begin
   else
 		idx := 0;
 
-	LabelUserType.Caption := USER_TYPE[idx];
-	LabelID.Caption       := NAME_ID[idx];
-
-  //ResurrectPnlButton.Enabled := FHunter;
+  LabelName.Caption := NAME_NAME[idx];
+	LabelID.Caption   := NAME_ID[idx];
 
   SetButtonColor;
 end;
@@ -514,19 +594,17 @@ var
 	i: Integer;
 begin
 	LabelPeriod.Caption := ' ';
-	LabelUserType.Caption := ' ';
 	EditName.Text := ' ';
 	EditID.Text := ' ';
 	EditLevel.Text := ' ';
-	LabelK.Caption := ' ';
-	LabelD.Caption := ' ';
-  LabelFight.Caption := ' ';
   ExplorPanel.Caption := ' ';
   MiningPanel.Caption := ' ';
   WoodctPanel.Caption := ' ';
   WeaponPanel.Caption := ' ';
   ArmorcPanel.Caption := ' ';
 
+	for i := 0 to Integer(idxStcCount) - 1 do
+	  StatisticsGrid.Cells[1, i] := '';
 	for i := 0 to Integer(idxRowCount) - 1 do
 	  InfoGrid.Cells[1, i] := '';
 
@@ -570,10 +648,6 @@ const
 	TAG_GID_S = '<h2>警備員[ID:';
   TAG_GID_E = ']</h2>';
 	//TAG_GID_R = '<p>あなたは警備員です。</p>';
-  TAG_PRD_S = '<div>第';
-  TAG_PRD_E = '期</div>';
-  TAG_LVL_S = '<div>レベル:';
-  TAG_LVL_E = '</div>';
 	TAG_DNG_S = '<div>どんぐり残高:';
 	TAG_DN2_S = '<div>種子残高:';
   TAG_DNG_E = '</div>';
@@ -589,15 +663,19 @@ const
   TAG_WCB_E = '</div>';
   TAG_ICB_S = '<div>鉄の大砲の玉:';
   TAG_ICB_E = '</div>';
-  TAG_CNN_S = '<div>K:';
+  TAG_CNN_S = '<label>大砲の統計</label><div>';
   TAG_CNN_E = '</div>';
   TAG_DMG_S = '| D:';
   TAG_FGT_S = '<label>大乱闘の統計</label><div>';
   TAG_FGT_E = '</div>';
-  TAG_PEX_S = '<div>経験値:<div class="progress-bar">';
+  TAG_PEX_S = '<div>経験値:';
   TAG_PEX_E = '</div>';
-  TAG_PTM_S = '<div>経過時間:<div class="progress-bar">';
+  TAG_LVL_S = 'レベル:';
+  TAG_LVL_E = '<div';
+  TAG_PTM_S = '<div>経過時間:';
   TAG_PTM_E = '</div>';
+  TAG_PRD_S = '第';
+  TAG_PRD_E = '期';
   TAG_EXP_S = '<div>○<a style="text-decoration:underline;" href="/focus/exploration">探検:';
   TAG_EX2_S = '<div>●<a style="text-decoration:underline;" href="/focus/exploration">探検:';
   TAG_EXP_E = '</a>';
@@ -622,8 +700,8 @@ const
 	TAG_E_COOKIE_MSG = '<p>ログアウトして、もう一度ログインしてください。</p>';
 var
   tmp: String;
+  tm2: String;
   ecd: String;
-  idx: Integer;
   prg: Integer;
 begin
 	Result := False;
@@ -652,12 +730,6 @@ begin
 
   	SetMode;
 
-    if DonguriSystem.Extract(TAG_PRD_S, TAG_PRD_E, html, tmp) then
-      LabelPeriod.Caption := '第' + tmp + '期';
-
-    if DonguriSystem.Extract(TAG_LVL_S, TAG_LVL_E, html, tmp) then
-			EditLevel.Text := Trim(tmp);
-
     if DonguriSystem.Extract(TAG_DNG_S, TAG_DNG_E, html, tmp) then begin
       InfoGrid.Cells[0, Integer(idxDonguri)] := COL_NAME_ACRN;
       InfoGrid.Cells[1, Integer(idxDonguri)] := Trim(tmp);
@@ -684,26 +756,30 @@ begin
     if DonguriSystem.Extract(TAG_ICB_S, TAG_ICB_E, html, tmp) then
       InfoGrid.Cells[1, Integer(idxIrCnBall)] := Trim(tmp);
 
-    if DonguriSystem.Extract(TAG_CNN_S, TAG_CNN_E, html, tmp) then begin
-    	idx := Pos(TAG_DMG_S, tmp);
-      if idx > 0 then begin
-	      LabelK.Caption := Trim(Copy(tmp, 1, idx - 1));
-        Delete(tmp, 1, idx + Length(TAG_DMG_S) - 1);
-	      LabelD.Caption := Trim(tmp);
-      end;
-    end;
+    if DonguriSystem.Extract(TAG_CNN_S, TAG_CNN_E, html, tmp) then
+		  StatisticsGrid.Cells[1, Integer(idxCannon)] := Trim(ReplaceString(tmp, '|', '　'));
 
     if DonguriSystem.Extract(TAG_FGT_S, TAG_FGT_E, html, tmp) then
-	  	LabelFight.Caption := Trim(tmp);
+		  StatisticsGrid.Cells[1, Integer(idxFight)] := Trim(ReplaceString(tmp, '|', '　'));
 
     // 経験値
-		prg := GetProgressPosition(html, TAG_PEX_S, TAG_PEX_E);
-    ExprProgressBar.Position := prg;
-    ExprValLabel.Caption := IntToStr(prg);
+    if DonguriSystem.Extract2(TAG_PEX_S, TAG_PEX_E, html, tmp) then begin
+    	tmp := tmp + TAG_PEX_E;
+      if DonguriSystem.Extract(TAG_LVL_S, TAG_LVL_E, tmp, tm2) then
+        EditLevel.Text := Trim(tm2);
+      prg := GetProgressPosition(tmp, TAG_PRG_S, TAG_PRG_E);
+      ExprProgressBar.Position := prg;
+      ExprValLabel.Caption := IntToStr(prg);
+    end;
   	// 経過時間
-		prg := GetProgressPosition(html, TAG_PTM_S, TAG_PTM_E);
-    TimeProgressBar.Position := prg;
-    TimeValLabel.Caption := IntToStr(prg);
+    if DonguriSystem.Extract2(TAG_PTM_S, TAG_PTM_E, html, tmp) then begin
+    	tmp := tmp + TAG_PTM_E;
+      if DonguriSystem.Extract(TAG_PRD_S, TAG_PRD_E, tmp, tm2) then
+	      LabelPeriod.Caption := '第' + tm2 + '期';
+      prg := GetProgressPosition(tmp, TAG_PRG_S, TAG_PRG_E);
+      TimeProgressBar.Position := prg;
+      TimeValLabel.Caption := IntToStr(prg);
+    end;
     // 探検
 		SetSkillInfo(html, TAG_EXP_S, TAG_EX2_S, TAG_EXP_E, TAG_PRG_S, TAG_PRG_E,
                 	ExplorPanel, ExplorProgressBar, ExplorValLabel);
@@ -787,9 +863,8 @@ begin
 
   if Pos('<h1>どんぐりシステム</h1><p>あなたは警備員です。</p>', html) > 0 then	// 未ログイン
     Result := True
-	else if ((Pos('<h2>ハンター[ID:', html) > 0) or
-					 (Pos('<h2>警備員[ID:',   html) > 0)) and
-					(Pos('<label>能力値</label>', html) > 0) then
+	else if (Pos('<h2>ハンター[ID:', html) > 0) or
+					(Pos('<h2>警備員[ID:',   html) > 0) then
     Result := True
   else
     Result := False;
@@ -851,6 +926,107 @@ begin
   SetButtonColor;
 end;
 
+function TDonguriForm.atoi(str: String): Integer;
+var
+  num, code, i: Integer;
+begin
+	num := 0;
+	for i := 1 to Length(str) do begin
+  	code := Ord(str[i]);
+    if (code and $F0) <> $30 then
+    	Break;
+    num := (num * 10) + (code and $0F);
+  end;
+	Result := num;
+end;
+
+function TDonguriForm.NumComp(text1, text2: String): Integer;
+begin
+	Result := atoi(text1) - atoi(text2);
+end;
+
+procedure TDonguriForm.ListViewWeaponColumnClick(Sender: TObject;
+  Column: TListColumn);
+begin
+	if FWpnSortIdx = Column.Index then
+		FWpnSortAsc := not FWpnSortAsc
+  else begin
+		FWpnSortIdx := Column.Index;
+		FWpnSortAsc := True;
+  end;
+	ListViewWeapon.SortType := stNone;
+	ListViewWeapon.SortType := stData;
+end;
+
+procedure TDonguriForm.ListViewWeaponCompare(Sender: TObject; Item1,
+  Item2: TListItem; Data: Integer; var Compare: Integer);
+var
+  text1, text2: String;
+  typ: TColumnType;
+begin
+	if (FWpnSortIdx > 0) and (FWpnSortIdx <= Item1.SubItems.Count) then begin
+  	text1 := Item1.SubItems.Strings[FWpnSortIdx - 1];
+  	text2 := Item2.SubItems.Strings[FWpnSortIdx - 1];
+  end else begin
+    text1 := Item1.Caption;
+    text2 := Item2.Caption;
+  end;
+
+	if (FWpnSortIdx >= Low(COL_TYPE_WPN)) and (FWpnSortIdx <= High(COL_TYPE_WPN)) then
+    typ := COL_TYPE_WPN[FWpnSortIdx]
+  else
+  	typ := ctString;
+
+	if typ = ctInteger then
+  	Compare := NumComp(text1, text2)
+  else
+  	Compare := AnsiCompareStr(text1, text2);
+
+  if not FWpnSortAsc then
+  	Compare := Compare * -1;
+end;
+
+procedure TDonguriForm.ListViewArmorColumnClick(Sender: TObject;
+  Column: TListColumn);
+begin
+	if FArmSortIdx = Column.Index then
+  	FArmSortAsc := not FArmSortAsc
+  else begin
+		FArmSortIdx := Column.Index;
+  	FArmSortAsc := True;
+  end;
+	ListViewArmor.SortType := stNone;
+	ListViewArmor.SortType := stData;
+end;
+
+procedure TDonguriForm.ListViewArmorCompare(Sender: TObject; Item1,
+  Item2: TListItem; Data: Integer; var Compare: Integer);
+var
+  text1, text2: String;
+  typ: TColumnType;
+begin
+	if (FArmSortIdx > 0) and (FArmSortIdx <= Item1.SubItems.Count) then begin
+  	text1 := Item1.SubItems.Strings[FArmSortIdx - 1];
+  	text2 := Item2.SubItems.Strings[FArmSortIdx - 1];
+  end else begin
+    text1 := Item1.Caption;
+    text2 := Item2.Caption;
+  end;
+
+	if (FArmSortIdx >= Low(COL_TYPE_ARM)) and (FArmSortIdx <= High(COL_TYPE_ARM)) then
+    typ := COL_TYPE_ARM[FArmSortIdx]
+  else
+  	typ := ctString;
+
+	if typ = ctInteger then
+  	Compare := NumComp(text1, text2)
+  else
+  	Compare := AnsiCompareStr(text1, text2);
+
+  if not FArmSortAsc then
+  	Compare := Compare * -1;
+end;
+
 procedure TDonguriForm.ListViewWeaponChange(Sender: TObject; Item: TListItem;
   Change: TItemChange);
 var
@@ -865,6 +1041,47 @@ begin
 end;
 
 procedure TDonguriForm.LoginPnlButtonClick(Sender: TObject);
+const
+  CAP_MSG: String = 'どんぐりシステム';
+var
+  hnt: Boolean;
+  grd: Boolean;
+begin
+	if GikoSys.DonguriSys.Processing then
+  	Exit;
+
+  hnt := (GikoSys.Setting.UserID <> '') and (GikoSys.Setting.Password <> '');
+  grd := (GikoSys.Setting.DonguriMail <> '') and (GikoSys.Setting.DonguriPwd <> '');
+
+	if (hnt = False) and (grd = False) then begin
+  	Login;
+    Exit;
+  end;
+
+  MItemHntLogin.Enabled := hnt;
+  MItemGrdLogin.Enabled := grd;
+
+  PopupMenuLogin.Popup(Mouse.CursorPos.X, Mouse.CursorPos.Y);
+end;
+
+procedure TDonguriForm.MItemGrdLoginClick(Sender: TObject);
+begin
+  MailLogin(GikoSys.Setting.DonguriMail, GikoSys.Setting.DonguriPwd);
+end;
+
+procedure TDonguriForm.MItemHntLoginClick(Sender: TObject);
+begin
+  MailLogin(GikoSys.Setting.UserID, GikoSys.Setting.Password);
+end;
+
+procedure TDonguriForm.MItemLoginClick(Sender: TObject);
+begin
+	Login;
+end;
+
+procedure TDonguriForm.Login;
+const
+  CAP_MSG: String = 'どんぐりシステム';
 var
   res: String;
 begin
@@ -874,16 +1091,42 @@ begin
   if GikoSys.DonguriSys.Login(res) then begin
   	if Parsing(res) = False then
       MsgBox(Handle, 'どんぐりシステムのページ解析に失敗しました',
-								'どんぐりシステム', MB_OK or MB_ICONERROR)
+								CAP_MSG, MB_OK or MB_ICONERROR)
     else if Pos('NG<>まずはUPLIFTでログイン', res) = 1 then
       MsgBox(Handle, PChar('UPLIFTでのログインを要求されました。' + #10 +
       						'UPLIFTでログインしない場合は書き込みでどんぐりを埋めてください。'),
-								'どんぐりシステム', MB_OK or MB_ICONWARNING);
+								CAP_MSG, MB_OK or MB_ICONWARNING);
+  end else
+  	ShowHttpError;
+end;
+
+procedure TDonguriForm.MailLogin(mail, pwd: String);
+const
+  CAP_MSG: String = 'どんぐりシステム';
+var
+  res: String;
+begin
+	if GikoSys.DonguriSys.Processing then
+  	Exit;
+
+  if GikoSys.DonguriSys.MailLogin(mail, pwd, res) then begin
+  	if IsRootPage(res) then begin
+      if Parsing(res) then
+        MsgBox(Handle, 'ログインしました。', CAP_MSG, MB_OK or MB_ICONINFORMATION)
+      else
+        MsgBox(Handle, 'ログインに成功しましたが、どんぐりシステムのページ解析に失敗しました。',
+                  CAP_MSG, MB_OK or MB_ICONWARNING);
+    end else if Pos('<html', res) < 1 then
+      MsgBox(Handle, res, CAP_MSG, MB_OK or MB_ICONWARNING)
+    else
+      MsgBox(Handle, 'ログイン結果の解析に失敗しました。', CAP_MSG, MB_OK or MB_ICONWARNING);
   end else
   	ShowHttpError;
 end;
 
 procedure TDonguriForm.LogoutPnlButtonClick(Sender: TObject);
+const
+  CAP_MSG: String = 'どんぐりシステム';
 var
   res: String;
 begin
@@ -891,13 +1134,45 @@ begin
   	Exit;
 
   if GikoSys.DonguriSys.Logout(res) then begin
-	  MsgBox(Handle, 'ログアウトしました。',
-    						'どんぐりシステム', MB_OK or MB_ICONINFORMATION);
+	  MsgBox(Handle, 'ログアウトしました。', CAP_MSG, MB_OK or MB_ICONINFORMATION);
   	if Parsing(res) = False then
       MsgBox(Handle, 'どんぐりシステムのページ解析に失敗しました',
-								'どんぐりシステム', MB_OK or MB_ICONERROR);
+								CAP_MSG, MB_OK or MB_ICONERROR);
   end else
   	ShowHttpError;
+end;
+
+procedure TDonguriForm.NewRegPnlButtonClick(Sender: TObject);
+const
+  CAP_MSG: String = 'どんぐりシステム';
+var
+  res: String;
+  dlg: TDonguriRegForm;
+begin
+	try
+    if GikoSys.DonguriSys.Processing then
+      Exit;
+
+    if GikoSys.DonguriSys.RegisterPage(res) then begin
+      if Pos('<html', res) < 1 then
+        MsgBox(Handle, res, CAP_MSG, MB_OK or MB_ICONINFORMATION)
+      else if (Pos('<h1>警備員登録サービス</h1>', res) > 0) and (Pos('<input type="submit"', res) > 0) then begin
+			  dlg := TDonguriRegForm.Create(Self);
+        try
+          dlg.ShowModal;
+        finally
+          dlg.Free;
+        end;
+      end else
+	      MsgBox(Handle, '警備員登録のページ解析に失敗しました',
+								CAP_MSG, MB_OK or MB_ICONERROR);
+    end else
+      ShowHttpError;
+  except
+    on e: Exception do begin
+      MsgBox(Handle, e.Message, CAP_MSG, MB_OK or MB_ICONERROR);
+    end;
+  end;
 end;
 
 procedure TDonguriForm.ExplorPnlButtonClick(Sender: TObject);
@@ -998,10 +1273,17 @@ end;
 // 呼び名変更
 procedure TDonguriForm.RenamePnlButtonClick(Sender: TObject);
 const
-  CAP_MSG: String = 'ハンター呼び名変更';
+  CAP_MSG: String = 'ハンターネーム変更';
+  // リネームページから取得できなかった場合の警告メッセージ　https://donguri.5ch.net/rename から取得 2024/05/29
+  WRN_MSG: String = '・特定の人種、国籍、宗教、性差別等に対する誹謗中傷的な名前' + #10 +
+										'・他人に対する脅迫、暴言、誹謗中傷と判断される名前' + #10 +
+										'名前変更を使ってこれらに該当する名前にしたものやその報告があった場合は罰を受けることがあります。' + #10;
 var
   res: String;
   newName: String;
+  tmp: String;
+  idx: Integer;
+  msg: String;
 begin
 	if GikoSys.DonguriSys.Processing then
   	Exit;
@@ -1009,26 +1291,46 @@ begin
   try
     newName := NewNameEdit.Text;
     if newName = '' then begin
-			MsgBox(Handle, '新しい呼び名を指定してください。', CAP_MSG, MB_OK or MB_ICONERROR);
+			MsgBox(Handle, '新しいハンターネームを指定してください。', CAP_MSG, MB_OK or MB_ICONERROR);
       Exit;
     end;
 
-		if MsgBox(Handle, 'ハンター呼び名を変更します。' + #10 +
-    									'　受新しい呼び名：' + newName + #10 +
-                      '　手数料どんぐり額：0.001' + #10 +
-                      '実行してよろしいですか？',
-	    						CAP_MSG, MB_OKCANCEL or MB_ICONQUESTION) <> IDOK then
-    	Exit;
+    // リネームページから警告メッセージを取得
+    if GikoSys.DonguriSys.RenamePage(res) = False then begin
+      ShowHttpError;
+      Exit;
+    end;
 
-	  if GikoSys.DonguriSys.Rename(newName, res) then begin
+    msg := 'ハンターネームを変更します。' + #10 +
+           '　新しいハンターネーム：' + newName + #10;
+  	idx := 0;
+
+    if DonguriSystem.Extract('<form', '</form>', res, tmp) then begin
+      idx := Pos('お知らせ：', tmp);
+      if idx > 0 then begin
+        Delete(tmp, 1, idx - 1);
+        tmp := ReplaceString(tmp, '</small>', #10);
+        tmp := ReplaceString(tmp, '<br>', #10);
+        msg := msg + #10 + TrimTag(tmp);
+      end;
+    end;
+    if idx < 1 then
+      msg := msg + '　手数料どんぐり額：' + GikoSys.Setting.DonguriRNCost + 'どんぐり' + #10#10 +
+             WRN_MSG;
+
+    if MsgBox(Handle, msg + #10 + '実行してよろしいですか？',
+                  CAP_MSG, MB_OKCANCEL or MB_ICONQUESTION) <> IDOK then
+        Exit;
+
+    if GikoSys.DonguriSys.Rename(newName, res) then begin
       if Pos('<html', res) < 1 then
-	      MsgBox(Handle, TrimTag(res), CAP_MSG, MB_OK or MB_ICONINFORMATION)
+        MsgBox(Handle, TrimTag(res), CAP_MSG, MB_OK or MB_ICONINFORMATION)
       else if IsRootPage(res) then begin
         if Parsing(res) = False then
           MsgBox(Handle, 'どんぐりシステムのページ解析に失敗しました',
                     CAP_MSG, MB_OK or MB_ICONERROR);
       end else
-      	MsgBox(Handle, 'ハンター呼び名変更の結果を確認できませんでした。',
+        MsgBox(Handle, 'ハンターネーム変更の結果を確認できませんでした。',
                             CAP_MSG, MB_OK or MB_ICONERROR);
     end else
       ShowHttpError;
@@ -1105,7 +1407,7 @@ begin
 		if MsgBox(Handle, 'どんぐり転送を実行します。' + #10 +
     									'　受取人ID：' + rid + #10 +
                       '　転送どんぐり額：' + amn + #10 +
-                      '　手数料どんぐり額：0.001' + #10 +
+                      '　手数料どんぐり額：' + GikoSys.Setting.DonguriTRCost + #10 +
                       'どんぐり転送を後から取り消すことはできません。' + #10 +
                       '実行してよろしいですか？',
 	    						CAP_MSG, MB_OKCANCEL or MB_ICONQUESTION) <> IDOK then
@@ -1151,12 +1453,13 @@ begin
         PageControlItemBag.OwnerDraw := False;
 
         Color := clBtnFace;
-        PanelTop.Color := clBtnFace;
+        SetColors(PanelTop,        clBtnFace, clWindowText);
 
 			  SetColors(PanelHome,       clBtnFace, clWindowText);
 			  SetColors(EditName,        clWindow,  clWindowText);
 			  SetColors(EditID,          clWindow,  clWindowText);
 			  SetColors(EditLevel,       clWindow,  clWindowText);
+        SetColors(StatisticsGrid,  clWindow,  clWindowText);
 			  SetColors(InfoGrid,        clWindow,  clWindowText);
         SetColors(ExplorPanel,     clWindow,  clWindowText);
         SetColors(MiningPanel,     clWindow,  clWindowText);
@@ -1204,12 +1507,13 @@ begin
         PageControlItemBag.OwnerDraw := True;
 
         Color := COL_DARK_BKG1;
-        PanelTop.Color := COL_DARK_BKG1;
+        SetColors(PanelTop,        COL_DARK_BKG1, COL_DARK_TEXT);
 
 			  SetColors(PanelHome,       COL_DARK_BKG1, COL_DARK_TEXT);
 			  SetColors(EditName,        COL_DARK_BKG2, COL_DARK_TEXT);
 			  SetColors(EditID,          COL_DARK_BKG2, COL_DARK_TEXT);
 			  SetColors(EditLevel,       COL_DARK_BKG2, COL_DARK_TEXT);
+        SetColors(StatisticsGrid,  COL_DARK_BKG2, COL_DARK_TEXT);
 			  SetColors(InfoGrid,        COL_DARK_BKG2, COL_DARK_TEXT);
         SetColors(ExplorPanel,     COL_DARK_BKG2, COL_DARK_TEXT);
         SetColors(MiningPanel,     COL_DARK_BKG2, COL_DARK_TEXT);
@@ -1308,6 +1612,7 @@ begin
   SetButtonColors(AuthPnlButton,   bkg, txt, dtx);
   SetButtonColors(LoginPnlButton,  bkg, txt, dtx);
   SetButtonColors(LogoutPnlButton, bkg, txt, dtx);
+  SetButtonColors(NewRegPnlButton, bkg, txt, dtx);
 
   SetButtonColors(ExplorPnlButton, bkg, txt, dtx);
   SetButtonColors(MiningPnlButton, bkg, txt, dtx);
@@ -1330,6 +1635,7 @@ begin
   SetButtonColors(ResurrectPnlButton, bkg, txt, dtx);
   SetButtonColors(RenamePnlButton,    bkg, txt, dtx);
 	SetButtonColors(TransferPnlButton,  bkg, txt, dtx);
+  SetButtonColors(CraftPnlButton,     bkg, txt, dtx);
   SetButtonColors(CraftKYPnlButton,   bkg, txt, dtx);
   SetButtonColors(CraftCBPnlButton,   bkg, txt, dtx);
   SetButtonColors(BagPnlButton,       bkg, txt, dtx);
@@ -1449,6 +1755,92 @@ begin
 	Result := StrToIntDef(Trim(cmb.Text), 0);
 end;
 
+// 工作コストチェック
+procedure TDonguriForm.CraftPnlButtonClick(Sender: TObject);
+var
+  res: String;
+  tmp: String;
+  kyc: Integer;
+  cbc: Integer;
+  rnc: String;
+  trc: String;
+begin
+	if GikoSys.DonguriSys.Processing then
+  	Exit;
+
+  kyc := -1;
+  cbc := -1;
+
+  if GikoSys.DonguriSys.Craft(res) then begin
+		if DonguriSystem.Extract('鉄のキーを作るには鉄が', '必要です。', res, tmp) then begin
+      kyc := StrToIntDef(tmp, -1);
+      if kyc > 0 then begin
+				GikoSys.Setting.DonguriKYCost := kyc;
+        KYCostLabel.Caption := IntToStr(GikoSys.Setting.DonguriKYCost);
+      end;
+    end;
+		if DonguriSystem.Extract('鉄の大砲の玉を作るには鉄が', '必要です。', res, tmp) then begin
+      cbc := StrToIntDef(tmp, -1);
+      if cbc > 0 then begin
+				GikoSys.Setting.DonguriCBCost := cbc;
+        CBCostLabel.Caption := IntToStr(GikoSys.Setting.DonguriCBCost);
+      end;
+    end;
+  end;
+
+	tmp := '';
+	res := '';
+  if GikoSys.DonguriSys.RenamePage(res) then begin
+		if DonguriSystem.Extract('お知らせ：ハンターネーム変更サービスの費用は', 'どんぐりポイントです。', res, tmp) then begin
+    	if tmp <> '' then begin
+	    	rnc := tmp;
+      	GikoSys.Setting.DonguriRNCost := rnc;
+        RNCostLabel.Caption := rnc + ' どんぐり';
+      end;
+    end;
+  end;
+
+	tmp := '';
+	res := '';
+  if GikoSys.DonguriSys.TransferPage(res) then begin
+		if DonguriSystem.Extract('注意：どんぐりの転送には', 'どんぐりの手数料がかかります。', res, tmp) then begin
+    	if tmp <> '' then begin
+	    	trc := tmp;
+      	GikoSys.Setting.DonguriTRCost := trc;
+        TRCostLabel.Caption := trc + ' どんぐり';
+      end;
+    end;
+  end;
+
+  tmp := 'サービスコスト確認結果' + #10 +
+         '　鉄のキー作成：';
+  if kyc > 0 then
+    tmp := tmp + Format('鉄%d', [kyc])
+  else
+    tmp := tmp + '確認できませんでした。';
+  tmp := tmp + #10 +
+         '　鉄の大砲の玉作成：';
+  if cbc > 0 then
+    tmp := tmp + Format('鉄%d', [cbc])
+  else
+    tmp := tmp + '確認できませんでした。';
+  tmp := tmp + #10 +
+         '　ハンターネーム変更：';
+  if rnc <> '' then
+    tmp := tmp + rnc + 'どんぐり'
+  else
+    tmp := tmp + '確認できませんでした。';
+  tmp := tmp + #10 +
+         '　どんぐり転送：';
+  if trc <> '' then
+    tmp := tmp + trc + 'どんぐり'
+  else
+    tmp := tmp + '確認できませんでした。';
+
+  MsgBox(Handle, tmp, 'サービスコスト確認', MB_OK or MB_ICONINFORMATION);
+
+end;
+
 procedure TDonguriForm.CBAmountComboBoxChange(Sender: TObject);
 var
 	amount: Integer;
@@ -1458,13 +1850,15 @@ begin
   	iron := 0;
 		amount := GetCmbAmount(CBAmountComboBox);
     if amount > 0 then
-      iron := amount * 10;
+      iron := amount * GikoSys.Setting.DonguriCBCost;
   	CBIronLabel.Caption := IntToStr(iron);
   except
   end;
 end;
 
 procedure TDonguriForm.CraftCBPnlButtonClick(Sender: TObject);
+const
+  CAP_MSG: String = '鉄の大砲の玉作成';
 var
 	amount: Integer;
   res: String;
@@ -1472,15 +1866,20 @@ begin
 	if GikoSys.DonguriSys.Processing then
   	Exit;
 
-		amount := GetCmbAmount(CBAmountComboBox);
+	amount := GetCmbAmount(CBAmountComboBox);
   if amount < 1 then begin
-    MsgBox(Handle, '鉄の大砲の玉の作成数を入力してください。', '工作センター',
+    MsgBox(Handle, '鉄の大砲の玉の作成数を入力してください。', CAP_MSG,
           	MB_OK or MB_ICONINFORMATION);
     Exit;
   end;
 
+  if MsgBox(Handle, Format('鉄の大砲の玉%dを作成するには鉄%dが必要です。%s作成しますか？',
+  												[amount, amount * GikoSys.Setting.DonguriCBCost, #10]),
+						CAP_MSG, MB_YESNO or MB_ICONQUESTION) <> IDYES then
+  	Exit;
+
   if GikoSys.DonguriSys.CraftCB(amount, res) then
-  	MsgBox(Handle, res, '鉄の大砲の玉作成', MB_OK or MB_ICONINFORMATION)
+  	MsgBox(Handle, res, CAP_MSG, MB_OK or MB_ICONINFORMATION)
   else
   	ShowHttpError;
 end;
@@ -1494,13 +1893,15 @@ begin
   	iron := 0;
 		amount := GetCmbAmount(KYAmountComboBox);
     if amount > 0 then
-      iron := amount * 15;
+      iron := amount * GikoSys.Setting.DonguriKYCost;
   	KYIronLabel.Caption := IntToStr(iron);
   except
   end;
 end;
 
 procedure TDonguriForm.CraftKYPnlButtonClick(Sender: TObject);
+const
+  CAP_MSG: String = '鉄のキー作成';
 var
 	amount: Integer;
   res: String;
@@ -1510,18 +1911,25 @@ begin
 
 		amount := GetCmbAmount(KYAmountComboBox);
   if amount < 1 then begin
-    MsgBox(Handle, '鉄のキーの作成数を入力してください。', '工作センター',
+    MsgBox(Handle, '鉄のキーの作成数を入力してください。', CAP_MSG,
           	MB_OK or MB_ICONINFORMATION);
     Exit;
   end;
 
+  if MsgBox(Handle, Format('鉄のキー%dを作成するには鉄%dが必要です。%s作成しますか？',
+  												[amount, amount * GikoSys.Setting.DonguriKYCost, #10]),
+						CAP_MSG, MB_YESNO or MB_ICONQUESTION) <> IDYES then
+  	Exit;
+
   if GikoSys.DonguriSys.CraftKY(amount, res) then
-  	MsgBox(Handle, res, '鉄のキー作成', MB_OK or MB_ICONINFORMATION)
+  	MsgBox(Handle, res, CAP_MSG, MB_OK or MB_ICONINFORMATION)
   else
   	ShowHttpError;
 end;
 
 procedure TDonguriForm.BagPnlButtonClick(Sender: TObject);
+const
+  CAP_MSG: String = 'アイテムバッグ';
 var
 	res: String;
 	denied: Boolean;
@@ -1536,9 +1944,9 @@ begin
     MsgBox(Handle, 'アイテムバッグを参照できませんでした。' + #10 +
                    'どんぐりが枯れたかもしれません。' + #10 +
                    'ログインし直してみてください。',
-                   'アイテムバッグ', MB_OK or MB_ICONWARNING)
+                   CAP_MSG, MB_OK or MB_ICONWARNING)
   else if Pos('<html', res) < 1 then
-    	MsgBox(Handle, TrimTag(res), 'アイテムバッグ', MB_OK or MB_ICONINFORMATION)
+		MsgBox(Handle, TrimTag(res), CAP_MSG, MB_OK or MB_ICONINFORMATION)
   else
   	ShowHttpError;
 end;
@@ -1598,6 +2006,8 @@ begin
 end;
 
 procedure TDonguriForm.SlotPnlButtonClick(Sender: TObject);
+const
+  CAP_MSG: String = 'アイテムバッグ';
 var
 	res: String;
 	denied: Boolean;
@@ -1607,13 +2017,13 @@ begin
   	Exit;
 
 	if MsgBox(Handle, '木材 1000 をアイテムスロット 10 に交換します。' + #10 +
-  									'よろしいですか？', 'アイテムバッグ',
+  									'よろしいですか？', CAP_MSG,
                     MB_OKCANCEL or MB_ICONQUESTION) <> IDOK then
   	Exit;
 
   if GikoSys.DonguriSys.AddSlots(res) then begin
     if (Pos('<html', res) < 1) then begin
-    	MsgBox(Handle, TrimTag(res), 'アイテムバッグ', MB_OK or MB_ICONINFORMATION);
+    	MsgBox(Handle, TrimTag(res), CAP_MSG, MB_OK or MB_ICONINFORMATION);
 
       // アイテムバッグ再表示
       res := '';
@@ -1621,12 +2031,12 @@ begin
       if GikoSys.DonguriSys.Bag(FBag, res, denied) then
         ShowBag
       else if (Pos('<html', res) < 1) then
-	    	MsgBox(Handle, TrimTag(res), 'アイテムバッグ', MB_OK or MB_ICONINFORMATION)
+	    	MsgBox(Handle, TrimTag(res), CAP_MSG, MB_OK or MB_ICONINFORMATION)
 			else
 		  	ShowHttpError;
 
   	end else	// 状況不明？？？
-    	MsgBox(Handle, 'アイテムバッグ表示更新を行ってください。', 'アイテムバッグ',
+    	MsgBox(Handle, 'アイテムバッグ表示更新を行ってください。', CAP_MSG,
       							MB_OK or MB_ICONINFORMATION);
   end else
   	ShowHttpError;
@@ -1702,6 +2112,8 @@ end;
 
 { 宝箱を開く }
 procedure TDonguriForm.OpenChest(amount: Integer; chestName: String);
+const
+  CAP_MSG: String = 'アイテムバッグ';
 var
   res: String;
   key: Integer;
@@ -1710,39 +2122,41 @@ begin
   	Exit;
 
 	if MsgBox(Handle, Format('鉄のキーを%d消費します。%s%sを開けますか？', [amount, #10, chestName]),
-  					'アイテムバッグ', MB_YESNO or MB_ICONQUESTION) <> IDYES then
+  					CAP_MSG, MB_YESNO or MB_ICONQUESTION) <> IDYES then
     Exit;
 
   if GikoSys.DonguriSys.ChestOpen(amount, FBag, res) then
 		ShowBag
   else if res <> ''then begin
   	if Pos('<html', res) < 1 then begin
-			MsgBox(Handle, res, 'アイテムバッグ', MB_OK or MB_ICONWARNING);
+			MsgBox(Handle, res, CAP_MSG, MB_OK or MB_ICONWARNING);
 			Exit;
     end;
     if IsRootPage(res) then begin
     	if Parsing(res) then begin
         key := StrToIntDef(InfoGrid.Cells[1, Integer(idxIronKey)], -1);
         if (key >= 0) and (key < amount) then begin
-          MsgBox(Handle, '鉄のキーが不足しています。', 'アイテムバッグ', MB_OK or MB_ICONWARNING);
+          MsgBox(Handle, '鉄のキーが不足しています。', CAP_MSG, MB_OK or MB_ICONWARNING);
           Exit;
         end;
 			end;
 		end;
-		MsgBox(Handle, chestName + 'を開くことができませんでした。', 'アイテムバッグ', MB_OK or MB_ICONWARNING);
+		MsgBox(Handle, chestName + 'を開くことができませんでした。', CAP_MSG, MB_OK or MB_ICONWARNING);
   end else
   	ShowHttpError;
 end;
 
 
 procedure TDonguriForm.RecycleAllPnlButtonClick(Sender: TObject);
+const
+  CAP_MSG: String = 'アイテムバッグ';
 begin
 	if GikoSys.DonguriSys.Processing then
   	Exit;
 
 	if MsgBox(Handle, '解体した装備を元に戻すことはできません。' + #10 +
                     'ロックされていない装備をすべて解体しますか？',
-  					'アイテムバッグ', MB_YESNO or MB_ICONQUESTION) <> IDYES then
+  					CAP_MSG, MB_YESNO or MB_ICONQUESTION) <> IDYES then
     Exit;
 
   if GikoSys.DonguriSys.RecycleAll(FBag) then
@@ -1778,6 +2192,8 @@ begin
 end;
 
 procedure TDonguriForm.LockItem(list: TListView);
+const
+  CAP_MSG: String = 'アイテムバッグ';
 var
 	i: Integer;
   item: TListItem;
@@ -1800,7 +2216,7 @@ begin
 
 		if itemNoList.Count < 1 then begin
       MsgBox(Handle, 'ロックする行にチェックを付けてください。',
-								'どんぐりシステム', MB_OK or MB_ICONERROR);
+								CAP_MSG, MB_OK or MB_ICONERROR);
       Exit;
     end;
 
@@ -1824,6 +2240,8 @@ begin
 end;
 
 procedure TDonguriForm.UnlockItem(list: TListView);
+const
+  CAP_MSG: String = 'アイテムバッグ';
 var
 	i: Integer;
   item: TListItem;
@@ -1846,7 +2264,7 @@ begin
 
 		if itemNoList.Count < 1 then begin
       MsgBox(Handle, 'アンロックする行にチェックを付けてください。',
-								'どんぐりシステム', MB_OK or MB_ICONERROR);
+								CAP_MSG, MB_OK or MB_ICONERROR);
       Exit;
     end;
 
@@ -1870,6 +2288,8 @@ begin
 end;
 
 procedure TDonguriForm.RecycleItem(list: TListView);
+const
+  CAP_MSG: String = 'アイテムバッグ';
 var
 	i: Integer;
   item: TListItem;
@@ -1892,7 +2312,7 @@ begin
 
 		if itemNoList.Count < 1 then begin
       MsgBox(Handle, '分解する行にチェックを付けてください。',
-								'どんぐりシステム', MB_OK or MB_ICONERROR);
+								CAP_MSG, MB_OK or MB_ICONERROR);
       Exit;
     end;
 
@@ -1918,6 +2338,8 @@ begin
 end;
 
 procedure TDonguriForm.UseItem(list: TListView);
+const
+  CAP_MSG: String = 'アイテムバッグ';
 var
 	i: Integer;
   item: TListItem;
@@ -1935,7 +2357,7 @@ begin
          (TDonguriItem(item.Data).ItemNo <> '') then begin
         if itemNo <> '' then begin
           MsgBox(Handle, '一度に複数を装備することはできません。',
-                    'どんぐりシステム', MB_OK or MB_ICONERROR);
+                    CAP_MSG, MB_OK or MB_ICONERROR);
         	Exit;
         end;
       	itemNo := TDonguriItem(item.Data).ItemNo;
@@ -1944,7 +2366,7 @@ begin
 
 		if itemNo = '' then begin
       MsgBox(Handle, '装備する行にチェックを付けてください。',
-								'どんぐりシステム', MB_OK or MB_ICONERROR);
+								CAP_MSG, MB_OK or MB_ICONERROR);
       Exit;
     end;
 

@@ -3,7 +3,7 @@ object DonguriForm: TDonguriForm
   Top = 0
   BorderIcons = [biSystemMenu, biMinimize]
   Caption = #12393#12435#12368#12426#12471#12473#12486#12512
-  ClientHeight = 527
+  ClientHeight = 732
   ClientWidth = 280
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -23,13 +23,19 @@ object DonguriForm: TDonguriForm
     Left = 0
     Top = 0
     Width = 280
-    Height = 33
+    Height = 28
     Align = alTop
     BevelOuter = bvNone
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -13
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
     TabOrder = 1
     object SpeedButtonTopMost: TSpeedButton
       Left = 245
-      Top = 8
+      Top = 4
       Width = 23
       Height = 22
       Hint = #12454#12451#12531#12489#12454#26368#21069#38754
@@ -65,196 +71,150 @@ object DonguriForm: TDonguriForm
   end
   object PageControl: TPageControl
     Left = 0
-    Top = 33
+    Top = 28
     Width = 280
-    Height = 494
-    ActivePage = TabSheetService
+    Height = 704
+    ActivePage = TabSheetHome
     Align = alClient
     TabOrder = 0
     OnDrawTab = PageControlDrawTab
     object TabSheetHome: TTabSheet
       Caption = #12507#12540#12512
+      ExplicitHeight = 671
       object PanelHome: TPanel
         Left = 0
         Top = 0
         Width = 272
-        Height = 466
+        Height = 472
         Align = alTop
         BevelOuter = bvNone
         TabOrder = 0
-        object Label1: TLabel
-          Left = 12
-          Top = 44
-          Width = 70
-          Height = 13
-          Caption = #12518#12540#12470#12540#31278#21029#65306
-        end
-        object LabelUserType: TLabel
-          Left = 100
-          Top = 44
-          Width = 36
-          Height = 13
-          Caption = #35686#20633#21729
-        end
         object LabelName: TLabel
           Left = 12
-          Top = 64
-          Width = 43
+          Top = 57
+          Width = 72
           Height = 13
-          Caption = #21628#12403#21517' '#65306
+          Caption = #35686#20633#21729#12493#12540#12512#65306
         end
         object LabelID: TLabel
           Left = 12
-          Top = 83
+          Top = 75
           Width = 53
           Height = 13
           Caption = #35686#20633#21729'ID'#65306
         end
         object Label3: TLabel
           Left = 12
-          Top = 102
+          Top = 94
           Width = 35
           Height = 13
           Caption = #12524#12505#12523#65306
         end
         object LabelPeriod: TLabel
           Left = 12
-          Top = 292
-          Width = 254
+          Top = 136
+          Width = 54
           Height = 13
-          Alignment = taCenter
-          AutoSize = False
-          Caption = #31532' 100 '#26399
-        end
-        object Label4: TLabel
-          Left = 100
-          Top = 121
-          Width = 12
-          Height = 13
-          Caption = 'K'#65306
-        end
-        object Label5: TLabel
-          Left = 170
-          Top = 121
-          Width = 13
-          Height = 13
-          Caption = 'D'#65306
-        end
-        object LabelD: TLabel
-          Left = 186
-          Top = 121
-          Width = 24
-          Height = 13
-          Caption = '1234'
-        end
-        object LabelK: TLabel
-          Left = 116
-          Top = 121
-          Width = 36
-          Height = 13
-          Caption = '123456'
+          Caption = #31532' 1000 '#26399
         end
         object Label12: TLabel
-          Left = 16
-          Top = 310
-          Width = 42
+          Left = 66
+          Top = 114
+          Width = 50
           Height = 13
+          Alignment = taRightJustify
+          AutoSize = False
           Caption = #32076#39443#20516#65306
         end
         object Label13: TLabel
-          Left = 16
-          Top = 330
-          Width = 54
+          Left = 76
+          Top = 136
+          Width = 40
           Height = 13
-          Caption = #26178#38291#32076#36942#65306
+          Alignment = taRightJustify
+          AutoSize = False
+          Caption = #32076#36942#65306
         end
         object ExprValLabel: TLabel
-          Left = 252
-          Top = 310
-          Width = 14
+          Left = 246
+          Top = 114
+          Width = 20
           Height = 13
           Alignment = taRightJustify
           AutoSize = False
-          Caption = '00'
+          Caption = '100'
         end
         object TimeValLabel: TLabel
-          Left = 252
-          Top = 330
-          Width = 14
+          Left = 246
+          Top = 136
+          Width = 20
           Height = 13
           Alignment = taRightJustify
           AutoSize = False
-          Caption = '00'
+          Caption = '100'
         end
         object ExplorValLabel: TLabel
-          Left = 252
-          Top = 352
-          Width = 14
+          Left = 246
+          Top = 158
+          Width = 20
           Height = 13
           Alignment = taRightJustify
           AutoSize = False
-          Caption = '00'
+          Caption = '100'
         end
         object MiningValLabel: TLabel
-          Left = 252
-          Top = 374
-          Width = 14
+          Left = 246
+          Top = 180
+          Width = 20
           Height = 13
           Alignment = taRightJustify
           AutoSize = False
-          Caption = '00'
+          Caption = '100'
         end
         object WoodctValLabel: TLabel
-          Left = 252
-          Top = 396
-          Width = 14
+          Left = 246
+          Top = 202
+          Width = 20
           Height = 13
           Alignment = taRightJustify
           AutoSize = False
-          Caption = '00'
+          Caption = '100'
         end
         object WeaponValLabel: TLabel
-          Left = 252
-          Top = 418
-          Width = 14
+          Left = 246
+          Top = 224
+          Width = 20
           Height = 13
           Alignment = taRightJustify
           AutoSize = False
-          Caption = '00'
+          Caption = '100'
         end
         object ArmorcValLabel: TLabel
-          Left = 252
-          Top = 440
-          Width = 14
+          Left = 246
+          Top = 246
+          Width = 20
           Height = 13
           Alignment = taRightJustify
           AutoSize = False
-          Caption = '00'
+          Caption = '100'
         end
         object Label24: TLabel
           Left = 12
-          Top = 121
-          Width = 64
+          Top = 324
+          Width = 36
           Height = 13
-          Caption = #22823#30770#12398#32113#35336#65306
+          Caption = #20445#31649#24235
         end
-        object Label26: TLabel
+        object Label1: TLabel
           Left = 12
-          Top = 140
-          Width = 76
+          Top = 270
+          Width = 24
           Height = 13
-          Caption = #22823#20081#38360#12398#32113#35336#65306
-        end
-        object LabelFight: TLabel
-          Left = 100
-          Top = 140
-          Width = 26
-          Height = 13
-          Caption = '0-0-0'
+          Caption = #32113#35336
         end
         object EditName: TEdit
           Left = 100
-          Top = 63
+          Top = 55
           Width = 164
           Height = 17
           TabStop = False
@@ -264,7 +224,7 @@ object DonguriForm: TDonguriForm
         end
         object EditID: TEdit
           Left = 100
-          Top = 82
+          Top = 74
           Width = 164
           Height = 17
           TabStop = False
@@ -274,7 +234,7 @@ object DonguriForm: TDonguriForm
         end
         object EditLevel: TEdit
           Left = 100
-          Top = 101
+          Top = 93
           Width = 164
           Height = 17
           TabStop = False
@@ -284,21 +244,21 @@ object DonguriForm: TDonguriForm
         end
         object RootPnlButton: TPanel
           Left = 12
-          Top = 8
-          Width = 60
-          Height = 25
+          Top = 3
+          Width = 85
+          Height = 47
           BevelInner = bvRaised
-          Caption = #20877#34920#31034
+          Caption = #34920#31034#26356#26032
           TabOrder = 3
           OnClick = RootPnlButtonClick
           OnMouseDown = PanelButtonMouseDown
           OnMouseUp = PanelButtonMouseUp
         end
         object AuthPnlButton: TPanel
-          Left = 80
-          Top = 8
-          Width = 60
-          Height = 25
+          Left = 126
+          Top = 27
+          Width = 68
+          Height = 23
           BevelInner = bvRaised
           Caption = #20877#35469#35388
           TabOrder = 4
@@ -307,10 +267,10 @@ object DonguriForm: TDonguriForm
           OnMouseUp = PanelButtonMouseUp
         end
         object LoginPnlButton: TPanel
-          Left = 142
-          Top = 8
-          Width = 60
-          Height = 25
+          Left = 126
+          Top = 3
+          Width = 68
+          Height = 23
           BevelInner = bvRaised
           Caption = #12525#12464#12452#12531
           TabOrder = 5
@@ -319,10 +279,10 @@ object DonguriForm: TDonguriForm
           OnMouseUp = PanelButtonMouseUp
         end
         object LogoutPnlButton: TPanel
-          Left = 204
-          Top = 8
-          Width = 60
-          Height = 25
+          Left = 196
+          Top = 3
+          Width = 68
+          Height = 23
           BevelInner = bvRaised
           Caption = #12525#12464#12450#12454#12488
           TabOrder = 6
@@ -331,29 +291,37 @@ object DonguriForm: TDonguriForm
           OnMouseUp = PanelButtonMouseUp
         end
         object InfoGrid: TStringGrid
-          Left = 10
-          Top = 158
-          Width = 256
-          Height = 129
+          Left = 12
+          Top = 340
+          Width = 253
+          Height = 125
+          BevelEdges = []
           BevelInner = bvNone
           BevelOuter = bvNone
+          BorderStyle = bsNone
           ColCount = 2
+          Ctl3D = False
           DefaultColWidth = 100
           DefaultRowHeight = 17
+          Enabled = False
           FixedCols = 0
           RowCount = 7
           FixedRows = 0
-          Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRowSelect]
+          Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goRowSelect]
+          ParentCtl3D = False
           ScrollBars = ssNone
           TabOrder = 7
         end
         object ExplorPnlButton: TPanel
           Left = 12
-          Top = 350
+          Top = 156
           Width = 70
           Height = 20
+          Hint = #8217#25506#26908#8217#12434#20462#34892#12377#12427
           BevelInner = bvRaised
           Caption = #25506#26908
+          ParentShowHint = False
+          ShowHint = True
           TabOrder = 8
           OnClick = ExplorPnlButtonClick
           OnMouseDown = PanelButtonMouseDown
@@ -361,11 +329,14 @@ object DonguriForm: TDonguriForm
         end
         object MiningPnlButton: TPanel
           Left = 12
-          Top = 372
+          Top = 178
           Width = 70
           Height = 20
+          Hint = #8217#25505#25496#8217#12434#20462#34892#12377#12427
           BevelInner = bvRaised
           Caption = #25505#25496
+          ParentShowHint = False
+          ShowHint = True
           TabOrder = 9
           OnClick = MiningPnlButtonClick
           OnMouseDown = PanelButtonMouseDown
@@ -373,11 +344,14 @@ object DonguriForm: TDonguriForm
         end
         object WoodctPnlButton: TPanel
           Left = 12
-          Top = 394
+          Top = 200
           Width = 70
           Height = 20
+          Hint = #8217#26408#12371#12426#8217#12434#20462#34892#12377#12427
           BevelInner = bvRaised
           Caption = #26408#12371#12426
+          ParentShowHint = False
+          ShowHint = True
           TabOrder = 10
           OnClick = WoodctPnlButtonClick
           OnMouseDown = PanelButtonMouseDown
@@ -385,11 +359,14 @@ object DonguriForm: TDonguriForm
         end
         object WeaponPnlButton: TPanel
           Left = 12
-          Top = 416
+          Top = 222
           Width = 70
           Height = 20
+          Hint = #8217#27494#22120#35069#20316#8217#12434#20462#34892#12377#12427
           BevelInner = bvRaised
           Caption = #27494#22120#35069#20316
+          ParentShowHint = False
+          ShowHint = True
           TabOrder = 11
           OnClick = WeaponPnlButtonClick
           OnMouseDown = PanelButtonMouseDown
@@ -397,29 +374,32 @@ object DonguriForm: TDonguriForm
         end
         object ArmorcPnlButton: TPanel
           Left = 12
-          Top = 438
+          Top = 244
           Width = 70
           Height = 20
+          Hint = #8217#38450#20855#35069#20316#8217#12434#20462#34892#12377#12427
           BevelInner = bvRaised
           Caption = #38450#20855#35069#20316
+          ParentShowHint = False
+          ShowHint = True
           TabOrder = 12
           OnClick = ArmorcPnlButtonClick
           OnMouseDown = PanelButtonMouseDown
           OnMouseUp = PanelButtonMouseUp
         end
         object ExprProgressBar: TProgressBar
-          Left = 80
-          Top = 312
-          Width = 172
+          Left = 122
+          Top = 116
+          Width = 126
           Height = 10
           Smooth = True
           Step = 1
           TabOrder = 13
         end
         object TimeProgressBar: TProgressBar
-          Left = 80
-          Top = 332
-          Width = 172
+          Left = 122
+          Top = 138
+          Width = 126
           Height = 10
           Smooth = True
           Step = 1
@@ -427,8 +407,8 @@ object DonguriForm: TDonguriForm
         end
         object ExplorProgressBar: TProgressBar
           Left = 122
-          Top = 354
-          Width = 130
+          Top = 160
+          Width = 126
           Height = 10
           Smooth = True
           Step = 1
@@ -436,8 +416,8 @@ object DonguriForm: TDonguriForm
         end
         object MiningProgressBar: TProgressBar
           Left = 122
-          Top = 376
-          Width = 130
+          Top = 182
+          Width = 126
           Height = 10
           Smooth = True
           Step = 1
@@ -445,16 +425,16 @@ object DonguriForm: TDonguriForm
         end
         object WoodctProgressBar: TProgressBar
           Left = 122
-          Top = 398
-          Width = 130
+          Top = 204
+          Width = 126
           Height = 10
           Smooth = True
           TabOrder = 17
         end
         object WeaponProgressBar: TProgressBar
           Left = 122
-          Top = 420
-          Width = 130
+          Top = 226
+          Width = 126
           Height = 10
           Smooth = True
           Step = 1
@@ -462,8 +442,8 @@ object DonguriForm: TDonguriForm
         end
         object ArmorcProgressBar: TProgressBar
           Left = 122
-          Top = 442
-          Width = 130
+          Top = 248
+          Width = 126
           Height = 10
           Smooth = True
           Step = 1
@@ -471,7 +451,7 @@ object DonguriForm: TDonguriForm
         end
         object ExplorPanel: TPanel
           Left = 82
-          Top = 350
+          Top = 156
           Width = 36
           Height = 20
           Hint = #20462#34892#20013
@@ -481,7 +461,7 @@ object DonguriForm: TDonguriForm
         end
         object MiningPanel: TPanel
           Left = 82
-          Top = 372
+          Top = 178
           Width = 36
           Height = 20
           Hint = #20462#34892#20013
@@ -491,7 +471,7 @@ object DonguriForm: TDonguriForm
         end
         object WoodctPanel: TPanel
           Left = 82
-          Top = 394
+          Top = 200
           Width = 36
           Height = 20
           Hint = #20462#34892#20013
@@ -501,7 +481,7 @@ object DonguriForm: TDonguriForm
         end
         object WeaponPanel: TPanel
           Left = 82
-          Top = 416
+          Top = 222
           Width = 36
           Height = 20
           Hint = #20462#34892#20013
@@ -511,7 +491,7 @@ object DonguriForm: TDonguriForm
         end
         object ArmorcPanel: TPanel
           Left = 82
-          Top = 438
+          Top = 244
           Width = 36
           Height = 20
           Hint = #20462#34892#20013
@@ -519,16 +499,52 @@ object DonguriForm: TDonguriForm
           Caption = '00000'
           TabOrder = 24
         end
+        object StatisticsGrid: TStringGrid
+          Left = 12
+          Top = 284
+          Width = 253
+          Height = 35
+          BevelEdges = []
+          BevelInner = bvNone
+          BevelOuter = bvNone
+          BorderStyle = bsNone
+          ColCount = 2
+          Ctl3D = False
+          DefaultColWidth = 100
+          DefaultRowHeight = 17
+          Enabled = False
+          FixedCols = 0
+          RowCount = 2
+          FixedRows = 0
+          Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goRowSelect]
+          ParentCtl3D = False
+          ScrollBars = ssNone
+          TabOrder = 25
+        end
+        object NewRegPnlButton: TPanel
+          Left = 196
+          Top = 27
+          Width = 68
+          Height = 23
+          BevelInner = bvRaised
+          Caption = #26032#35215#30331#37682
+          TabOrder = 26
+          OnClick = NewRegPnlButtonClick
+          OnMouseDown = PanelButtonMouseDown
+          OnMouseUp = PanelButtonMouseUp
+        end
       end
       object Panel2: TPanel
         Left = 0
-        Top = 466
+        Top = 472
         Width = 272
-        Height = 0
+        Height = 204
         Align = alClient
         BevelOuter = bvLowered
         ParentColor = True
         TabOrder = 1
+        ExplicitTop = 466
+        ExplicitHeight = 205
       end
     end
     object TabSheetService: TTabSheet
@@ -538,7 +554,7 @@ object DonguriForm: TDonguriForm
         Left = 0
         Top = 0
         Width = 272
-        Height = 466
+        Height = 472
         Align = alTop
         BevelOuter = bvNone
         TabOrder = 0
@@ -582,6 +598,20 @@ object DonguriForm: TDonguriForm
             Width = 6
             Height = 13
             Caption = '0'
+          end
+          object Label4: TLabel
+            Left = 16
+            Top = 56
+            Width = 87
+            Height = 13
+            Caption = '1'#20491#24403#12383#12426#37444#12398#37327#65306
+          end
+          object KYCostLabel: TLabel
+            Left = 106
+            Top = 56
+            Width = 12
+            Height = 13
+            Caption = '15'
           end
           object KYAmountComboBox: TComboBox
             Left = 76
@@ -645,6 +675,20 @@ object DonguriForm: TDonguriForm
             Height = 13
             Caption = '0'
           end
+          object Label5: TLabel
+            Left = 16
+            Top = 56
+            Width = 87
+            Height = 13
+            Caption = '1'#20491#24403#12383#12426#37444#12398#37327#65306
+          end
+          object CBCostLabel: TLabel
+            Left = 106
+            Top = 56
+            Width = 18
+            Height = 13
+            Caption = '100'
+          end
           object CBAmountComboBox: TComboBox
             Left = 76
             Top = 20
@@ -697,9 +741,16 @@ object DonguriForm: TDonguriForm
           object Label17: TLabel
             Left = 16
             Top = 78
-            Width = 108
+            Width = 42
             Height = 13
-            Caption = #25163#25968#26009#65306'0.001 '#12393#12435#12368#12426
+            Caption = #25163#25968#26009#65306
+          end
+          object RNCostLabel: TLabel
+            Left = 60
+            Top = 78
+            Width = 66
+            Height = 13
+            Caption = '0.001 '#12393#12435#12368#12426
           end
           object RenamePnlButton: TPanel
             Left = 150
@@ -747,9 +798,16 @@ object DonguriForm: TDonguriForm
           object Label11: TLabel
             Left = 16
             Top = 80
-            Width = 108
+            Width = 42
             Height = 13
-            Caption = #25163#25968#26009#65306'0.001 '#12393#12435#12368#12426
+            Caption = #25163#25968#26009#65306
+          end
+          object TRCostLabel: TLabel
+            Left = 60
+            Top = 80
+            Width = 66
+            Height = 13
+            Caption = '0.001 '#12393#12435#12368#12426
           end
           object TransferPnlButton: TPanel
             Left = 142
@@ -786,21 +844,39 @@ object DonguriForm: TDonguriForm
             TabOrder = 2
           end
         end
+        object CraftPnlButton: TPanel
+          Left = 144
+          Top = 12
+          Width = 118
+          Height = 25
+          Hint = #12469#12540#12499#12473#12395#24517#35201#12394#37444#12398#37327#12420#12393#12435#12368#12426#12434#21462#24471#12377#12427
+          BevelInner = bvRaised
+          Caption = #12469#12540#12499#12473#12467#12473#12488#30906#35469
+          ParentShowHint = False
+          ShowHint = True
+          TabOrder = 5
+          OnClick = CraftPnlButtonClick
+          OnMouseDown = PanelButtonMouseDown
+          OnMouseUp = PanelButtonMouseUp
+        end
       end
       object Panel1: TPanel
         Left = 0
-        Top = 466
+        Top = 472
         Width = 272
-        Height = 0
+        Height = 204
         Align = alClient
         BevelOuter = bvLowered
         ParentColor = True
         TabOrder = 1
+        ExplicitTop = 466
+        ExplicitHeight = 210
       end
     end
     object TabSheetChest: TTabSheet
       Caption = #12450#12452#12486#12512
       ImageIndex = 2
+      ExplicitHeight = 671
       object BagTopPanel: TPanel
         Left = 0
         Top = 0
@@ -897,11 +973,12 @@ object DonguriForm: TDonguriForm
         Left = 0
         Top = 126
         Width = 272
-        Height = 340
+        Height = 550
         ActivePage = TabSheetUsing
         Align = alClient
         TabOrder = 1
         OnDrawTab = PageControlItemBagDrawTab
+        ExplicitHeight = 545
         object TabSheetUsing: TTabSheet
           Caption = #35013#20633#20013
           OnResize = TabSheetUsingResize
@@ -909,7 +986,7 @@ object DonguriForm: TDonguriForm
             Left = 0
             Top = 0
             Width = 264
-            Height = 316
+            Height = 322
             Align = alTop
             BevelOuter = bvNone
             TabOrder = 0
@@ -1070,18 +1147,21 @@ object DonguriForm: TDonguriForm
           end
           object Panel5: TPanel
             Left = 0
-            Top = 316
+            Top = 322
             Width = 264
-            Height = 0
+            Height = 200
             Align = alClient
             BevelOuter = bvLowered
             ParentColor = True
             TabOrder = 1
+            ExplicitTop = 316
+            ExplicitHeight = 206
           end
         end
         object TabSheetWeapon: TTabSheet
           Caption = #27494#22120
           ImageIndex = 1
+          ExplicitHeight = 517
           object WeaponTopPanel: TPanel
             Left = 0
             Top = 0
@@ -1172,7 +1252,7 @@ object DonguriForm: TDonguriForm
             Left = 0
             Top = 30
             Width = 264
-            Height = 282
+            Height = 492
             Align = alClient
             BevelInner = bvNone
             BevelOuter = bvNone
@@ -1219,12 +1299,17 @@ object DonguriForm: TDonguriForm
               end>
             Ctl3D = False
             FlatScrollBars = True
+            MultiSelect = True
             ReadOnly = True
             RowSelect = True
             SmallImages = BagImageList
+            SortType = stData
             TabOrder = 1
             ViewStyle = vsReport
             OnChange = ListViewWeaponChange
+            OnColumnClick = ListViewWeaponColumnClick
+            OnCompare = ListViewWeaponCompare
+            ExplicitHeight = 487
           end
         end
         object TabSheetArmor: TTabSheet
@@ -1320,7 +1405,7 @@ object DonguriForm: TDonguriForm
             Left = 0
             Top = 30
             Width = 264
-            Height = 282
+            Height = 492
             Align = alClient
             BevelInner = bvNone
             BevelOuter = bvNone
@@ -1367,12 +1452,16 @@ object DonguriForm: TDonguriForm
               end>
             Ctl3D = False
             FlatScrollBars = True
+            MultiSelect = True
             ReadOnly = True
             RowSelect = True
             SmallImages = BagImageList
+            SortType = stData
             TabOrder = 1
             ViewStyle = vsReport
             OnChange = ListViewArmorChange
+            OnColumnClick = ListViewArmorColumnClick
+            OnCompare = ListViewArmorCompare
           end
         end
       end
@@ -1384,7 +1473,7 @@ object DonguriForm: TDonguriForm
         Left = 0
         Top = 0
         Width = 272
-        Height = 466
+        Height = 472
         Align = alTop
         BevelOuter = bvNone
         TabOrder = 0
@@ -1652,13 +1741,15 @@ object DonguriForm: TDonguriForm
       end
       object Panel3: TPanel
         Left = 0
-        Top = 466
+        Top = 472
         Width = 272
-        Height = 0
+        Height = 204
         Align = alClient
         BevelOuter = bvLowered
         ParentColor = True
         TabOrder = 1
+        ExplicitTop = 466
+        ExplicitHeight = 210
       end
     end
     object TabSheetSetting: TTabSheet
@@ -1668,7 +1759,7 @@ object DonguriForm: TDonguriForm
         Left = 0
         Top = 0
         Width = 272
-        Height = 466
+        Height = 472
         Align = alTop
         BevelOuter = bvNone
         ParentColor = True
@@ -1731,13 +1822,15 @@ object DonguriForm: TDonguriForm
       end
       object Panel4: TPanel
         Left = 0
-        Top = 466
+        Top = 472
         Width = 272
-        Height = 0
+        Height = 204
         Align = alClient
         BevelOuter = bvLowered
         ParentColor = True
         TabOrder = 1
+        ExplicitTop = 466
+        ExplicitHeight = 210
       end
     end
   end
@@ -1749,10 +1842,9 @@ object DonguriForm: TDonguriForm
     Top = 24
   end
   object BagImageList: TImageList
-    Left = 240
-    Top = 256
+    Left = 72
     Bitmap = {
-      494C01010A0014008C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01010A001400AC0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000003000000001002000000000000030
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -2156,8 +2248,7 @@ object DonguriForm: TDonguriForm
       000000000000}
   end
   object PopupMenuLink: TPopupMenu
-    Left = 240
-    Top = 288
+    Left = 120
     object ManuItemOpen: TMenuItem
       Caption = 'WEB'#12502#12521#12454#12470#12391#38283#12367'(&O)'
       OnClick = ManuItemOpenClick
@@ -2165,6 +2256,21 @@ object DonguriForm: TDonguriForm
     object ManuItemCopy: TMenuItem
       Caption = #12522#12531#12463#12434#12467#12500#12540'(&C)'
       OnClick = ManuItemCopyClick
+    end
+  end
+  object PopupMenuLogin: TPopupMenu
+    Left = 160
+    object MItemLogin: TMenuItem
+      Caption = #12381#12398#12414#12414#12525#12464#12452#12531'(&L)'
+      OnClick = MItemLoginClick
+    end
+    object MItemHntLogin: TMenuItem
+      Caption = #12495#12531#12479#12540#12392#12375#12390#12513#12540#12523#12525#12464#12452#12531'(&H)'
+      OnClick = MItemHntLoginClick
+    end
+    object MItemGrdLogin: TMenuItem
+      Caption = #35686#20633#21729#12392#12375#12390#12513#12540#12523#12525#12464#12452#12531'(&G)'
+      OnClick = MItemGrdLoginClick
     end
   end
 end
