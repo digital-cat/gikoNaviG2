@@ -12,6 +12,7 @@ object DonguriRegForm: TDonguriRegForm
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
+  FormStyle = fsStayOnTop
   OldCreateOrder = False
   Position = poMainFormCenter
   OnCreate = FormCreate
@@ -22,7 +23,7 @@ object DonguriRegForm: TDonguriRegForm
     Top = 0
     Width = 569
     Height = 329
-    ActivePage = TabSheet3
+    ActivePage = TabSheet1
     Align = alClient
     Style = tsFlatButtons
     TabOrder = 0
@@ -94,6 +95,10 @@ object DonguriRegForm: TDonguriRegForm
     object TabSheet2: TTabSheet
       Caption = #30331#37682
       ImageIndex = 1
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object PanelReg: TPanel
         Left = 0
         Top = 0
@@ -217,10 +222,6 @@ object DonguriRegForm: TDonguriRegForm
         Align = alClient
         BevelOuter = bvNone
         TabOrder = 0
-        ExplicitLeft = 176
-        ExplicitTop = 24
-        ExplicitWidth = 185
-        ExplicitHeight = 41
         object Label6: TLabel
           Left = 30
           Top = 29
