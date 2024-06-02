@@ -237,8 +237,9 @@ type
     GroupBox25: TGroupBox;
     GroupBox30: TGroupBox;
     RadioButtonDngNone: TRadioButton;
-    RadioButtonDngHmtr: TRadioButton;
+    RadioButtonDngHntr: TRadioButton;
     RadioButtonDngGrdn: TRadioButton;
+    RadioButtonDngLogin: TRadioButton;
 		procedure FormCreate(Sender: TObject);
 		procedure FormDestroy(Sender: TObject);
 		procedure ApplyButtonClick(Sender: TObject);
@@ -288,6 +289,10 @@ type
 		procedure ResRangeHoldCheckBoxClick(Sender: TObject);
 		procedure CroutOptionClick(Sender: TObject);
 		procedure MaxRecordCountEditExit(Sender: TObject);
+    procedure UserIDEditChange(Sender: TObject);
+    procedure PasswordEditChange(Sender: TObject);
+    procedure DonMailEditChange(Sender: TObject);
+    procedure DonPwdEditChange(Sender: TObject);
 	private
 		{ Private 宣言 }
 		FClose: Boolean;
@@ -700,7 +705,7 @@ begin
 		i := (i shr 16) or (i and $ff00) or ((i and $ff) shl 16);
 		FCSSBackColor := i;
 	end;
-	//
+	///
 	//スタイルシートファイル名一覧
 	FileList := TStringList.Create;
 	try
@@ -932,12 +937,28 @@ begin
   StoredTaskTrayCB.Checked := GikoSys.Setting.StoredTaskTray;
   // ブラウザタブの移動でループを許可するか
   LoopBrowserTabsCB.Checked := GikoSys.Setting.LoopBrowserTabs;
-  //
+  ///
   IgnoreContextCheckBox.Checked := GikoSys.Setting.GestureIgnoreContext;
 
   // 警備員アカウント
 	DonMailEdit.Text := GikoSys.Setting.DonguriMail;
   DonPwdEdit.Text  := GikoSys.Setting.DonguriPwd;
+//  RadioButtonDngHntr.Enabled := (GikoSys.Setting.UserID <> '') and
+//  															(GikoSys.Setting.Password <> '');
+//  RadioButtonDngGrdn.Enabled := (GikoSys.Setting.DonguriMail <> '') and
+//																(GikoSys.Setting.DonguriPwd <> '');
+//  if (GikoSys.Setting.DonguriAutoLogin = 1) then
+//		RadioButtonDngLogin.Checked := True
+//	else
+//  if (GikoSys.Setting.DonguriAutoLogin = 2) and
+//     RadioButtonDngHntr.Enabled then
+//	  RadioButtonDngHntr.Checked := True
+//	else
+//  if (GikoSys.Setting.DonguriAutoLogin = 3) and
+//     RadioButtonDngGrdn.Enabled then
+//	  RadioButtonDngGrdn.Checked := True
+//  else
+//  	RadioButtonDngNone.Checked := true;
 
   // User-Agentバージョン番号固定
 	GikoSys.GetUAVerList(UAVerComboBox.Items);
@@ -1095,6 +1116,15 @@ begin
   // 警備員アカウント
 	GikoSys.Setting.DonguriMail := DonMailEdit.Text;
   GikoSys.Setting.DonguriPwd  := DonPwdEdit.Text;
+//	if RadioButtonDngLogin.Checked then
+//  	GikoSys.Setting.DonguriAutoLogin := 1
+//  else if RadioButtonDngHntr.Checked then
+//  	GikoSys.Setting.DonguriAutoLogin := 2
+//  else if RadioButtonDngGrdn.Checked then
+//  	GikoSys.Setting.DonguriAutoLogin := 3
+//  else
+//  	GikoSys.Setting.DonguriAutoLogin := 0;
+
   // User-Agentバージョン番号固定
 	GikoSys.Setting.UAVersion := UAVerComboBox.ItemIndex;
   if GikoSys.Setting.UAVersion < 0 then
@@ -1473,6 +1503,46 @@ begin
 	AppFolderLabel.Enabled := URLAppCheckBox.Checked;
 	AppFolderEdit.Enabled := URLAppCheckBox.Checked;
 	AppFolderButton.Enabled := URLAppCheckBox.Checked;
+end;
+
+procedure TOptionDialog.UserIDEditChange(Sender: TObject);
+//var
+//  enb: Boolean;
+begin
+//	enb := (UserIDEdit.Text <> '') and (PasswordEdit.Text <> '');
+//	if RadioButtonDngHntr.Checked and (enb = False) then
+//	  RadioButtonDngNone.Checked := True;
+//  RadioButtonDngHntr.Enabled := enb;
+end;
+
+procedure TOptionDialog.PasswordEditChange(Sender: TObject);
+//var
+//  enb: Boolean;
+begin
+//	enb := (UserIDEdit.Text <> '') and (PasswordEdit.Text <> '');
+//	if RadioButtonDngHntr.Checked and (enb = False) then
+//	  RadioButtonDngNone.Checked := True;
+//  RadioButtonDngHntr.Enabled := enb;
+end;
+
+procedure TOptionDialog.DonMailEditChange(Sender: TObject);
+//var
+//  enb: Boolean;
+begin
+//	enb := (DonMailEdit.Text <> '') and (DonPwdEdit.Text <> '');
+//	if RadioButtonDngGrdn.Checked and (enb = False) then
+//	  RadioButtonDngNone.Checked := True;
+//  RadioButtonDngGrdn.Enabled := enb;
+end;
+
+procedure TOptionDialog.DonPwdEditChange(Sender: TObject);
+//var
+//  enb: Boolean;
+begin
+//	enb := (DonMailEdit.Text <> '') and (DonPwdEdit.Text <> '');
+//	if RadioButtonDngGrdn.Checked and (enb = False) then
+//	  RadioButtonDngNone.Checked := True;
+//  RadioButtonDngGrdn.Enabled := enb;
 end;
 
 procedure TOptionDialog.AddressHistoryCountEditExit(Sender: TObject);
