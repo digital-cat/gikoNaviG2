@@ -118,6 +118,7 @@ type
     function RegisterPage(var response: String): Boolean;
     function RegisterSubmit(mail, pwd: String; var response: String): Boolean;
     function RegisterVerify(link: String; var response: String): Boolean;
+    function ToggleAutoLogin(var response: String): Boolean;
 
     function Exploration(var response: String): Boolean;
     function Mining(var response: String): Boolean;
@@ -175,6 +176,8 @@ const
   URL_DNG_LOGIN   = 'https://donguri.5ch.net/login';
   URL_DNG_LOGOUT  = 'https://donguri.5ch.net/logout';
   URL_DNG_REGIST  = 'https://donguri.5ch.net/register';
+  URL_DNG_SET_ALN = 'https://donguri.5ch.net/setting/autologin';
+
   URL_DNG_EXPLOR  = 'https://donguri.5ch.net/focus/exploration';    // íTåü
   URL_DNG_MINING  = 'https://donguri.5ch.net/focus/mining';         // çÃå@
   URL_DNG_WOODCT  = 'https://donguri.5ch.net/focus/woodcutting';    // ñÿÇ±ÇË
@@ -782,6 +785,23 @@ begin
   end;
 end;
 
+// é©ìÆÉçÉOÉCÉìêÿÇËë÷Ç¶
+function TDonguriSys.ToggleAutoLogin(var response: String): Boolean;
+begin
+	Result := False;
+  response := '';
+
+	try
+	  ClearResponse;
+
+  	Result := HttpGetCall(URL_DNG_SET_ALN, response);
+
+  except
+    on e: Exception do begin
+      FErroeMessage := e.Message;
+    end;
+  end;
+end;
 
 // íTåü
 function TDonguriSys.Exploration(var response: String): Boolean;
