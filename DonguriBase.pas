@@ -21,7 +21,6 @@ type
     PanelService: TPanel;
     TabSheetSetting: TTabSheet;
     PanelHome: TPanel;
-    LabelName: TLabel;
     EditName: TEdit;
     LabelID: TLabel;
     EditID: TEdit;
@@ -173,6 +172,11 @@ type
     MItemLogin: TMenuItem;
     MItemHntLogin: TMenuItem;
     MItemGrdLogin: TMenuItem;
+    AutoLoginCheckBox: TCheckBox;
+    Label26: TLabel;
+    ModePanel: TPanel;
+    Label30: TLabel;
+    Label34: TLabel;
     procedure TimerInitTimer(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCreate(Sender: TObject);
@@ -244,6 +248,7 @@ type
     procedure MItemLoginClick(Sender: TObject);
     procedure MItemHntLoginClick(Sender: TObject);
     procedure MItemGrdLoginClick(Sender: TObject);
+    procedure AutoLoginCheckBoxClick(Sender: TObject);
   private
     { Private declarations }
     FHunter: Boolean;
@@ -328,14 +333,15 @@ const
     '　木製の大砲の玉',
     '　鉄の大砲の玉'
     );
-  NAME_NAME: array [0..1] of string = (
-    '警備員ネーム：',
-    'ハンターネーム：'
-	  );
-  NAME_ID: array [0..1] of string = (
-    '警備員ID：',
-    'ハンターID：'
-	  );
+  MODE_NAME: array[0..6] of String = (
+    '不明',
+    'ハンター',
+    'ハンター●',
+    'ハンター○',
+    '警備員',
+    '警備員●',
+    '警備員○'
+  );
   COL_NAME_ACRN : String = '　どんぐり残高';
   COL_NAME_SEED : String = '　種子残高';
 
@@ -554,16 +560,9 @@ begin
 end;
 
 procedure TDonguriForm.SetMode;
-var
-	idx: Integer;
 begin
-	if FHunter then
-		idx := 1
-  else
-		idx := 0;
 
-  LabelName.Caption := NAME_NAME[idx];
-	LabelID.Caption   := NAME_ID[idx];
+  AutoLoginCheckBox.Enabled := not FHunter;
 
   SetButtonColor;
 end;
@@ -641,12 +640,16 @@ end;
 
 function TDonguriForm.Parsing(html: String): Boolean;
 const
-  TAG_ANM_S = '<div class="header"><h1>';
-  TAG_ANM_E = '</h1>';
-	TAG_HID_S = '<h2>ハンター[ID:';
-  TAG_HID_E = ']</h2>';
-	TAG_GID_S = '<h2>警備員[ID:';
-  TAG_GID_E = ']</h2>';
+  TAG_ANM_S = '<body>';
+  TAG_ANM_E = '</div>';
+	TAG_HID_S = '<div>ハンター[ID:';
+	TAG_HID1S = '<div>ハンター●[ID:';
+	TAG_HID2S = '<div>ハンター○[ID:';
+  TAG_HID_E = ']</div>';
+	TAG_GID_S = '<div>警備員[ID:';
+	TAG_GID1S = '<div>警備員●[ID:';
+	TAG_GID2S = '<div>警備員○[ID:';
+  TAG_GID_E = ']</div>';
 	//TAG_GID_R = '<p>あなたは警備員です。</p>';
 	TAG_DNG_S = '<div>どんぐり残高:';
 	TAG_DN2_S = '<div>種子残高:';
@@ -693,16 +696,22 @@ const
   TAG_PRT_E = '</a>';
   TAG_PRG_S = '<div class="progress-bar">';
   TAG_PRG_E = '</div>';
+  TAG_ALN_H = '<div>自動ログイン：●<br>';
+  TAG_ALN_S = '<a href="https://donguri.5ch.net/setting/autologin">自動ログイン：';
+  TAG_ALN_E = '</a>';
 
   TAG_ERROR = '<p>エラー！</p>';
 	TAG_ECD_S = '<p>NG&lt;&gt;';
 	TAG_ECD_E = '</p>';
 	TAG_E_COOKIE_MSG = '<p>ログアウトして、もう一度ログインしてください。</p>';
+
 var
   tmp: String;
   tm2: String;
   ecd: String;
   prg: Integer;
+  mode: Integer;
+  err: Boolean;
 begin
 	Result := False;
 
@@ -720,13 +729,20 @@ begin
     end;
 
 		if DonguriSystem.Extract(TAG_ANM_S, TAG_ANM_E, html, tmp) then
-			EditName.Text := Trim(tmp);
+      EditName.Text := Trim(TrimTag(tmp));
 
-		if DonguriSystem.Extract(TAG_HID_S, TAG_HID_E, html, tmp) then begin
-			EditID.Text := Trim(tmp);
-    	FHunter := True;
-		end else if DonguriSystem.Extract(TAG_GID_S, TAG_GID_E, html, tmp) then
-			EditID.Text := Trim(tmp);
+  	tmp := '';
+    mode := 0;
+    if      DonguriSystem.Extract(TAG_HID_S, TAG_HID_E, html, tmp) then mode := 1
+    else if DonguriSystem.Extract(TAG_HID1S, TAG_HID_E, html, tmp) then mode := 2
+    else if DonguriSystem.Extract(TAG_HID2S, TAG_HID_E, html, tmp) then mode := 3
+    else if DonguriSystem.Extract(TAG_GID_S, TAG_GID_E, html, tmp) then mode := 4
+    else if DonguriSystem.Extract(TAG_GID1S, TAG_GID_E, html, tmp) then mode := 5
+    else if DonguriSystem.Extract(TAG_GID2S, TAG_GID_E, html, tmp) then mode := 6;
+
+		FHunter := (mode >= 1) and (mode <= 3);
+		EditID.Text := Trim(tmp);
+		ModePanel.Caption := MODE_NAME[mode];
 
   	SetMode;
 
@@ -796,6 +812,26 @@ begin
 		SetSkillInfo(html, TAG_PRT_S, TAG_PR2_S, TAG_PRT_E, TAG_PRG_S, TAG_PRG_E,
                 	ArmorcPanel, ArmorcProgressBar, ArmorcValLabel);
 
+    // 自動ログイン
+    AutoLoginCheckBox.Tag := 1;
+    err := False;
+  	if FHunter then
+      AutoLoginCheckBox.Checked := Pos(TAG_ALN_H, html) > 0
+    else if DonguriSystem.Extract(TAG_ALN_S, TAG_ALN_E, html, tmp) then begin
+      if (tmp = '●') then
+	      AutoLoginCheckBox.Checked := True
+      else if (tmp = '○') then
+	      AutoLoginCheckBox.Checked := False
+      else
+        err := True;
+    end else
+      err := True;
+  	if err then begin
+      AutoLoginCheckBox.Enabled := False;
+      AutoLoginCheckBox.Checked := False;
+    end;
+    AutoLoginCheckBox.Tag := 0;
+
     // これはもうなくなったかも
   	if Pos(TAG_ERROR, html) > 0 then begin
 			ecd := 'エラーが発生しました。';
@@ -863,8 +899,12 @@ begin
 
   if Pos('<h1>どんぐりシステム</h1><p>あなたは警備員です。</p>', html) > 0 then	// 未ログイン
     Result := True
-	else if (Pos('<h2>ハンター[ID:', html) > 0) or
-					(Pos('<h2>警備員[ID:',   html) > 0) then
+	else if (Pos('<div>ハンター[ID:',   html) > 0) or
+					(Pos('<div>ハンター●[ID:', html) > 0) or
+					(Pos('<div>ハンター○[ID:', html) > 0) or
+					(Pos('<div>警備員[ID:',     html) > 0) or
+					(Pos('<div>警備員●[ID:',   html) > 0) or
+					(Pos('<div>警備員○[ID:',   html) > 0) then
     Result := True
   else
     Result := False;
@@ -893,6 +933,25 @@ begin
   	if Parsing(res) = False then
       MsgBox(Handle, 'どんぐりシステムのページ解析に失敗しました',
 								'どんぐりシステム', MB_OK or MB_ICONERROR);
+  end else
+  	ShowHttpError;
+end;
+
+procedure TDonguriForm.AutoLoginCheckBoxClick(Sender: TObject);
+const
+  CAP_MSG: String = 'どんぐりシステム';
+var
+  res: String;
+begin
+	if AutoLoginCheckBox.Tag <> 0 then
+  	Exit;
+	if GikoSys.DonguriSys.Processing then
+  	Exit;
+
+  if GikoSys.DonguriSys.ToggleAutoLogin(res) then begin
+  	if Parsing(res) = False then
+      MsgBox(Handle, 'どんぐりシステムのページ解析に失敗しました',
+								CAP_MSG, MB_OK or MB_ICONERROR);
   end else
   	ShowHttpError;
 end;
@@ -1456,6 +1515,7 @@ begin
         SetColors(PanelTop,        clBtnFace, clWindowText);
 
 			  SetColors(PanelHome,       clBtnFace, clWindowText);
+        SetColors(ModePanel,       clWindow,  clWindowText);
 			  SetColors(EditName,        clWindow,  clWindowText);
 			  SetColors(EditID,          clWindow,  clWindowText);
 			  SetColors(EditLevel,       clWindow,  clWindowText);
@@ -1510,6 +1570,7 @@ begin
         SetColors(PanelTop,        COL_DARK_BKG1, COL_DARK_TEXT);
 
 			  SetColors(PanelHome,       COL_DARK_BKG1, COL_DARK_TEXT);
+        SetColors(ModePanel,       COL_DARK_BKG2, COL_DARK_TEXT);
 			  SetColors(EditName,        COL_DARK_BKG2, COL_DARK_TEXT);
 			  SetColors(EditID,          COL_DARK_BKG2, COL_DARK_TEXT);
 			  SetColors(EditLevel,       COL_DARK_BKG2, COL_DARK_TEXT);

@@ -35,7 +35,7 @@ object DonguriForm: TDonguriForm
     TabOrder = 1
     object SpeedButtonTopMost: TSpeedButton
       Left = 245
-      Top = 4
+      Top = 2
       Width = 23
       Height = 22
       Hint = #12454#12451#12531#12489#12454#26368#21069#38754
@@ -80,7 +80,6 @@ object DonguriForm: TDonguriForm
     OnDrawTab = PageControlDrawTab
     object TabSheetHome: TTabSheet
       Caption = #12507#12540#12512
-      ExplicitHeight = 671
       object PanelHome: TPanel
         Left = 0
         Top = 0
@@ -89,25 +88,22 @@ object DonguriForm: TDonguriForm
         Align = alTop
         BevelOuter = bvNone
         TabOrder = 0
-        object LabelName: TLabel
-          Left = 12
-          Top = 57
-          Width = 72
-          Height = 13
-          Caption = #35686#20633#21729#12493#12540#12512#65306
-        end
         object LabelID: TLabel
-          Left = 12
+          Left = 92
           Top = 75
-          Width = 53
+          Width = 26
           Height = 13
-          Caption = #35686#20633#21729'ID'#65306
+          Alignment = taRightJustify
+          AutoSize = False
+          Caption = 'ID'#65306
         end
         object Label3: TLabel
-          Left = 12
+          Left = 72
           Top = 94
-          Width = 35
+          Width = 46
           Height = 13
+          Alignment = taRightJustify
+          AutoSize = False
           Caption = #12524#12505#12523#65306
         end
         object LabelPeriod: TLabel
@@ -118,7 +114,7 @@ object DonguriForm: TDonguriForm
           Caption = #31532' 1000 '#26399
         end
         object Label12: TLabel
-          Left = 66
+          Left = 68
           Top = 114
           Width = 50
           Height = 13
@@ -127,7 +123,7 @@ object DonguriForm: TDonguriForm
           Caption = #32076#39443#20516#65306
         end
         object Label13: TLabel
-          Left = 76
+          Left = 78
           Top = 136
           Width = 40
           Height = 13
@@ -212,10 +208,26 @@ object DonguriForm: TDonguriForm
           Height = 13
           Caption = #32113#35336
         end
+        object Label30: TLabel
+          Left = 12
+          Top = 58
+          Width = 34
+          Height = 13
+          Caption = #12514#12540#12489#65306
+        end
+        object Label34: TLabel
+          Left = 78
+          Top = 56
+          Width = 40
+          Height = 13
+          Alignment = taRightJustify
+          AutoSize = False
+          Caption = #21517#21069#65306
+        end
         object EditName: TEdit
-          Left = 100
+          Left = 122
           Top = 55
-          Width = 164
+          Width = 142
           Height = 17
           TabStop = False
           BorderStyle = bsNone
@@ -223,9 +235,9 @@ object DonguriForm: TDonguriForm
           TabOrder = 0
         end
         object EditID: TEdit
-          Left = 100
+          Left = 122
           Top = 74
-          Width = 164
+          Width = 142
           Height = 17
           TabStop = False
           BorderStyle = bsNone
@@ -233,9 +245,9 @@ object DonguriForm: TDonguriForm
           TabOrder = 1
         end
         object EditLevel: TEdit
-          Left = 100
+          Left = 122
           Top = 93
-          Width = 164
+          Width = 142
           Height = 17
           TabStop = False
           BorderStyle = bsNone
@@ -251,42 +263,6 @@ object DonguriForm: TDonguriForm
           Caption = #34920#31034#26356#26032
           TabOrder = 3
           OnClick = RootPnlButtonClick
-          OnMouseDown = PanelButtonMouseDown
-          OnMouseUp = PanelButtonMouseUp
-        end
-        object AuthPnlButton: TPanel
-          Left = 126
-          Top = 27
-          Width = 68
-          Height = 23
-          BevelInner = bvRaised
-          Caption = #20877#35469#35388
-          TabOrder = 4
-          OnClick = AuthPnlButtonClick
-          OnMouseDown = PanelButtonMouseDown
-          OnMouseUp = PanelButtonMouseUp
-        end
-        object LoginPnlButton: TPanel
-          Left = 126
-          Top = 3
-          Width = 68
-          Height = 23
-          BevelInner = bvRaised
-          Caption = #12525#12464#12452#12531
-          TabOrder = 5
-          OnClick = LoginPnlButtonClick
-          OnMouseDown = PanelButtonMouseDown
-          OnMouseUp = PanelButtonMouseUp
-        end
-        object LogoutPnlButton: TPanel
-          Left = 196
-          Top = 3
-          Width = 68
-          Height = 23
-          BevelInner = bvRaised
-          Caption = #12525#12464#12450#12454#12488
-          TabOrder = 6
-          OnClick = LogoutPnlButtonClick
           OnMouseDown = PanelButtonMouseDown
           OnMouseUp = PanelButtonMouseUp
         end
@@ -310,7 +286,7 @@ object DonguriForm: TDonguriForm
           Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goRowSelect]
           ParentCtl3D = False
           ScrollBars = ssNone
-          TabOrder = 7
+          TabOrder = 4
         end
         object ExplorPnlButton: TPanel
           Left = 12
@@ -322,7 +298,7 @@ object DonguriForm: TDonguriForm
           Caption = #25506#26908
           ParentShowHint = False
           ShowHint = True
-          TabOrder = 8
+          TabOrder = 5
           OnClick = ExplorPnlButtonClick
           OnMouseDown = PanelButtonMouseDown
           OnMouseUp = PanelButtonMouseUp
@@ -337,7 +313,7 @@ object DonguriForm: TDonguriForm
           Caption = #25505#25496
           ParentShowHint = False
           ShowHint = True
-          TabOrder = 9
+          TabOrder = 6
           OnClick = MiningPnlButtonClick
           OnMouseDown = PanelButtonMouseDown
           OnMouseUp = PanelButtonMouseUp
@@ -352,7 +328,7 @@ object DonguriForm: TDonguriForm
           Caption = #26408#12371#12426
           ParentShowHint = False
           ShowHint = True
-          TabOrder = 10
+          TabOrder = 7
           OnClick = WoodctPnlButtonClick
           OnMouseDown = PanelButtonMouseDown
           OnMouseUp = PanelButtonMouseUp
@@ -367,7 +343,7 @@ object DonguriForm: TDonguriForm
           Caption = #27494#22120#35069#20316
           ParentShowHint = False
           ShowHint = True
-          TabOrder = 11
+          TabOrder = 8
           OnClick = WeaponPnlButtonClick
           OnMouseDown = PanelButtonMouseDown
           OnMouseUp = PanelButtonMouseUp
@@ -382,7 +358,7 @@ object DonguriForm: TDonguriForm
           Caption = #38450#20855#35069#20316
           ParentShowHint = False
           ShowHint = True
-          TabOrder = 12
+          TabOrder = 9
           OnClick = ArmorcPnlButtonClick
           OnMouseDown = PanelButtonMouseDown
           OnMouseUp = PanelButtonMouseUp
@@ -394,7 +370,7 @@ object DonguriForm: TDonguriForm
           Height = 10
           Smooth = True
           Step = 1
-          TabOrder = 13
+          TabOrder = 10
         end
         object TimeProgressBar: TProgressBar
           Left = 122
@@ -403,7 +379,7 @@ object DonguriForm: TDonguriForm
           Height = 10
           Smooth = True
           Step = 1
-          TabOrder = 14
+          TabOrder = 11
         end
         object ExplorProgressBar: TProgressBar
           Left = 122
@@ -412,7 +388,7 @@ object DonguriForm: TDonguriForm
           Height = 10
           Smooth = True
           Step = 1
-          TabOrder = 15
+          TabOrder = 12
         end
         object MiningProgressBar: TProgressBar
           Left = 122
@@ -421,7 +397,7 @@ object DonguriForm: TDonguriForm
           Height = 10
           Smooth = True
           Step = 1
-          TabOrder = 16
+          TabOrder = 13
         end
         object WoodctProgressBar: TProgressBar
           Left = 122
@@ -429,7 +405,7 @@ object DonguriForm: TDonguriForm
           Width = 126
           Height = 10
           Smooth = True
-          TabOrder = 17
+          TabOrder = 14
         end
         object WeaponProgressBar: TProgressBar
           Left = 122
@@ -438,7 +414,7 @@ object DonguriForm: TDonguriForm
           Height = 10
           Smooth = True
           Step = 1
-          TabOrder = 18
+          TabOrder = 15
         end
         object ArmorcProgressBar: TProgressBar
           Left = 122
@@ -447,7 +423,7 @@ object DonguriForm: TDonguriForm
           Height = 10
           Smooth = True
           Step = 1
-          TabOrder = 19
+          TabOrder = 16
         end
         object ExplorPanel: TPanel
           Left = 82
@@ -457,7 +433,7 @@ object DonguriForm: TDonguriForm
           Hint = #20462#34892#20013
           BevelOuter = bvLowered
           Caption = '00000'
-          TabOrder = 20
+          TabOrder = 18
         end
         object MiningPanel: TPanel
           Left = 82
@@ -467,7 +443,7 @@ object DonguriForm: TDonguriForm
           Hint = #20462#34892#20013
           BevelOuter = bvLowered
           Caption = '00000'
-          TabOrder = 21
+          TabOrder = 20
         end
         object WoodctPanel: TPanel
           Left = 82
@@ -477,7 +453,7 @@ object DonguriForm: TDonguriForm
           Hint = #20462#34892#20013
           BevelOuter = bvLowered
           Caption = '00000'
-          TabOrder = 22
+          TabOrder = 26
         end
         object WeaponPanel: TPanel
           Left = 82
@@ -487,7 +463,7 @@ object DonguriForm: TDonguriForm
           Hint = #20462#34892#20013
           BevelOuter = bvLowered
           Caption = '00000'
-          TabOrder = 23
+          TabOrder = 17
         end
         object ArmorcPanel: TPanel
           Left = 82
@@ -497,7 +473,7 @@ object DonguriForm: TDonguriForm
           Hint = #20462#34892#20013
           BevelOuter = bvLowered
           Caption = '00000'
-          TabOrder = 24
+          TabOrder = 19
         end
         object StatisticsGrid: TStringGrid
           Left = 12
@@ -519,19 +495,66 @@ object DonguriForm: TDonguriForm
           Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goRowSelect]
           ParentCtl3D = False
           ScrollBars = ssNone
-          TabOrder = 25
+          TabOrder = 21
+        end
+        object LoginPnlButton: TPanel
+          Left = 122
+          Top = 3
+          Width = 70
+          Height = 23
+          BevelInner = bvRaised
+          Caption = #12525#12464#12452#12531
+          TabOrder = 22
+          OnClick = LoginPnlButtonClick
+          OnMouseDown = PanelButtonMouseDown
+          OnMouseUp = PanelButtonMouseUp
+        end
+        object LogoutPnlButton: TPanel
+          Left = 122
+          Top = 27
+          Width = 70
+          Height = 23
+          BevelInner = bvRaised
+          Caption = #12525#12464#12450#12454#12488
+          TabOrder = 23
+          OnClick = LogoutPnlButtonClick
+          OnMouseDown = PanelButtonMouseDown
+          OnMouseUp = PanelButtonMouseUp
+        end
+        object AuthPnlButton: TPanel
+          Left = 194
+          Top = 3
+          Width = 70
+          Height = 23
+          BevelInner = bvRaised
+          Caption = #20877#35469#35388
+          TabOrder = 24
+          OnClick = AuthPnlButtonClick
+          OnMouseDown = PanelButtonMouseDown
+          OnMouseUp = PanelButtonMouseUp
         end
         object NewRegPnlButton: TPanel
-          Left = 196
+          Left = 194
           Top = 27
-          Width = 68
+          Width = 70
           Height = 23
           BevelInner = bvRaised
           Caption = #26032#35215#30331#37682
-          TabOrder = 26
+          TabOrder = 25
           OnClick = NewRegPnlButtonClick
           OnMouseDown = PanelButtonMouseDown
           OnMouseUp = PanelButtonMouseUp
+        end
+        object ModePanel: TPanel
+          Left = 12
+          Top = 74
+          Width = 60
+          Height = 17
+          Alignment = taLeftJustify
+          BevelOuter = bvNone
+          Color = clWindow
+          ParentBackground = False
+          TabOrder = 27
         end
       end
       object Panel2: TPanel
@@ -543,8 +566,6 @@ object DonguriForm: TDonguriForm
         BevelOuter = bvLowered
         ParentColor = True
         TabOrder = 1
-        ExplicitTop = 466
-        ExplicitHeight = 205
       end
     end
     object TabSheetService: TTabSheet
@@ -869,14 +890,11 @@ object DonguriForm: TDonguriForm
         BevelOuter = bvLowered
         ParentColor = True
         TabOrder = 1
-        ExplicitTop = 466
-        ExplicitHeight = 210
       end
     end
     object TabSheetChest: TTabSheet
       Caption = #12450#12452#12486#12512
       ImageIndex = 2
-      ExplicitHeight = 671
       object BagTopPanel: TPanel
         Left = 0
         Top = 0
@@ -978,7 +996,6 @@ object DonguriForm: TDonguriForm
         Align = alClient
         TabOrder = 1
         OnDrawTab = PageControlItemBagDrawTab
-        ExplicitHeight = 545
         object TabSheetUsing: TTabSheet
           Caption = #35013#20633#20013
           OnResize = TabSheetUsingResize
@@ -1154,14 +1171,11 @@ object DonguriForm: TDonguriForm
             BevelOuter = bvLowered
             ParentColor = True
             TabOrder = 1
-            ExplicitTop = 316
-            ExplicitHeight = 206
           end
         end
         object TabSheetWeapon: TTabSheet
           Caption = #27494#22120
           ImageIndex = 1
-          ExplicitHeight = 517
           object WeaponTopPanel: TPanel
             Left = 0
             Top = 0
@@ -1309,7 +1323,6 @@ object DonguriForm: TDonguriForm
             OnChange = ListViewWeaponChange
             OnColumnClick = ListViewWeaponColumnClick
             OnCompare = ListViewWeaponCompare
-            ExplicitHeight = 487
           end
         end
         object TabSheetArmor: TTabSheet
@@ -1504,9 +1517,9 @@ object DonguriForm: TDonguriForm
         object Label20: TLabel
           Left = 22
           Top = 68
-          Width = 221
+          Width = 239
           Height = 13
-          Caption = #8251#12414#12384#35686#20633#21729#12450#12459#12454#12531#12488#12391#12399#12525#12464#12452#12531#12391#12365#12414#12379#12435#12290
+          Caption = #8251#26410#30331#37682#35686#20633#21729#12450#12459#12454#12531#12488#12391#12399#12525#12464#12452#12531#12391#12365#12414#12379#12435#12290
         end
         object Label21: TLabel
           Left = 12
@@ -1734,9 +1747,9 @@ object DonguriForm: TDonguriForm
         object Label32: TLabel
           Left = 22
           Top = 388
-          Width = 221
+          Width = 227
           Height = 13
-          Caption = #8251#12414#12384#35686#20633#21729#12450#12459#12454#12531#12488#12391#12399#12525#12464#12452#12531#12391#12365#12414#12379#12435#12290
+          Caption = #8251#26410#30331#37682#35686#20633#21729#12450#12459#12454#12531#12488#12391#12399#21033#29992#12391#12365#12414#12379#12435#12290
         end
       end
       object Panel3: TPanel
@@ -1748,8 +1761,6 @@ object DonguriForm: TDonguriForm
         BevelOuter = bvLowered
         ParentColor = True
         TabOrder = 1
-        ExplicitTop = 466
-        ExplicitHeight = 210
       end
     end
     object TabSheetSetting: TTabSheet
@@ -1768,28 +1779,35 @@ object DonguriForm: TDonguriForm
           Left = 12
           Top = 12
           Width = 245
-          Height = 117
+          Height = 140
           Caption = #12393#12435#12368#12426#12471#12473#12486#12512
           TabOrder = 0
           object Label8: TLabel
             Left = 32
-            Top = 40
+            Top = 64
             Width = 204
             Height = 13
             Caption = #65288#12371#12398#30011#38754#12434#38281#12376#12390#20877#24230#34920#31034#12377#12427#12392#26377#21177#21270#65289
           end
+          object Label26: TLabel
+            Left = 124
+            Top = 22
+            Width = 95
+            Height = 13
+            Caption = #65288#12495#12531#12479#12540#12399#24120#12395'ON'#65289
+          end
           object TaskBarCheckBox: TCheckBox
             Left = 12
-            Top = 20
+            Top = 44
             Width = 213
             Height = 17
             Caption = #12479#12473#12463#12496#12540#12395#12450#12452#12467#12531#34920#31034'(&I)'
-            TabOrder = 0
+            TabOrder = 1
             OnClick = TaskBarCheckBoxClick
           end
           object ColorRadioGroup: TRadioGroup
             Left = 12
-            Top = 62
+            Top = 84
             Width = 220
             Height = 45
             Caption = #12454#12452#12531#12489#12454#37197#33394
@@ -1798,13 +1816,22 @@ object DonguriForm: TDonguriForm
             Items.Strings = (
               #12521#12452#12488
               #12480#12540#12463)
-            TabOrder = 1
+            TabOrder = 2
             OnClick = ColorRadioGroupClick
+          end
+          object AutoLoginCheckBox: TCheckBox
+            Left = 12
+            Top = 20
+            Width = 106
+            Height = 17
+            Caption = #33258#21205#12525#12464#12452#12531'(&A)'
+            TabOrder = 0
+            OnClick = AutoLoginCheckBoxClick
           end
         end
         object CannonGroupBox: TGroupBox
           Left = 12
-          Top = 135
+          Top = 160
           Width = 245
           Height = 51
           Caption = #12393#12435#12368#12426#22823#30770
@@ -1829,8 +1856,6 @@ object DonguriForm: TDonguriForm
         BevelOuter = bvLowered
         ParentColor = True
         TabOrder = 1
-        ExplicitTop = 466
-        ExplicitHeight = 210
       end
     end
   end
@@ -1842,9 +1867,10 @@ object DonguriForm: TDonguriForm
     Top = 24
   end
   object BagImageList: TImageList
-    Left = 72
+    Left = 16
+    Top = 536
     Bitmap = {
-      494C01010A001400AC0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01010A001400C00010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000003000000001002000000000000030
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -2248,7 +2274,8 @@ object DonguriForm: TDonguriForm
       000000000000}
   end
   object PopupMenuLink: TPopupMenu
-    Left = 120
+    Left = 56
+    Top = 536
     object ManuItemOpen: TMenuItem
       Caption = 'WEB'#12502#12521#12454#12470#12391#38283#12367'(&O)'
       OnClick = ManuItemOpenClick
@@ -2259,7 +2286,8 @@ object DonguriForm: TDonguriForm
     end
   end
   object PopupMenuLogin: TPopupMenu
-    Left = 160
+    Left = 96
+    Top = 536
     object MItemLogin: TMenuItem
       Caption = #12381#12398#12414#12414#12525#12464#12452#12531'(&L)'
       OnClick = MItemLoginClick
