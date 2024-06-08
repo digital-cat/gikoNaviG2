@@ -9,7 +9,9 @@ type
 	//! MessageList
 	TGikoMessageListType = (gmLogout, gmLogin, gmForceLogin, gmSureItiran,
 			gmUnKnown, gmSureSyutoku, gmSureDiff, gmNotMod, gmAbort, gmError,
-			gmNewRes, gmNewSure, gmResError, gmSureError, gmBeLogout, gmBeLogin);
+			gmNewRes, gmNewSure, gmResError, gmSureError, gmBeLogout, gmBeLogin,
+      gmDngLogin, gmDngMailLogin, gmDngLogout, gmDngAuth,
+      gmMax);
 
 	TGikoMessage = class(THashedStringList)
 	private
@@ -21,7 +23,7 @@ type
 implementation
 
 const
-	DEF_MESSAGES : array[0..15] of string = (  'ログアウトしました',
+	DEF_MESSAGES : array[0..20] of string = (  'ログアウトしました',
 											   'ログインしました - ',
 											   '強制ログインしました - ',
 											   '[スレ一覧取得完了]',
@@ -35,17 +37,24 @@ const
 											   '[新スレ送信終了]',
 											   '[レス送信失敗]',
 											   '[新スレ送信失敗]',
-                                               'BEログアウトしました',
-											   'BEログインしました - ');
+                         'BEログアウトしました',
+											   'BEログインしました - ',
+                         'どんぐりシステムにログインしました',
+                         'どんぐりシステムにログインしました - ',
+                         'どんぐりシステムからログアウトしました',
+                         'どんぐりシステムで再認証しました',
+                         '');
 
-	MESSAGE_KEYS : array[0..15] of String = ( 'Logout', 'Login',
+	MESSAGE_KEYS : array[0..20] of String = ( 'Logout', 'Login',
 											'ForceLogin', 'SureItiran',
 											'UnKnown', 'SureSyutoku',
 											'SureDiff', 'NotMod',
 											'Abort', 'Error',
 											'NewRes', 'NewSure',
 											'ResError', 'SureError',
-                                            'BELogout', 'BELogin');
+											'BELogout', 'BELogin',
+                      'DngLogin', 'DngMailLogin', 'DngLogout', 'DngAuth',
+                      'MessageMax');
 
 constructor TGikoMessage.Create;
 begin
@@ -57,7 +66,7 @@ end;
 function TGikoMessage.GetMessage(MesType: TGikoMessageListType): String;
 begin
 	Result := '';
-	if MesType in [gmLogout..gmBeLogin] then begin
+	if MesType in [gmLogout..gmMax] then begin
 		//Keyで検索して見つかればそれを返す
 		Result := Self.Values[MESSAGE_KEYS[Ord(MesType)]];
 		if Result = '' then begin

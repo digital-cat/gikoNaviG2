@@ -263,6 +263,11 @@ type
     DonguriAction: TAction;
     DonguriCannonAction: TAction;
     CookieMngAction: TAction;
+    DonguriLoginAction: TAction;
+    DonguriHntLoginAction: TAction;
+    DonguriGrdLoginAction: TAction;
+    DonguriLogoutAction: TAction;
+    DonguriAuthAction: TAction;
 	procedure EditNGActionExecute(Sender: TObject);
 	procedure ReloadActionExecute(Sender: TObject);
 	procedure GoFowardActionExecute(Sender: TObject);
@@ -490,6 +495,14 @@ type
     procedure DonguriCannonActionExecute(Sender: TObject);
     procedure DonguriCannonActionUpdate(Sender: TObject);
     procedure CookieMngActionExecute(Sender: TObject);
+    procedure DonguriActionHint(var HintStr: string; var CanShow: Boolean);
+    procedure DonguriLoginActionExecute(Sender: TObject);
+    procedure DonguriHntLoginActionExecute(Sender: TObject);
+    procedure DonguriGrdLoginActionExecute(Sender: TObject);
+    procedure DonguriLogoutActionExecute(Sender: TObject);
+    procedure DonguriAuthActionExecute(Sender: TObject);
+    procedure DonguriHntLoginActionUpdate(Sender: TObject);
+    procedure DonguriGrdLoginActionUpdate(Sender: TObject);
   private
 	{ Private 宣言 }
 	procedure ClearResFilter;
@@ -511,13 +524,14 @@ type
     procedure GetLinkURLs(links : IHTMLElementCollection;
         URLs : TStringList; const Start: Integer; Exts : TStringList);
   public
-	{ Public 宣言 }
-	procedure RepaintStatusBar;
+    { Public 宣言 }
+    procedure RepaintStatusBar;
     function EditorFormExists(): boolean;
     procedure GetTabURLs(AStringList: TStringList);
     procedure OpenURLs(AStringList: TStringList);
     procedure MoveURLWithHistory(URL : String; KeyMask: Boolean = False);
     procedure SaveThreadSearchSetting;
+    procedure DonguriHomeUpdate;
   published
 	{ Published 宣言 }
 	//! TActionでGetActiveContentがnil以外で有効になる
@@ -4772,9 +4786,201 @@ begin
   end;
 end;
 
+procedure TGikoDM.DonguriActionHint(var HintStr: string; var CanShow: Boolean);
+begin
+  if (GikoSys.DonguriSys.Home.UserMode <> '') or
+     (GikoSys.DonguriSys.Home.UserID   <> '') or
+     (GikoSys.DonguriSys.Home.Level    <> '') or
+     (GikoSys.DonguriSys.Home.UserName <> '') then
+	  HintStr := Format('どんぐりシステム%s%s [%s]%sLv.%s [%s]', [
+    			#10, GikoSys.DonguriSys.Home.UserMode,
+          		 GikoSys.DonguriSys.Home.UserID,
+          #10, GikoSys.DonguriSys.Home.Level,
+          		 GikoSys.DonguriSys.Home.UserName])
+  else
+		HintStr := 'どんぐりシステムを表示する';
+	CanShow := True;
+end;
+
 procedure TGikoDM.DonguriActionUpdate(Sender: TObject);
 begin
 //
+end;
+
+procedure TGikoDM.DonguriHomeUpdate;
+begin
+	try
+    if (DonguriForm <> nil) and (DonguriForm.Visible) then
+      DonguriForm.UpdateHomeInfo;
+  except
+  end;
+end;
+
+procedure TGikoDM.DonguriLoginActionExecute(Sender: TObject);
+var
+	res: String;
+  msg: String;
+begin
+	try
+    if GikoSys.DonguriSys.Processing then
+      Exit;
+
+    if GikoSys.DonguriSys.Login(res) then begin
+      GikoForm.AddMessageList(GikoSys.GetGikoMessage(gmDngLogin), nil, gmiOK);
+      DonguriHomeUpdate;
+    end else begin
+      msg := 'どんぐりシステムにログインできませんでした。';
+      if Pos('<html', res) < 1 then
+        msg := msg + res
+      else if GikoSys.DonguriSys.Home.Error <> '' then
+        msg := msg + GikoSys.DonguriSys.Home.Error;
+      GikoForm.AddMessageList(msg, nil, gmiNG);
+      GikoForm.PlaySound('Error');
+    end;
+  except
+    on e: Exception do begin
+      GikoForm.AddMessageList('どんぐりシステムにログインできませんでした。' + e.Message, nil, gmiNG);
+      GikoForm.PlaySound('Error');
+    end;
+  end;
+end;
+
+procedure TGikoDM.DonguriHntLoginActionUpdate(Sender: TObject);
+begin
+	DonguriHntLoginAction.Enabled := (GikoSys.Setting.UserID <> '') and (GikoSys.Setting.Password <> '');
+end;
+
+procedure TGikoDM.DonguriHntLoginActionExecute(Sender: TObject);
+var
+	res: String;
+  msg: String;
+begin
+	try
+  	if (GikoSys.Setting.UserID = '') or (GikoSys.Setting.Password = '') then begin
+      GikoForm.AddMessageList('どんぐりシステムログインエラー：UPLIFTの設定が正しくありません。', nil, gmiNG);
+      GikoForm.PlaySound('Error');
+      Exit;
+    end;
+
+    if GikoSys.DonguriSys.Processing then
+      Exit;
+
+    if GikoSys.DonguriSys.MailLogin(GikoSys.Setting.UserID, GikoSys.Setting.Password, res) then begin
+      GikoForm.AddMessageList(GikoSys.GetGikoMessage(gmDngMailLogin) + GikoSys.Setting.UserID, nil, gmiOK);
+      DonguriHomeUpdate;
+    end else begin
+      msg := 'どんぐりシステムにログインできませんでした。';
+      if Pos('<html', res) < 1 then
+        msg := msg + res
+      else if GikoSys.DonguriSys.Home.Error <> '' then
+        msg := msg + GikoSys.DonguriSys.Home.Error;
+      GikoForm.AddMessageList(msg, nil, gmiNG);
+      GikoForm.PlaySound('Error');
+    end;
+  except
+    on e: Exception do begin
+      GikoForm.AddMessageList('どんぐりシステムにログインできませんでした。' + e.Message, nil, gmiNG);
+      GikoForm.PlaySound('Error');
+    end;
+  end;
+end;
+
+procedure TGikoDM.DonguriGrdLoginActionUpdate(Sender: TObject);
+begin
+	DonguriGrdLoginAction.Enabled := (GikoSys.Setting.DonguriMail <> '') and (GikoSys.Setting.DonguriPwd <> '');
+end;
+
+procedure TGikoDM.DonguriGrdLoginActionExecute(Sender: TObject);
+var
+	res: String;
+  msg: String;
+begin
+	try
+  	if (GikoSys.Setting.DonguriMail = '') or (GikoSys.Setting.DonguriPwd = '') then begin
+      GikoForm.AddMessageList('どんぐりシステムログインエラー：警備員アカウントの設定が正しくありません。', nil, gmiNG);
+      GikoForm.PlaySound('Error');
+      Exit;
+    end;
+
+    if GikoSys.DonguriSys.Processing then
+      Exit;
+
+    if GikoSys.DonguriSys.MailLogin(GikoSys.Setting.DonguriMail, GikoSys.Setting.DonguriPwd, res) then begin
+      GikoForm.AddMessageList(GikoSys.GetGikoMessage(gmDngMailLogin) + GikoSys.Setting.DonguriMail, nil, gmiOK);
+      DonguriHomeUpdate;
+    end else begin
+      msg := 'どんぐりシステムにログインできませんでした。';
+      if Pos('<html', res) < 1 then
+        msg := msg + res
+      else if GikoSys.DonguriSys.Home.Error <> '' then
+        msg := msg + GikoSys.DonguriSys.Home.Error;
+      GikoForm.AddMessageList(msg, nil, gmiNG);
+      GikoForm.PlaySound('Error');
+    end;
+  except
+    on e: Exception do begin
+      GikoForm.AddMessageList('どんぐりシステムにログインできませんでした。' + e.Message, nil, gmiNG);
+      GikoForm.PlaySound('Error');
+    end;
+  end;
+end;
+
+procedure TGikoDM.DonguriLogoutActionExecute(Sender: TObject);
+var
+  res: String;
+  msg: String;
+begin
+	try
+    if GikoSys.DonguriSys.Processing then
+      Exit;
+
+    if GikoSys.DonguriSys.Logout(res) then begin
+      GikoForm.AddMessageList(GikoSys.GetGikoMessage(gmDngLogout), nil, gmiOK);
+      DonguriHomeUpdate;
+    end else begin
+      msg := 'どんぐりシステムからログアウトできませんでした。';
+      if Pos('<html', res) < 1 then
+        msg := msg + res
+      else if GikoSys.DonguriSys.Home.Error <> '' then
+        msg := msg + GikoSys.DonguriSys.Home.Error;
+      GikoForm.AddMessageList(msg, nil, gmiNG);
+      GikoForm.PlaySound('Error');
+    end;
+  except
+    on e: Exception do begin
+      GikoForm.AddMessageList('どんぐりシステムからログアウトできませんでした。' + e.Message, nil, gmiNG);
+      GikoForm.PlaySound('Error');
+    end;
+  end;
+end;
+
+procedure TGikoDM.DonguriAuthActionExecute(Sender: TObject);
+var
+  res: String;
+  msg: String;
+begin
+  try
+    if GikoSys.DonguriSys.Processing then
+      Exit;
+
+    if GikoSys.DonguriSys.Auth(res) then begin
+      GikoForm.AddMessageList(GikoSys.GetGikoMessage(gmDngAuth), nil, gmiOK);
+      DonguriHomeUpdate;
+    end else begin
+      msg := 'どんぐりシステムの再認証が失敗しました。';
+      if Pos('<html', res) < 1 then
+        msg := msg + res
+      else if GikoSys.DonguriSys.Home.Error <> '' then
+        msg := msg + GikoSys.DonguriSys.Home.Error;
+      GikoForm.AddMessageList(msg, nil, gmiNG);
+      GikoForm.PlaySound('Error');
+    end;
+  except
+    on e: Exception do begin
+      GikoForm.AddMessageList('どんぐりシステムの再認証が失敗しました。' + e.Message, nil, gmiNG);
+      GikoForm.PlaySound('Error');
+    end;
+  end;
 end;
 
 // どんぐり大砲有効無効更新

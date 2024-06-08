@@ -1551,7 +1551,7 @@ begin
     FDonguriTRCost := ini.ReadString( 'Donguri',      'TRCost',  '0.001');
     FDonguriMail   := ini.ReadString( 'Donguri',      'Mail',    '');
     FDonguriPwd    := ini.ReadString( 'Donguri',      'Pwd',     '');
-//		FDonguriAutoLogin := ini.ReadInteger('Donguri', 'AutoLogin', 0);
+		FDonguriAutoLogin := ini.ReadInteger('Donguri', 'AutoLogin', 0);
 
 		// Cookieに付加する固定コード
 		FFixedCookie := ini.ReadString('Cookie', 'fixedString', FIXED_COOKIE);
@@ -2060,7 +2060,7 @@ begin
     ini.WriteString( 'Donguri',      'TRCost',  FDonguriTRCost);
     ini.WriteString( 'Donguri',      'Mail',    FDonguriMail);
     ini.WriteString( 'Donguri',      'Pwd',     FDonguriPwd);
-//		ini.WriteInteger('Donguri',    'AutoLogin', FDonguriAutoLogin);
+		ini.WriteInteger('Donguri',    'AutoLogin', FDonguriAutoLogin);
 
 
 		ini.UpdateFile;

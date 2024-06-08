@@ -439,6 +439,12 @@ type
     CookieMngMenu: TMenuItem;
     DonguriCannonTopMenu: TMenuItem;
     DonguriSeparatorTopMenu: TMenuItem;
+    DonguriShowMenu: TMenuItem;
+    DonguriLoginMenu: TMenuItem;
+    DonguriHntLoginMenu: TMenuItem;
+    DonguriGrdLoginMenu: TMenuItem;
+    DonguriAuthMenu: TMenuItem;
+    DonguriLogoutMenu: TMenuItem;
 		procedure FormCreate(Sender: TObject);
 		procedure FormDestroy(Sender: TObject);
 		procedure SaveSettingAll();
@@ -1841,6 +1847,39 @@ begin
 		    on e: Exception do begin
 					MsgBox(Self.Handle, 'Beの自動ログインに失敗しました。' + #13#10 + e.Message,
           				'ログイン', MB_OK or MB_ICONERROR);
+        end;
+      end;
+    end;
+
+    case GikoSys.Setting.DonguriAutoLogin of
+      1: begin
+        try
+          GikoDM.DonguriLoginAction.Execute;
+        except
+          on e: Exception do begin
+            MsgBox(Self.Handle, 'どんぐりシステムの自動ログインに失敗しました。' + #13#10 + e.Message,
+                    'ログイン', MB_OK or MB_ICONERROR);
+          end;
+        end;
+      end;
+      2: begin
+        try
+          GikoDM.DonguriHntLoginAction.Execute;
+        except
+          on e: Exception do begin
+            MsgBox(Self.Handle, 'どんぐりシステムのハンター自動ログインに失敗しました。' + #13#10 + e.Message,
+                    'ログイン', MB_OK or MB_ICONERROR);
+          end;
+        end;
+      end;
+      3: begin
+        try
+          GikoDM.DonguriGrdLoginAction.Execute;
+        except
+          on e: Exception do begin
+            MsgBox(Self.Handle, 'どんぐりシステムの警備員自動ログインに失敗しました。' + #13#10 + e.Message,
+                    'ログイン', MB_OK or MB_ICONERROR);
+          end;
         end;
       end;
     end;
