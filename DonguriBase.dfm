@@ -74,7 +74,7 @@ object DonguriForm: TDonguriForm
     Top = 28
     Width = 280
     Height = 704
-    ActivePage = TabSheetHome
+    ActivePage = TabSheetSetting
     Align = alClient
     TabOrder = 0
     OnDrawTab = PageControlDrawTab
@@ -257,7 +257,7 @@ object DonguriForm: TDonguriForm
         object RootPnlButton: TPanel
           Left = 12
           Top = 3
-          Width = 85
+          Width = 80
           Height = 47
           BevelInner = bvRaised
           Caption = #34920#31034#26356#26032
@@ -498,9 +498,9 @@ object DonguriForm: TDonguriForm
           TabOrder = 21
         end
         object LoginPnlButton: TPanel
-          Left = 122
+          Left = 110
           Top = 3
-          Width = 70
+          Width = 76
           Height = 23
           BevelInner = bvRaised
           Caption = #12525#12464#12452#12531
@@ -510,9 +510,9 @@ object DonguriForm: TDonguriForm
           OnMouseUp = PanelButtonMouseUp
         end
         object LogoutPnlButton: TPanel
-          Left = 122
+          Left = 110
           Top = 27
-          Width = 70
+          Width = 76
           Height = 23
           BevelInner = bvRaised
           Caption = #12525#12464#12450#12454#12488
@@ -522,9 +522,9 @@ object DonguriForm: TDonguriForm
           OnMouseUp = PanelButtonMouseUp
         end
         object AuthPnlButton: TPanel
-          Left = 194
+          Left = 188
           Top = 3
-          Width = 70
+          Width = 76
           Height = 23
           BevelInner = bvRaised
           Caption = #20877#35469#35388
@@ -534,12 +534,15 @@ object DonguriForm: TDonguriForm
           OnMouseUp = PanelButtonMouseUp
         end
         object NewRegPnlButton: TPanel
-          Left = 194
+          Left = 188
           Top = 27
-          Width = 70
+          Width = 76
           Height = 23
+          Hint = #35686#20633#21729#12450#12459#12454#12531#12488#12434#12513#12540#12523#35469#35388#12395#30331#37682#12377#12427
           BevelInner = bvRaised
-          Caption = #26032#35215#30331#37682
+          Caption = #35686#20633#21729#30331#37682
+          ParentShowHint = False
+          ShowHint = True
           TabOrder = 25
           OnClick = NewRegPnlButtonClick
           OnMouseDown = PanelButtonMouseDown
@@ -1779,26 +1782,27 @@ object DonguriForm: TDonguriForm
           Left = 12
           Top = 12
           Width = 245
-          Height = 140
+          Height = 154
           Caption = #12393#12435#12368#12426#12471#12473#12486#12512
           TabOrder = 0
           object Label8: TLabel
             Left = 32
-            Top = 64
+            Top = 78
             Width = 204
             Height = 13
             Caption = #65288#12371#12398#30011#38754#12434#38281#12376#12390#20877#24230#34920#31034#12377#12427#12392#26377#21177#21270#65289
           end
-          object Label26: TLabel
-            Left = 124
-            Top = 22
+          object AutoLoginLabel: TLabel
+            Left = 32
+            Top = 38
             Width = 95
             Height = 13
             Caption = #65288#12495#12531#12479#12540#12399#24120#12395'ON'#65289
+            Visible = False
           end
           object TaskBarCheckBox: TCheckBox
             Left = 12
-            Top = 44
+            Top = 58
             Width = 213
             Height = 17
             Caption = #12479#12473#12463#12496#12540#12395#12450#12452#12467#12531#34920#31034'(&I)'
@@ -1807,7 +1811,7 @@ object DonguriForm: TDonguriForm
           end
           object ColorRadioGroup: TRadioGroup
             Left = 12
-            Top = 84
+            Top = 98
             Width = 220
             Height = 45
             Caption = #12454#12452#12531#12489#12454#37197#33394
@@ -1822,16 +1826,16 @@ object DonguriForm: TDonguriForm
           object AutoLoginCheckBox: TCheckBox
             Left = 12
             Top = 20
-            Width = 106
+            Width = 230
             Height = 17
-            Caption = #33258#21205#12525#12464#12452#12531'(&A)'
+            Caption = #12393#12435#12368#12426#30011#38754#12458#12540#12503#12531#26178#12395#33258#21205#12525#12464#12452#12531'(&A)'
             TabOrder = 0
             OnClick = AutoLoginCheckBoxClick
           end
         end
         object CannonGroupBox: TGroupBox
           Left = 12
-          Top = 160
+          Top = 176
           Width = 245
           Height = 51
           Caption = #12393#12435#12368#12426#22823#30770
@@ -1870,7 +1874,7 @@ object DonguriForm: TDonguriForm
     Left = 16
     Top = 536
     Bitmap = {
-      494C01010A001400C00010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01010A001400D80010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000003000000001002000000000000030
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000

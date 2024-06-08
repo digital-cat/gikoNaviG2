@@ -11,6 +11,60 @@ uses
   IdHTTP, ComCtrls;
 
 type
+  TDonguriAutoLogin = (atlOn, atlOff, atlUnknown);
+
+	TDonguriHome = class(TObject)
+  protected
+    function GetProgressPosition(var html: String; const kws: String; const kwe: String): Integer;
+		procedure SetSkillInfo(var html: String; const kws: String; const kw2: String; const kwe: String;
+												const pbs: String; const pbe: String; var Sel: Boolean; var Value: Integer; var Rate: Integer);
+  public
+  	Hunter:     Boolean;
+    UserMode:   String;
+    UserID:     String;
+    UserName:   String;
+    Level:      String;
+    RateExpr:		Integer;
+    Period:     String;
+    RatePrgr:   Integer;
+    Explor:     Integer;
+    RateExplr:  Integer;
+    SelExplr:   Boolean;
+    Mining:     Integer;
+    RateMnng:   Integer;
+    SelMnng:    Boolean;
+    Woodct:     Integer;
+    RateWdct:   Integer;
+    SelWdct:    Boolean;
+    Weapon:     Integer;
+    RateWpn:    Integer;
+    SelWpn:     Boolean;
+    Armorc:     Integer;
+    RateArmr:   Integer;
+    SelArmr:    Boolean;
+    // 統計
+    SttCannon:  String;
+    SttFight:   String;
+    // 保管庫
+    Acorn:      String;
+    AcornTitle: String;
+    Wood:       Integer;
+    Iron:       Integer;
+    IronKey:    Integer;
+    Marimo:     Integer;
+    WoodCB:     Integer;
+    IronCB:     Integer;
+  	// 設定
+    AutoLogin:  TDonguriAutoLogin;
+    ////
+    Error:      String;
+
+		constructor Create;
+    procedure Clear;
+    function Parsing(html: String): Boolean;
+  end;
+
+
 	TDonguriItem = class(TObject)
   protected
     procedure SetMarimo(html: String);
@@ -89,6 +143,7 @@ type
     FResponseCode: Integer;
     FErroeMessage: String;
     FProcessing:   Boolean;
+    FHome:				 TDonguriHome;
 
     procedure ClearResponse;
 		function HttpGet(url, referer: String; gzip: Boolean; var response: String; var redirect: Boolean): Boolean;
@@ -155,6 +210,8 @@ type
   	// 通信中かどうか
     property Processing:   Boolean read FProcessing;
 
+    // ユーザ情報
+    property Home:				 TDonguriHome read FHome;
 
   	// ビルドモード
 		function GetBuildMode: String;
@@ -162,6 +219,7 @@ type
   end;
 
 
+function IsRootPage(html: String): Boolean;
 function Extract(kw1, kw2, text: String; var val: String): Boolean;
 function Extract2(kw1, kw2: String; var text: String; var val: String): Boolean;
 function TrimTag(html: String): String;
@@ -228,6 +286,8 @@ begin
     FSSL.SSLOptions.SSLVersions := [sslvTLSv1_2];
     FSSL.SSLOptions.Method := sslvTLSv1_2;
     FHTTP.IOHandler := FSSL;
+
+		FHome := TDonguriHome.Create;
   except
     //on e: Exception do begin
     //  MessageBox(0, PChar(e.Message), 'TDonguriSys.Create', MB_OK);
@@ -242,6 +302,8 @@ begin
     TIndyMdl.ClearHTTP(FHTTP);
     FHTTP.Free;
     FSSL.Free;
+
+    FHome.Free;
   except
   end;
 
@@ -628,6 +690,22 @@ begin
   end;
 end;
 
+function IsRootPage(html: String): Boolean;
+begin
+
+  if Pos('<h1>どんぐりシステム</h1><p>あなたは警備員です。</p>', html) > 0 then	// 未ログイン
+    Result := True
+	else if (Pos('<div>ハンター[ID:',   html) > 0) or
+					(Pos('<div>ハンター●[ID:', html) > 0) or
+					(Pos('<div>ハンター○[ID:', html) > 0) or
+					(Pos('<div>警備員[ID:',     html) > 0) or
+					(Pos('<div>警備員●[ID:',   html) > 0) or
+					(Pos('<div>警備員○[ID:',   html) > 0) then
+    Result := True
+  else
+    Result := False;
+end;
+
 // ルート（メインページ）
 function TDonguriSys.Root(var response: String): Boolean;
 var
@@ -640,6 +718,9 @@ begin
 	  ClearResponse;
 
   	Result := HttpGet(URL_DNG_ROOT, '', True, response, redirect);
+
+    if Result then
+      FHome.Parsing(response);
 
   except
     on e: Exception do begin
@@ -659,6 +740,9 @@ begin
 
   	Result := HttpGetCall(URL_DNG_AUTH, response);
 
+    if Result then
+      FHome.Parsing(response);
+
   except
     on e: Exception do begin
       FErroeMessage := e.Message;
@@ -676,6 +760,9 @@ begin
 	  ClearResponse;
 
   	Result := HttpGetCall(URL_DNG_LOGIN, response);
+
+    if Result then
+      FHome.Parsing(response);
 
   except
     on e: Exception do begin
@@ -700,6 +787,9 @@ begin
 
     Result := HttpPostCall(URL_DNG_LOGIN, URL_DNG_ROOT, param, response);
 
+    if Result then
+      FHome.Parsing(response);
+
   except
     on e: Exception do begin
       FErroeMessage := e.Message;
@@ -718,6 +808,9 @@ begin
 	  ClearResponse;
 
   	Result := HttpGetCall(URL_DNG_LOGOUT, response);
+
+    if Result then
+      FHome.Parsing(response);
 
   except
     on e: Exception do begin
@@ -814,6 +907,9 @@ begin
 
   	Result := HttpGetCall(URL_DNG_EXPLOR, response);
 
+    if Result then
+      FHome.Parsing(response);
+
   except
     on e: Exception do begin
       FErroeMessage := e.Message;
@@ -831,6 +927,9 @@ begin
 	  ClearResponse;
 
   	Result := HttpGetCall(URL_DNG_MINING, response);
+
+    if Result then
+      FHome.Parsing(response);
 
   except
     on e: Exception do begin
@@ -850,6 +949,9 @@ begin
 
   	Result := HttpGetCall(URL_DNG_WOODCT, response);
 
+    if Result then
+      FHome.Parsing(response);
+
   except
     on e: Exception do begin
       FErroeMessage := e.Message;
@@ -868,6 +970,9 @@ begin
 
   	Result := HttpGetCall(URL_DNG_WEAPON, response);
 
+    if Result then
+      FHome.Parsing(response);
+
   except
     on e: Exception do begin
       FErroeMessage := e.Message;
@@ -885,6 +990,9 @@ begin
 	  ClearResponse;
 
   	Result := HttpGetCall(URL_DNG_ARMORC, response);
+
+    if Result then
+      FHome.Parsing(response);
 
   except
     on e: Exception do begin
@@ -938,6 +1046,9 @@ begin
     finally
 	  	postParam.Free;
     end;
+
+    if Result then
+      FHome.Parsing(response);
 
   except
     on e: Exception do begin
@@ -1092,6 +1203,9 @@ begin
     finally
 	  	postParam.Free;
     end;
+
+    if Result then
+      FHome.Parsing(response);
 
   except
     on e: Exception do begin
@@ -1687,6 +1801,284 @@ begin
 	Result := MsgBox(GikoForm.Handle, PChar(msg), 'どんぐり大砲', mbType);
 end;
 
+
+
+//------------------------------------------------------------------------------
+// どんぐりホーム
+//------------------------------------------------------------------------------
+
+constructor TDonguriHome.Create;
+begin
+	Inherited;
+
+	Clear;
+end;
+
+procedure TDonguriHome.Clear;
+begin
+	Hunter     := False;
+  UserMode   := '';
+  UserID     := '';
+  UserName   := '';
+  Level      := '';
+  RateExpr   := 0;
+  Period     := '';
+  RatePrgr   := 0;
+  Explor     := 0;
+  RateExplr  := 0;
+  SelExplr   := False;
+  Mining     := 0;
+  RateMnng   := 0;
+  SelMnng    := False;
+  Woodct     := 0;
+  RateWdct   := 0;
+  SelWdct    := False;
+  Weapon     := 0;
+  RateWpn    := 0;
+  SelWpn     := False;
+  Armorc     := 0;
+  RateArmr   := 0;
+  SelArmr    := False;
+  SttCannon  := '';
+  SttFight   := '';
+  Acorn      := '';
+  AcornTitle := '';
+  Wood       := 0;
+  Iron       := 0;
+  IronKey    := 0;
+  Marimo     := 0;
+  WoodCB     := 0;
+  IronCB     := 0;
+  AutoLogin  := atlUnknown;
+  Error      := '';
+end;
+
+function TDonguriHome.Parsing(html: String): Boolean;
+const
+  TAG_ANM_S = 'どんぐり基地</h1>';
+  TAG_ANM_E = '</div>';
+	TAG_HID_S = '<div>ハンター[ID:';
+	TAG_HID1S = '<div>ハンター●[ID:';
+	TAG_HID2S = '<div>ハンター○[ID:';
+  TAG_HID_E = ']</div>';
+	TAG_GID_S = '<div>警備員[ID:';
+	TAG_GID1S = '<div>警備員●[ID:';
+	TAG_GID2S = '<div>警備員○[ID:';
+  TAG_GID_E = ']</div>';
+	TAG_DNG_S = '<div>どんぐり残高:';
+	TAG_DN2_S = '<div>種子残高:';
+  TAG_DNG_E = '</div>';
+  TAG_NWD_S = '<div>木材の数:';
+  TAG_NWD_E = '</div>';
+  TAG_NIR_S = '<div>鉄の数:';
+  TAG_NIR_E = '</div>';
+  TAG_IRK_S = '<div>鉄のキー:';
+  TAG_IRK_E = '</div>';
+  TAG_MRM_S = '<div>マリモ:';
+  TAG_MRM_E = '</div>';
+  TAG_WCB_S = '<div>木製の大砲の玉:';
+  TAG_WCB_E = '</div>';
+  TAG_ICB_S = '<div>鉄の大砲の玉:';
+  TAG_ICB_E = '</div>';
+  TAG_CNN_S = '<label>大砲の統計</label><div>';
+  TAG_CNN_E = '</div>';
+  TAG_DMG_S = '| D:';
+  TAG_FGT_S = '<label>大乱闘の統計</label><div>';
+  TAG_FGT_E = '</div>';
+  TAG_PEX_S = '<div>経験値:';
+  TAG_PEX_E = '</div>';
+  TAG_LVL_S = 'レベル:';
+  TAG_LVL_E = '<div';
+  TAG_PTM_S = '<div>経過時間:';
+  TAG_PTM_E = '</div>';
+  TAG_PRD_S = '第';
+  TAG_PRD_E = '期';
+  TAG_EXP_S = '<div>○<a style="text-decoration:underline;" href="/focus/exploration">探検:';
+  TAG_EX2_S = '<div>●<a style="text-decoration:underline;" href="/focus/exploration">探検:';
+  TAG_EXP_E = '</a>';
+  TAG_MNG_S = '<div>○<a style="text-decoration:underline;" href="/focus/mining">採掘:';
+  TAG_MN2_S = '<div>●<a style="text-decoration:underline;" href="/focus/mining">採掘:';
+  TAG_MNG_E = '</a>';
+  TAG_FLL_S = '<div>○<a style="text-decoration:underline;" href="/focus/woodcutting">木こり:';
+  TAG_FL2_S = '<div>●<a style="text-decoration:underline;" href="/focus/woodcutting">木こり:';
+  TAG_FLL_E = '</a>';
+  TAG_ARM_S = '<div>○<a style="text-decoration:underline;" href="/focus/weaponcraft">武器製作:';
+  TAG_AR2_S = '<div>●<a style="text-decoration:underline;" href="/focus/weaponcraft">武器製作:';
+  TAG_ARM_E = '</a>';
+  TAG_PRT_S = '<div>○<a style="text-decoration:underline;" href="/focus/armorcraft">防具製作:';
+  TAG_PR2_S = '<div>●<a style="text-decoration:underline;" href="/focus/armorcraft">防具製作:';
+  TAG_PRT_E = '</a>';
+  TAG_PRG_S = '<div class="progress-bar">';
+  TAG_PRG_E = '</div>';
+  TAG_ALN_H = '<div>自動ログイン：ON<br>';
+  TAG_ALN_S = '<a href="https://donguri.5ch.net/setting/autologin">自動ログイン：';
+  TAG_ALN_E = '</a>';
+
+  MODE_NAME: array[0..6] of String = (
+    '不明',
+    'ハンター',
+    'ハンター●',
+    'ハンター○',
+    '警備員',
+    '警備員●',
+    '警備員○'
+  );
+  COL_NAME_ACRN : String = '　どんぐり残高';
+  COL_NAME_SEED : String = '　種子残高';
+
+var
+  tmp: String;
+  tm2: String;
+  mode: Integer;
+  err: Boolean;
+  auto: Boolean;
+begin
+	Result := False;
+
+	try
+		if not IsRootPage(html) then
+      Exit;
+
+  	Clear;
+    Hunter := False;
+
+		if DonguriSystem.Extract(TAG_ANM_S, TAG_ANM_E, html, tmp) then
+      UserName := Trim(TrimTag(tmp));
+
+  	tmp := '';
+    mode := 0;
+    if      DonguriSystem.Extract(TAG_HID_S, TAG_HID_E, html, tmp) then mode := 1
+    else if DonguriSystem.Extract(TAG_HID1S, TAG_HID_E, html, tmp) then mode := 2
+    else if DonguriSystem.Extract(TAG_HID2S, TAG_HID_E, html, tmp) then mode := 3
+    else if DonguriSystem.Extract(TAG_GID_S, TAG_GID_E, html, tmp) then mode := 4
+    else if DonguriSystem.Extract(TAG_GID1S, TAG_GID_E, html, tmp) then mode := 5
+    else if DonguriSystem.Extract(TAG_GID2S, TAG_GID_E, html, tmp) then mode := 6;
+
+		Hunter := (mode >= 1) and (mode <= 3);
+		UserID := Trim(tmp);
+		UserMode := MODE_NAME[mode];
+
+    if Extract(TAG_DNG_S, TAG_DNG_E, html, tmp) then begin
+      Acorntitle := COL_NAME_ACRN;
+      Acorn := Trim(tmp);
+    end else if Extract(TAG_DN2_S, TAG_DNG_E, html, tmp) then begin
+      Acorntitle := COL_NAME_SEED;
+      Acorn := Trim(tmp);
+    end;
+
+    if Extract(TAG_NWD_S, TAG_NWD_E, html, tmp) then
+      Wood := StrToIntDef(Trim(tmp), 0);
+
+    if Extract(TAG_NIR_S, TAG_NIR_E, html, tmp) then
+      Iron := StrToIntDef(Trim(tmp), 0);
+
+    if Extract(TAG_IRK_S, TAG_IRK_E, html, tmp) then
+      IronKey := StrToIntDef(Trim(tmp), 0);
+
+    if Extract(TAG_MRM_S, TAG_MRM_E, html, tmp) then
+      Marimo := StrToIntDef(Trim(tmp), 0);
+
+    if Extract(TAG_WCB_S, TAG_WCB_E, html, tmp) then
+      WoodCB := StrToIntDef(Trim(tmp), 0);
+
+    if Extract(TAG_ICB_S, TAG_ICB_E, html, tmp) then
+      IronCB := StrToIntDef(Trim(tmp), 0);
+
+    if Extract(TAG_CNN_S, TAG_CNN_E, html, tmp) then
+		  SttCannon := Trim(ReplaceString(tmp, '|', '　'));
+
+    if Extract(TAG_FGT_S, TAG_FGT_E, html, tmp) then
+		  SttFight := Trim(ReplaceString(tmp, '|', '　'));
+
+    // 経験値
+    if Extract2(TAG_PEX_S, TAG_PEX_E, html, tmp) then begin
+    	tmp := tmp + TAG_PEX_E;
+      if Extract(TAG_LVL_S, TAG_LVL_E, tmp, tm2) then
+        Level := Trim(tm2);
+      RateExpr := GetProgressPosition(tmp, TAG_PRG_S, TAG_PRG_E);
+    end;
+  	// 経過時間
+    if Extract2(TAG_PTM_S, TAG_PTM_E, html, tmp) then begin
+    	tmp := tmp + TAG_PTM_E;
+      if Extract(TAG_PRD_S, TAG_PRD_E, tmp, tm2) then
+	      Period := '第' + tm2 + '期';
+      RatePrgr := GetProgressPosition(tmp, TAG_PRG_S, TAG_PRG_E);
+    end;
+
+    // 探検
+		SetSkillInfo(html, TAG_EXP_S, TAG_EX2_S, TAG_EXP_E, TAG_PRG_S, TAG_PRG_E, SelExplr, Explor, RateExplr);
+  	// 採掘
+		SetSkillInfo(html, TAG_MNG_S, TAG_MN2_S, TAG_MNG_E, TAG_PRG_S, TAG_PRG_E, SelMnng,  Mining, RateMnng);
+  	// 木こり
+		SetSkillInfo(html, TAG_FLL_S, TAG_FL2_S, TAG_FLL_E, TAG_PRG_S, TAG_PRG_E, SelWdct,  Woodct, RateWdct);
+  	// 武器製作
+		SetSkillInfo(html, TAG_ARM_S, TAG_AR2_S, TAG_ARM_E, TAG_PRG_S, TAG_PRG_E, SelWpn,   Weapon, RateWpn);
+  	// 防具製作
+		SetSkillInfo(html, TAG_PRT_S, TAG_PR2_S, TAG_PRT_E, TAG_PRG_S, TAG_PRG_E, SelArmr,  Armorc, RateArmr);
+
+    // 自動ログイン
+    auto := False;
+    err := False;
+  	if Hunter then
+      auto := (Pos(TAG_ALN_H, html) > 0)
+    else if DonguriSystem.Extract(TAG_ALN_S, TAG_ALN_E, html, tmp) then begin
+      if (tmp = 'ON') then
+	      auto := True
+      else if (tmp <> 'OFF') then
+        err := True;
+    end else
+      err := True;
+
+  	if err then
+    	AutoLogin := atlUnknown
+    else if auto then
+    	AutoLogin := atlOn
+    else
+    	AutoLogin := atlOff;
+
+    //Error := (mode = 0) or (UserID = '') or (UserName = '') or (Level = '');
+
+    Result := True;
+  except
+    on e: Exception do
+	    Error := e.Message;
+  end;
+end;
+
+
+function TDonguriHome.GetProgressPosition(var html: String; const kws: String; const kwe: String): Integer;
+var
+	tmp: String;
+  idx: Integer;
+begin
+	Result := 0;
+  if Extract2(kws, kwe, html, tmp) then begin 	// 削除あり！
+  	tmp := TrimTag(tmp);
+    idx := Pos('%', tmp);
+    if idx > 0 then
+      SetLength(tmp, idx - 1);
+	  Result := StrToInt(tmp);
+  end;
+end;
+
+procedure TDonguriHome.SetSkillInfo(var html: String;
+												const kws: String; const kw2: String; const kwe: String;
+												const pbs: String; const pbe: String;
+                        var Sel: Boolean; var Value: Integer; var Rate: Integer);
+var
+	tmp: String;
+begin
+	Value := 0;
+  Rate  := 0;
+  Sel   := False;
+	if Extract2(kws, kwe, html, tmp) = False then
+		Sel := Extract2(kw2, kwe, html, tmp);
+
+  if tmp <> '' then begin
+    Value := StrToIntDef(Trim(tmp), 0);
+    Rate := GetProgressPosition(html, pbs, pbe);
+  end;
+end;
 
 
 //------------------------------------------------------------------------------

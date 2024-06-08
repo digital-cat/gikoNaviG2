@@ -173,7 +173,7 @@ type
     MItemHntLogin: TMenuItem;
     MItemGrdLogin: TMenuItem;
     AutoLoginCheckBox: TCheckBox;
-    Label26: TLabel;
+    AutoLoginLabel: TLabel;
     ModePanel: TPanel;
     Label30: TLabel;
     Label34: TLabel;
@@ -259,7 +259,6 @@ type
     FWpnSortAsc: Boolean;
     FArmSortAsc: Boolean;
 
-    procedure SetMode;
     procedure SetColor;
     procedure SetButtonColor;
     procedure SetColors(control: TControl; bkg, txt: TColor);
@@ -268,7 +267,7 @@ type
     procedure SetSkillPanelColor(panel: TPanel);
     procedure ClearInfoValue;
     procedure ShowRoot;
-    function Parsing(html: String): Boolean;
+    procedure SetHomeInfo(res: String);
     procedure ShowHttpError;
     function MsgBox(const hWnd: HWND; const Text, Caption: string; Flags: Longint = MB_OK): Integer;
     procedure DrawTab(TabCanvas: TCanvas; TabIndex: Integer; TabCaption: String; const Rect: TRect; Active: Boolean);
@@ -280,10 +279,7 @@ type
     procedure UnlockItem(list: TListView);
     procedure RecycleItem(list: TListView);
     procedure UseItem(list: TListView);
-		procedure SetSkillInfo(var html: String; const kws: String; const kw2: String; const kwe: String;
-												const pbs: String; const pbe: String; panel: TPanel; prgbar: TProgressBar; prglbl: TLabel);
-    function GetProgressPosition(var html: String; const kws: String; const kwe: String): Integer;
-    function IsRootPage(html: String): Boolean;
+		procedure SetSkillInfo(val: Integer; rate: Integer; sel: Boolean; panel: TPanel; prgbar: TProgressBar; prglbl: TLabel);
     procedure OpenChest(amount: Integer; chestName: String);
     function NumComp(text1, text2: String): Integer;
     function atoi(str: String): Integer;
@@ -292,7 +288,7 @@ type
 	protected
 		procedure CreateParams(var Params: TCreateParams); override;
   public
-    { Public declarations }
+    procedure UpdateHomeInfo;
   end;
 
 var
@@ -333,17 +329,17 @@ const
     '　木製の大砲の玉',
     '　鉄の大砲の玉'
     );
-  MODE_NAME: array[0..6] of String = (
-    '不明',
-    'ハンター',
-    'ハンター●',
-    'ハンター○',
-    '警備員',
-    '警備員●',
-    '警備員○'
-  );
-  COL_NAME_ACRN : String = '　どんぐり残高';
-  COL_NAME_SEED : String = '　種子残高';
+//  MODE_NAME: array[0..6] of String = (
+//    '不明',
+//    'ハンター',
+//    'ハンター●',
+//    'ハンター○',
+//    '警備員',
+//    '警備員●',
+//    '警備員○'
+//  );
+//  COL_NAME_ACRN : String = '　どんぐり残高';
+//  COL_NAME_SEED : String = '　種子残高';
 
 	COL_DARK_BKG1 : TColor = $00202020;
 	COL_DARK_BKG2 : TColor = $00404040;
@@ -446,8 +442,6 @@ begin
 	for i := 0 to Integer(idxRowCount) - 1 do
 	  InfoGrid.Cells[0, i] := COL_NAME[i];
   InfoGrid.Selection := sel;
-
-	SetMode;
 
 	wp.length := sizeof(wp);
 	wp.rcNormalPosition.Top    := GikoSys.Setting.DonguriTop;
@@ -559,14 +553,6 @@ begin
   end;
 end;
 
-procedure TDonguriForm.SetMode;
-begin
-
-  AutoLoginCheckBox.Enabled := not FHunter;
-
-  SetButtonColor;
-end;
-
 procedure TDonguriForm.RedrawControl(h: HWND);
 begin
   if h <> 0 then begin
@@ -630,284 +616,100 @@ begin
 	if GikoSys.DonguriSys.Processing then
   	Exit;
 
-  if GikoSys.DonguriSys.Root(res) then begin
-  	if Parsing(res) = False then
-      MsgBox(Handle, 'どんぐりシステムのページ解析に失敗しました',
-								'どんぐりシステム', MB_OK or MB_ICONERROR);
-  end else
+  if GikoSys.DonguriSys.Root(res) then
+		SetHomeInfo(res)
+  else
   	ShowHttpError;
 end;
 
-function TDonguriForm.Parsing(html: String): Boolean;
+procedure TDonguriForm.SetHomeInfo(res: String);
 const
-  TAG_ANM_S = '<body>';
-  TAG_ANM_E = '</div>';
-	TAG_HID_S = '<div>ハンター[ID:';
-	TAG_HID1S = '<div>ハンター●[ID:';
-	TAG_HID2S = '<div>ハンター○[ID:';
-  TAG_HID_E = ']</div>';
-	TAG_GID_S = '<div>警備員[ID:';
-	TAG_GID1S = '<div>警備員●[ID:';
-	TAG_GID2S = '<div>警備員○[ID:';
-  TAG_GID_E = ']</div>';
-	//TAG_GID_R = '<p>あなたは警備員です。</p>';
-	TAG_DNG_S = '<div>どんぐり残高:';
-	TAG_DN2_S = '<div>種子残高:';
-  TAG_DNG_E = '</div>';
-  TAG_NWD_S = '<div>木材の数:';
-  TAG_NWD_E = '</div>';
-  TAG_NIR_S = '<div>鉄の数:';
-  TAG_NIR_E = '</div>';
-  TAG_IRK_S = '<div>鉄のキー:';
-  TAG_IRK_E = '</div>';
-  TAG_MRM_S = '<div>マリモ:';
-  TAG_MRM_E = '</div>';
-  TAG_WCB_S = '<div>木製の大砲の玉:';
-  TAG_WCB_E = '</div>';
-  TAG_ICB_S = '<div>鉄の大砲の玉:';
-  TAG_ICB_E = '</div>';
-  TAG_CNN_S = '<label>大砲の統計</label><div>';
-  TAG_CNN_E = '</div>';
-  TAG_DMG_S = '| D:';
-  TAG_FGT_S = '<label>大乱闘の統計</label><div>';
-  TAG_FGT_E = '</div>';
-  TAG_PEX_S = '<div>経験値:';
-  TAG_PEX_E = '</div>';
-  TAG_LVL_S = 'レベル:';
-  TAG_LVL_E = '<div';
-  TAG_PTM_S = '<div>経過時間:';
-  TAG_PTM_E = '</div>';
-  TAG_PRD_S = '第';
-  TAG_PRD_E = '期';
-  TAG_EXP_S = '<div>○<a style="text-decoration:underline;" href="/focus/exploration">探検:';
-  TAG_EX2_S = '<div>●<a style="text-decoration:underline;" href="/focus/exploration">探検:';
-  TAG_EXP_E = '</a>';
-  TAG_MNG_S = '<div>○<a style="text-decoration:underline;" href="/focus/mining">採掘:';
-  TAG_MN2_S = '<div>●<a style="text-decoration:underline;" href="/focus/mining">採掘:';
-  TAG_MNG_E = '</a>';
-  TAG_FLL_S = '<div>○<a style="text-decoration:underline;" href="/focus/woodcutting">木こり:';
-  TAG_FL2_S = '<div>●<a style="text-decoration:underline;" href="/focus/woodcutting">木こり:';
-  TAG_FLL_E = '</a>';
-  TAG_ARM_S = '<div>○<a style="text-decoration:underline;" href="/focus/weaponcraft">武器製作:';
-  TAG_AR2_S = '<div>●<a style="text-decoration:underline;" href="/focus/weaponcraft">武器製作:';
-  TAG_ARM_E = '</a>';
-  TAG_PRT_S = '<div>○<a style="text-decoration:underline;" href="/focus/armorcraft">防具製作:';
-  TAG_PR2_S = '<div>●<a style="text-decoration:underline;" href="/focus/armorcraft">防具製作:';
-  TAG_PRT_E = '</a>';
-  TAG_PRG_S = '<div class="progress-bar">';
-  TAG_PRG_E = '</div>';
-  TAG_ALN_H = '<div>自動ログイン：●<br>';
-  TAG_ALN_S = '<a href="https://donguri.5ch.net/setting/autologin">自動ログイン：';
-  TAG_ALN_E = '</a>';
-
-  TAG_ERROR = '<p>エラー！</p>';
-	TAG_ECD_S = '<p>NG&lt;&gt;';
-	TAG_ECD_E = '</p>';
-	TAG_E_COOKIE_MSG = '<p>ログアウトして、もう一度ログインしてください。</p>';
-
+	CAP_MSG: String = 'どんぐりシステム';
 var
-  tmp: String;
-  tm2: String;
-  ecd: String;
-  prg: Integer;
-  mode: Integer;
-  err: Boolean;
+	home: TDonguriHome;
 begin
-	Result := False;
-
 	try
-  	ClearInfoValue;
-    FHunter := False;
 
-//    MsgBox(Handle, html, 'debug');
-
-    // HTMLではなくエラーメッセージのテキストのみ
-    if Pos('NG<>', html) = 1 then begin
-    	MsgBox(Handle, Copy(html, 5, Length(html) - 4), Caption, MB_OK or MB_ICONERROR);
-      Result := True;
+  	if (res <> '') and (IsRootPage(res) = False) then begin
+      if Pos('<html', res) < 1 then
+        MsgBox(Handle, TrimTag(res), CAP_MSG, MB_OK or MB_ICONWARNING)
+      else
+        MsgBox(Handle, 'どんぐりシステムのページ解析に失敗しました', CAP_MSG, MB_OK or MB_ICONERROR);
       Exit;
     end;
 
-		if DonguriSystem.Extract(TAG_ANM_S, TAG_ANM_E, html, tmp) then
-      EditName.Text := Trim(TrimTag(tmp));
+  	ClearInfoValue;
 
-  	tmp := '';
-    mode := 0;
-    if      DonguriSystem.Extract(TAG_HID_S, TAG_HID_E, html, tmp) then mode := 1
-    else if DonguriSystem.Extract(TAG_HID1S, TAG_HID_E, html, tmp) then mode := 2
-    else if DonguriSystem.Extract(TAG_HID2S, TAG_HID_E, html, tmp) then mode := 3
-    else if DonguriSystem.Extract(TAG_GID_S, TAG_GID_E, html, tmp) then mode := 4
-    else if DonguriSystem.Extract(TAG_GID1S, TAG_GID_E, html, tmp) then mode := 5
-    else if DonguriSystem.Extract(TAG_GID2S, TAG_GID_E, html, tmp) then mode := 6;
+    home := GikoSys.DonguriSys.Home;
 
-		FHunter := (mode >= 1) and (mode <= 3);
-		EditID.Text := Trim(tmp);
-		ModePanel.Caption := MODE_NAME[mode];
-
-  	SetMode;
-
-    if DonguriSystem.Extract(TAG_DNG_S, TAG_DNG_E, html, tmp) then begin
-      InfoGrid.Cells[0, Integer(idxDonguri)] := COL_NAME_ACRN;
-      InfoGrid.Cells[1, Integer(idxDonguri)] := Trim(tmp);
-    end else if DonguriSystem.Extract(TAG_DN2_S, TAG_DNG_E, html, tmp) then begin
-      InfoGrid.Cells[0, Integer(idxDonguri)] := COL_NAME_SEED;
-      InfoGrid.Cells[1, Integer(idxDonguri)] := Trim(tmp);
-    end;
-
-    if DonguriSystem.Extract(TAG_NWD_S, TAG_NWD_E, html, tmp) then
-      InfoGrid.Cells[1, Integer(idxNumWood)] := Trim(tmp);
-
-    if DonguriSystem.Extract(TAG_NIR_S, TAG_NIR_E, html, tmp) then
-      InfoGrid.Cells[1, Integer(idxNumIron)] := Trim(tmp);
-
-    if DonguriSystem.Extract(TAG_IRK_S, TAG_IRK_E, html, tmp) then
-      InfoGrid.Cells[1, Integer(idxIronKey)] := Trim(tmp);
-
-    if DonguriSystem.Extract(TAG_MRM_S, TAG_MRM_E, html, tmp) then
-      InfoGrid.Cells[1, Integer(idxMarimo)] := Trim(tmp);
-
-    if DonguriSystem.Extract(TAG_WCB_S, TAG_WCB_E, html, tmp) then
-      InfoGrid.Cells[1, Integer(idxWdCnBall)] := Trim(tmp);
-
-    if DonguriSystem.Extract(TAG_ICB_S, TAG_ICB_E, html, tmp) then
-      InfoGrid.Cells[1, Integer(idxIrCnBall)] := Trim(tmp);
-
-    if DonguriSystem.Extract(TAG_CNN_S, TAG_CNN_E, html, tmp) then
-		  StatisticsGrid.Cells[1, Integer(idxCannon)] := Trim(ReplaceString(tmp, '|', '　'));
-
-    if DonguriSystem.Extract(TAG_FGT_S, TAG_FGT_E, html, tmp) then
-		  StatisticsGrid.Cells[1, Integer(idxFight)] := Trim(ReplaceString(tmp, '|', '　'));
-
+    FHunter             := home.Hunter;
+		ModePanel.Caption   := home.UserMode;
+		EditName.Text       := home.UserName;
+		EditID.Text         := home.UserID;
+		EditLevel.Text      := home.Level;
+		LabelPeriod.Caption := home.Period;
     // 経験値
-    if DonguriSystem.Extract2(TAG_PEX_S, TAG_PEX_E, html, tmp) then begin
-    	tmp := tmp + TAG_PEX_E;
-      if DonguriSystem.Extract(TAG_LVL_S, TAG_LVL_E, tmp, tm2) then
-        EditLevel.Text := Trim(tm2);
-      prg := GetProgressPosition(tmp, TAG_PRG_S, TAG_PRG_E);
-      ExprProgressBar.Position := prg;
-      ExprValLabel.Caption := IntToStr(prg);
-    end;
+		ExprProgressBar.Position := home.RateExpr;
+		ExprValLabel.Caption     := IntToStr(home.RateExpr);
   	// 経過時間
-    if DonguriSystem.Extract2(TAG_PTM_S, TAG_PTM_E, html, tmp) then begin
-    	tmp := tmp + TAG_PTM_E;
-      if DonguriSystem.Extract(TAG_PRD_S, TAG_PRD_E, tmp, tm2) then
-	      LabelPeriod.Caption := '第' + tm2 + '期';
-      prg := GetProgressPosition(tmp, TAG_PRG_S, TAG_PRG_E);
-      TimeProgressBar.Position := prg;
-      TimeValLabel.Caption := IntToStr(prg);
-    end;
+		TimeProgressBar.Position := home.RatePrgr;
+		TimeValLabel.Caption     := IntToStr(home.RatePrgr);
     // 探検
-		SetSkillInfo(html, TAG_EXP_S, TAG_EX2_S, TAG_EXP_E, TAG_PRG_S, TAG_PRG_E,
-                	ExplorPanel, ExplorProgressBar, ExplorValLabel);
+		SetSkillInfo(home.Explor, home.RateExplr, home.SelExplr, ExplorPanel, ExplorProgressBar, ExplorValLabel);
   	// 採掘
-		SetSkillInfo(html, TAG_MNG_S, TAG_MN2_S, TAG_MNG_E, TAG_PRG_S, TAG_PRG_E,
-                	MiningPanel, MiningProgressBar, MiningValLabel);
+		SetSkillInfo(home.Mining, home.RateMnng,  home.SelMnng,  MiningPanel, MiningProgressBar, MiningValLabel);
   	// 木こり
-		SetSkillInfo(html, TAG_FLL_S, TAG_FL2_S, TAG_FLL_E, TAG_PRG_S, TAG_PRG_E,
-                	WoodctPanel, WoodctProgressBar, WoodctValLabel);
+		SetSkillInfo(home.Woodct, home.RateWdct,  home.SelWdct,  WoodctPanel, WoodctProgressBar, WoodctValLabel);
   	// 武器製作
-		SetSkillInfo(html, TAG_ARM_S, TAG_AR2_S, TAG_ARM_E, TAG_PRG_S, TAG_PRG_E,
-                	WeaponPanel, WeaponProgressBar, WeaponValLabel);
+		SetSkillInfo(home.Weapon, home.RateWpn,   home.SelWpn,   WeaponPanel, WeaponProgressBar, WeaponValLabel);
   	// 防具製作
-		SetSkillInfo(html, TAG_PRT_S, TAG_PR2_S, TAG_PRT_E, TAG_PRG_S, TAG_PRG_E,
-                	ArmorcPanel, ArmorcProgressBar, ArmorcValLabel);
+		SetSkillInfo(home.Armorc, home.RateArmr,  home.SelArmr,  ArmorcPanel, ArmorcProgressBar, ArmorcValLabel);
+
+    // 統計
+		StatisticsGrid.Cells[1, Integer(idxCannon)] := home.SttCannon;
+		StatisticsGrid.Cells[1, Integer(idxFight)]  := home.SttFight;
+    // 保管庫
+    InfoGrid.Cells[0, Integer(idxDonguri)]  := home.AcornTitle;
+    InfoGrid.Cells[1, Integer(idxDonguri)]  := home.Acorn;
+		InfoGrid.Cells[1, Integer(idxNumWood)]  := IntToStr(home.Wood);
+    InfoGrid.Cells[1, Integer(idxNumIron)]  := IntToStr(home.Iron);
+    InfoGrid.Cells[1, Integer(idxIronKey)]  := IntToStr(home.IronKey);
+    InfoGrid.Cells[1, Integer(idxMarimo)]   := IntToStr(home.Marimo);
+    InfoGrid.Cells[1, Integer(idxWdCnBall)] := IntToStr(home.WoodCB);
+    InfoGrid.Cells[1, Integer(idxIrCnBall)] := IntToStr(home.IronCB);
 
     // 自動ログイン
     AutoLoginCheckBox.Tag := 1;
-    err := False;
-  	if FHunter then
-      AutoLoginCheckBox.Checked := Pos(TAG_ALN_H, html) > 0
-    else if DonguriSystem.Extract(TAG_ALN_S, TAG_ALN_E, html, tmp) then begin
-      if (tmp = '●') then
-	      AutoLoginCheckBox.Checked := True
-      else if (tmp = '○') then
-	      AutoLoginCheckBox.Checked := False
-      else
-        err := True;
-    end else
-      err := True;
-  	if err then begin
-      AutoLoginCheckBox.Enabled := False;
-      AutoLoginCheckBox.Checked := False;
+		AutoLoginCheckBox.Checked := (home.AutoLogin = atlOn);
+		AutoLoginCheckBox.Enabled := (not FHunter) and (home.AutoLogin <> atlUnknown);
+    AutoLoginLabel.Visible := FHunter;
+    case home.AutoLogin of
+    atlOn:  LoginPnlButton.Hint := '自動ログイン設定：ON';
+    atlOff: LoginPnlButton.Hint := '自動ログイン設定：OFF';
+    else    LoginPnlButton.Hint := '自動ログイン設定：不明';
     end;
+    LoginPnlButton.ShowHint := True;
     AutoLoginCheckBox.Tag := 0;
 
-    // これはもうなくなったかも
-  	if Pos(TAG_ERROR, html) > 0 then begin
-			ecd := 'エラーが発生しました。';
-	    if DonguriSystem.Extract(TAG_ECD_S, TAG_ECD_E, html, tmp) then begin
-        ecd := ecd + #10 + tmp;
-        if Pos(TAG_E_COOKIE_MSG, html) > 0 then
-		      ecd := ecd + ' ' + TAG_E_COOKIE_MSG;
-      end;
-      MsgBox(Handle, ecd, Caption, MB_OK or MB_ICONERROR);
-    end;
-
-    Result := True;
+    if home.Error <> '' then
+      MsgBox(Handle, home.Error, CAP_MSG, MB_OK or MB_ICONERROR);
   except
   end;
 end;
 
-procedure TDonguriForm.SetSkillInfo(var html: String;
-												const kws: String; const kw2: String; const kwe: String;
-												const pbs: String; const pbe: String;
-                        panel: TPanel; prgbar: TProgressBar; prglbl: TLabel);
-var
-	tmp: String;
-  prg: Integer;
+procedure TDonguriForm.SetSkillInfo(val: Integer; rate: Integer; sel: Boolean;
+																		panel: TPanel; prgbar: TProgressBar; prglbl: TLabel);
 begin
-	panel.Tag := 0;
-	if DonguriSystem.Extract2(kws, kwe, html, tmp) = False then begin
-		if DonguriSystem.Extract2(kw2, kwe, html, tmp) then
-			panel.Tag := 1;
-  end;
-
-  if tmp <> '' then begin
-    panel.Caption := Trim(tmp);
-    prg := GetProgressPosition(html, pbs, pbe);
-    prgbar.Position := prg;
-    prglbl.Caption := IntToStr(prg);
-  end else begin
-    panel.Caption := '';
-    prgbar.Position := 0;
-    prglbl.Caption := '';
-  end;
-
-  panel.ShowHint := (panel.Tag = 1);
+	if sel then
+		panel.Tag := 1
+  else
+		panel.Tag := 0;
+  panel.ShowHint := sel;
+  panel.Caption := IntToStr(val);
+  prgbar.Position := rate;
+  prglbl.Caption := IntToStr(rate);
 
   SetSkillPanelColor(panel);
-  
-end;
-
-function TDonguriForm.GetProgressPosition(var html: String; const kws: String; const kwe: String): Integer;
-var
-	tmp: String;
-  idx: Integer;
-begin
-	Result := 0;
-  if DonguriSystem.Extract2(kws, kwe, html, tmp) then begin 	// 削除あり！
-  	tmp := DonguriSystem.TrimTag(tmp);
-    idx := Pos('%', tmp);
-    if idx > 0 then
-      SetLength(tmp, idx - 1);
-	  Result := StrToInt(tmp);
-  end;
-end;
-
-function TDonguriForm.IsRootPage(html: String): Boolean;
-begin
-
-  if Pos('<h1>どんぐりシステム</h1><p>あなたは警備員です。</p>', html) > 0 then	// 未ログイン
-    Result := True
-	else if (Pos('<div>ハンター[ID:',   html) > 0) or
-					(Pos('<div>ハンター●[ID:', html) > 0) or
-					(Pos('<div>ハンター○[ID:', html) > 0) or
-					(Pos('<div>警備員[ID:',     html) > 0) or
-					(Pos('<div>警備員●[ID:',   html) > 0) or
-					(Pos('<div>警備員○[ID:',   html) > 0) then
-    Result := True
-  else
-    Result := False;
 end;
 
 procedure TDonguriForm.ShowHttpError;
@@ -929,17 +731,13 @@ begin
 	if GikoSys.DonguriSys.Processing then
   	Exit;
 
-  if GikoSys.DonguriSys.Auth(res) then begin
-  	if Parsing(res) = False then
-      MsgBox(Handle, 'どんぐりシステムのページ解析に失敗しました',
-								'どんぐりシステム', MB_OK or MB_ICONERROR);
-  end else
+  if GikoSys.DonguriSys.Auth(res) then
+		SetHomeInfo(res)
+  else
   	ShowHttpError;
 end;
 
 procedure TDonguriForm.AutoLoginCheckBoxClick(Sender: TObject);
-const
-  CAP_MSG: String = 'どんぐりシステム';
 var
   res: String;
 begin
@@ -948,11 +746,9 @@ begin
 	if GikoSys.DonguriSys.Processing then
   	Exit;
 
-  if GikoSys.DonguriSys.ToggleAutoLogin(res) then begin
-  	if Parsing(res) = False then
-      MsgBox(Handle, 'どんぐりシステムのページ解析に失敗しました',
-								CAP_MSG, MB_OK or MB_ICONERROR);
-  end else
+  if GikoSys.DonguriSys.ToggleAutoLogin(res) then
+  	SetHomeInfo(res)
+  else
   	ShowHttpError;
 end;
 
@@ -1148,13 +944,8 @@ begin
   	Exit;
 
   if GikoSys.DonguriSys.Login(res) then begin
-  	if Parsing(res) = False then
-      MsgBox(Handle, 'どんぐりシステムのページ解析に失敗しました',
-								CAP_MSG, MB_OK or MB_ICONERROR)
-    else if Pos('NG<>まずはUPLIFTでログイン', res) = 1 then
-      MsgBox(Handle, PChar('UPLIFTでのログインを要求されました。' + #10 +
-      						'UPLIFTでログインしない場合は書き込みでどんぐりを埋めてください。'),
-								CAP_MSG, MB_OK or MB_ICONWARNING);
+		SetHomeInfo(res);
+    MsgBox(Handle, 'ログインしました。', CAP_MSG, MB_OK or MB_ICONINFORMATION);
   end else
   	ShowHttpError;
 end;
@@ -1169,16 +960,8 @@ begin
   	Exit;
 
   if GikoSys.DonguriSys.MailLogin(mail, pwd, res) then begin
-  	if IsRootPage(res) then begin
-      if Parsing(res) then
-        MsgBox(Handle, 'ログインしました。', CAP_MSG, MB_OK or MB_ICONINFORMATION)
-      else
-        MsgBox(Handle, 'ログインに成功しましたが、どんぐりシステムのページ解析に失敗しました。',
-                  CAP_MSG, MB_OK or MB_ICONWARNING);
-    end else if Pos('<html', res) < 1 then
-      MsgBox(Handle, res, CAP_MSG, MB_OK or MB_ICONWARNING)
-    else
-      MsgBox(Handle, 'ログイン結果の解析に失敗しました。', CAP_MSG, MB_OK or MB_ICONWARNING);
+  	SetHomeInfo(res);
+    MsgBox(Handle, 'ログインしました。', CAP_MSG, MB_OK or MB_ICONINFORMATION);
   end else
   	ShowHttpError;
 end;
@@ -1193,10 +976,8 @@ begin
   	Exit;
 
   if GikoSys.DonguriSys.Logout(res) then begin
+  	SetHomeInfo(res);
 	  MsgBox(Handle, 'ログアウトしました。', CAP_MSG, MB_OK or MB_ICONINFORMATION);
-  	if Parsing(res) = False then
-      MsgBox(Handle, 'どんぐりシステムのページ解析に失敗しました',
-								CAP_MSG, MB_OK or MB_ICONERROR);
   end else
   	ShowHttpError;
 end;
@@ -1241,11 +1022,9 @@ begin
 	if GikoSys.DonguriSys.Processing then
   	Exit;
 
-  if GikoSys.DonguriSys.Exploration(res) then begin
-  	if Parsing(res) = False then
-      MsgBox(Handle, 'どんぐりシステムのページ解析に失敗しました',
-								'どんぐりシステム', MB_OK or MB_ICONERROR);
-  end else
+  if GikoSys.DonguriSys.Exploration(res) then
+  	SetHomeInfo(res)
+  else
   	ShowHttpError;
 end;
 
@@ -1274,11 +1053,9 @@ begin
 	if GikoSys.DonguriSys.Processing then
   	Exit;
 
-  if GikoSys.DonguriSys.Mining(res) then begin
-  	if Parsing(res) = False then
-      MsgBox(Handle, 'どんぐりシステムのページ解析に失敗しました',
-								'どんぐりシステム', MB_OK or MB_ICONERROR);
-  end else
+  if GikoSys.DonguriSys.Mining(res) then
+  	SetHomeInfo(res)
+  else
   	ShowHttpError;
 end;
 
@@ -1289,11 +1066,9 @@ begin
 	if GikoSys.DonguriSys.Processing then
   	Exit;
 
-  if GikoSys.DonguriSys.WoodCutting(res) then begin
-  	if Parsing(res) = False then
-      MsgBox(Handle, 'どんぐりシステムのページ解析に失敗しました',
-								'どんぐりシステム', MB_OK or MB_ICONERROR);
-  end else
+  if GikoSys.DonguriSys.WoodCutting(res) then
+  	SetHomeInfo(res)
+  else
   	ShowHttpError;
 end;
 
@@ -1304,11 +1079,9 @@ begin
 	if GikoSys.DonguriSys.Processing then
   	Exit;
 
-  if GikoSys.DonguriSys.WeaponCraft(res) then begin
-  	if Parsing(res) = False then
-      MsgBox(Handle, 'どんぐりシステムのページ解析に失敗しました',
-								'どんぐりシステム', MB_OK or MB_ICONERROR);
-  end else
+  if GikoSys.DonguriSys.WeaponCraft(res) then
+  	SetHomeInfo(res)
+  else
   	ShowHttpError;
 end;
 
@@ -1319,11 +1092,9 @@ begin
 	if GikoSys.DonguriSys.Processing then
   	Exit;
 
-  if GikoSys.DonguriSys.ArmorCraft(res) then begin
-  	if Parsing(res) = False then
-      MsgBox(Handle, 'どんぐりシステムのページ解析に失敗しました',
-								'どんぐりシステム', MB_OK or MB_ICONERROR);
-  end else
+  if GikoSys.DonguriSys.ArmorCraft(res) then
+  	SetHomeInfo(res)
+  else
   	ShowHttpError;
 end;
 
@@ -1381,17 +1152,9 @@ begin
                   CAP_MSG, MB_OKCANCEL or MB_ICONQUESTION) <> IDOK then
         Exit;
 
-    if GikoSys.DonguriSys.Rename(newName, res) then begin
-      if Pos('<html', res) < 1 then
-        MsgBox(Handle, TrimTag(res), CAP_MSG, MB_OK or MB_ICONINFORMATION)
-      else if IsRootPage(res) then begin
-        if Parsing(res) = False then
-          MsgBox(Handle, 'どんぐりシステムのページ解析に失敗しました',
-                    CAP_MSG, MB_OK or MB_ICONERROR);
-      end else
-        MsgBox(Handle, 'ハンターネーム変更の結果を確認できませんでした。',
-                            CAP_MSG, MB_OK or MB_ICONERROR);
-    end else
+    if GikoSys.DonguriSys.Rename(newName, res) then
+    	SetHomeInfo(res)
+    else
       ShowHttpError;
   except
   	on e: Exception do
@@ -1472,17 +1235,9 @@ begin
 	    						CAP_MSG, MB_OKCANCEL or MB_ICONQUESTION) <> IDOK then
     	Exit;
 
-	  if GikoSys.DonguriSys.Transfer(rid, amn, res) then begin
-      if Pos('<html', res) < 1 then
-	      MsgBox(Handle, TrimTag(res), CAP_MSG, MB_OK or MB_ICONINFORMATION)
-      else if IsRootPage(res) then begin
-        if Parsing(res) = False then
-          MsgBox(Handle, 'どんぐりシステムのページ解析に失敗しました',
-                    CAP_MSG, MB_OK or MB_ICONERROR);
-      end else
-      	MsgBox(Handle, 'ドングリ転送の結果を確認できませんでした。',
-                            CAP_MSG, MB_OK or MB_ICONERROR);
-    end else
+	  if GikoSys.DonguriSys.Transfer(rid, amn, res) then
+    	SetHomeInfo(res)
+    else
       ShowHttpError;
   except
   	on e: Exception do
@@ -2193,15 +1948,17 @@ begin
 			MsgBox(Handle, res, CAP_MSG, MB_OK or MB_ICONWARNING);
 			Exit;
     end;
-    if IsRootPage(res) then begin
-    	if Parsing(res) then begin
-        key := StrToIntDef(InfoGrid.Cells[1, Integer(idxIronKey)], -1);
-        if (key >= 0) and (key < amount) then begin
-          MsgBox(Handle, '鉄のキーが不足しています。', CAP_MSG, MB_OK or MB_ICONWARNING);
-          Exit;
-        end;
-			end;
-		end;
+
+    if IsRootPage(res) then
+    	SetHomeInfo(res)
+    else
+    	ShowRoot;
+    key := GikoSys.DonguriSys.Home.IronKey;
+    if (key >= 0) and (key < amount) then begin
+      MsgBox(Handle, '鉄のキーが不足しています。', CAP_MSG, MB_OK or MB_ICONWARNING);
+      Exit;
+    end;
+
 		MsgBox(Handle, chestName + 'を開くことができませんでした。', CAP_MSG, MB_OK or MB_ICONWARNING);
   end else
   	ShowHttpError;
@@ -2475,6 +2232,11 @@ begin
   	on e: Exception do
     	MsgBox(Handle, e.Message, Caption, MB_OK or MB_ICONERROR);
   end;
+end;
+
+procedure TDonguriForm.UpdateHomeInfo;
+begin
+	SetHomeInfo('');
 end;
 
 end.
