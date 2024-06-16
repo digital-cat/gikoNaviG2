@@ -3,7 +3,7 @@ unit DonguriBase;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Jpeg, Controls, Forms,
   Dialogs, StdCtrls, ExtCtrls, Grids, StrUtils, ComCtrls, Buttons, DonguriSystem,
   ImgList, Menus, Clipbrd;
 
@@ -177,6 +177,82 @@ type
     ModePanel: TPanel;
     Label30: TLabel;
     Label34: TLabel;
+    ModWPnlButton: TPanel;
+    ModAPnlButton: TPanel;
+    ModAGrid: TStringGrid;
+    ModBackAPnlButton: TPanel;
+    Label26: TLabel;
+    DefMinCurPanel: TPanel;
+    Label35: TLabel;
+    DefMinNewPanel: TPanel;
+    Label36: TLabel;
+    DefMinMrmPanel: TPanel;
+    ModDefMinPnlButton: TPanel;
+    Label37: TLabel;
+    DefMaxCurPanel: TPanel;
+    Label38: TLabel;
+    DefMaxNewPanel: TPanel;
+    Label39: TLabel;
+    DefMaxMrmPanel: TPanel;
+    ModDefMaxPnlButton: TPanel;
+    Label40: TLabel;
+    WeightCurPanel: TPanel;
+    Label41: TLabel;
+    WeightNewPanel: TPanel;
+    Label42: TLabel;
+    WeightMrmPanel: TPanel;
+    ModWeightPnlButton: TPanel;
+    Label43: TLabel;
+    CritACurPanel: TPanel;
+    Label44: TLabel;
+    CritANewPanel: TPanel;
+    Label45: TLabel;
+    CritAMrmPanel: TPanel;
+    ModCritAPnlButton: TPanel;
+    Label46: TLabel;
+    Label47: TLabel;
+    Label48: TLabel;
+    Label49: TLabel;
+    Label50: TLabel;
+    Label51: TLabel;
+    Label52: TLabel;
+    Label53: TLabel;
+    Label54: TLabel;
+    Label55: TLabel;
+    Label56: TLabel;
+    Label57: TLabel;
+    ModWGrid: TStringGrid;
+    ModBackWPnlButton: TPanel;
+    DmgMinCurPanel: TPanel;
+    DmgMinNewPanel: TPanel;
+    DmgMinMrmPanel: TPanel;
+    ModDmgMinPnlButton: TPanel;
+    DmgMaxCurPanel: TPanel;
+    DmgMaxNewPanel: TPanel;
+    DmgMaxMrmPanel: TPanel;
+    ModDmgMaxPnlButton: TPanel;
+    SpeedCurPanel: TPanel;
+    SpeedNewPanel: TPanel;
+    SpeedMrmPanel: TPanel;
+    ModSpeedPnlButton: TPanel;
+    CritWCurPanel: TPanel;
+    CritWNewPanel: TPanel;
+    CritWMrmPanel: TPanel;
+    ModCritWPnlButton: TPanel;
+    ModWPanel: TPanel;
+    ModAPanel: TPanel;
+    Label59: TLabel;
+    ModABasePanel: TPanel;
+    Panel6: TPanel;
+    ModWBasePanel: TPanel;
+    Panel7: TPanel;
+    TabSheetModW: TTabSheet;
+    TabSheetModA: TTabSheet;
+    ModWMarimoPanel: TPanel;
+    Label58: TLabel;
+    ModAMarimoPanel: TPanel;
+    ModAImage: TImage;
+    ModWImage: TImage;
     procedure TimerInitTimer(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCreate(Sender: TObject);
@@ -249,6 +325,18 @@ type
     procedure MItemHntLoginClick(Sender: TObject);
     procedure MItemGrdLoginClick(Sender: TObject);
     procedure AutoLoginCheckBoxClick(Sender: TObject);
+    procedure ModWPnlButtonClick(Sender: TObject);
+    procedure ModAPnlButtonClick(Sender: TObject);
+    procedure ModBackAPnlButtonClick(Sender: TObject);
+    procedure ModDefMinPnlButtonClick(Sender: TObject);
+    procedure ModDefMaxPnlButtonClick(Sender: TObject);
+    procedure ModWeightPnlButtonClick(Sender: TObject);
+    procedure ModCritAPnlButtonClick(Sender: TObject);
+    procedure ModBackWPnlButtonClick(Sender: TObject);
+    procedure ModDmgMinPnlButtonClick(Sender: TObject);
+    procedure ModDmgMaxPnlButtonClick(Sender: TObject);
+    procedure ModSpeedPnlButtonClick(Sender: TObject);
+    procedure ModCritWPnlButtonClick(Sender: TObject);
   private
     { Private declarations }
     FHunter: Boolean;
@@ -285,6 +373,11 @@ type
     function atoi(str: String): Integer;
     procedure Login;
     procedure MailLogin(mail, pwd: String);
+    procedure ShowModViewW(res: String);
+    procedure ModWeapon(modType: TModifyWeapon);
+    procedure ShowModViewA(res: String);
+    procedure ModArmor(modType: TModifyArmor);
+    function SetImageFromURL(image: TImage; url: String): Boolean;
 	protected
 		procedure CreateParams(var Params: TCreateParams); override;
   public
@@ -313,21 +406,23 @@ type
     idxMarimo    = 4,
     idxWdCnBall  = 5,
     idxIrCnBall  = 6,
-    idxRowCount  = 7);
+    idxHP        = 7,
+    idxRowCount  = 8);
 
 const
 	COL_STSC: array [0..1] of string = (
     '　どんぐり大砲',
     '　大乱闘'
   );
-  COL_NAME: array [0..6] of string  = (
+  COL_NAME: array [0..7] of string  = (
     '　どんぐり残高',
   	'　木材',
     '　鉄',
     '　鉄のキー',
     '　マリモ',
     '　木製の大砲の玉',
-    '　鉄の大砲の玉'
+    '　鉄の大砲の玉',
+    '　HP'
     );
 //  MODE_NAME: array[0..6] of String = (
 //    '不明',
@@ -469,6 +564,14 @@ begin
   ListViewWeapon.ShowHint := True;
   ListViewArmor.Hint := hintText;
   ListViewArmor.ShowHint := True;
+
+  ModWGrid.ColWidths[1] := 160;
+  ModWGrid.Selection := sel;
+  ModAGrid.ColWidths[1] := 160;
+  ModAGrid.Selection := sel;
+
+  TabSheetModW.TabVisible := False;
+  TabSheetModA.TabVisible := False;
 
   LabelHomeLink.Caption   := URL_ROOT;
   LabelFaqLink.Caption    := URL_FAQ;
@@ -677,6 +780,7 @@ begin
     InfoGrid.Cells[1, Integer(idxMarimo)]   := IntToStr(home.Marimo);
     InfoGrid.Cells[1, Integer(idxWdCnBall)] := IntToStr(home.WoodCB);
     InfoGrid.Cells[1, Integer(idxIrCnBall)] := IntToStr(home.IronCB);
+    InfoGrid.Cells[1, Integer(idxHP)]       := IntToStr(home.HP);
 
     // 自動ログイン
     AutoLoginCheckBox.Tag := 1;
@@ -778,6 +882,7 @@ begin
   UnlockAPnlButton.Enabled := (lock > 0);
   RecycleAPnlButton.Enabled := (unlock > 0);
   UseAPnlButton.Enabled := ((lock + unlock) = 1);
+  ModAPnlButton.Enabled := ((lock + unlock) = 1);
   SetButtonColor;
 end;
 
@@ -892,6 +997,7 @@ begin
   UnlockWPnlButton.Enabled := (lock > 0);
   RecycleWPnlButton.Enabled := (unlock > 0);
   UseWPnlButton.Enabled := ((lock + unlock) = 1);
+  ModWPnlButton.Enabled := ((lock + unlock) = 1);
   SetButtonColor;
 end;
 
@@ -1299,6 +1405,36 @@ begin
         SetColors(ListViewWeapon,      clWindow,  clWindowText);
         SetColors(ListViewArmor,       clWindow,  clWindowText);
       	SetColors(UsingPanel,          clBtnFace, clWindowText);
+        SetColors(ModWPanel,           clBtnFace, clWindowText);
+        SetColors(ModWGrid,            clWindow,  clWindowText);
+        SetColors(ModWMarimoPanel,     clWindow,  clWindowText);
+        SetColors(DmgMinCurPanel,      clWindow,  clWindowText);
+        SetColors(DmgMinNewPanel,      clWindow,  clWindowText);
+        SetColors(DmgMinMrmPanel,      clWindow,  clWindowText);
+        SetColors(DmgMaxCurPanel,      clWindow,  clWindowText);
+        SetColors(DmgMaxNewPanel,      clWindow,  clWindowText);
+        SetColors(DmgMaxMrmPanel,      clWindow,  clWindowText);
+        SetColors(SpeedCurPanel,       clWindow,  clWindowText);
+        SetColors(SpeedNewPanel,       clWindow,  clWindowText);
+        SetColors(SpeedMrmPanel,       clWindow,  clWindowText);
+        SetColors(CritWCurPanel,       clWindow,  clWindowText);
+        SetColors(CritWNewPanel,       clWindow,  clWindowText);
+        SetColors(CritWMrmPanel,       clWindow,  clWindowText);
+        SetColors(ModAPanel,           clBtnFace, clWindowText);
+        SetColors(ModAGrid,            clWindow,  clWindowText);
+        SetColors(ModAMarimoPanel,     clWindow,  clWindowText);
+        SetColors(DefMinCurPanel,      clWindow,  clWindowText);
+        SetColors(DefMinNewPanel,      clWindow,  clWindowText);
+        SetColors(DefMinMrmPanel,      clWindow,  clWindowText);
+        SetColors(DefMaxCurPanel,      clWindow,  clWindowText);
+        SetColors(DefMaxNewPanel,      clWindow,  clWindowText);
+        SetColors(DefMaxMrmPanel,      clWindow,  clWindowText);
+        SetColors(WeightCurPanel,      clWindow,  clWindowText);
+        SetColors(WeightNewPanel,      clWindow,  clWindowText);
+        SetColors(WeightMrmPanel,      clWindow,  clWindowText);
+        SetColors(CritACurPanel,       clWindow,  clWindowText);
+        SetColors(CritANewPanel,       clWindow,  clWindowText);
+        SetColors(CritAMrmPanel,       clWindow,  clWindowText);
 
       	TabSheetSetting.Font.Color := clWindowText;
 
@@ -1354,6 +1490,36 @@ begin
         SetColors(ListViewWeapon,      COL_DARK_BKG2, COL_DARK_TEXT);
         SetColors(ListViewArmor,       COL_DARK_BKG2, COL_DARK_TEXT);
       	SetColors(UsingPanel,          COL_DARK_BKG1, COL_DARK_TEXT);
+      	SetColors(ModWPanel,           COL_DARK_BKG1, COL_DARK_TEXT);
+        SetColors(ModWGrid,            COL_DARK_BKG2, COL_DARK_TEXT);
+        SetColors(ModWMarimoPanel,     COL_DARK_BKG2, COL_DARK_TEXT);
+        SetColors(DmgMinCurPanel,      COL_DARK_BKG2, COL_DARK_TEXT);
+        SetColors(DmgMinNewPanel,      COL_DARK_BKG2, COL_DARK_TEXT);
+        SetColors(DmgMinMrmPanel,      COL_DARK_BKG2, COL_DARK_TEXT);
+        SetColors(DmgMaxCurPanel,      COL_DARK_BKG2, COL_DARK_TEXT);
+        SetColors(DmgMaxNewPanel,      COL_DARK_BKG2, COL_DARK_TEXT);
+        SetColors(DmgMaxMrmPanel,      COL_DARK_BKG2, COL_DARK_TEXT);
+        SetColors(SpeedCurPanel,       COL_DARK_BKG2, COL_DARK_TEXT);
+        SetColors(SpeedNewPanel,       COL_DARK_BKG2, COL_DARK_TEXT);
+        SetColors(SpeedMrmPanel,       COL_DARK_BKG2, COL_DARK_TEXT);
+        SetColors(CritWCurPanel,       COL_DARK_BKG2, COL_DARK_TEXT);
+        SetColors(CritWNewPanel,       COL_DARK_BKG2, COL_DARK_TEXT);
+        SetColors(CritWMrmPanel,       COL_DARK_BKG2, COL_DARK_TEXT);
+        SetColors(ModAPanel,           COL_DARK_BKG1, COL_DARK_TEXT);
+        SetColors(ModAGrid,            COL_DARK_BKG2, COL_DARK_TEXT);
+        SetColors(ModAMarimoPanel,     COL_DARK_BKG2, COL_DARK_TEXT);
+        SetColors(DefMinCurPanel,      COL_DARK_BKG2, COL_DARK_TEXT);
+        SetColors(DefMinNewPanel,      COL_DARK_BKG2, COL_DARK_TEXT);
+        SetColors(DefMinMrmPanel,      COL_DARK_BKG2, COL_DARK_TEXT);
+        SetColors(DefMaxCurPanel,      COL_DARK_BKG2, COL_DARK_TEXT);
+        SetColors(DefMaxNewPanel,      COL_DARK_BKG2, COL_DARK_TEXT);
+        SetColors(DefMaxMrmPanel,      COL_DARK_BKG2, COL_DARK_TEXT);
+        SetColors(WeightCurPanel,      COL_DARK_BKG2, COL_DARK_TEXT);
+        SetColors(WeightNewPanel,      COL_DARK_BKG2, COL_DARK_TEXT);
+        SetColors(WeightMrmPanel,      COL_DARK_BKG2, COL_DARK_TEXT);
+        SetColors(CritACurPanel,       COL_DARK_BKG2, COL_DARK_TEXT);
+        SetColors(CritANewPanel,       COL_DARK_BKG2, COL_DARK_TEXT);
+        SetColors(CritAMrmPanel,       COL_DARK_BKG2, COL_DARK_TEXT);
 
       	TabSheetSetting.Font.Color := COL_DARK_TEXT;
 
@@ -1447,7 +1613,18 @@ begin
   SetButtonColors(RecycleAPnlButton,  bkg, txt, dtx);
   SetButtonColors(UseAPnlButton,      bkg, txt, dtx);
   SetButtonColors(RecycleAllPnlButton,bkg, txt, dtx);
-
+	SetButtonColors(ModWPnlButton,      bkg, txt, dtx);
+  SetButtonColors(ModBackWPnlButton,  bkg, txt, dtx);
+  SetButtonColors(ModDmgMinPnlButton, bkg, txt, dtx);
+  SetButtonColors(ModDmgMaxPnlButton, bkg, txt, dtx);
+  SetButtonColors(ModSpeedPnlButton,  bkg, txt, dtx);
+  SetButtonColors(ModCritWPnlButton,  bkg, txt, dtx);
+  SetButtonColors(ModAPnlButton,      bkg, txt, dtx);
+  SetButtonColors(ModBackAPnlButton,  bkg, txt, dtx);
+  SetButtonColors(ModDefMinPnlButton, bkg, txt, dtx);
+  SetButtonColors(ModDefMaxPnlButton, bkg, txt, dtx);
+  SetButtonColors(ModWeightPnlButton, bkg, txt, dtx);
+  SetButtonColors(ModCritAPnlButton,  bkg, txt, dtx);
   SetButtonColors(ResurrectPnlButton, bkg, txt, dtx);
   SetButtonColors(RenamePnlButton,    bkg, txt, dtx);
 	SetButtonColors(TransferPnlButton,  bkg, txt, dtx);
@@ -1521,7 +1698,15 @@ begin
   case TabIndex of
     0: cpt := TabSheetHome.Caption;
     1: cpt := TabSheetService.Caption;
-    2: cpt := TabSheetChest.Caption;
+    2:
+      begin
+        if TabSheetChest.TabVisible then
+          cpt := TabSheetChest.Caption
+        else if TabSheetModW.TabVisible then
+          cpt := TabSheetModW.Caption
+        else if TabSheetModA.TabVisible then
+          cpt := TabSheetModA.Caption;
+      end;
     3: cpt := TabSheetLink.Caption;
     4: cpt := TabSheetSetting.Caption;
   end;
@@ -1808,10 +1993,12 @@ begin
     UnlockWPnlButton.Enabled  := False;
     RecycleWPnlButton.Enabled := False;
     UseWPnlButton.Enabled     := False;
+    ModWPnlButton.Enabled     := False;
     LockAPnlButton.Enabled    := False;
     UnlockAPnlButton.Enabled  := False;
     RecycleAPnlButton.Enabled := False;
     UseAPnlButton.Enabled     := False;
+    ModAPnlButton.Enabled     := False;
     SetButtonColor;
 
   except
@@ -2192,9 +2379,636 @@ begin
       ShowBag
     else
       ShowHttpError;
-  finally
+  except
+    on e: Exception do begin
+			MsgBox(Handle, e.Message, CAP_MSG, MB_OK or MB_ICONERROR);
+    end;
   end;
 end;
+
+procedure TDonguriForm.ModAPnlButtonClick(Sender: TObject);
+const
+  CAP_MSG: String = 'アイテムバッグ';
+var
+	i: Integer;
+  item: TListItem;
+	itemNo: String;
+  res: String;
+begin
+
+	if GikoSys.DonguriSys.Processing then
+  	Exit;
+
+	try
+  	for i := 0 to ListViewArmor.Items.Count - 1 do begin
+    	item := ListViewArmor.Items.Item[i];
+      if item.Checked and (item.Data <> nil) and
+         (TDonguriItem(item.Data).ItemNo <> '') then begin
+        if itemNo <> '' then begin
+          MsgBox(Handle, '一度に複数を強化することはできません。',
+                    CAP_MSG, MB_OK or MB_ICONERROR);
+        	Exit;
+        end;
+      	itemNo := TDonguriItem(item.Data).ItemNo;
+			end;
+    end;
+
+		if itemNo = '' then begin
+      MsgBox(Handle, '強化する行にチェックを付けてください。',
+								CAP_MSG, MB_OK or MB_ICONERROR);
+      Exit;
+    end;
+
+    if GikoSys.DonguriSys.ModArmorView(itemNo, res) then begin
+    	ShowModViewA(res);
+
+    	LockWindowUpdate(PageControl.Handle);
+      TabSheetModA.TabVisible := True;
+      PageControl.ActivePage := TabSheetModA;
+      TabSheetModW.TabVisible := False;
+      TabSheetChest.TabVisible := False;
+    	LockWindowUpdate(0);
+    end else
+      ShowHttpError;
+  except
+    on e: Exception do begin
+			MsgBox(Handle, e.Message, CAP_MSG, MB_OK or MB_ICONERROR);
+    end;
+  end;
+end;
+
+type
+  ColIndexModA = (
+   idxmaID     = 0,
+   idxmaRank   = 1,
+   idxmaType   = 2,
+   idxmaName   = 3,
+   idxmaDefMin = 4,
+   idxmaDefMax = 5,
+   idxmaWeight = 6,
+   idxmaCritic = 7,
+   idxmaMarimo = 8,
+   idxmaMod    = 9,
+   idxmaCount  = 10
+  );
+
+procedure TDonguriForm.ShowModViewA(res: String);
+const
+  COL_NAME_MODA: array [0..9] of String = (
+    '　ID',
+    '　ランク',
+    '　タイプ',
+    '　名前',
+    '　DEF最小値',
+    '　DEF最大値',
+    '　WT.',
+    '　CRIT',
+    '　マリモ',
+    '　MOD'
+  );
+  KW_IMG1_S  = '<div class="upgrade-option"><img';
+  KW_IMG1_E  = '>';
+  KW_IMG2_S  = 'src="';
+  KW_IMG2_E  = '"';
+  KW_TTLM_S = '<div>持っているマリモの量:';
+  KW_TTLM_E = '</div>';
+  KW_ID_S   = '<span id="armorID">';
+  KW_ID_E   = '</span>';
+  KW_RANK_S = '<span id="armorRarity">';
+  KW_RANK_E = '</span>';
+  KW_TYPE_S = '<span id="armorType">';
+  KW_TYPE_E = '</span>';
+  KW_NAME_S = '<span id="armorNickName">';
+  KW_NAME_E = '</span>';
+  KW_DFMN_S = '<span id="armorHardnessMin">';
+  KW_DFMN_E = '</span>';
+  KW_DFMX_S = '<span id="armorHardnessMax">';
+  KW_DFMX_E = '</span>';
+  KW_WGHT_S = '<span id="armorWeight">';
+  KW_WGHT_E = '</span>';
+  KW_CRIT_S = '<span id="armorCritical">';
+  KW_CRIT_E = '</span>';
+  KW_MARI_S = '<span id="armorValue">';
+  KW_MARI_E = '</span>';
+  KW_MODC_S = '<span id="armorModCount">';
+  KW_MODC_E = '</span>';
+  KW_FM_DFMN_S = '<form class="upgrade-option" action="https://donguri.5ch.net/modify/armor/deflow/';
+  KW_FM_DFMN_E = '</form>';
+  KW_FM_DFMX_S = '<form class="upgrade-option" action="https://donguri.5ch.net/modify/armor/defhigh/';
+  KW_FM_DFMX_E = '</form>';
+  KW_FM_WGHT_S = '<form class="upgrade-option" action="https://donguri.5ch.net/modify/armor/weight/';
+  KW_FM_WGHT_E = '</form>';
+  KW_FM_CRIT_S = '<form class="upgrade-option" action="https://donguri.5ch.net/modify/armor/critical/';
+  KW_FM_CRIT_E = '</form>';
+  KW_CURVAL_S  = '旧値:';
+  KW_CURVAL_E  = '</span>';
+  KW_NEWVAL_S  = '新値:';
+  KW_NEWVAL_E  = '</span>';
+  KW_MRCOST_S  = '<button type="submit">';
+  KW_MRCOST_E  = 'マを消費して強化</button>';
+var
+	i: Integer;
+  tmp: String;
+  tm2: String;
+begin
+	ModAGrid.RowCount := Integer(idxmaCount);
+	for i := 0 to Integer(idxmaCount) - 1 do begin
+	  ModAGrid.Cells[0, i] := COL_NAME_MODA[i];
+	  ModAGrid.Cells[1, i] := '';
+  end;
+  ModAMarimoPanel.Caption := '';
+  DefMinCurPanel.Caption := '';
+  DefMinNewPanel.Caption := '';
+  DefMinMrmPanel.Caption := '';
+  DefMaxCurPanel.Caption := '';
+  DefMaxNewPanel.Caption := '';
+  DefMaxMrmPanel.Caption := '';
+  WeightCurPanel.Caption := '';
+  WeightNewPanel.Caption := '';
+  WeightMrmPanel.Caption := '';
+  CritACurPanel.Caption := '';
+  CritANewPanel.Caption := '';
+  CritAMrmPanel.Caption := '';
+
+	if Pos('<html', res) < 1 then
+  	Exit;
+
+	if Extract(KW_IMG1_S, KW_IMG1_E, res, tmp) and
+		 Extract(KW_IMG2_S, KW_IMG2_E, tmp, tm2) and (tm2 <> '') then
+			ModAImage.Visible := SetImageFromURL(ModAImage, tm2);
+
+	if Extract(KW_TTLM_S, KW_TTLM_E, res, tmp) then
+	  ModAMarimoPanel.Caption := TrimTag(tmp);
+
+	if Extract(KW_ID_S, KW_ID_E, res, tmp) then
+	  ModAGrid.Cells[1, Integer(idxmaID)] := tmp;
+
+	if Extract(KW_RANK_S, KW_RANK_E, res, tmp) then
+	  ModAGrid.Cells[1, Integer(idxmaRank)] := tmp;
+
+	if Extract(KW_TYPE_S, KW_TYPE_E, res, tmp) then
+	  ModAGrid.Cells[1, Integer(idxmaType)] := tmp;
+
+	if Extract(KW_NAME_S, KW_NAME_E, res, tmp) then
+	  ModAGrid.Cells[1, Integer(idxmaName)] := tmp;
+
+	if Extract(KW_DFMN_S, KW_DFMN_E, res, tmp) then
+	  ModAGrid.Cells[1, Integer(idxmaDefMin)] := tmp;
+
+	if Extract(KW_DFMX_S, KW_DFMX_E, res, tmp) then
+	  ModAGrid.Cells[1, Integer(idxmaDefMax)] := tmp;
+
+	if Extract(KW_WGHT_S, KW_WGHT_E, res, tmp) then
+	  ModAGrid.Cells[1, Integer(idxmaWeight)] := tmp;
+
+	if Extract(KW_CRIT_S, KW_CRIT_E, res, tmp) then
+	  ModAGrid.Cells[1, Integer(idxmaCritic)] := tmp;
+
+	if Extract(KW_MARI_S, KW_MARI_E, res, tmp) then
+	  ModAGrid.Cells[1, Integer(idxmaMarimo)] := tmp;
+
+	if Extract(KW_MODC_S, KW_MODC_E, res, tmp) then
+	  ModAGrid.Cells[1, Integer(idxmaMod)] := tmp;
+
+	if Extract(KW_FM_DFMN_S, KW_FM_DFMN_E, res, tmp) then begin
+
+		if Extract(KW_CURVAL_S, KW_CURVAL_E, tmp, tm2) then
+	    DefMinCurPanel.Caption := TrimTag(tm2);
+
+		if Extract(KW_NEWVAL_S, KW_NEWVAL_E, tmp, tm2) then
+	    DefMinNewPanel.Caption := TrimTag(tm2);
+
+		if Extract(KW_MRCOST_S, KW_MRCOST_E, tmp, tm2) then
+	    DefMinMrmPanel.Caption := TrimTag(tm2);
+  end;
+
+	if Extract(KW_FM_DFMX_S, KW_FM_DFMX_E, res, tmp) then begin
+
+		if Extract(KW_CURVAL_S, KW_CURVAL_E, tmp, tm2) then
+	    DefMaxCurPanel.Caption := TrimTag(tm2);
+
+		if Extract(KW_NEWVAL_S, KW_NEWVAL_E, tmp, tm2) then
+	    DefMaxNewPanel.Caption := TrimTag(tm2);
+
+		if Extract(KW_MRCOST_S, KW_MRCOST_E, tmp, tm2) then
+	    DefMaxMrmPanel.Caption := TrimTag(tm2);
+  end;
+
+	if Extract(KW_FM_WGHT_S, KW_FM_WGHT_E, res, tmp) then begin
+
+		if Extract(KW_CURVAL_S, KW_CURVAL_E, tmp, tm2) then
+	    WeightCurPanel.Caption := TrimTag(tm2);
+
+		if Extract(KW_NEWVAL_S, KW_NEWVAL_E, tmp, tm2) then
+	    WeightNewPanel.Caption := TrimTag(tm2);
+
+		if Extract(KW_MRCOST_S, KW_MRCOST_E, tmp, tm2) then
+	    WeightMrmPanel.Caption := TrimTag(tm2);
+  end;
+
+	if Extract(KW_FM_CRIT_S, KW_FM_CRIT_E, res, tmp) then begin
+
+		if Extract(KW_CURVAL_S, KW_CURVAL_E, tmp, tm2) then
+	    CritACurPanel.Caption := TrimTag(tm2);
+
+		if Extract(KW_NEWVAL_S, KW_NEWVAL_E, tmp, tm2) then
+	    CritANewPanel.Caption := TrimTag(tm2);
+
+		if Extract(KW_MRCOST_S, KW_MRCOST_E, tmp, tm2) then
+	    CritAMrmPanel.Caption := TrimTag(tm2);
+  end;
+
+end;
+
+procedure TDonguriForm.ModBackAPnlButtonClick(Sender: TObject);
+begin
+	LockWindowUpdate(PageControl.Handle);
+  TabSheetChest.TabVisible := True;
+  PageControl.ActivePage := TabSheetChest;
+  TabSheetModW.TabVisible := False;
+  TabSheetModA.TabVisible := False;
+	LockWindowUpdate(0);
+end;
+
+procedure TDonguriForm.ModBackWPnlButtonClick(Sender: TObject);
+begin
+	LockWindowUpdate(PageControl.Handle);
+  TabSheetChest.TabVisible := True;
+  PageControl.ActivePage := TabSheetChest;
+  TabSheetModW.TabVisible := False;
+  TabSheetModA.TabVisible := False;
+	LockWindowUpdate(0);
+end;
+
+procedure TDonguriForm.ModDmgMinPnlButtonClick(Sender: TObject);
+begin
+	ModWeapon(mdwDmgMin);
+end;
+
+procedure TDonguriForm.ModDmgMaxPnlButtonClick(Sender: TObject);
+begin
+	ModWeapon(mdwDmgMax);
+end;
+
+procedure TDonguriForm.ModSpeedPnlButtonClick(Sender: TObject);
+begin
+	ModWeapon(mdwSpeed);
+end;
+
+procedure TDonguriForm.ModCritWPnlButtonClick(Sender: TObject);
+begin
+	ModWeapon(mdwCrit);
+end;
+
+procedure TDonguriForm.ModDefMinPnlButtonClick(Sender: TObject);
+begin
+	ModArmor(mdaDefMin);
+end;
+
+procedure TDonguriForm.ModDefMaxPnlButtonClick(Sender: TObject);
+begin
+	ModArmor(mdaDefMax);
+end;
+
+procedure TDonguriForm.ModWeightPnlButtonClick(Sender: TObject);
+begin
+	ModArmor(mdaWeight);
+end;
+
+procedure TDonguriForm.ModCritAPnlButtonClick(Sender: TObject);
+begin
+	ModArmor(mdaCrit);
+end;
+
+procedure TDonguriForm.ModArmor(modType: TModifyArmor);
+const
+	CAP_MSG = '防具強化';
+var
+	res: String;
+  itemNo: String;
+begin
+	if GikoSys.DonguriSys.Processing then
+  	Exit;
+
+	try
+		itemNo := Trim(ModAGrid.Cells[1, Integer(idxmaID)]);
+
+    if (itemNo = '') or (StrToIntDef(itemNo, -1) < 1) then begin
+    	MsgBox(Handle, '防具の情報が正しくありません。', CAP_MSG, MB_OK or MB_ICONERROR);
+      Exit;
+    end;
+
+  	if GikoSys.DonguriSys.ModArmor(modType, itemNo, res) then begin
+      if Pos('<html', res) < 1 then
+        MsgBox(Handle, TrimTag(res), CAP_MSG, MB_OK or MB_ICONWARNING)
+      else
+	    	ShowModViewA(res);
+    end else
+      ShowHttpError;
+  except
+    on e: Exception do begin
+			MsgBox(Handle, e.Message, CAP_MSG, MB_OK or MB_ICONERROR);
+    end;
+  end;
+end;
+
+
+
+procedure TDonguriForm.ModWPnlButtonClick(Sender: TObject);
+const
+  CAP_MSG: String = 'アイテムバッグ';
+var
+	i: Integer;
+  item: TListItem;
+	itemNo: String;
+  res: String;
+begin
+
+	if GikoSys.DonguriSys.Processing then
+  	Exit;
+
+	try
+  	for i := 0 to ListViewWeapon.Items.Count - 1 do begin
+    	item := ListViewWeapon.Items.Item[i];
+      if item.Checked and (item.Data <> nil) and
+         (TDonguriItem(item.Data).ItemNo <> '') then begin
+        if itemNo <> '' then begin
+          MsgBox(Handle, '一度に複数を強化することはできません。',
+                    CAP_MSG, MB_OK or MB_ICONERROR);
+        	Exit;
+        end;
+      	itemNo := TDonguriItem(item.Data).ItemNo;
+			end;
+    end;
+
+		if itemNo = '' then begin
+      MsgBox(Handle, '強化する行にチェックを付けてください。',
+								CAP_MSG, MB_OK or MB_ICONERROR);
+      Exit;
+    end;
+
+    if GikoSys.DonguriSys.ModWeaponView(itemNo, res) then begin
+    	ShowModViewW(res);
+
+    	LockWindowUpdate(PageControl.Handle);
+      TabSheetModW.TabVisible := True;
+      PageControl.ActivePage := TabSheetModW;
+      TabSheetModA.TabVisible := False;
+      TabSheetChest.TabVisible := False;
+    	LockWindowUpdate(0);
+    end else
+      ShowHttpError;
+  except
+    on e: Exception do begin
+			MsgBox(Handle, e.Message, CAP_MSG, MB_OK or MB_ICONERROR);
+    end;
+  end;
+
+end;
+
+type
+  ColIndexModW = (
+   idxmwID     = 0,
+   idxmwRank   = 1,
+   idxmwType   = 2,
+   idxmwName   = 3,
+   idxmwDmgMin = 4,
+   idxmwDmgMax = 5,
+   idxmwSpeed  = 6,
+   idxmwCritic = 7,
+   idxmwMarimo = 8,
+   idxmwMod    = 9,
+   idxmwCount  = 10
+  );
+
+procedure TDonguriForm.ShowModViewW(res: String);
+const
+  COL_NAME_MODW: array [0..9] of String = (
+    '　ID',
+    '　ランク',
+    '　タイプ',
+    '　名前',
+    '　DMG最小値',
+    '　DMG最大値',
+    '　SPD',
+    '　CRIT',
+    '　マリモ',
+    '　MOD'
+  );
+  KW_IMG1_S  = '<div class="upgrade-option"><img';
+  KW_IMG1_E  = '>';
+  KW_IMG2_S  = 'src="';
+  KW_IMG2_E  = '"';
+  KW_TTLM_S = '<div>持っているマリモの量:';
+  KW_TTLM_E = '</div>';
+  KW_ID_S   = '<span id="weaponID">';
+  KW_ID_E   = '</span>';
+  KW_RANK_S = '<span id="weaponRarity">';
+  KW_RANK_E = '</span>';
+  KW_TYPE_S = '<span id="weaponType">';
+  KW_TYPE_E = '</span>';
+  KW_NAME_S = '<span id="weaponNickName">';
+  KW_NAME_E = '</span>';
+  KW_DMMN_S = '<span id="weaponDMGmin">';
+  KW_DMMN_E = '</span>';
+  KW_DMMX_S = '<span id="weaponHardnessMax">';
+  KW_DMMX_E = '</span>';
+  KW_WSPD_S = '<span id="weaponSpeed">';
+  KW_WSPD_E = '</span>';
+  KW_CRIT_S = '<span id="weaponCritical">';
+  KW_CRIT_E = '</span>';
+  KW_MARI_S = '<span id="weaponValue">';
+  KW_MARI_E = '</span>';
+  KW_MODC_S = '<span id="weaponModCount">';
+  KW_MODC_E = '</span>';
+  KW_FM_DMMN_S = '<form class="upgrade-option" action="https://donguri.5ch.net/modify/weapon/dmglow/';
+  KW_FM_DMMN_E = '</form>';
+  KW_FM_DMMX_S = '<form class="upgrade-option" action="https://donguri.5ch.net/modify/weapon/dmghigh/';
+  KW_FM_DMMX_E = '</form>';
+  KW_FM_WSPD_S = '<form class="upgrade-option" action="https://donguri.5ch.net/modify/weapon/speed/';
+  KW_FM_WSPD_E = '</form>';
+  KW_FM_CRIT_S = '<form class="upgrade-option" action="https://donguri.5ch.net/modify/weapon/critical/';
+  KW_FM_CRIT_E = '</form>';
+  KW_CURVAL_S  = '旧値:';
+  KW_CURVAL_E  = '</span>';
+  KW_NEWVAL_S  = '新値:';
+  KW_NEWVAL_E  = '</span>';
+  KW_MRCOST_S  = '<button type="submit">';
+  KW_MRCOST_E  = 'マを消費して強化</button>';
+var
+	i: Integer;
+  tmp: String;
+  tm2: String;
+begin
+	ModWGrid.RowCount := Integer(idxmwCount);
+	for i := 0 to Integer(idxmwCount) - 1 do begin
+	  ModWGrid.Cells[0, i] := COL_NAME_MODW[i];
+	  ModWGrid.Cells[1, i] := '';
+  end;
+  ModWMarimoPanel.Caption := '';
+  DmgMinCurPanel.Caption := '';
+  DmgMinNewPanel.Caption := '';
+  DmgMinMrmPanel.Caption := '';
+  DmgMaxCurPanel.Caption := '';
+  DmgMaxNewPanel.Caption := '';
+  DmgMaxMrmPanel.Caption := '';
+  SpeedCurPanel.Caption := '';
+  SpeedNewPanel.Caption := '';
+  SpeedMrmPanel.Caption := '';
+  CritWCurPanel.Caption := '';
+  CritWNewPanel.Caption := '';
+  CritWMrmPanel.Caption := '';
+  ModWImage.Visible := False;
+
+	if Pos('<html', res) < 1 then
+  	Exit;
+
+	if Extract(KW_IMG1_S, KW_IMG1_E, res, tmp) and
+		 Extract(KW_IMG2_S, KW_IMG2_E, tmp, tm2) and (tm2 <> '') then
+			ModWImage.Visible := SetImageFromURL(ModWImage, tm2);
+
+	if Extract(KW_TTLM_S, KW_TTLM_E, res, tmp) then
+	  ModWMarimoPanel.Caption := TrimTag(tmp);
+
+	if Extract(KW_ID_S, KW_ID_E, res, tmp) then
+	  ModWGrid.Cells[1, Integer(idxmaID)] := tmp;
+
+	if Extract(KW_RANK_S, KW_RANK_E, res, tmp) then
+	  ModWGrid.Cells[1, Integer(idxmwRank)] := tmp;
+
+	if Extract(KW_TYPE_S, KW_TYPE_E, res, tmp) then
+	  ModWGrid.Cells[1, Integer(idxmwType)] := tmp;
+
+	if Extract(KW_NAME_S, KW_NAME_E, res, tmp) then
+	  ModWGrid.Cells[1, Integer(idxmwName)] := tmp;
+
+	if Extract(KW_DMMN_S, KW_DMMN_E, res, tmp) then
+	  ModWGrid.Cells[1, Integer(idxmwDmgMin)] := tmp;
+
+	if Extract(KW_DMMX_S, KW_DMMX_E, res, tmp) then
+	  ModWGrid.Cells[1, Integer(idxmwDmgMax)] := tmp;
+
+	if Extract(KW_WSPD_S, KW_WSPD_E, res, tmp) then
+	  ModWGrid.Cells[1, Integer(idxmwSpeed)] := tmp;
+
+	if Extract(KW_CRIT_S, KW_CRIT_E, res, tmp) then
+	  ModWGrid.Cells[1, Integer(idxmwCritic)] := tmp;
+
+	if Extract(KW_MARI_S, KW_MARI_E, res, tmp) then
+	  ModWGrid.Cells[1, Integer(idxmwMarimo)] := tmp;
+
+	if Extract(KW_MODC_S, KW_MODC_E, res, tmp) then
+	  ModWGrid.Cells[1, Integer(idxmwMod)] := tmp;
+
+	if Extract(KW_FM_DMMN_S, KW_FM_DMMN_E, res, tmp) then begin
+
+		if Extract(KW_CURVAL_S, KW_CURVAL_E, tmp, tm2) then
+	    DmgMinCurPanel.Caption := TrimTag(tm2);
+
+		if Extract(KW_NEWVAL_S, KW_NEWVAL_E, tmp, tm2) then
+	    DmgMinNewPanel.Caption := TrimTag(tm2);
+
+		if Extract(KW_MRCOST_S, KW_MRCOST_E, tmp, tm2) then
+	    DmgMinMrmPanel.Caption := TrimTag(tm2);
+  end;
+
+	if Extract(KW_FM_DMMX_S, KW_FM_DMMX_E, res, tmp) then begin
+
+		if Extract(KW_CURVAL_S, KW_CURVAL_E, tmp, tm2) then
+	    DmgMaxCurPanel.Caption := TrimTag(tm2);
+
+		if Extract(KW_NEWVAL_S, KW_NEWVAL_E, tmp, tm2) then
+	    DmgMaxNewPanel.Caption := TrimTag(tm2);
+
+		if Extract(KW_MRCOST_S, KW_MRCOST_E, tmp, tm2) then
+	    DmgMaxMrmPanel.Caption := TrimTag(tm2);
+  end;
+
+	if Extract(KW_FM_WSPD_S, KW_FM_WSPD_E, res, tmp) then begin
+
+		if Extract(KW_CURVAL_S, KW_CURVAL_E, tmp, tm2) then
+	    SpeedCurPanel.Caption := TrimTag(tm2);
+
+		if Extract(KW_NEWVAL_S, KW_NEWVAL_E, tmp, tm2) then
+	    SpeedNewPanel.Caption := TrimTag(tm2);
+
+		if Extract(KW_MRCOST_S, KW_MRCOST_E, tmp, tm2) then
+	    SpeedMrmPanel.Caption := TrimTag(tm2);
+  end;
+
+	if Extract(KW_FM_CRIT_S, KW_FM_CRIT_E, res, tmp) then begin
+
+		if Extract(KW_CURVAL_S, KW_CURVAL_E, tmp, tm2) then
+	    CritWCurPanel.Caption := TrimTag(tm2);
+
+		if Extract(KW_NEWVAL_S, KW_NEWVAL_E, tmp, tm2) then
+	    CritWNewPanel.Caption := TrimTag(tm2);
+
+		if Extract(KW_MRCOST_S, KW_MRCOST_E, tmp, tm2) then
+	    CritWMrmPanel.Caption := TrimTag(tm2);
+  end;
+
+end;
+
+
+function TDonguriForm.SetImageFromURL(image: TImage; url: String): Boolean;
+var
+  img: TMemoryStream;
+  jpg: TJPEGImage;
+begin
+	Result := False;
+  img := TMemoryStream.Create;
+  try
+    if GikoSys.DonguriSys.Download(url, '', img) and (img.Size > 0) then begin
+      jpg := TJPEGImage.Create;
+      try
+        img.Position := 0;
+        jpg.LoadFromStream(img);
+        image.Picture.Assign(jpg);
+        Result := True;
+      finally
+	      jpg.Free;
+      end;
+    end;
+  finally
+	  img.Free;
+  end;
+end;
+
+
+procedure TDonguriForm.ModWeapon(modType: TModifyWeapon);
+const
+	CAP_MSG = '武器強化';
+var
+	res: String;
+  itemNo: String;
+begin
+	if GikoSys.DonguriSys.Processing then
+  	Exit;
+
+	try
+		itemNo := Trim(ModWGrid.Cells[1, Integer(idxmaID)]);
+
+    if (itemNo = '') or (StrToIntDef(itemNo, -1) < 1) then begin
+    	MsgBox(Handle, '武器の情報が正しくありません。', CAP_MSG, MB_OK or MB_ICONERROR);
+      Exit;
+    end;
+
+  	if GikoSys.DonguriSys.ModWeapon(modType, itemNo, res) then begin
+      if Pos('<html', res) < 1 then
+        MsgBox(Handle, TrimTag(res), CAP_MSG, MB_OK or MB_ICONWARNING)
+      else
+	    	ShowModViewW(res);
+    end else
+      ShowHttpError;
+  except
+    on e: Exception do begin
+			MsgBox(Handle, e.Message, CAP_MSG, MB_OK or MB_ICONERROR);
+    end;
+  end;
+end;
+
+
 
 
 procedure TDonguriForm.LabelLinkContextPopup(Sender: TObject;

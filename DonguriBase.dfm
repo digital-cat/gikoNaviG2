@@ -3,7 +3,7 @@ object DonguriForm: TDonguriForm
   Top = 0
   BorderIcons = [biSystemMenu, biMinimize]
   Caption = #12393#12435#12368#12426#12471#12473#12486#12512
-  ClientHeight = 732
+  ClientHeight = 541
   ClientWidth = 280
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -73,13 +73,15 @@ object DonguriForm: TDonguriForm
     Left = 0
     Top = 28
     Width = 280
-    Height = 704
-    ActivePage = TabSheetSetting
+    Height = 513
+    ActivePage = TabSheetHome
     Align = alClient
     TabOrder = 0
     OnDrawTab = PageControlDrawTab
+    ExplicitHeight = 833
     object TabSheetHome: TTabSheet
       Caption = #12507#12540#12512
+      ExplicitHeight = 805
       object PanelHome: TPanel
         Left = 0
         Top = 0
@@ -196,14 +198,14 @@ object DonguriForm: TDonguriForm
         end
         object Label24: TLabel
           Left = 12
-          Top = 324
+          Top = 318
           Width = 36
           Height = 13
           Caption = #20445#31649#24235
         end
         object Label1: TLabel
           Left = 12
-          Top = 270
+          Top = 268
           Width = 24
           Height = 13
           Caption = #32113#35336
@@ -268,9 +270,9 @@ object DonguriForm: TDonguriForm
         end
         object InfoGrid: TStringGrid
           Left = 12
-          Top = 340
+          Top = 332
           Width = 253
-          Height = 125
+          Height = 135
           BevelEdges = []
           BevelInner = bvNone
           BevelOuter = bvNone
@@ -278,10 +280,10 @@ object DonguriForm: TDonguriForm
           ColCount = 2
           Ctl3D = False
           DefaultColWidth = 100
-          DefaultRowHeight = 17
+          DefaultRowHeight = 16
           Enabled = False
           FixedCols = 0
-          RowCount = 7
+          RowCount = 8
           FixedRows = 0
           Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goRowSelect]
           ParentCtl3D = False
@@ -477,9 +479,9 @@ object DonguriForm: TDonguriForm
         end
         object StatisticsGrid: TStringGrid
           Left = 12
-          Top = 284
+          Top = 282
           Width = 253
-          Height = 35
+          Height = 33
           BevelEdges = []
           BevelInner = bvNone
           BevelOuter = bvNone
@@ -487,7 +489,7 @@ object DonguriForm: TDonguriForm
           ColCount = 2
           Ctl3D = False
           DefaultColWidth = 100
-          DefaultRowHeight = 17
+          DefaultRowHeight = 16
           Enabled = False
           FixedCols = 0
           RowCount = 2
@@ -564,16 +566,18 @@ object DonguriForm: TDonguriForm
         Left = 0
         Top = 472
         Width = 272
-        Height = 204
+        Height = 13
         Align = alClient
         BevelOuter = bvLowered
         ParentColor = True
         TabOrder = 1
+        ExplicitHeight = 333
       end
     end
     object TabSheetService: TTabSheet
       Caption = #12469#12540#12499#12473
       ImageIndex = 1
+      ExplicitHeight = 805
       object PanelService: TPanel
         Left = 0
         Top = 0
@@ -888,16 +892,18 @@ object DonguriForm: TDonguriForm
         Left = 0
         Top = 472
         Width = 272
-        Height = 204
+        Height = 13
         Align = alClient
         BevelOuter = bvLowered
         ParentColor = True
         TabOrder = 1
+        ExplicitHeight = 333
       end
     end
     object TabSheetChest: TTabSheet
       Caption = #12450#12452#12486#12512
       ImageIndex = 2
+      ExplicitHeight = 805
       object BagTopPanel: TPanel
         Left = 0
         Top = 0
@@ -994,14 +1000,16 @@ object DonguriForm: TDonguriForm
         Left = 0
         Top = 126
         Width = 272
-        Height = 550
-        ActivePage = TabSheetUsing
+        Height = 359
+        ActivePage = TabSheetWeapon
         Align = alClient
         TabOrder = 1
         OnDrawTab = PageControlItemBagDrawTab
+        ExplicitHeight = 255
         object TabSheetUsing: TTabSheet
           Caption = #35013#20633#20013
           OnResize = TabSheetUsingResize
+          ExplicitHeight = 227
           object UsingPanel: TPanel
             Left = 0
             Top = 0
@@ -1169,16 +1177,18 @@ object DonguriForm: TDonguriForm
             Left = 0
             Top = 322
             Width = 264
-            Height = 200
+            Height = 9
             Align = alClient
             BevelOuter = bvLowered
             ParentColor = True
             TabOrder = 1
+            ExplicitHeight = 2
           end
         end
         object TabSheetWeapon: TTabSheet
           Caption = #27494#22120
           ImageIndex = 1
+          ExplicitHeight = 227
           object WeaponTopPanel: TPanel
             Left = 0
             Top = 0
@@ -1201,7 +1211,7 @@ object DonguriForm: TDonguriForm
               OnClick = WeaponAllCheckBoxClick
             end
             object RecycleWPnlButton: TPanel
-              Left = 138
+              Left = 132
               Top = 4
               Width = 44
               Height = 22
@@ -1217,7 +1227,7 @@ object DonguriForm: TDonguriForm
               OnMouseUp = PanelButtonMouseUp
             end
             object UnlockWPnlButton: TPanel
-              Left = 76
+              Left = 70
               Top = 4
               Width = 60
               Height = 22
@@ -1233,7 +1243,7 @@ object DonguriForm: TDonguriForm
               OnMouseUp = PanelButtonMouseUp
             end
             object LockWPnlButton: TPanel
-              Left = 30
+              Left = 24
               Top = 4
               Width = 44
               Height = 22
@@ -1249,7 +1259,7 @@ object DonguriForm: TDonguriForm
               OnMouseUp = PanelButtonMouseUp
             end
             object UseWPnlButton: TPanel
-              Left = 184
+              Left = 178
               Top = 4
               Width = 44
               Height = 22
@@ -1264,12 +1274,25 @@ object DonguriForm: TDonguriForm
               OnMouseDown = PanelButtonMouseDown
               OnMouseUp = PanelButtonMouseUp
             end
+            object ModWPnlButton: TPanel
+              Left = 224
+              Top = 4
+              Width = 44
+              Height = 22
+              BevelInner = bvRaised
+              Caption = #24375#21270
+              Enabled = False
+              TabOrder = 5
+              OnClick = ModWPnlButtonClick
+              OnMouseDown = PanelButtonMouseDown
+              OnMouseUp = PanelButtonMouseUp
+            end
           end
           object ListViewWeapon: TListView
             Left = 0
             Top = 30
             Width = 264
-            Height = 492
+            Height = 301
             Align = alClient
             BevelInner = bvNone
             BevelOuter = bvNone
@@ -1326,11 +1349,13 @@ object DonguriForm: TDonguriForm
             OnChange = ListViewWeaponChange
             OnColumnClick = ListViewWeaponColumnClick
             OnCompare = ListViewWeaponCompare
+            ExplicitHeight = 197
           end
         end
         object TabSheetArmor: TTabSheet
           Caption = #38450#20855
           ImageIndex = 2
+          ExplicitHeight = 227
           object ArmorTopPanel: TPanel
             Left = 0
             Top = 0
@@ -1353,7 +1378,7 @@ object DonguriForm: TDonguriForm
               OnClick = ArmorAllCheckBoxClick
             end
             object LockAPnlButton: TPanel
-              Left = 30
+              Left = 24
               Top = 4
               Width = 44
               Height = 22
@@ -1369,7 +1394,7 @@ object DonguriForm: TDonguriForm
               OnMouseUp = PanelButtonMouseUp
             end
             object UnlockAPnlButton: TPanel
-              Left = 76
+              Left = 70
               Top = 4
               Width = 60
               Height = 22
@@ -1385,7 +1410,7 @@ object DonguriForm: TDonguriForm
               OnMouseUp = PanelButtonMouseUp
             end
             object RecycleAPnlButton: TPanel
-              Left = 138
+              Left = 132
               Top = 4
               Width = 44
               Height = 22
@@ -1401,7 +1426,7 @@ object DonguriForm: TDonguriForm
               OnMouseUp = PanelButtonMouseUp
             end
             object UseAPnlButton: TPanel
-              Left = 184
+              Left = 178
               Top = 4
               Width = 44
               Height = 22
@@ -1416,12 +1441,25 @@ object DonguriForm: TDonguriForm
               OnMouseDown = PanelButtonMouseDown
               OnMouseUp = PanelButtonMouseUp
             end
+            object ModAPnlButton: TPanel
+              Left = 224
+              Top = 4
+              Width = 44
+              Height = 22
+              BevelInner = bvRaised
+              Caption = #24375#21270
+              Enabled = False
+              TabOrder = 5
+              OnClick = ModAPnlButtonClick
+              OnMouseDown = PanelButtonMouseDown
+              OnMouseUp = PanelButtonMouseUp
+            end
           end
           object ListViewArmor: TListView
             Left = 0
             Top = 30
             Width = 264
-            Height = 492
+            Height = 301
             Align = alClient
             BevelInner = bvNone
             BevelOuter = bvNone
@@ -1478,13 +1516,735 @@ object DonguriForm: TDonguriForm
             OnChange = ListViewArmorChange
             OnColumnClick = ListViewArmorColumnClick
             OnCompare = ListViewArmorCompare
+            ExplicitHeight = 197
           end
+        end
+      end
+    end
+    object TabSheetModW: TTabSheet
+      Caption = #27494#22120#24375#21270
+      ImageIndex = 5
+      ExplicitHeight = 805
+      object ModWPanel: TPanel
+        Left = 0
+        Top = 0
+        Width = 272
+        Height = 485
+        Align = alClient
+        BevelOuter = bvNone
+        TabOrder = 0
+        ExplicitTop = 569
+        ExplicitHeight = 236
+        object ModWBasePanel: TPanel
+          Left = 0
+          Top = 0
+          Width = 272
+          Height = 472
+          Align = alTop
+          BevelOuter = bvNone
+          ParentColor = True
+          TabOrder = 0
+          object Label46: TLabel
+            Left = 8
+            Top = 211
+            Width = 70
+            Height = 13
+            Caption = 'DMG'#65288#26368#23567#20516#65289
+          end
+          object Label47: TLabel
+            Left = 60
+            Top = 229
+            Width = 11
+            Height = 13
+            Caption = #8594
+          end
+          object Label48: TLabel
+            Left = 134
+            Top = 211
+            Width = 49
+            Height = 13
+            Caption = #12510#12522#12514#28040#36027
+          end
+          object Label49: TLabel
+            Left = 8
+            Top = 249
+            Width = 70
+            Height = 13
+            Caption = 'DMG'#65288#26368#22823#20516#65289
+          end
+          object Label50: TLabel
+            Left = 60
+            Top = 267
+            Width = 11
+            Height = 13
+            Caption = #8594
+          end
+          object Label51: TLabel
+            Left = 134
+            Top = 249
+            Width = 49
+            Height = 13
+            Caption = #12510#12522#12514#28040#36027
+          end
+          object Label52: TLabel
+            Left = 8
+            Top = 287
+            Width = 19
+            Height = 13
+            Caption = 'SPD'
+          end
+          object Label53: TLabel
+            Left = 60
+            Top = 305
+            Width = 11
+            Height = 13
+            Caption = #8594
+          end
+          object Label54: TLabel
+            Left = 134
+            Top = 287
+            Width = 49
+            Height = 13
+            Caption = #12510#12522#12514#28040#36027
+          end
+          object Label55: TLabel
+            Left = 8
+            Top = 325
+            Width = 24
+            Height = 13
+            Caption = 'CRIT'
+          end
+          object Label56: TLabel
+            Left = 60
+            Top = 343
+            Width = 11
+            Height = 13
+            Caption = #8594
+          end
+          object Label57: TLabel
+            Left = 134
+            Top = 325
+            Width = 49
+            Height = 13
+            Caption = #12510#12522#12514#28040#36027
+          end
+          object Label59: TLabel
+            Left = 8
+            Top = 10
+            Width = 55
+            Height = 13
+            Caption = #20445#26377#12510#12522#12514#65306
+          end
+          object ModWImage: TImage
+            Left = 8
+            Top = 375
+            Width = 254
+            Height = 90
+            Center = True
+            Proportional = True
+            Stretch = True
+          end
+          object ModWGrid: TStringGrid
+            Left = 8
+            Top = 35
+            Width = 254
+            Height = 169
+            BevelInner = bvNone
+            BevelOuter = bvNone
+            BorderStyle = bsNone
+            ColCount = 2
+            Ctl3D = False
+            DefaultColWidth = 100
+            DefaultRowHeight = 16
+            Enabled = False
+            FixedCols = 0
+            RowCount = 10
+            FixedRows = 0
+            ParentCtl3D = False
+            ScrollBars = ssNone
+            TabOrder = 0
+          end
+          object ModBackWPnlButton: TPanel
+            Left = 162
+            Top = 4
+            Width = 100
+            Height = 25
+            BevelInner = bvRaised
+            Caption = #25147#12427
+            TabOrder = 1
+            OnClick = ModBackWPnlButtonClick
+            OnMouseDown = PanelButtonMouseDown
+            OnMouseUp = PanelButtonMouseUp
+          end
+          object DmgMinCurPanel: TPanel
+            Left = 8
+            Top = 227
+            Width = 46
+            Height = 16
+            BevelOuter = bvNone
+            Caption = '12345'
+            Color = clWindow
+            ParentBackground = False
+            TabOrder = 2
+          end
+          object DmgMinNewPanel: TPanel
+            Left = 76
+            Top = 227
+            Width = 46
+            Height = 16
+            BevelOuter = bvNone
+            Caption = '12345'
+            Color = clWindow
+            ParentBackground = False
+            TabOrder = 3
+          end
+          object DmgMinMrmPanel: TPanel
+            Left = 134
+            Top = 227
+            Width = 58
+            Height = 16
+            BevelOuter = bvNone
+            Caption = '123456'
+            Color = clWindow
+            ParentBackground = False
+            TabOrder = 4
+          end
+          object ModDmgMinPnlButton: TPanel
+            Left = 202
+            Top = 223
+            Width = 60
+            Height = 22
+            BevelInner = bvRaised
+            Caption = #24375#21270
+            TabOrder = 5
+            OnClick = ModDmgMinPnlButtonClick
+            OnMouseDown = PanelButtonMouseDown
+            OnMouseUp = PanelButtonMouseUp
+          end
+          object DmgMaxCurPanel: TPanel
+            Left = 8
+            Top = 265
+            Width = 46
+            Height = 16
+            BevelOuter = bvNone
+            Caption = '12345'
+            Color = clWindow
+            ParentBackground = False
+            TabOrder = 6
+          end
+          object DmgMaxNewPanel: TPanel
+            Left = 76
+            Top = 265
+            Width = 46
+            Height = 16
+            BevelOuter = bvNone
+            Caption = '12345'
+            Color = clWindow
+            ParentBackground = False
+            TabOrder = 7
+          end
+          object DmgMaxMrmPanel: TPanel
+            Left = 134
+            Top = 265
+            Width = 58
+            Height = 16
+            BevelOuter = bvNone
+            Caption = '123456'
+            Color = clWindow
+            ParentBackground = False
+            TabOrder = 8
+          end
+          object ModDmgMaxPnlButton: TPanel
+            Left = 202
+            Top = 261
+            Width = 60
+            Height = 22
+            BevelInner = bvRaised
+            Caption = #24375#21270
+            TabOrder = 9
+            OnClick = ModDmgMaxPnlButtonClick
+            OnMouseDown = PanelButtonMouseDown
+            OnMouseUp = PanelButtonMouseUp
+          end
+          object SpeedCurPanel: TPanel
+            Left = 8
+            Top = 303
+            Width = 46
+            Height = 16
+            BevelOuter = bvNone
+            Caption = '12345'
+            Color = clWindow
+            ParentBackground = False
+            TabOrder = 10
+          end
+          object SpeedNewPanel: TPanel
+            Left = 76
+            Top = 303
+            Width = 46
+            Height = 16
+            BevelOuter = bvNone
+            Caption = '12345'
+            Color = clWindow
+            ParentBackground = False
+            TabOrder = 11
+          end
+          object SpeedMrmPanel: TPanel
+            Left = 134
+            Top = 303
+            Width = 58
+            Height = 16
+            BevelOuter = bvNone
+            Caption = '123456'
+            Color = clWindow
+            ParentBackground = False
+            TabOrder = 12
+          end
+          object ModSpeedPnlButton: TPanel
+            Left = 202
+            Top = 299
+            Width = 60
+            Height = 22
+            BevelInner = bvRaised
+            Caption = #24375#21270
+            TabOrder = 13
+            OnClick = ModSpeedPnlButtonClick
+            OnMouseDown = PanelButtonMouseDown
+            OnMouseUp = PanelButtonMouseUp
+          end
+          object CritWCurPanel: TPanel
+            Left = 8
+            Top = 341
+            Width = 46
+            Height = 16
+            BevelOuter = bvNone
+            Caption = '12345'
+            Color = clWindow
+            ParentBackground = False
+            TabOrder = 14
+          end
+          object CritWNewPanel: TPanel
+            Left = 76
+            Top = 341
+            Width = 46
+            Height = 16
+            BevelOuter = bvNone
+            Caption = '12345'
+            Color = clWindow
+            ParentBackground = False
+            TabOrder = 15
+          end
+          object CritWMrmPanel: TPanel
+            Left = 134
+            Top = 341
+            Width = 58
+            Height = 16
+            BevelOuter = bvNone
+            Caption = '123456'
+            Color = clWindow
+            ParentBackground = False
+            TabOrder = 16
+          end
+          object ModCritWPnlButton: TPanel
+            Left = 202
+            Top = 337
+            Width = 60
+            Height = 22
+            BevelInner = bvRaised
+            Caption = #24375#21270
+            TabOrder = 17
+            OnClick = ModCritWPnlButtonClick
+            OnMouseDown = PanelButtonMouseDown
+            OnMouseUp = PanelButtonMouseUp
+          end
+          object ModWMarimoPanel: TPanel
+            Left = 70
+            Top = 8
+            Width = 80
+            Height = 16
+            BevelOuter = bvNone
+            Caption = '1234567890'
+            Color = clWindow
+            ParentBackground = False
+            TabOrder = 18
+          end
+        end
+        object Panel7: TPanel
+          Left = 0
+          Top = 472
+          Width = 272
+          Height = 13
+          Align = alClient
+          BevelOuter = bvLowered
+          ParentColor = True
+          TabOrder = 1
+          ExplicitHeight = 12
+        end
+      end
+    end
+    object TabSheetModA: TTabSheet
+      Caption = #38450#20855#24375#21270
+      ImageIndex = 6
+      ExplicitHeight = 805
+      object ModAPanel: TPanel
+        Left = 0
+        Top = 0
+        Width = 272
+        Height = 485
+        Align = alClient
+        BevelOuter = bvNone
+        TabOrder = 0
+        ExplicitTop = 391
+        ExplicitHeight = 154
+        object ModABasePanel: TPanel
+          Left = 0
+          Top = 0
+          Width = 272
+          Height = 472
+          Align = alTop
+          BevelOuter = bvNone
+          ParentColor = True
+          TabOrder = 0
+          object Label26: TLabel
+            Left = 8
+            Top = 211
+            Width = 67
+            Height = 13
+            Caption = 'DEF'#65288#26368#23567#20516#65289
+          end
+          object Label35: TLabel
+            Left = 60
+            Top = 229
+            Width = 11
+            Height = 13
+            Caption = #8594
+          end
+          object Label36: TLabel
+            Left = 134
+            Top = 211
+            Width = 49
+            Height = 13
+            Caption = #12510#12522#12514#28040#36027
+          end
+          object Label37: TLabel
+            Left = 8
+            Top = 249
+            Width = 67
+            Height = 13
+            Caption = 'DEF'#65288#26368#22823#20516#65289
+          end
+          object Label38: TLabel
+            Left = 60
+            Top = 267
+            Width = 11
+            Height = 13
+            Caption = #8594
+          end
+          object Label39: TLabel
+            Left = 134
+            Top = 249
+            Width = 49
+            Height = 13
+            Caption = #12510#12522#12514#28040#36027
+          end
+          object Label40: TLabel
+            Left = 8
+            Top = 287
+            Width = 20
+            Height = 13
+            Caption = 'WT.'
+          end
+          object Label41: TLabel
+            Left = 60
+            Top = 305
+            Width = 11
+            Height = 13
+            Caption = #8594
+          end
+          object Label42: TLabel
+            Left = 134
+            Top = 287
+            Width = 49
+            Height = 13
+            Caption = #12510#12522#12514#28040#36027
+          end
+          object Label43: TLabel
+            Left = 8
+            Top = 325
+            Width = 24
+            Height = 13
+            Caption = 'CRIT'
+          end
+          object Label44: TLabel
+            Left = 60
+            Top = 343
+            Width = 11
+            Height = 13
+            Caption = #8594
+          end
+          object Label45: TLabel
+            Left = 134
+            Top = 325
+            Width = 49
+            Height = 13
+            Caption = #12510#12522#12514#28040#36027
+          end
+          object Label58: TLabel
+            Left = 8
+            Top = 10
+            Width = 55
+            Height = 13
+            Caption = #20445#26377#12510#12522#12514#65306
+          end
+          object ModAImage: TImage
+            Left = 8
+            Top = 375
+            Width = 254
+            Height = 90
+            Center = True
+            Proportional = True
+            Stretch = True
+          end
+          object ModAGrid: TStringGrid
+            Left = 8
+            Top = 35
+            Width = 254
+            Height = 169
+            BevelInner = bvNone
+            BevelOuter = bvNone
+            BorderStyle = bsNone
+            ColCount = 2
+            Ctl3D = False
+            DefaultColWidth = 100
+            DefaultRowHeight = 16
+            Enabled = False
+            FixedCols = 0
+            RowCount = 10
+            FixedRows = 0
+            ParentCtl3D = False
+            ScrollBars = ssNone
+            TabOrder = 0
+          end
+          object ModBackAPnlButton: TPanel
+            Left = 162
+            Top = 4
+            Width = 100
+            Height = 25
+            BevelInner = bvRaised
+            Caption = #25147#12427
+            TabOrder = 1
+            OnClick = ModBackAPnlButtonClick
+            OnMouseDown = PanelButtonMouseDown
+            OnMouseUp = PanelButtonMouseUp
+          end
+          object DefMinCurPanel: TPanel
+            Left = 8
+            Top = 227
+            Width = 46
+            Height = 16
+            BevelOuter = bvNone
+            Caption = '12345'
+            Color = clWindow
+            ParentBackground = False
+            TabOrder = 2
+          end
+          object DefMinNewPanel: TPanel
+            Left = 76
+            Top = 227
+            Width = 46
+            Height = 16
+            BevelOuter = bvNone
+            Caption = '12345'
+            Color = clWindow
+            ParentBackground = False
+            TabOrder = 3
+          end
+          object DefMinMrmPanel: TPanel
+            Left = 134
+            Top = 227
+            Width = 58
+            Height = 16
+            BevelOuter = bvNone
+            Caption = '123456'
+            Color = clWindow
+            ParentBackground = False
+            TabOrder = 4
+          end
+          object ModDefMinPnlButton: TPanel
+            Left = 202
+            Top = 223
+            Width = 60
+            Height = 22
+            BevelInner = bvRaised
+            Caption = #24375#21270
+            TabOrder = 5
+            OnClick = ModDefMinPnlButtonClick
+            OnMouseDown = PanelButtonMouseDown
+            OnMouseUp = PanelButtonMouseUp
+          end
+          object DefMaxCurPanel: TPanel
+            Left = 8
+            Top = 265
+            Width = 46
+            Height = 16
+            BevelOuter = bvNone
+            Caption = '12345'
+            Color = clWindow
+            ParentBackground = False
+            TabOrder = 6
+          end
+          object DefMaxNewPanel: TPanel
+            Left = 76
+            Top = 265
+            Width = 46
+            Height = 16
+            BevelOuter = bvNone
+            Caption = '12345'
+            Color = clWindow
+            ParentBackground = False
+            TabOrder = 7
+          end
+          object DefMaxMrmPanel: TPanel
+            Left = 134
+            Top = 265
+            Width = 58
+            Height = 16
+            BevelOuter = bvNone
+            Caption = '123456'
+            Color = clWindow
+            ParentBackground = False
+            TabOrder = 8
+          end
+          object ModDefMaxPnlButton: TPanel
+            Left = 202
+            Top = 261
+            Width = 60
+            Height = 22
+            BevelInner = bvRaised
+            Caption = #24375#21270
+            TabOrder = 9
+            OnClick = ModDefMaxPnlButtonClick
+            OnMouseDown = PanelButtonMouseDown
+            OnMouseUp = PanelButtonMouseUp
+          end
+          object WeightCurPanel: TPanel
+            Left = 8
+            Top = 303
+            Width = 46
+            Height = 16
+            BevelOuter = bvNone
+            Caption = '12345'
+            Color = clWindow
+            ParentBackground = False
+            TabOrder = 10
+          end
+          object WeightNewPanel: TPanel
+            Left = 76
+            Top = 303
+            Width = 46
+            Height = 16
+            BevelOuter = bvNone
+            Caption = '12345'
+            Color = clWindow
+            ParentBackground = False
+            TabOrder = 11
+          end
+          object WeightMrmPanel: TPanel
+            Left = 134
+            Top = 303
+            Width = 58
+            Height = 16
+            BevelOuter = bvNone
+            Caption = '123456'
+            Color = clWindow
+            ParentBackground = False
+            TabOrder = 12
+          end
+          object ModWeightPnlButton: TPanel
+            Left = 202
+            Top = 299
+            Width = 60
+            Height = 22
+            BevelInner = bvRaised
+            Caption = #24375#21270
+            TabOrder = 13
+            OnClick = ModWeightPnlButtonClick
+            OnMouseDown = PanelButtonMouseDown
+            OnMouseUp = PanelButtonMouseUp
+          end
+          object CritACurPanel: TPanel
+            Left = 8
+            Top = 341
+            Width = 46
+            Height = 16
+            BevelOuter = bvNone
+            Caption = '12345'
+            Color = clWindow
+            ParentBackground = False
+            TabOrder = 14
+          end
+          object CritANewPanel: TPanel
+            Left = 76
+            Top = 341
+            Width = 46
+            Height = 16
+            BevelOuter = bvNone
+            Caption = '12345'
+            Color = clWindow
+            ParentBackground = False
+            TabOrder = 15
+          end
+          object CritAMrmPanel: TPanel
+            Left = 134
+            Top = 341
+            Width = 58
+            Height = 16
+            BevelOuter = bvNone
+            Caption = '123456'
+            Color = clWindow
+            ParentBackground = False
+            TabOrder = 16
+          end
+          object ModCritAPnlButton: TPanel
+            Left = 202
+            Top = 337
+            Width = 60
+            Height = 22
+            BevelInner = bvRaised
+            Caption = #24375#21270
+            TabOrder = 17
+            OnClick = ModCritAPnlButtonClick
+            OnMouseDown = PanelButtonMouseDown
+            OnMouseUp = PanelButtonMouseUp
+          end
+          object ModAMarimoPanel: TPanel
+            Left = 70
+            Top = 8
+            Width = 80
+            Height = 16
+            BevelOuter = bvNone
+            Caption = '1234567890'
+            Color = clWindow
+            ParentBackground = False
+            TabOrder = 18
+          end
+        end
+        object Panel6: TPanel
+          Left = 0
+          Top = 472
+          Width = 272
+          Height = 13
+          Align = alClient
+          BevelOuter = bvLowered
+          ParentColor = True
+          TabOrder = 1
+          ExplicitHeight = 23
         end
       end
     end
     object TabSheetLink: TTabSheet
       Caption = #12522#12531#12463
       ImageIndex = 3
+      ExplicitHeight = 805
       object LinkPanel: TPanel
         Left = 0
         Top = 0
@@ -1759,16 +2519,18 @@ object DonguriForm: TDonguriForm
         Left = 0
         Top = 472
         Width = 272
-        Height = 204
+        Height = 13
         Align = alClient
         BevelOuter = bvLowered
         ParentColor = True
         TabOrder = 1
+        ExplicitHeight = 333
       end
     end
     object TabSheetSetting: TTabSheet
       Caption = #35373#23450
       ImageIndex = 4
+      ExplicitHeight = 805
       object PanelSetting: TPanel
         Left = 0
         Top = 0
@@ -1855,11 +2617,12 @@ object DonguriForm: TDonguriForm
         Left = 0
         Top = 472
         Width = 272
-        Height = 204
+        Height = 13
         Align = alClient
         BevelOuter = bvLowered
         ParentColor = True
         TabOrder = 1
+        ExplicitHeight = 333
       end
     end
   end
@@ -1871,10 +2634,10 @@ object DonguriForm: TDonguriForm
     Top = 24
   end
   object BagImageList: TImageList
-    Left = 16
-    Top = 536
+    Left = 24
+    Top = 392
     Bitmap = {
-      494C01010A001400D80010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01010A001400000110001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000003000000001002000000000000030
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -2279,7 +3042,7 @@ object DonguriForm: TDonguriForm
   end
   object PopupMenuLink: TPopupMenu
     Left = 56
-    Top = 536
+    Top = 392
     object ManuItemOpen: TMenuItem
       Caption = 'WEB'#12502#12521#12454#12470#12391#38283#12367'(&O)'
       OnClick = ManuItemOpenClick
@@ -2291,7 +3054,7 @@ object DonguriForm: TDonguriForm
   end
   object PopupMenuLogin: TPopupMenu
     Left = 96
-    Top = 536
+    Top = 392
     object MItemLogin: TMenuItem
       Caption = #12381#12398#12414#12414#12525#12464#12452#12531'(&L)'
       OnClick = MItemLoginClick

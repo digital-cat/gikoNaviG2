@@ -12,6 +12,8 @@ uses
 
 type
   TDonguriAutoLogin = (atlOn, atlOff, atlUnknown);
+  TModifyWeapon = (mdwDmgMin, mdwDmgMax, mdwSpeed,  mdwCrit);
+  TModifyArmor  = (mdaDefMin, mdaDefMax, mdaWeight, mdaCrit);
 
 	TDonguriHome = class(TObject)
   protected
@@ -54,6 +56,7 @@ type
     Marimo:     Integer;
     WoodCB:     Integer;
     IronCB:     Integer;
+    HP:         Integer;
   	// 設定
     AutoLogin:  TDonguriAutoLogin;
     ////
@@ -70,6 +73,7 @@ type
     procedure SetMarimo(html: String);
     procedure SetState(html: String);
     function GetRangeValue(html: String): String;
+    function TrimBracket(src: String): String;
   public
     Rarity: String;		// レアリティ
     Name:   String;		// 名称
@@ -165,6 +169,8 @@ type
 		constructor Create;
 		destructor Destroy; override;
 
+		function Download(url, referer: String; var response: TMemoryStream): Boolean;
+
 		function Root(var response: String): Boolean;
 		function Auth(var response: String): Boolean;
 		function Login(var response: String): Boolean;
@@ -198,6 +204,11 @@ type
     function Unlock(itemNoList: TStringList; var itemBag: TDonguriBag): Boolean;
     function Equip(itemNo: String; var itemBag: TDonguriBag): Boolean;
     function Recycle(itemNoList: TStringList; var itemBag: TDonguriBag): Boolean;
+    function ModArmorView(itemNo: String; var response: String): Boolean;
+    function ModArmor(modType: TModifyArmor; itemNo: String; var response: String): Boolean;
+    function ModWeaponView(itemNo: String; var response: String): Boolean;
+    function ModWeapon(modType: TModifyWeapon; itemNo: String; var response: String): Boolean;
+
 
 		function Cannon(urlRes, date: String; no: Integer): Boolean;
 
@@ -258,6 +269,18 @@ const
   URL_DNG_UNLOCK  = 'https://donguri.5ch.net/unlock/';							// アンロック
   URL_DNG_EQUIP   = 'https://donguri.5ch.net/equip/';								// 装備
   URL_DNG_RECYCLE = 'https://donguri.5ch.net/recycle/';							// 分解
+
+  URL_DNG_MDYW_VW = 'https://donguri.5ch.net/modify/weapon/view/';			// 武器改造 詳細表示
+  URL_DNG_MDYW_DL = 'https://donguri.5ch.net/modify/weapon/dmglow/';		// 武器改造 ダメージ最小値
+  URL_DNG_MDYW_DH = 'https://donguri.5ch.net/modify/weapon/dmghigh/';		// 武器改造 ダメージ最大値
+  URL_DNG_MDYW_SP = 'https://donguri.5ch.net/modify/weapon/speed/';			// 武器改造 スピード
+  URL_DNG_MDYW_CR = 'https://donguri.5ch.net/modify/weapon/critical/';	// 武器改造 クリティカル
+
+  URL_DNG_MDYA_VW = 'https://donguri.5ch.net/modify/armor/view/';				// 防具改造 詳細表示
+  URL_DNG_MDYA_DL = 'https://donguri.5ch.net/modify/armor/deflow/';			// 防具改造 防御最小値
+  URL_DNG_MDYA_DH = 'https://donguri.5ch.net/modify/armor/defhigh/';		// 防具改造 防御最大値
+  URL_DNG_MDYA_WT = 'https://donguri.5ch.net/modify/armor/weight/';			// 防具改造 重量
+  URL_DNG_MDYA_CR = 'https://donguri.5ch.net/modify/armor/critical/';		// 防具改造 クリティカル
 
   URL_DNG_CANNON  = 'https://donguri.5ch.net/cannon';								// どんぐり大砲
   URL_DNG_CANNON2 = 'https://donguri.5ch.net/confirm';							// どんぐり大砲確認
@@ -689,6 +712,91 @@ begin
     end;
   end;
 end;
+
+
+function TDonguriSys.Download(url, referer: String; var response: TMemoryStream): Boolean;
+var
+  ok: Boolean;
+	uri: TIdURI;
+  url2: String;
+  sendCookies: String;
+{$IFDEF _DEBUG_MODE}
+  dbgpath: String;
+  dbgcnt: Integer;
+{$ENDIF}
+begin
+	Result := False;
+
+  if FProcessing then
+    Exit;
+
+  FProcessing := True;
+
+  ClearResponse;
+
+	try
+		uri := TIdURI.Create(url);
+  	try
+	    sendCookies := IndyMdl.GetCookieString(uri);
+    finally
+		  uri.Free;
+    end;
+
+    url2 := GikoSys.GetActualURL(url);
+
+    TIndyMdl.InitHTTP(FHTTP);
+
+    FHTTP.AllowCookies    := True;
+    FHTTP.Request.Referer := referer;
+    FHTTP.Request.Accept  := 'text/html';
+    FHTTP.Request.AcceptLanguage := 'ja';
+		FHTTP.Request.AcceptEncoding := '';
+  	if sendCookies <> '' then
+	    FHTTP.Request.CustomHeaders.Add('Cookie: ' + sendCookies);
+
+    ok := False;
+
+    IndyMdl.StartAntiFreeze(100);
+    Screen.Cursor := crHourGlass;
+    try
+      FHTTP.Get(url2, response);
+      ok := True;
+    except
+      on e: Exception do begin
+				FErroeMessage := e.Message;
+      end;
+    end;
+    FResponseText := FHTTP.ResponseText;
+		FResponseCode := FHTTP.ResponseCode;
+
+    Screen.Cursor := crDefault;
+    IndyMdl.EndAntiFreeze;
+		IndyMdl.SaveCookies(FHTTP);
+
+    if ok then begin
+{$IFDEF _DEBUG_MODE}
+      if response.Size > 0 then begin
+        for dbgcnt := 0 to 99 do begin
+					dbgpath := 'D:\Log\Donguri\' + FormatDateTime('yyyymmdd_hhnnss_zzz', Now) + Format('_%.2d.dat', [dbgcnt]);
+          if not FileExists(dbgpath) then
+          	Break;
+        end;
+        try
+          response.SaveToFile(dbgpath);
+        except
+        end;
+      end;
+      response.Position := 0;
+{$ENDIF}
+    end;
+
+    Result := ok;
+
+  finally
+	  FProcessing := False;
+  end;
+end;
+
 
 function IsRootPage(html: String): Boolean;
 begin
@@ -1616,6 +1724,111 @@ begin
 end;
 
 
+// 武器強化ビュー
+function TDonguriSys.ModWeaponView(itemNo: String; var response: String): Boolean;
+begin
+  try
+    ClearResponse;
+
+    Result := HttpGetCall(URL_DNG_MDYW_VW+ itemNo, response);
+
+  except
+    on e: Exception do begin
+			Result := False;
+      FErroeMessage := e.Message;
+    end;
+  end;
+end;
+
+function TDonguriSys.ModWeapon(modType: TModifyWeapon; itemNo: String; var response: String): Boolean;
+var
+	url: String;
+  param: TStringList;
+begin
+  param := TStringList.Create;
+  try
+    try
+      ClearResponse;
+
+      case modType of
+        mdwDmgMin: url := URL_DNG_MDYW_DL + itemNo;
+        mdwDmgMax: url := URL_DNG_MDYW_DH + itemNo;
+        mdwSpeed:  url := URL_DNG_MDYW_SP + itemNo;
+        mdwCrit:   url := URL_DNG_MDYW_CR + itemNo;
+        else begin
+          Result := False;
+          FErroeMessage := 'システムエラー：武器強化種別';
+          Exit;
+        end;
+      end;
+
+      Result := HttpPostCall(url, URL_DNG_MDYW_VW + itemNo, param, response);
+
+    except
+      on e: Exception do begin
+        Result := False;
+        FErroeMessage := e.Message;
+      end;
+    end;
+  finally
+  	param.Free;
+  end;
+end;
+
+
+
+// 防具強化ビュー
+function TDonguriSys.ModArmorView(itemNo: String; var response: String): Boolean;
+begin
+  try
+    ClearResponse;
+
+    Result := HttpGetCall(URL_DNG_MDYA_VW + itemNo, response);
+
+  except
+    on e: Exception do begin
+			Result := False;
+      FErroeMessage := e.Message;
+    end;
+  end;
+end;
+
+function TDonguriSys.ModArmor(modType: TModifyArmor; itemNo: String; var response: String): Boolean;
+var
+	url: String;
+  param: TStringList;
+begin
+  param := TStringList.Create;
+  try
+    try
+      ClearResponse;
+
+      case modType of
+        mdaDefMin: url := URL_DNG_MDYA_DL + itemNo;
+        mdaDefMax: url := URL_DNG_MDYA_DH + itemNo;
+        mdaWeight: url := URL_DNG_MDYA_WT + itemNo;
+        mdaCrit:   url := URL_DNG_MDYA_CR + itemNo;
+        else begin
+          Result := False;
+          FErroeMessage := 'システムエラー：防具強化種別';
+          Exit;
+        end;
+      end;
+
+      Result := HttpPostCall(url, URL_DNG_MDYA_VW + itemNo, param, response);
+
+    except
+      on e: Exception do begin
+        Result := False;
+        FErroeMessage := e.Message;
+      end;
+    end;
+  finally
+  	param.Free;
+  end;
+end;
+
+
 //------------------------------------------------------------------------------
 // どんぐり大砲
 //------------------------------------------------------------------------------
@@ -1849,6 +2062,7 @@ begin
   Marimo     := 0;
   WoodCB     := 0;
   IronCB     := 0;
+  HP         := 0;
   AutoLogin  := atlUnknown;
   Error      := '';
 end;
@@ -1880,6 +2094,8 @@ const
   TAG_WCB_E = '</div>';
   TAG_ICB_S = '<div>鉄の大砲の玉:';
   TAG_ICB_E = '</div>';
+  TAG_HP__S = '<div>HP:';
+  TAG_HP__E = '</div>';
   TAG_CNN_S = '<label>大砲の統計</label><div>';
   TAG_CNN_E = '</div>';
   TAG_DMG_S = '| D:';
@@ -1983,6 +2199,9 @@ begin
 
     if Extract(TAG_ICB_S, TAG_ICB_E, html, tmp) then
       IronCB := StrToIntDef(Trim(tmp), 0);
+
+    if Extract(TAG_HP__S, TAG_HP__E, html, tmp) then
+      HP := StrToIntDef(Trim(tmp), 0);
 
     if Extract(TAG_CNN_S, TAG_CNN_E, html, tmp) then
 		  SttCannon := Trim(ReplaceString(tmp, '|', '　'));
@@ -2177,6 +2396,22 @@ begin
 	Result := (Name = '');
 end;
 
+function TDonguriItem.TrimBracket(src: String): String;
+var
+	dst: String;
+  len: Integer;
+begin
+	dst := Trim(src);
+  len := Length(dst);
+  if (len > 0) and (dst[1] = '[') then begin
+    Delete(dst, 1, 1);
+    Dec(len);
+  end;
+  if (len > 0) and (dst[len] = ']') then
+    SetLength(dst, len - 1);
+	Result := dst;
+end;
+
 procedure TDonguriWeapon.Clear;
 begin
 	Inherited;
@@ -2223,7 +2458,7 @@ begin
       2: SPD := Trim(TrimTag(tmp1));
       3: CRIT := Trim(TrimTag(tmp1));
       4: ELEM := Trim(TrimTag(tmp1));
-      5: Modify := Trim(TrimTag(tmp1));
+      5: Modify := TrimBracket(TrimTag(tmp1));
       6: SetMarimo(tmp1);
       7: SetState(tmp1);
     end;
@@ -2276,7 +2511,7 @@ begin
       2: WT  := Trim(TrimTag(tmp1));
       3: CRIT := Trim(TrimTag(tmp1));
       4: ELEM := Trim(TrimTag(tmp1));
-      5: Modify := Trim(TrimTag(tmp1));
+      5: Modify := TrimBracket(TrimTag(tmp1));
       6: SetMarimo(tmp1);
       7: SetState(tmp1);
     end;
