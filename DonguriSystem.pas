@@ -2069,7 +2069,7 @@ end;
 
 function TDonguriHome.Parsing(html: String): Boolean;
 const
-  TAG_ANM_S = 'どんぐり基地</h1>';
+  TAG_ANM_S = '<div class="stats header">';
   TAG_ANM_E = '</div>';
 	TAG_HID_S = '<div>ハンター[ID:';
 	TAG_HID1S = '<div>ハンター●[ID:';
