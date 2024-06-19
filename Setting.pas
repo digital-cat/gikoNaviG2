@@ -263,6 +263,8 @@ type
     FIconImageDisplay: Boolean;
     // スレタイ特定文字列除去
     FThreadTitleTrim: Boolean;
+    // 文字&#78840;の扱い 0:何もしない 1:数値参照で表示 2:類似文字に置換
+    FReplChar: Integer;
 
 		//ログフォルダ
 		FLogFolder: string;
@@ -758,6 +760,7 @@ type
 		property ResPopupHeaderBold: Boolean read FResPopupHeaderBold write FResPopupHeaderBold;
 		property IconImageDisplay: Boolean read FIconImageDisplay write FIconImageDisplay;
 		property ThreadTitleTrim: Boolean read FThreadTitleTrim write FThreadTitleTrim;
+    property ReplChar: Integer read FReplChar write FReplChar;
 
 		property LogFolder: string read FLogFolder write WriteLogFolder;
 		property LogFolderP: string read FLogFolderP;
@@ -1320,10 +1323,15 @@ begin
 		FUnActivePopup := ini.ReadBool('Thread', 'UnActivePopup', False);
 		//レスポップアップヘッダーボールド
 		FResPopupHeaderBold := ini.ReadBool('Thread', 'ResPopupHeaderBold', True);
-        // BEアイコン・Emoticon画像表示
-        FIconImageDisplay := ini.ReadBool('Thread', 'IconImageDisplay', True);
-        // スレタイ特定文字列除去
-        FThreadTitleTrim := ini.ReadBool('Thread', 'ThreadTitleTrim', False);
+		// BEアイコン・Emoticon画像表示
+		FIconImageDisplay := ini.ReadBool('Thread', 'IconImageDisplay', True);
+		// スレタイ特定文字列除去
+		FThreadTitleTrim := ini.ReadBool('Thread', 'ThreadTitleTrim', False);
+    // 文字&#78840;の扱い 0:何もしない 1:数値参照で表示 2:類似文字に置換
+    FReplChar := ini.ReadInteger('Thread','ReplaceChar', 0);
+    if (FReplChar < 0) or (FReplChar > 2) then
+    	FReplChar := 0;
+    
 		//削除確認
 		FDeleteMsg := ini.ReadBool('Function', 'LogDeleteMessage', True);
 		//終了確認
@@ -1821,11 +1829,15 @@ begin
 		ini.WriteBool('Thread', 'UnActivePopup', FUnActivePopup);
 		//レスポップアップヘッダーボールド
 		ini.WriteBool('Thread', 'ResPopupHeaderBold', FResPopupHeaderBold);
-        // BEアイコン・Emoticon画像表示
-        ini.WriteBool('Thread', 'IconImageDisplay', FIconImageDisplay);
-        // スレタイ特定文字列除去
-        ini.WriteBool('Thread', 'ThreadTitleTrim', FThreadTitleTrim);
+    // BEアイコン・Emoticon画像表示
+    ini.WriteBool('Thread', 'IconImageDisplay', FIconImageDisplay);
+    // スレタイ特定文字列除去
+    ini.WriteBool('Thread', 'ThreadTitleTrim', FThreadTitleTrim);
 		//ini.WriteString('BoardURL', '2ch', FBoardURL2ch);
+    // 文字&#78840;の扱い 0:何もしない 1:数値参照で表示 2:類似文字に置換
+    if (FReplChar < 0) or (FReplChar > 2) then
+    	FReplChar := 0;
+    ini.WriteInteger('Thread','ReplaceChar', FReplChar);
 
 		//認証用ユーザID・パスワード
 		ini.WriteString('Attestation', 'UserID', FUserID);

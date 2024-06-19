@@ -1534,6 +1534,17 @@ begin
 		Line := CustomStringReplace(Line, ',', '<>');
 		Line := CustomStringReplace(Line, '＠｀', ',');
 	end;
+	// 文字&#78840;の扱い 0:何もしない 1:数値参照で表示 2:類似文字に置換
+  case GikoSys.Setting.ReplChar of
+    1: begin
+      Line := CustomStringReplace(Line, '&#78840;', '&amp;#78840;');
+      Line := CustomStringReplace(Line, '&#x133f8;', '&amp;#x133f8;', True);
+    end;
+    2: begin
+      Line := CustomStringReplace(Line, '&#78840;', '&#77954;');
+      Line := CustomStringReplace(Line, '&#x133f8;', '&#77954;', True);
+    end;
+  end;
 	//Trimしてはいけない気がする　byもじゅ
 	PRes.FName := MojuUtils.RemoveToken(Line, delimiter);
 	PRes.FMailTo := MojuUtils.RemoveToken(Line, delimiter);

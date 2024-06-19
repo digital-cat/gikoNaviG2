@@ -237,6 +237,8 @@ type
     GroupBox25: TGroupBox;
     Label25: TLabel;
     DonAutoLgnComboBox: TComboBox;
+    Label30: TLabel;
+    ReplCharComboBox: TComboBox;
 		procedure FormCreate(Sender: TObject);
 		procedure FormDestroy(Sender: TObject);
 		procedure ApplyButtonClick(Sender: TObject);
@@ -747,8 +749,8 @@ begin
 
 	//Mail欄表示
 	ShowMailCheckBox.Checked := GikoSys.Setting.ShowMail;
-    //BE2.0アイコン・Emoticonsを画像表示する
-    DispImageCheckBox.Checked := GikoSys.Setting.IconImageDisplay;
+  //BE2.0アイコン・Emoticonsを画像表示する
+  DispImageCheckBox.Checked := GikoSys.Setting.IconImageDisplay;
 
 	// 起動時レス表示範囲の固定
 	ResRangeHoldCheckBox.Checked := GikoSys.Setting.ResRangeHold;
@@ -759,6 +761,9 @@ begin
 	10..65535:						ResRangeHoldComboBox.ItemIndex := 1;
 	end;
 	ResRangeHoldComboBox.Enabled := GikoSys.Setting.ResRangeHold;
+	// 文字&#78840;の扱い 0:何もしない 1:数値参照で表示 2:類似文字に置換
+  ReplCharComboBox.ItemIndex := GikoSys.Setting.ReplChar;
+
 	//タブ追加位置
 	TabAddRadioGroup.ItemIndex := Ord(GikoSys.Setting.BrowserTabAppend);
 	//板更新URL
@@ -1083,6 +1088,10 @@ begin
 	        2: GikoSys.Setting.ResRange := Ord( grrKoko );
 	        3: GikoSys.Setting.ResRange := Ord( grrNew );
 	end;
+	// 文字&#78840;の扱い 0:何もしない 1:数値参照で表示 2:類似文字に置換
+  GikoSys.Setting.ReplChar := ReplCharComboBox.ItemIndex;
+  if (GikoSys.Setting.ReplChar < 0) or (GikoSys.Setting.ReplChar > 2) then
+  	GikoSys.Setting.ReplChar := 0;
 
 	GikoSys.Setting.BrowserTabAppend := TGikoTabAppend(TabAddRadioGroup.ItemIndex);
 
