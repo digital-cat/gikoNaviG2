@@ -57,7 +57,6 @@ type
     Label9: TLabel;
     SlotLabel: TLabel;
     SlotPnlButton: TPanel;
-    ListViewWeaponUsing: TListView;
     PageControlItemBag: TPageControl;
     TabSheetUsing: TTabSheet;
     TabSheetWeapon: TTabSheet;
@@ -67,7 +66,6 @@ type
     RemWeaponPnlButton: TPanel;
     UsingArmorLabel: TLabel;
     RemArmorPnlButton: TPanel;
-    ListViewArmorUsing: TListView;
     WeaponTopPanel: TPanel;
     ListViewWeapon: TListView;
     ArmorTopPanel: TPanel;
@@ -253,6 +251,12 @@ type
     ModAMarimoPanel: TPanel;
     ModAImage: TImage;
     ModWImage: TImage;
+    GridWeaponUsing1: TStringGrid;
+    GridWeaponUsing2: TStringGrid;
+    GridWeaponUsing3: TStringGrid;
+    GridArmorUsing3: TStringGrid;
+    GridArmorUsing2: TStringGrid;
+    GridArmorUsing1: TStringGrid;
     procedure TimerInitTimer(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCreate(Sender: TObject);
@@ -282,7 +286,6 @@ type
     procedure TransferPnlButtonClick(Sender: TObject);
     procedure CannonMenuCheckBoxClick(Sender: TObject);
     procedure TaskBarCheckBoxClick(Sender: TObject);
-    procedure TabSheetUsingResize(Sender: TObject);
     procedure PageControlItemBagDrawTab(Control: TCustomTabControl;
       TabIndex: Integer; const Rect: TRect; Active: Boolean);
     procedure BagPnlButtonClick(Sender: TObject);
@@ -337,6 +340,8 @@ type
     procedure ModDmgMaxPnlButtonClick(Sender: TObject);
     procedure ModSpeedPnlButtonClick(Sender: TObject);
     procedure ModCritWPnlButtonClick(Sender: TObject);
+    procedure DrawGridCell(Sender: TObject; ACol, ARow: Integer; Rect: TRect;
+      State: TGridDrawState);
   private
     { Private declarations }
     FHunter: Boolean;
@@ -490,6 +495,9 @@ const
   URL_SHOP  : String = 'https://donguri.5ch.net/keyshop';
   URL_UPLIFT: String = 'https://uplift.5ch.net/';
 
+//  CAP_USING_TOP: String = 'ﾛｯｸ／ﾚｱﾘﾃｨ';
+  CAP_USING_TOP: String = 'レアリティ';
+
 {$R *.dfm}
 
 procedure TDonguriForm.CreateParams(var Params: TCreateParams);
@@ -556,14 +564,37 @@ begin
   hintText := 'レアリティ出現率';
   for i := Low(RARITY_TABLE) to High(RARITY_TABLE) do
     hintText := hintText + #10 + Format(' %s : %s', [RARITY_TABLE[i, 0], RARITY_TABLE[i, 1]]);
-  ListViewWeaponUsing.Hint := hintText;
-  ListViewWeaponUsing.ShowHint := True;
-  ListViewArmorUsing.Hint := hintText;
-  ListViewArmorUsing.ShowHint := True;
   ListViewWeapon.Hint := hintText;
   ListViewWeapon.ShowHint := True;
   ListViewArmor.Hint := hintText;
   ListViewArmor.ShowHint := True;
+
+  GridWeaponUsing1.ColWidths[1] := 170;
+  GridWeaponUsing1.Selection := sel;
+  GridWeaponUsing2.Selection := sel;
+  GridWeaponUsing3.Selection := sel;
+  GridWeaponUsing1.Cells[0, 0] := CAP_USING_TOP;
+  GridWeaponUsing1.Cells[1, 0] := '名称';
+  GridWeaponUsing1.Cells[2, 0] := 'ロック状態';	// 非表示セル
+  GridWeaponUsing2.Cells[0, 0] := 'ATK';
+  GridWeaponUsing2.Cells[1, 0] := 'SPD';
+  GridWeaponUsing2.Cells[2, 0] := 'CRIT';
+  GridWeaponUsing3.Cells[0, 0] := 'ELEM';
+  GridWeaponUsing3.Cells[1, 0] := 'MOD';
+  GridWeaponUsing3.Cells[2, 0] := 'マリモ';
+  GridArmorUsing1.ColWidths[1] := 170;
+  GridArmorUsing1.Selection := sel;
+  GridArmorUsing2.Selection := sel;
+  GridArmorUsing3.Selection := sel;
+  GridArmorUsing1.Cells[0, 0] := CAP_USING_TOP;
+  GridArmorUsing1.Cells[1, 0] := '名称';
+  GridArmorUsing1.Cells[2, 0] := 'ロック状態';	// 非表示セル
+  GridArmorUsing2.Cells[0, 0] := 'DEF';
+  GridArmorUsing2.Cells[1, 0] := 'WT.';
+  GridArmorUsing2.Cells[2, 0] := 'CRIT';
+  GridArmorUsing3.Cells[0, 0] := 'ELEM';
+  GridArmorUsing3.Cells[1, 0] := 'MOD';
+  GridArmorUsing3.Cells[2, 0] := 'マリモ';
 
   ModWGrid.ColWidths[1] := 160;
   ModWGrid.Selection := sel;
@@ -595,15 +626,6 @@ begin
   	PanelTop.Caption := mode;
 
 	TimerInit.Enabled := True;
-end;
-
-procedure TDonguriForm.TabSheetUsingResize(Sender: TObject);
-var
-  w: Integer;
-begin
-	w := TabSheetUsing.ClientWidth;
-  ListViewWeaponUsing.Width := w;
-  ListViewArmorUsing.Width := w;
 end;
 
 procedure TDonguriForm.TaskBarCheckBoxClick(Sender: TObject);
@@ -1400,8 +1422,12 @@ begin
         SetColors(BagTopPanel,         clBtnFace, clWindowText);
         SetColors(WeaponTopPanel,      clBtnFace, clWindowText);
         SetColors(ArmorTopPanel,       clBtnFace, clWindowText);
-        SetColors(ListViewWeaponUsing, clWindow,  clWindowText);
-        SetColors(ListViewArmorUsing,  clWindow,  clWindowText);
+        SetColors(GridWeaponUsing1,    clWindow,  clWindowText); GridWeaponUsing1.FixedColor := clBtnFace;
+        SetColors(GridWeaponUsing2,    clWindow,  clWindowText); GridWeaponUsing2.FixedColor := clBtnFace;
+        SetColors(GridWeaponUsing3,    clWindow,  clWindowText); GridWeaponUsing3.FixedColor := clBtnFace;
+        SetColors(GridArmorUsing1,     clWindow,  clWindowText); GridArmorUsing1.FixedColor := clBtnFace;
+        SetColors(GridArmorUsing2,     clWindow,  clWindowText); GridArmorUsing2.FixedColor := clBtnFace;
+        SetColors(GridArmorUsing3,     clWindow,  clWindowText); GridArmorUsing3.FixedColor := clBtnFace;
         SetColors(ListViewWeapon,      clWindow,  clWindowText);
         SetColors(ListViewArmor,       clWindow,  clWindowText);
       	SetColors(UsingPanel,          clBtnFace, clWindowText);
@@ -1485,8 +1511,12 @@ begin
         SetColors(BagTopPanel,         COL_DARK_BKG1, COL_DARK_TEXT);
         SetColors(WeaponTopPanel,      COL_DARK_BKG1, COL_DARK_TEXT);
         SetColors(ArmorTopPanel,       COL_DARK_BKG1, COL_DARK_TEXT);
-        SetColors(ListViewWeaponUsing, COL_DARK_BKG2, COL_DARK_TEXT);
-        SetColors(ListViewArmorUsing,  COL_DARK_BKG2, COL_DARK_TEXT);
+        SetColors(GridWeaponUsing1,    COL_DARK_BKG2, COL_DARK_TEXT); GridWeaponUsing1.FixedColor := COL_DARK_BKG1;
+        SetColors(GridWeaponUsing2,    COL_DARK_BKG2, COL_DARK_TEXT); GridWeaponUsing2.FixedColor := COL_DARK_BKG1;
+        SetColors(GridWeaponUsing3,    COL_DARK_BKG2, COL_DARK_TEXT); GridWeaponUsing3.FixedColor := COL_DARK_BKG1;
+        SetColors(GridArmorUsing1,     COL_DARK_BKG2, COL_DARK_TEXT); GridArmorUsing1.FixedColor := COL_DARK_BKG1;
+        SetColors(GridArmorUsing2,     COL_DARK_BKG2, COL_DARK_TEXT); GridArmorUsing2.FixedColor := COL_DARK_BKG1;
+        SetColors(GridArmorUsing3,     COL_DARK_BKG2, COL_DARK_TEXT); GridArmorUsing3.FixedColor := COL_DARK_BKG1;
         SetColors(ListViewWeapon,      COL_DARK_BKG2, COL_DARK_TEXT);
         SetColors(ListViewArmor,       COL_DARK_BKG2, COL_DARK_TEXT);
       	SetColors(UsingPanel,          COL_DARK_BKG1, COL_DARK_TEXT);
@@ -1745,6 +1775,47 @@ begin
   end;
 end;
 
+procedure TDonguriForm.DrawGridCell(Sender: TObject; ACol, ARow: Integer;
+  Rect: TRect; State: TGridDrawState);
+const
+  RARITY: array [0..4] of String = ('N', 'R', 'SR', 'SSR', 'UR');
+var
+  grid: TStringGrid;
+  text: String;
+  drwRct: TRect;
+  imgIdx: Integer;
+begin
+	if Sender is TStringGrid then
+  	grid := TStringGrid(Sender)
+  else
+  	Exit;
+
+	text := grid.Cells[ACol, ARow];
+
+  if (ARow and 1) = 0 then
+		grid.Canvas.Brush.Color := grid.FixedColor
+  else
+		grid.Canvas.Brush.Color := grid.Color;
+	grid.Canvas.FillRect(Rect);
+
+	drwRct := Rect;
+	drwRct.Left := Rect.Left + 4;
+
+	if (ACol = 0) and (ARow = 1) and (grid.Cells[0, 0] = CAP_USING_TOP) then begin
+  	imgIdx := IndexText(text, RARITY);
+    if imgIdx >= 0 then begin
+    	if (grid.ColCount >= 3) and (grid.Cells[2, 1] = '1') then
+      	imgIdx := imgIdx + Length(RARITY);
+    	BagImageList.Draw(grid.Canvas, drwRct.Left, drwRct.Top, imgIdx);
+    end;
+		drwRct.Left := drwRct.Left + BagImageList.Width + 4;
+  end;
+
+  grid.Canvas.Font := grid.Font;
+	DrawText(grid.Canvas.Handle, PChar(text), -1, drwRct, DT_SINGLELINE or DT_VCENTER);
+end;
+
+
 procedure TDonguriForm.CannonMenuCheckBoxClick(Sender: TObject);
 begin
   GikoSys.Setting.DonguriMenuTop := CannonMenuCheckBox.Checked;
@@ -1957,34 +2028,54 @@ var
   usedSlot: Integer;
   i: Integer;
   item: TListItem;
+  wItmNo: String;
+  aItmNo: String;
+  w: TDonguriWeapon;
+  a: TDonguriArmor;
 begin
 	try
-  	ListViewWeaponUsing.Items.Clear;
-    ListViewArmorUsing.Items.Clear;
     ListViewWeapon.Items.Clear;
     ListViewArmor.Items.Clear;
 
   	usedSlot := FBag.WeaponList.Count + FBag.ArmorList.Count;
   	SlotLabel.Caption := Format('%d / %d', [usedSlot, FBag.Slot]);
 
-    if FBag.UseWeapon.IsEmpty = False then begin
-      item := ListViewWeaponUsing.Items.Add;
-      FBag.UseWeapon.SetListItem(0, item);
-    end;
+    GridWeaponUsing1.Cells[0, 1] := FBag.UseWeapon.Rarity;
+    GridWeaponUsing1.Cells[1, 1] := FBag.UseWeapon.Name;
+		GridWeaponUsing1.Cells[2, 1] := '';
+    GridWeaponUsing2.Cells[0, 1] := FBag.UseWeapon.ATK;
+    GridWeaponUsing2.Cells[1, 1] := FBag.UseWeapon.SPD;
+    GridWeaponUsing2.Cells[2, 1] := FBag.UseWeapon.CRIT;
+    GridWeaponUsing3.Cells[0, 1] := FBag.UseWeapon.ELEM;
+    GridWeaponUsing3.Cells[1, 1] := FBag.UseWeapon.Modify;
+    GridWeaponUsing3.Cells[2, 1] := FBag.UseWeapon.Marimo;
 
-    if FBag.UseArmor.IsEmpty = False then begin
-      item := ListViewArmorUsing.Items.Add;
-      FBag.UseArmor.SetListItem(0, item);
-    end;
+    GridArmorUsing1.Cells[0, 1] := FBag.UseArmor.Rarity;
+    GridArmorUsing1.Cells[1, 1] := FBag.UseArmor.Name;
+		GridArmorUsing1.Cells[2, 1] := '';
+    GridArmorUsing2.Cells[0, 1] := FBag.UseArmor.DEF;
+    GridArmorUsing2.Cells[1, 1] := FBag.UseArmor.WT;
+    GridArmorUsing2.Cells[2, 1] := FBag.UseArmor.CRIT;
+    GridArmorUsing3.Cells[0, 1] := FBag.UseArmor.ELEM;
+    GridArmorUsing3.Cells[1, 1] := FBag.UseArmor.Modify;
+    GridArmorUsing3.Cells[2, 1] := FBag.UseArmor.Marimo;
 
+  	wItmNo := FBag.UseWeapon.ItemNo;
     for i := 0 to FBag.WeaponList.Count - 1 do begin
       item := ListViewWeapon.Items.Add;
-      TDonguriWeapon(FBag.WeaponList.Items[i]).SetListItem(i + 1, item);
+      w := TDonguriWeapon(FBag.WeaponList.Items[i]);
+      w.SetListItem(i + 1, item);
+      if (wItmNo <> '') and (wItmNo = w.ItemNo) and w.Lock then
+		    GridWeaponUsing1.Cells[2, 1] := '1';
     end;
 
+  	aItmNo := FBag.UseArmor.ItemNo;
     for i := 0 to FBag.ArmorList.Count - 1 do begin
       item := ListViewArmor.Items.Add;
-      TDonguriArmor(FBag.ArmorList.Items[i]).SetListItem(i + 1, item);
+      a := TDonguriArmor(FBag.ArmorList.Items[i]);
+      a.SetListItem(i + 1, item);
+      if (aItmNo <> '') and (aItmNo = a.ItemNo) and a.Lock then
+		    GridArmorUsing1.Cells[2, 1] := '1';
     end;
 
     RemWeaponPnlButton.Enabled := (FBag.UseWeapon.IsEmpty = False);

@@ -3,7 +3,7 @@ object DonguriForm: TDonguriForm
   Top = 0
   BorderIcons = [biSystemMenu, biMinimize]
   Caption = #12393#12435#12368#12426#12471#12473#12486#12512
-  ClientHeight = 541
+  ClientHeight = 538
   ClientWidth = 280
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -73,15 +73,17 @@ object DonguriForm: TDonguriForm
     Left = 0
     Top = 28
     Width = 280
-    Height = 513
-    ActivePage = TabSheetHome
+    Height = 510
+    ActivePage = TabSheetChest
     Align = alClient
     TabOrder = 0
     OnDrawTab = PageControlDrawTab
-    ExplicitHeight = 833
     object TabSheetHome: TTabSheet
       Caption = #12507#12540#12512
-      ExplicitHeight = 805
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 670
       object PanelHome: TPanel
         Left = 0
         Top = 0
@@ -566,18 +568,17 @@ object DonguriForm: TDonguriForm
         Left = 0
         Top = 472
         Width = 272
-        Height = 13
+        Height = 10
         Align = alClient
         BevelOuter = bvLowered
         ParentColor = True
         TabOrder = 1
-        ExplicitHeight = 333
+        ExplicitHeight = 198
       end
     end
     object TabSheetService: TTabSheet
       Caption = #12469#12540#12499#12473
       ImageIndex = 1
-      ExplicitHeight = 805
       object PanelService: TPanel
         Left = 0
         Top = 0
@@ -892,18 +893,17 @@ object DonguriForm: TDonguriForm
         Left = 0
         Top = 472
         Width = 272
-        Height = 13
+        Height = 10
         Align = alClient
         BevelOuter = bvLowered
         ParentColor = True
         TabOrder = 1
-        ExplicitHeight = 333
+        ExplicitHeight = 198
       end
     end
     object TabSheetChest: TTabSheet
       Caption = #12450#12452#12486#12512
       ImageIndex = 2
-      ExplicitHeight = 805
       object BagTopPanel: TPanel
         Left = 0
         Top = 0
@@ -1000,16 +1000,13 @@ object DonguriForm: TDonguriForm
         Left = 0
         Top = 126
         Width = 272
-        Height = 359
-        ActivePage = TabSheetWeapon
+        Height = 356
+        ActivePage = TabSheetUsing
         Align = alClient
         TabOrder = 1
         OnDrawTab = PageControlItemBagDrawTab
-        ExplicitHeight = 255
         object TabSheetUsing: TTabSheet
           Caption = #35013#20633#20013
-          OnResize = TabSheetUsingResize
-          ExplicitHeight = 227
           object UsingPanel: TPanel
             Left = 0
             Top = 0
@@ -1019,72 +1016,18 @@ object DonguriForm: TDonguriForm
             BevelOuter = bvNone
             TabOrder = 0
             object UsingWeaponLabel: TLabel
-              Left = 2
+              Left = 8
               Top = 7
               Width = 24
               Height = 13
               Caption = #27494#22120
             end
             object UsingArmorLabel: TLabel
-              Left = 2
-              Top = 100
+              Left = 8
+              Top = 145
               Width = 24
               Height = 13
               Caption = #38450#20855
-            end
-            object ListViewWeaponUsing: TListView
-              Left = 0
-              Top = 25
-              Width = 250
-              Height = 59
-              BevelInner = bvNone
-              BevelOuter = bvNone
-              Columns = <
-                item
-                  Caption = #12288
-                  Width = 10
-                end
-                item
-                  Alignment = taCenter
-                  Caption = #65434#65393#65432#65411#65384
-                  Width = 36
-                end
-                item
-                  Caption = #21517#31216
-                  Width = 100
-                end
-                item
-                  Alignment = taCenter
-                  Caption = 'ATK'
-                end
-                item
-                  Alignment = taRightJustify
-                  Caption = 'SPD'
-                  Width = 36
-                end
-                item
-                  Alignment = taRightJustify
-                  Caption = 'CRIT'
-                  Width = 40
-                end
-                item
-                  Caption = 'ELEM'
-                end
-                item
-                  Alignment = taRightJustify
-                  Caption = 'MOD'
-                  Width = 30
-                end
-                item
-                  Alignment = taRightJustify
-                  Caption = #12510#12522#12514
-                end>
-              Ctl3D = False
-              FlatScrollBars = True
-              ReadOnly = True
-              RowSelect = True
-              TabOrder = 0
-              ViewStyle = vsReport
             end
             object RemWeaponPnlButton: TPanel
               Left = 48
@@ -1097,14 +1040,14 @@ object DonguriForm: TDonguriForm
               Enabled = False
               ParentShowHint = False
               ShowHint = True
-              TabOrder = 1
+              TabOrder = 0
               OnClick = RemWeaponPnlButtonClick
               OnMouseDown = PanelButtonMouseDown
               OnMouseUp = PanelButtonMouseUp
             end
             object RemArmorPnlButton: TPanel
               Left = 48
-              Top = 95
+              Top = 140
               Width = 60
               Height = 22
               Hint = #38450#20855#12398#35013#20633#12434#12420#12417#12427
@@ -1113,82 +1056,156 @@ object DonguriForm: TDonguriForm
               Enabled = False
               ParentShowHint = False
               ShowHint = True
-              TabOrder = 2
+              TabOrder = 1
               OnClick = RemArmorPnlButtonClick
               OnMouseDown = PanelButtonMouseDown
               OnMouseUp = PanelButtonMouseUp
             end
-            object ListViewArmorUsing: TListView
-              Left = 3
-              Top = 120
+            object GridWeaponUsing1: TStringGrid
+              Left = 8
+              Top = 26
               Width = 250
-              Height = 59
+              Height = 35
               BevelInner = bvNone
               BevelOuter = bvNone
-              Columns = <
-                item
-                  Caption = #12288
-                  Width = 10
-                end
-                item
-                  Alignment = taCenter
-                  Caption = #65434#65393#65432#65411#65384
-                  Width = 36
-                end
-                item
-                  Caption = #21517#31216
-                  Width = 100
-                end
-                item
-                  Alignment = taCenter
-                  Caption = 'DEF'
-                end
-                item
-                  Alignment = taRightJustify
-                  Caption = 'WT.'
-                  Width = 36
-                end
-                item
-                  Alignment = taRightJustify
-                  Caption = 'CRIT'
-                  Width = 40
-                end
-                item
-                  Caption = 'ELEM'
-                end
-                item
-                  Alignment = taRightJustify
-                  Caption = 'MOD'
-                  Width = 30
-                end
-                item
-                  Alignment = taRightJustify
-                  Caption = #12510#12522#12514
-                end>
+              ColCount = 3
               Ctl3D = False
-              FlatScrollBars = True
-              ReadOnly = True
-              RowSelect = True
+              DefaultColWidth = 83
+              DefaultRowHeight = 16
+              DefaultDrawing = False
+              Enabled = False
+              FixedCols = 0
+              RowCount = 2
+              FixedRows = 0
+              ParentCtl3D = False
+              ScrollBars = ssNone
+              TabOrder = 2
+              OnDrawCell = DrawGridCell
+            end
+            object GridWeaponUsing2: TStringGrid
+              Left = 8
+              Top = 60
+              Width = 250
+              Height = 35
+              BevelInner = bvNone
+              BevelOuter = bvNone
+              ColCount = 3
+              Ctl3D = False
+              DefaultColWidth = 83
+              DefaultRowHeight = 16
+              DefaultDrawing = False
+              Enabled = False
+              FixedCols = 0
+              RowCount = 2
+              FixedRows = 0
+              ParentCtl3D = False
+              ScrollBars = ssNone
               TabOrder = 3
-              ViewStyle = vsReport
+              OnDrawCell = DrawGridCell
+            end
+            object GridWeaponUsing3: TStringGrid
+              Left = 8
+              Top = 94
+              Width = 250
+              Height = 35
+              BevelInner = bvNone
+              BevelOuter = bvNone
+              ColCount = 3
+              Ctl3D = False
+              DefaultColWidth = 83
+              DefaultRowHeight = 16
+              DefaultDrawing = False
+              Enabled = False
+              FixedCols = 0
+              RowCount = 2
+              FixedRows = 0
+              ParentCtl3D = False
+              ScrollBars = ssNone
+              TabOrder = 4
+              OnDrawCell = DrawGridCell
+            end
+            object GridArmorUsing3: TStringGrid
+              Left = 8
+              Top = 232
+              Width = 250
+              Height = 35
+              BevelInner = bvNone
+              BevelOuter = bvNone
+              ColCount = 3
+              Ctl3D = False
+              DefaultColWidth = 83
+              DefaultRowHeight = 16
+              DefaultDrawing = False
+              Enabled = False
+              FixedCols = 0
+              RowCount = 2
+              FixedRows = 0
+              ParentCtl3D = False
+              ScrollBars = ssNone
+              TabOrder = 5
+              OnDrawCell = DrawGridCell
+            end
+            object GridArmorUsing2: TStringGrid
+              Left = 8
+              Top = 198
+              Width = 250
+              Height = 35
+              BevelInner = bvNone
+              BevelOuter = bvNone
+              ColCount = 3
+              Ctl3D = False
+              DefaultColWidth = 83
+              DefaultRowHeight = 16
+              DefaultDrawing = False
+              Enabled = False
+              FixedCols = 0
+              RowCount = 2
+              FixedRows = 0
+              ParentCtl3D = False
+              ScrollBars = ssNone
+              TabOrder = 6
+              OnDrawCell = DrawGridCell
+            end
+            object GridArmorUsing1: TStringGrid
+              Left = 8
+              Top = 164
+              Width = 250
+              Height = 35
+              BevelInner = bvNone
+              BevelOuter = bvNone
+              ColCount = 3
+              Ctl3D = False
+              DefaultColWidth = 83
+              DefaultRowHeight = 16
+              DefaultDrawing = False
+              Enabled = False
+              FixedCols = 0
+              RowCount = 2
+              FixedRows = 0
+              ParentCtl3D = False
+              ScrollBars = ssNone
+              TabOrder = 7
+              OnDrawCell = DrawGridCell
             end
           end
           object Panel5: TPanel
             Left = 0
             Top = 322
             Width = 264
-            Height = 9
+            Height = 6
             Align = alClient
             BevelOuter = bvLowered
             ParentColor = True
             TabOrder = 1
-            ExplicitHeight = 2
           end
         end
         object TabSheetWeapon: TTabSheet
           Caption = #27494#22120
           ImageIndex = 1
-          ExplicitHeight = 227
+          ExplicitLeft = 0
+          ExplicitTop = 0
+          ExplicitWidth = 0
+          ExplicitHeight = 516
           object WeaponTopPanel: TPanel
             Left = 0
             Top = 0
@@ -1292,7 +1309,7 @@ object DonguriForm: TDonguriForm
             Left = 0
             Top = 30
             Width = 264
-            Height = 301
+            Height = 298
             Align = alClient
             BevelInner = bvNone
             BevelOuter = bvNone
@@ -1349,13 +1366,16 @@ object DonguriForm: TDonguriForm
             OnChange = ListViewWeaponChange
             OnColumnClick = ListViewWeaponColumnClick
             OnCompare = ListViewWeaponCompare
-            ExplicitHeight = 197
+            ExplicitHeight = 486
           end
         end
         object TabSheetArmor: TTabSheet
           Caption = #38450#20855
           ImageIndex = 2
-          ExplicitHeight = 227
+          ExplicitLeft = 0
+          ExplicitTop = 0
+          ExplicitWidth = 0
+          ExplicitHeight = 516
           object ArmorTopPanel: TPanel
             Left = 0
             Top = 0
@@ -1459,7 +1479,7 @@ object DonguriForm: TDonguriForm
             Left = 0
             Top = 30
             Width = 264
-            Height = 301
+            Height = 298
             Align = alClient
             BevelInner = bvNone
             BevelOuter = bvNone
@@ -1516,7 +1536,7 @@ object DonguriForm: TDonguriForm
             OnChange = ListViewArmorChange
             OnColumnClick = ListViewArmorColumnClick
             OnCompare = ListViewArmorCompare
-            ExplicitHeight = 197
+            ExplicitHeight = 486
           end
         end
       end
@@ -1524,17 +1544,19 @@ object DonguriForm: TDonguriForm
     object TabSheetModW: TTabSheet
       Caption = #27494#22120#24375#21270
       ImageIndex = 5
-      ExplicitHeight = 805
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 670
       object ModWPanel: TPanel
         Left = 0
         Top = 0
         Width = 272
-        Height = 485
+        Height = 482
         Align = alClient
         BevelOuter = bvNone
         TabOrder = 0
-        ExplicitTop = 569
-        ExplicitHeight = 236
+        ExplicitHeight = 670
         object ModWBasePanel: TPanel
           Left = 0
           Top = 0
@@ -1872,29 +1894,31 @@ object DonguriForm: TDonguriForm
           Left = 0
           Top = 472
           Width = 272
-          Height = 13
+          Height = 10
           Align = alClient
           BevelOuter = bvLowered
           ParentColor = True
           TabOrder = 1
-          ExplicitHeight = 12
+          ExplicitHeight = 198
         end
       end
     end
     object TabSheetModA: TTabSheet
       Caption = #38450#20855#24375#21270
       ImageIndex = 6
-      ExplicitHeight = 805
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 670
       object ModAPanel: TPanel
         Left = 0
         Top = 0
         Width = 272
-        Height = 485
+        Height = 482
         Align = alClient
         BevelOuter = bvNone
         TabOrder = 0
-        ExplicitTop = 391
-        ExplicitHeight = 154
+        ExplicitHeight = 670
         object ModABasePanel: TPanel
           Left = 0
           Top = 0
@@ -2232,19 +2256,22 @@ object DonguriForm: TDonguriForm
           Left = 0
           Top = 472
           Width = 272
-          Height = 13
+          Height = 10
           Align = alClient
           BevelOuter = bvLowered
           ParentColor = True
           TabOrder = 1
-          ExplicitHeight = 23
+          ExplicitHeight = 198
         end
       end
     end
     object TabSheetLink: TTabSheet
       Caption = #12522#12531#12463
       ImageIndex = 3
-      ExplicitHeight = 805
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 670
       object LinkPanel: TPanel
         Left = 0
         Top = 0
@@ -2519,18 +2546,21 @@ object DonguriForm: TDonguriForm
         Left = 0
         Top = 472
         Width = 272
-        Height = 13
+        Height = 10
         Align = alClient
         BevelOuter = bvLowered
         ParentColor = True
         TabOrder = 1
-        ExplicitHeight = 333
+        ExplicitHeight = 198
       end
     end
     object TabSheetSetting: TTabSheet
       Caption = #35373#23450
       ImageIndex = 4
-      ExplicitHeight = 805
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 670
       object PanelSetting: TPanel
         Left = 0
         Top = 0
@@ -2617,12 +2647,12 @@ object DonguriForm: TDonguriForm
         Left = 0
         Top = 472
         Width = 272
-        Height = 13
+        Height = 10
         Align = alClient
         BevelOuter = bvLowered
         ParentColor = True
         TabOrder = 1
-        ExplicitHeight = 333
+        ExplicitHeight = 198
       end
     end
   end
@@ -2637,7 +2667,7 @@ object DonguriForm: TDonguriForm
     Left = 24
     Top = 392
     Bitmap = {
-      494C01010A001400000110001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01010A0014000C0110001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000003000000001002000000000000030
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000

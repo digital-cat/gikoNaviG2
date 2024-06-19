@@ -70,6 +70,7 @@ type
 
 	TDonguriItem = class(TObject)
   protected
+    procedure SetModify(html: String; wpn: Boolean);
     procedure SetMarimo(html: String);
     procedure SetState(html: String);
     function GetRangeValue(html: String): String;
@@ -2317,6 +2318,31 @@ begin
   Used   := False;
 end;
 
+procedure TDonguriItem.SetModify(html: String; wpn: Boolean);
+const
+	HREF_WPN = 'href="https://donguri.5ch.net/modify/weapon/view/';
+  HREF_ARM = 'href="https://donguri.5ch.net/modify/armor/view/';
+var
+  idx1: Integer;
+  idx2: Integer;
+begin
+	if wpn then begin
+    idx1 := Pos(HREF_WPN, html);
+    if idx1 >= 1 then
+      idx1 := idx1 + Length(HREF_WPN);
+  end else begin
+		idx1 := Pos(HREF_ARM, html);
+    if idx1 >= 1 then
+      idx1 := idx1 + Length(HREF_ARM);
+  end;
+  if idx1 >= 1 then begin
+  	idx2 := PosEx('"', html, idx1);
+    if idx2 > idx1 then
+			ItemNo := Copy(html, idx1, idx2 - idx1);
+  end;
+	Modify := TrimBracket(TrimTag(html));
+end;
+
 procedure TDonguriItem.SetMarimo(html: String);
 var
 	tmp: String;
@@ -2458,7 +2484,7 @@ begin
       2: SPD := Trim(TrimTag(tmp1));
       3: CRIT := Trim(TrimTag(tmp1));
       4: ELEM := Trim(TrimTag(tmp1));
-      5: Modify := TrimBracket(TrimTag(tmp1));
+      5: SetModify(tmp1, True);
       6: SetMarimo(tmp1);
       7: SetState(tmp1);
     end;
@@ -2511,7 +2537,7 @@ begin
       2: WT  := Trim(TrimTag(tmp1));
       3: CRIT := Trim(TrimTag(tmp1));
       4: ELEM := Trim(TrimTag(tmp1));
-      5: Modify := TrimBracket(TrimTag(tmp1));
+      5: SetModify(tmp1, False);
       6: SetMarimo(tmp1);
       7: SetState(tmp1);
     end;
