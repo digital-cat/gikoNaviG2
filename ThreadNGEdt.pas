@@ -17,6 +17,7 @@ type
     BtnDel: TButton;
     BtnOk: TButton;
     BtnCancel: TButton;
+    CheckBoxInvisible: TCheckBox;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure BtnAddClick(Sender: TObject);
@@ -35,7 +36,7 @@ var
 
 implementation
 
-uses BoardGroup;
+uses BoardGroup, GikoSystem;
 
 {$R *.dfm}
 
@@ -56,6 +57,7 @@ end;
 procedure TThreadNGEdit.FormShow(Sender: TObject);
 begin
     LstNgWord.Items.Assign(ThreadNgList);
+    CheckBoxInvisible.Checked := GikoSys.Setting.NGThreadInvis;
 end;
 
 procedure TThreadNGEdit.LstNgWordClick(Sender: TObject);
@@ -96,6 +98,7 @@ procedure TThreadNGEdit.BtnOkClick(Sender: TObject);
 begin
     ThreadNgList.Assign(LstNgWord.Items);
     ThreadNgList.Save;
+    GikoSys.Setting.NGThreadInvis := CheckBoxInvisible.Checked;
 
     ModalResult := mrOk;
 end;

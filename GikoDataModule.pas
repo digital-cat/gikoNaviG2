@@ -4758,7 +4758,8 @@ procedure TGikoDM.ThreadNgEditActionExecute(Sender: TObject);
 begin
     ThreadNGEdit := TThreadNGEdit.Create(GikoForm);
     if (ThreadNGEdit.ShowModal = mrOk) then begin
-        GikoForm.ListViewUC.Refresh;
+        if GikoForm.ListViewUC.Visible then
+        	GikoForm.UpdateListView();
     end;
     ThreadNGEdit.Free;
     ThreadNGEdit := nil;

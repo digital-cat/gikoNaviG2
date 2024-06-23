@@ -375,7 +375,7 @@ begin
 
                     vField := vRec.Field['subject'];
                     Title := HTMLEncode(String(vField.Value));
-                    if (ChkNG.Checked = True) and (ThreadNgList.IsNG(Title) = True) then
+                    if (ChkNG.Checked = True) and (ThreadNgList.IsNG(Title, GikoSys.Setting.NGThreadInvis) = True) then
                         Continue;
 
                     vField := vRec.Field['ita'];

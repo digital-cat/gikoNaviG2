@@ -725,7 +725,7 @@ type
 		//! ListViewのD&D受け取り
 		procedure AcceptDropFiles(var Msg: TMsg);
 		//! スレッド一覧更新処理
-		procedure UpdateListView();
+		//procedure UpdateListView();		publicへ
 		//! アイコン読み込み
 		procedure LoadIcon();
 		//! ポップアップメニュー読み込み
@@ -884,6 +884,8 @@ type
 		procedure AddressItemsSetCount;
     //! レス番号ポップアップメニュー先頭の「どんぐり大砲」表示切替
     procedure ShowDonguriCannonTopMenu;
+		//! スレッド一覧更新処理
+		procedure UpdateListView();
 	published
 		property EnabledCloseButton: Boolean read FEnabledCloseButton write SetEnabledCloseButton;
 	end;
@@ -8550,7 +8552,8 @@ begin
         TBoard(ActiveList).UserThreadCount:= TBoard(ActiveList).GetUserThreadCount;
         //ListViewのアイテムの個数も更新
         case GikoForm.ViewType of
-            gvtAll: ListViewUC.Items.Count := TBoard(ActiveList).Count;
+            //gvtAll: ListViewUC.Items.Count := TBoard(ActiveList).Count;
+            gvtAll: ListViewUC.Items.Count := TBoard(ActiveList).UserThreadCount;
             gvtLog: ListViewUC.Items.Count := TBoard(ActiveList).LogThreadCount;
             gvtNew: ListViewUC.Items.Count := TBoard(ActiveList).NewThreadCount;
             gvtArch: ListViewUC.Items.Count := TBoard(ActiveList).ArchiveThreadCount;

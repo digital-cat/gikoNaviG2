@@ -371,6 +371,8 @@ type
 		FDeleteSyria : Boolean;	//シリア語ブラクラ対策
 		FIgnoreKana	: Boolean;	//全半角ひらカナの違いを無視するか
     FKeepNgFile : Boolean;	//スレ全体再取得時に手動あぼ～ん情報をクリアしない
+    //! スレッドあぼーん
+    FNGThreadInvis: Boolean;	// 透明あぼーん
 
 		//NGワード編集
 		FNGTextEditor: Boolean; //編集にテキストエディタを使用するか
@@ -539,7 +541,6 @@ type
     FDonguriMail: String;
     FDonguriPwd: String;
     FDonguriAutoLogin: Integer;
-
 
 		function GetMainCoolSet(Index: Integer): TCoolSet;
 		function GetBoardCoolSet(Index: Integer): TCoolSet;
@@ -841,6 +842,8 @@ type
 		property DeleteSyria : Boolean read FDeleteSyria write FDeleteSyria;
 		property IgnoreKana : Boolean read FIgnoreKana write FIgnoreKana;
     property KeepNgFile : Boolean read FKeepNgFile write FKeepNgFile;
+    //! スレッドあぼーん
+    property NGThreadInvis: Boolean read FNGThreadInvis write FNGThreadInvis;	// 透明あぼーん
 
 		//NGワード編集
 		property NGTextEditor: Boolean read FNGTextEditor write FNGTextEditor;
@@ -1467,6 +1470,8 @@ begin
 		FDeleteSyria :=  ini.ReadBool('Abon','DeleteSyria',false);
 		FIgnoreKana  :=  ini.ReadBool('Abon','IgnoreKana',false);
     FKeepNgFile  :=  ini.ReadBool('Abon','KeepNgFile',false);
+    //! スレッドあぼーん
+    FNGThreadInvis := ini.ReadBool('Abon','ThreadInvisible', False);
 
         //NGワード編集
         FNGTextEditor   := ini.ReadBool('NGWordEditor', 'NGTextEditor', False);
@@ -1974,6 +1979,8 @@ begin
 		ini.WriteBool('Abon','DeleteSyria',FDeleteSyria);
 		ini.WriteBool('Abon','IgnoreKana', FIgnoreKana);
     ini.WriteBool('Abon','KeepNgFile', FKeepNgFile);
+    //! スレッドあぼーん
+    ini.WriteBool('Abon','ThreadInvisible', FNGThreadInvis);
 
 		//NGワード編集
 		ini.WriteBool('NGWordEditor', 'NGTextEditor', FNGTextEditor);

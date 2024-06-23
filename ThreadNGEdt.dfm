@@ -1,10 +1,10 @@
 object ThreadNGEdit: TThreadNGEdit
   Left = 192
   Top = 133
-  Width = 360
-  Height = 543
   BorderIcons = [biSystemMenu, biMaximize]
   Caption = #12473#12524#12479#12452'NG'#12527#12540#12489#32232#38598
+  ClientHeight = 504
+  ClientWidth = 344
   Color = clBtnFace
   Constraints.MinHeight = 300
   Constraints.MinWidth = 360
@@ -65,23 +65,24 @@ object ThreadNGEdit: TThreadNGEdit
     Left = 0
     Top = 65
     Width = 344
-    Height = 399
+    Height = 379
     Align = alClient
     ItemHeight = 12
     TabOrder = 1
     OnClick = LstNgWordClick
+    ExplicitHeight = 398
   end
   object Panel2: TPanel
     Left = 0
-    Top = 464
+    Top = 444
     Width = 344
-    Height = 41
+    Height = 60
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 2
     object BtnOk: TButton
       Left = 80
-      Top = 8
+      Top = 26
       Width = 75
       Height = 25
       Caption = 'OK'
@@ -90,13 +91,21 @@ object ThreadNGEdit: TThreadNGEdit
     end
     object BtnCancel: TButton
       Left = 184
-      Top = 8
+      Top = 26
       Width = 75
       Height = 25
       Cancel = True
       Caption = #12461#12515#12531#12475#12523
       ModalResult = 2
       TabOrder = 1
+    end
+    object CheckBoxInvisible: TCheckBox
+      Left = 8
+      Top = 6
+      Width = 121
+      Height = 17
+      Caption = #36879#26126#12354#12412#12540#12435'(&I)'
+      TabOrder = 2
     end
   end
 end
