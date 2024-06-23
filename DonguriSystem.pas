@@ -12,8 +12,8 @@ uses
 
 type
   TDonguriAutoLogin = (atlOn, atlOff, atlUnknown);
-  TModifyWeapon = (mdwDmgMin, mdwDmgMax, mdwSpeed,  mdwCrit);
-  TModifyArmor  = (mdaDefMin, mdaDefMax, mdaWeight, mdaCrit);
+  TModifyWeapon = (mdwDmgMin, mdwDmgMax, mdwSpeed,  mdwCrit, mdwDmgMinDwn, mdwDmgMaxDwn, mdwSpeedDwn,  mdwCritDwn);
+  TModifyArmor  = (mdaDefMin, mdaDefMax, mdaWeight, mdaCrit, mdaDefMinDwn, mdaDefMaxDwn, mdaWeightDwn, mdaCritDwn);
 
 	TDonguriHome = class(TObject)
   protected
@@ -271,17 +271,25 @@ const
   URL_DNG_EQUIP   = 'https://donguri.5ch.net/equip/';								// 装備
   URL_DNG_RECYCLE = 'https://donguri.5ch.net/recycle/';							// 分解
 
-  URL_DNG_MDYW_VW = 'https://donguri.5ch.net/modify/weapon/view/';			// 武器改造 詳細表示
-  URL_DNG_MDYW_DL = 'https://donguri.5ch.net/modify/weapon/dmglow/';		// 武器改造 ダメージ最小値
-  URL_DNG_MDYW_DH = 'https://donguri.5ch.net/modify/weapon/dmghigh/';		// 武器改造 ダメージ最大値
-  URL_DNG_MDYW_SP = 'https://donguri.5ch.net/modify/weapon/speed/';			// 武器改造 スピード
-  URL_DNG_MDYW_CR = 'https://donguri.5ch.net/modify/weapon/critical/';	// 武器改造 クリティカル
+  URL_DNG_MDYW_VW = 'https://donguri.5ch.net/modify/weapon/view/';					// 武器改造 詳細表示
+  URL_DNG_MDYW_DL = 'https://donguri.5ch.net/modify/weapon/dmglow/';				// 武器改造 ダメージ最小値
+  URL_DNG_MDYW_DH = 'https://donguri.5ch.net/modify/weapon/dmghigh/';				// 武器改造 ダメージ最大値
+  URL_DNG_MDYW_SP = 'https://donguri.5ch.net/modify/weapon/speed/';					// 武器改造 スピード
+  URL_DNG_MDYW_CR = 'https://donguri.5ch.net/modify/weapon/critical/';			// 武器改造 クリティカル
+  URL_DNG_DWNW_DL = 'https://donguri.5ch.net/modify/weapon/dmglowdown/';		// 武器改造 ダメージ最小値 低下
+  URL_DNG_DWNW_DH = 'https://donguri.5ch.net/modify/weapon/dmghighdown/';		// 武器改造 ダメージ最大値 低下
+  URL_DNG_DWNW_SP = 'https://donguri.5ch.net/modify/weapon/speeddown/';			// 武器改造 スピード       低下
+  URL_DNG_DWNW_CR = 'https://donguri.5ch.net/modify/weapon/criticaldown/';	// 武器改造 クリティカル   低下
 
-  URL_DNG_MDYA_VW = 'https://donguri.5ch.net/modify/armor/view/';				// 防具改造 詳細表示
-  URL_DNG_MDYA_DL = 'https://donguri.5ch.net/modify/armor/deflow/';			// 防具改造 防御最小値
-  URL_DNG_MDYA_DH = 'https://donguri.5ch.net/modify/armor/defhigh/';		// 防具改造 防御最大値
-  URL_DNG_MDYA_WT = 'https://donguri.5ch.net/modify/armor/weight/';			// 防具改造 重量
-  URL_DNG_MDYA_CR = 'https://donguri.5ch.net/modify/armor/critical/';		// 防具改造 クリティカル
+  URL_DNG_MDYA_VW = 'https://donguri.5ch.net/modify/armor/view/';					// 防具改造 詳細表示
+  URL_DNG_MDYA_DL = 'https://donguri.5ch.net/modify/armor/deflow/';				// 防具改造 防御最小値
+  URL_DNG_MDYA_DH = 'https://donguri.5ch.net/modify/armor/defhigh/';			// 防具改造 防御最大値
+  URL_DNG_MDYA_WT = 'https://donguri.5ch.net/modify/armor/weight/';				// 防具改造 重量
+  URL_DNG_MDYA_CR = 'https://donguri.5ch.net/modify/armor/critical/';			// 防具改造 クリティカル
+  URL_DNG_DWNA_DL = 'https://donguri.5ch.net/modify/armor/deflowdown/';		// 防具改造 防御最小値		低下
+  URL_DNG_DWNA_DH = 'https://donguri.5ch.net/modify/armor/defhighdown/';	// 防具改造 防御最大値   低下
+  URL_DNG_DWNA_WT = 'https://donguri.5ch.net/modify/armor/weightdown/';		// 防具改造 重量         低下
+  URL_DNG_DWNA_CR = 'https://donguri.5ch.net/modify/armor/criticaldown/';	// 防具改造 クリティカル 低下
 
   URL_DNG_CANNON  = 'https://donguri.5ch.net/cannon';								// どんぐり大砲
   URL_DNG_CANNON2 = 'https://donguri.5ch.net/confirm';							// どんぐり大砲確認
@@ -1752,10 +1760,14 @@ begin
       ClearResponse;
 
       case modType of
-        mdwDmgMin: url := URL_DNG_MDYW_DL + itemNo;
-        mdwDmgMax: url := URL_DNG_MDYW_DH + itemNo;
-        mdwSpeed:  url := URL_DNG_MDYW_SP + itemNo;
-        mdwCrit:   url := URL_DNG_MDYW_CR + itemNo;
+        mdwDmgMin:    url := URL_DNG_MDYW_DL + itemNo;
+        mdwDmgMax:    url := URL_DNG_MDYW_DH + itemNo;
+        mdwSpeed:     url := URL_DNG_MDYW_SP + itemNo;
+        mdwCrit:      url := URL_DNG_MDYW_CR + itemNo;
+        mdwDmgMinDwn: url := URL_DNG_DWNW_DL + itemNo;
+        mdwDmgMaxDwn: url := URL_DNG_DWNW_DH + itemNo;
+        mdwSpeedDwn:  url := URL_DNG_DWNW_SP + itemNo;
+        mdwCritDwn:   url := URL_DNG_DWNW_CR + itemNo;
         else begin
           Result := False;
           FErroeMessage := 'システムエラー：武器強化種別';
@@ -1805,10 +1817,14 @@ begin
       ClearResponse;
 
       case modType of
-        mdaDefMin: url := URL_DNG_MDYA_DL + itemNo;
-        mdaDefMax: url := URL_DNG_MDYA_DH + itemNo;
-        mdaWeight: url := URL_DNG_MDYA_WT + itemNo;
-        mdaCrit:   url := URL_DNG_MDYA_CR + itemNo;
+        mdaDefMin:    url := URL_DNG_MDYA_DL + itemNo;
+        mdaDefMax:    url := URL_DNG_MDYA_DH + itemNo;
+        mdaWeight:    url := URL_DNG_MDYA_WT + itemNo;
+        mdaCrit:      url := URL_DNG_MDYA_CR + itemNo;
+        mdaDefMinDwn: url := URL_DNG_DWNA_DL + itemNo;
+        mdaDefMaxDwn: url := URL_DNG_DWNA_DH + itemNo;
+        mdaWeightDwn: url := URL_DNG_DWNA_WT + itemNo;
+        mdaCritDwn:   url := URL_DNG_DWNA_CR + itemNo;
         else begin
           Result := False;
           FErroeMessage := 'システムエラー：防具強化種別';

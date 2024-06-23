@@ -8,7 +8,7 @@ uses
   ImgList, Menus, Clipbrd;
 
 type
-  TColumnType = (ctString, ctInteger);
+  TColumnType = (ctString, ctInteger, ctIntStr);
 
   TDonguriForm = class(TForm)
     TimerInit: TTimer;
@@ -177,7 +177,7 @@ type
     Label34: TLabel;
     ModWPnlButton: TPanel;
     ModAPnlButton: TPanel;
-    ModAGrid: TStringGrid;
+    ModAGrid1: TStringGrid;
     ModBackAPnlButton: TPanel;
     Label26: TLabel;
     DefMinCurPanel: TPanel;
@@ -219,7 +219,7 @@ type
     Label55: TLabel;
     Label56: TLabel;
     Label57: TLabel;
-    ModWGrid: TStringGrid;
+    ModWGrid1: TStringGrid;
     ModBackWPnlButton: TPanel;
     DmgMinCurPanel: TPanel;
     DmgMinNewPanel: TPanel;
@@ -257,6 +257,44 @@ type
     GridArmorUsing3: TStringGrid;
     GridArmorUsing2: TStringGrid;
     GridArmorUsing1: TStringGrid;
+    ModWGrid2: TStringGrid;
+    ModWGrid3: TStringGrid;
+    Label60: TLabel;
+    CritWDwnPanel: TPanel;
+    CritWDMrPanel: TPanel;
+    DwnCritWPnlButton: TPanel;
+    Label61: TLabel;
+    DmgMinDwnPanel: TPanel;
+    DmgMinDMrPanel: TPanel;
+    DwnDmgMinPnlButton: TPanel;
+    Label62: TLabel;
+    DmgMaxDwnPanel: TPanel;
+    DmgMaxDMrPanel: TPanel;
+    DwnDmgMaxPnlButton: TPanel;
+    DwnSpeedPnlButton: TPanel;
+    SpeedDMrPanel: TPanel;
+    SpeedDwnPanel: TPanel;
+    Label63: TLabel;
+    ModAGrid3: TStringGrid;
+    ModAGrid2: TStringGrid;
+    Label64: TLabel;
+    DefMinDwnPanel: TPanel;
+    DefMinDMrPanel: TPanel;
+    DwnDefMinPnlButton: TPanel;
+    Label65: TLabel;
+    DefMaxDwnPanel: TPanel;
+    DefMaxDMrPanel: TPanel;
+    DwnDefMaxPnlButton: TPanel;
+    Label66: TLabel;
+    WeightDwnPanel: TPanel;
+    WeightDMrPanel: TPanel;
+    DwnWeightPnlButton: TPanel;
+    Label67: TLabel;
+    CritADwnPanel: TPanel;
+    CritADMrPanel: TPanel;
+    DwnCritAPnlButton: TPanel;
+    ModUseWPnlButton: TPanel;
+    ModUseAPnlButton: TPanel;
     procedure TimerInitTimer(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCreate(Sender: TObject);
@@ -342,6 +380,18 @@ type
     procedure ModCritWPnlButtonClick(Sender: TObject);
     procedure DrawGridCell(Sender: TObject; ACol, ARow: Integer; Rect: TRect;
       State: TGridDrawState);
+    procedure DrawModGridCell(Sender: TObject; ACol, ARow: Integer; Rect: TRect;
+      State: TGridDrawState);
+    procedure DwnDmgMinPnlButtonClick(Sender: TObject);
+    procedure DwnDmgMaxPnlButtonClick(Sender: TObject);
+    procedure DwnSpeedPnlButtonClick(Sender: TObject);
+    procedure DwnCritWPnlButtonClick(Sender: TObject);
+    procedure DwnDefMinPnlButtonClick(Sender: TObject);
+    procedure DwnDefMaxPnlButtonClick(Sender: TObject);
+    procedure DwnWeightPnlButtonClick(Sender: TObject);
+    procedure DwnCritAPnlButtonClick(Sender: TObject);
+    procedure ModUseWPnlButtonClick(Sender: TObject);
+    procedure ModUseAPnlButtonClick(Sender: TObject);
   private
     { Private declarations }
     FHunter: Boolean;
@@ -375,7 +425,8 @@ type
 		procedure SetSkillInfo(val: Integer; rate: Integer; sel: Boolean; panel: TPanel; prgbar: TProgressBar; prglbl: TLabel);
     procedure OpenChest(amount: Integer; chestName: String);
     function NumComp(text1, text2: String): Integer;
-    function atoi(str: String): Integer;
+    function atoi(str: String; var numLen: Integer): Integer;
+    function NumStrComp(text1, text2: String): Integer;
     procedure Login;
     procedure MailLogin(mail, pwd: String);
     procedure ShowModViewW(res: String);
@@ -383,6 +434,8 @@ type
     procedure ShowModViewA(res: String);
     procedure ModArmor(modType: TModifyArmor);
     function SetImageFromURL(image: TImage; url: String): Boolean;
+    procedure EnableModButton(newVal, cost, button: TPanel);
+    procedure SwitchItemTab(showTab: TTabSheet);
 	protected
 		procedure CreateParams(var Params: TCreateParams); override;
   public
@@ -468,7 +521,7 @@ const
     ctInteger,
     ctInteger,
     ctInteger,
-  	ctString,
+  	ctIntStr,//ctString,
     ctInteger,
     ctInteger
   );
@@ -479,7 +532,7 @@ const
     ctInteger,
     ctInteger,
     ctInteger,
-  	ctString,
+  	ctIntStr,//ctString,
     ctInteger,
     ctInteger
   );
@@ -596,10 +649,18 @@ begin
   GridArmorUsing3.Cells[1, 0] := 'MOD';
   GridArmorUsing3.Cells[2, 0] := 'マリモ';
 
-  ModWGrid.ColWidths[1] := 160;
-  ModWGrid.Selection := sel;
-  ModAGrid.ColWidths[1] := 160;
-  ModAGrid.Selection := sel;
+  ModWGrid1.ColWidths[1] := 130;
+  ModWGrid1.Selection := sel;
+  ModWGrid2.ColWidths[1] := 60;
+  ModWGrid2.Selection := sel;
+  ModWGrid3.ColWidths[1] := 80;
+  ModWGrid3.Selection := sel;
+  ModAGrid1.ColWidths[1] := 130;
+  ModAGrid1.Selection := sel;
+  ModAGrid2.ColWidths[1] := 60;
+  ModAGrid2.Selection := sel;
+  ModAGrid3.ColWidths[1] := 80;
+  ModAGrid3.Selection := sel;
 
   TabSheetModW.TabVisible := False;
   TabSheetModA.TabVisible := False;
@@ -908,23 +969,54 @@ begin
   SetButtonColor;
 end;
 
-function TDonguriForm.atoi(str: String): Integer;
+function TDonguriForm.atoi(str: String; var numLen: Integer): Integer;
 var
   num, code, i: Integer;
 begin
+	numLen := 0;
 	num := 0;
 	for i := 1 to Length(str) do begin
   	code := Ord(str[i]);
     if (code and $F0) <> $30 then
     	Break;
     num := (num * 10) + (code and $0F);
+    Int(numLen);
   end;
 	Result := num;
 end;
 
 function TDonguriForm.NumComp(text1, text2: String): Integer;
+var
+	tmp: Integer;
 begin
-	Result := atoi(text1) - atoi(text2);
+	Result := atoi(text1, tmp) - atoi(text2, tmp);
+end;
+
+function TDonguriForm.NumStrComp(text1, text2: String): Integer;
+var
+  diff: Integer;
+  len1, len2: Integer;
+  idx1, idx2: Integer;
+  len11, len21: Integer;
+  str1, str2: String;
+begin
+	len1 := 0;
+  len2 := 0;
+	diff := atoi(text1, len1) - atoi(text2, len2);
+  if diff = 0 then begin
+  	len11 := Length(text1);
+  	len21 := Length(text2);
+  	idx1 := len1 + 1;
+  	idx2 := len2 + 1;
+    len1 := len11 - len1;
+    len2 := len21 - len2;
+    if len1 > 0 then
+      str1 := Copy(text1, idx1, len1);
+    if len2 > 0 then
+      str2 := Copy(text2, idx2, len2);
+    diff := AnsiCompareStr(str1, str2);
+  end;
+	Result := diff;
 end;
 
 procedure TDonguriForm.ListViewWeaponColumnClick(Sender: TObject;
@@ -959,10 +1051,12 @@ begin
   else
   	typ := ctString;
 
-	if typ = ctInteger then
-  	Compare := NumComp(text1, text2)
-  else
-  	Compare := AnsiCompareStr(text1, text2);
+	case typ of
+  ctInteger: Compare := NumComp(text1, text2);
+	ctIntStr:  Compare := NumStrComp(text1, text2);
+  //ctString:
+  else       Compare := AnsiCompareStr(text1, text2);
+  end;
 
   if not FWpnSortAsc then
   	Compare := Compare * -1;
@@ -1000,10 +1094,12 @@ begin
   else
   	typ := ctString;
 
-	if typ = ctInteger then
-  	Compare := NumComp(text1, text2)
-  else
-  	Compare := AnsiCompareStr(text1, text2);
+	case typ of
+  ctInteger: Compare := NumComp(text1, text2);
+	ctIntStr:  Compare := NumStrComp(text1, text2);
+  //ctString:
+  else       Compare := AnsiCompareStr(text1, text2);
+  end;
 
   if not FArmSortAsc then
   	Compare := Compare * -1;
@@ -1165,12 +1261,22 @@ end;
 
 procedure TDonguriForm.PanelButtonMouseUp(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+var
+  btn: TPanel;
 begin
   if Sender is TPanel then begin
-    if ColorRadioGroup.ItemIndex = 0 then
-      TPanel(Sender).Font.Color := clWindowText
-    else
-      TPanel(Sender).Font.Color := COL_DARK_TEXT;
+    btn := TPanel(Sender);
+    if btn.Enabled then begin
+      if ColorRadioGroup.ItemIndex = 0 then
+        btn.Font.Color := clWindowText
+      else
+        btn.Font.Color := COL_DARK_TEXT;
+    end else begin
+      if ColorRadioGroup.ItemIndex = 0 then
+        btn.Font.Color := COL_LGHT_DTXT
+      else
+        btn.Font.Color := COL_DARK_DTXT;
+    end;
   end;
 end;
 
@@ -1432,35 +1538,55 @@ begin
         SetColors(ListViewArmor,       clWindow,  clWindowText);
       	SetColors(UsingPanel,          clBtnFace, clWindowText);
         SetColors(ModWPanel,           clBtnFace, clWindowText);
-        SetColors(ModWGrid,            clWindow,  clWindowText);
+        SetColors(ModWGrid1,           clWindow,  clWindowText); ModWGrid1.FixedColor := clBtnFace;
+        SetColors(ModWGrid2,           clWindow,  clWindowText); ModWGrid2.FixedColor := clBtnFace;
+        SetColors(ModWGrid3,           clWindow,  clWindowText); ModWGrid3.FixedColor := clBtnFace;
         SetColors(ModWMarimoPanel,     clWindow,  clWindowText);
         SetColors(DmgMinCurPanel,      clWindow,  clWindowText);
         SetColors(DmgMinNewPanel,      clWindow,  clWindowText);
         SetColors(DmgMinMrmPanel,      clWindow,  clWindowText);
+        SetColors(DmgMinDwnPanel,      clWindow,  clWindowText);
+        SetColors(DmgMinDMrPanel,      clWindow,  clWindowText);
         SetColors(DmgMaxCurPanel,      clWindow,  clWindowText);
         SetColors(DmgMaxNewPanel,      clWindow,  clWindowText);
         SetColors(DmgMaxMrmPanel,      clWindow,  clWindowText);
+        SetColors(DmgMaxDwnPanel,      clWindow,  clWindowText);
+        SetColors(DmgMaxDMrPanel,      clWindow,  clWindowText);
         SetColors(SpeedCurPanel,       clWindow,  clWindowText);
         SetColors(SpeedNewPanel,       clWindow,  clWindowText);
         SetColors(SpeedMrmPanel,       clWindow,  clWindowText);
+        SetColors(SpeedDwnPanel,       clWindow,  clWindowText);
+        SetColors(SpeedDMrPanel,       clWindow,  clWindowText);
         SetColors(CritWCurPanel,       clWindow,  clWindowText);
         SetColors(CritWNewPanel,       clWindow,  clWindowText);
         SetColors(CritWMrmPanel,       clWindow,  clWindowText);
+        SetColors(CritWDwnPanel,       clWindow,  clWindowText);
+        SetColors(CritWDMrPanel,       clWindow,  clWindowText);
         SetColors(ModAPanel,           clBtnFace, clWindowText);
-        SetColors(ModAGrid,            clWindow,  clWindowText);
+        SetColors(ModAGrid1,           clWindow,  clWindowText); ModAGrid1.FixedColor := clBtnFace;
+        SetColors(ModAGrid2,           clWindow,  clWindowText); ModAGrid2.FixedColor := clBtnFace;
+        SetColors(ModAGrid3,           clWindow,  clWindowText); ModAGrid3.FixedColor := clBtnFace;
         SetColors(ModAMarimoPanel,     clWindow,  clWindowText);
         SetColors(DefMinCurPanel,      clWindow,  clWindowText);
         SetColors(DefMinNewPanel,      clWindow,  clWindowText);
+        SetColors(DefMinDwnPanel,      clWindow,  clWindowText);
         SetColors(DefMinMrmPanel,      clWindow,  clWindowText);
+        SetColors(DefMinDMrPanel,      clWindow,  clWindowText);
         SetColors(DefMaxCurPanel,      clWindow,  clWindowText);
         SetColors(DefMaxNewPanel,      clWindow,  clWindowText);
+        SetColors(DefMaxDwnPanel,      clWindow,  clWindowText);
         SetColors(DefMaxMrmPanel,      clWindow,  clWindowText);
+        SetColors(DefMaxDMrPanel,      clWindow,  clWindowText);
         SetColors(WeightCurPanel,      clWindow,  clWindowText);
         SetColors(WeightNewPanel,      clWindow,  clWindowText);
+        SetColors(WeightDwnPanel,      clWindow,  clWindowText);
         SetColors(WeightMrmPanel,      clWindow,  clWindowText);
+        SetColors(WeightDMrPanel,      clWindow,  clWindowText);
         SetColors(CritACurPanel,       clWindow,  clWindowText);
         SetColors(CritANewPanel,       clWindow,  clWindowText);
+        SetColors(CritADwnPanel,       clWindow,  clWindowText);
         SetColors(CritAMrmPanel,       clWindow,  clWindowText);
+        SetColors(CritADMrPanel,       clWindow,  clWindowText);
 
       	TabSheetSetting.Font.Color := clWindowText;
 
@@ -1521,35 +1647,55 @@ begin
         SetColors(ListViewArmor,       COL_DARK_BKG2, COL_DARK_TEXT);
       	SetColors(UsingPanel,          COL_DARK_BKG1, COL_DARK_TEXT);
       	SetColors(ModWPanel,           COL_DARK_BKG1, COL_DARK_TEXT);
-        SetColors(ModWGrid,            COL_DARK_BKG2, COL_DARK_TEXT);
+        SetColors(ModWGrid1,           COL_DARK_BKG2, COL_DARK_TEXT); ModWGrid1.FixedColor := COL_DARK_BKG1;
+        SetColors(ModWGrid2,           COL_DARK_BKG2, COL_DARK_TEXT); ModWGrid2.FixedColor := COL_DARK_BKG1;
+        SetColors(ModWGrid3,           COL_DARK_BKG2, COL_DARK_TEXT); ModWGrid3.FixedColor := COL_DARK_BKG1;
         SetColors(ModWMarimoPanel,     COL_DARK_BKG2, COL_DARK_TEXT);
         SetColors(DmgMinCurPanel,      COL_DARK_BKG2, COL_DARK_TEXT);
         SetColors(DmgMinNewPanel,      COL_DARK_BKG2, COL_DARK_TEXT);
         SetColors(DmgMinMrmPanel,      COL_DARK_BKG2, COL_DARK_TEXT);
+        SetColors(DmgMinDwnPanel,      COL_DARK_BKG2, COL_DARK_TEXT);
+        SetColors(DmgMinDMrPanel,      COL_DARK_BKG2, COL_DARK_TEXT);
         SetColors(DmgMaxCurPanel,      COL_DARK_BKG2, COL_DARK_TEXT);
         SetColors(DmgMaxNewPanel,      COL_DARK_BKG2, COL_DARK_TEXT);
         SetColors(DmgMaxMrmPanel,      COL_DARK_BKG2, COL_DARK_TEXT);
+        SetColors(DmgMaxDwnPanel,      COL_DARK_BKG2, COL_DARK_TEXT);
+        SetColors(DmgMaxDMrPanel,      COL_DARK_BKG2, COL_DARK_TEXT);
         SetColors(SpeedCurPanel,       COL_DARK_BKG2, COL_DARK_TEXT);
         SetColors(SpeedNewPanel,       COL_DARK_BKG2, COL_DARK_TEXT);
         SetColors(SpeedMrmPanel,       COL_DARK_BKG2, COL_DARK_TEXT);
+        SetColors(SpeedDwnPanel,       COL_DARK_BKG2, COL_DARK_TEXT);
+        SetColors(SpeedDMrPanel,       COL_DARK_BKG2, COL_DARK_TEXT);
         SetColors(CritWCurPanel,       COL_DARK_BKG2, COL_DARK_TEXT);
         SetColors(CritWNewPanel,       COL_DARK_BKG2, COL_DARK_TEXT);
         SetColors(CritWMrmPanel,       COL_DARK_BKG2, COL_DARK_TEXT);
+        SetColors(CritWDwnPanel,       COL_DARK_BKG2, COL_DARK_TEXT);
+        SetColors(CritWDMrPanel,       COL_DARK_BKG2, COL_DARK_TEXT);
         SetColors(ModAPanel,           COL_DARK_BKG1, COL_DARK_TEXT);
-        SetColors(ModAGrid,            COL_DARK_BKG2, COL_DARK_TEXT);
+        SetColors(ModAGrid1,           COL_DARK_BKG2, COL_DARK_TEXT); ModAGrid1.FixedColor := COL_DARK_BKG1;
+        SetColors(ModAGrid2,           COL_DARK_BKG2, COL_DARK_TEXT); ModAGrid2.FixedColor := COL_DARK_BKG1;
+        SetColors(ModAGrid3,           COL_DARK_BKG2, COL_DARK_TEXT); ModAGrid3.FixedColor := COL_DARK_BKG1;
         SetColors(ModAMarimoPanel,     COL_DARK_BKG2, COL_DARK_TEXT);
         SetColors(DefMinCurPanel,      COL_DARK_BKG2, COL_DARK_TEXT);
         SetColors(DefMinNewPanel,      COL_DARK_BKG2, COL_DARK_TEXT);
+        SetColors(DefMinDwnPanel,      COL_DARK_BKG2, COL_DARK_TEXT);
         SetColors(DefMinMrmPanel,      COL_DARK_BKG2, COL_DARK_TEXT);
+        SetColors(DefMinDMrPanel,      COL_DARK_BKG2, COL_DARK_TEXT);
         SetColors(DefMaxCurPanel,      COL_DARK_BKG2, COL_DARK_TEXT);
         SetColors(DefMaxNewPanel,      COL_DARK_BKG2, COL_DARK_TEXT);
+        SetColors(DefMaxDwnPanel,      COL_DARK_BKG2, COL_DARK_TEXT);
         SetColors(DefMaxMrmPanel,      COL_DARK_BKG2, COL_DARK_TEXT);
+        SetColors(DefMaxDMrPanel,      COL_DARK_BKG2, COL_DARK_TEXT);
         SetColors(WeightCurPanel,      COL_DARK_BKG2, COL_DARK_TEXT);
         SetColors(WeightNewPanel,      COL_DARK_BKG2, COL_DARK_TEXT);
+        SetColors(WeightDwnPanel,      COL_DARK_BKG2, COL_DARK_TEXT);
         SetColors(WeightMrmPanel,      COL_DARK_BKG2, COL_DARK_TEXT);
+        SetColors(WeightDMrPanel,      COL_DARK_BKG2, COL_DARK_TEXT);
         SetColors(CritACurPanel,       COL_DARK_BKG2, COL_DARK_TEXT);
         SetColors(CritANewPanel,       COL_DARK_BKG2, COL_DARK_TEXT);
+        SetColors(CritADwnPanel,       COL_DARK_BKG2, COL_DARK_TEXT);
         SetColors(CritAMrmPanel,       COL_DARK_BKG2, COL_DARK_TEXT);
+        SetColors(CritADMrPanel,       COL_DARK_BKG2, COL_DARK_TEXT);
 
       	TabSheetSetting.Font.Color := COL_DARK_TEXT;
 
@@ -1634,6 +1780,8 @@ begin
   SetButtonColors(SlotPnlButton,   bkg, txt, dtx);
   SetButtonColors(RemWeaponPnlButton, bkg, txt, dtx);
   SetButtonColors(RemArmorPnlButton,  bkg, txt, dtx);
+  SetButtonColors(ModUseWPnlButton,   bkg, txt, dtx);
+  SetButtonColors(ModUseAPnlButton,   bkg, txt, dtx);
   SetButtonColors(LockWPnlButton,     bkg, txt, dtx);
   SetButtonColors(UnlockWPnlButton,   bkg, txt, dtx);
   SetButtonColors(RecycleWPnlButton,  bkg, txt, dtx);
@@ -1646,15 +1794,23 @@ begin
 	SetButtonColors(ModWPnlButton,      bkg, txt, dtx);
   SetButtonColors(ModBackWPnlButton,  bkg, txt, dtx);
   SetButtonColors(ModDmgMinPnlButton, bkg, txt, dtx);
+  SetButtonColors(DwnDmgMinPnlButton, bkg, txt, dtx);
   SetButtonColors(ModDmgMaxPnlButton, bkg, txt, dtx);
+  SetButtonColors(DwnDmgMaxPnlButton, bkg, txt, dtx);
   SetButtonColors(ModSpeedPnlButton,  bkg, txt, dtx);
+  SetButtonColors(DwnSpeedPnlButton,  bkg, txt, dtx);
   SetButtonColors(ModCritWPnlButton,  bkg, txt, dtx);
+  SetButtonColors(DwnCritWPnlButton,  bkg, txt, dtx);
   SetButtonColors(ModAPnlButton,      bkg, txt, dtx);
   SetButtonColors(ModBackAPnlButton,  bkg, txt, dtx);
   SetButtonColors(ModDefMinPnlButton, bkg, txt, dtx);
+  SetButtonColors(DwnDefMinPnlButton, bkg, txt, dtx);
   SetButtonColors(ModDefMaxPnlButton, bkg, txt, dtx);
+  SetButtonColors(DwnDefMaxPnlButton, bkg, txt, dtx);
   SetButtonColors(ModWeightPnlButton, bkg, txt, dtx);
+  SetButtonColors(DwnWeightPnlButton, bkg, txt, dtx);
   SetButtonColors(ModCritAPnlButton,  bkg, txt, dtx);
+  SetButtonColors(DwnCritAPnlButton,  bkg, txt, dtx);
   SetButtonColors(ResurrectPnlButton, bkg, txt, dtx);
   SetButtonColors(RenamePnlButton,    bkg, txt, dtx);
 	SetButtonColors(TransferPnlButton,  bkg, txt, dtx);
@@ -1815,6 +1971,33 @@ begin
 	DrawText(grid.Canvas.Handle, PChar(text), -1, drwRct, DT_SINGLELINE or DT_VCENTER);
 end;
 
+
+procedure TDonguriForm.DrawModGridCell(Sender: TObject; ACol, ARow: Integer;
+  Rect: TRect; State: TGridDrawState);
+var
+  grid: TStringGrid;
+  text: String;
+  drwRct: TRect;
+begin
+	if Sender is TStringGrid then
+  	grid := TStringGrid(Sender)
+  else
+  	Exit;
+
+	text := grid.Cells[ACol, ARow];
+
+  if (ACol and 1) = 0 then
+		grid.Canvas.Brush.Color := grid.FixedColor
+  else
+		grid.Canvas.Brush.Color := grid.Color;
+	grid.Canvas.FillRect(Rect);
+
+	drwRct := Rect;
+	drwRct.Left := Rect.Left + 4;
+
+  grid.Canvas.Font := grid.Font;
+	DrawText(grid.Canvas.Handle, PChar(text), -1, drwRct, DT_SINGLELINE or DT_VCENTER);
+end;
 
 procedure TDonguriForm.CannonMenuCheckBoxClick(Sender: TObject);
 begin
@@ -2079,7 +2262,9 @@ begin
     end;
 
     RemWeaponPnlButton.Enabled := (FBag.UseWeapon.IsEmpty = False);
+		ModUseWPnlButton.Enabled   := (FBag.UseWeapon.IsEmpty = False);
     RemArmorPnlButton.Enabled := (FBag.UseArmor.IsEmpty = False);
+		ModUseAPnlButton.Enabled  := (FBag.UseArmor.IsEmpty = False);
     LockWPnlButton.Enabled    := False;
     UnlockWPnlButton.Enabled  := False;
     RecycleWPnlButton.Enabled := False;
@@ -2477,6 +2662,79 @@ begin
   end;
 end;
 
+procedure TDonguriForm.SwitchItemTab(showTab: TTabSheet);
+begin
+  LockWindowUpdate(PageControl.Handle);
+  try
+    TabSheetChest.TabVisible := (showTab = TabSheetChest);
+    TabSheetModW.TabVisible  := (showTab = TabSheetModW);
+    TabSheetModA.TabVisible  := (showTab = TabSheetModA);
+    PageControl.ActivePage := showTab;
+  finally
+	  LockWindowUpdate(0);
+  end;
+end;
+
+procedure TDonguriForm.ModUseAPnlButtonClick(Sender: TObject);
+const
+  CAP_MSG: String = 'アイテムバッグ';
+var
+  res: String;
+begin
+
+	if GikoSys.DonguriSys.Processing then
+  	Exit;
+
+  try
+		if (FBag.UseArmor.IsEmpty) or (FBag.UseArmor.ItemNo = '') then begin
+      MsgBox(Handle, '装備中の防具はありません。',
+								CAP_MSG, MB_OK or MB_ICONERROR);
+      Exit;
+    end;
+
+    if GikoSys.DonguriSys.ModArmorView(FBag.UseArmor.ItemNo, res) then begin
+    	ShowModViewA(res);
+
+      SwitchItemTab(TabSheetModA);
+    end else
+      ShowHttpError;
+  except
+    on e: Exception do begin
+			MsgBox(Handle, e.Message, CAP_MSG, MB_OK or MB_ICONERROR);
+    end;
+  end;
+end;
+
+procedure TDonguriForm.ModUseWPnlButtonClick(Sender: TObject);
+const
+  CAP_MSG: String = 'アイテムバッグ';
+var
+  res: String;
+begin
+
+	if GikoSys.DonguriSys.Processing then
+  	Exit;
+
+  try
+		if (FBag.UseWeapon.IsEmpty) or (FBag.UseWeapon.ItemNo = '') then begin
+      MsgBox(Handle, '装備中の武器はありません。',
+								CAP_MSG, MB_OK or MB_ICONERROR);
+      Exit;
+    end;
+
+    if GikoSys.DonguriSys.ModWeaponView(FBag.UseWeapon.ItemNo, res) then begin
+    	ShowModViewW(res);
+
+      SwitchItemTab(TabSheetModW);
+    end else
+      ShowHttpError;
+  except
+    on e: Exception do begin
+			MsgBox(Handle, e.Message, CAP_MSG, MB_OK or MB_ICONERROR);
+    end;
+  end;
+end;
+
 procedure TDonguriForm.ModAPnlButtonClick(Sender: TObject);
 const
   CAP_MSG: String = 'アイテムバッグ';
@@ -2513,12 +2771,7 @@ begin
     if GikoSys.DonguriSys.ModArmorView(itemNo, res) then begin
     	ShowModViewA(res);
 
-    	LockWindowUpdate(PageControl.Handle);
-      TabSheetModA.TabVisible := True;
-      PageControl.ActivePage := TabSheetModA;
-      TabSheetModW.TabVisible := False;
-      TabSheetChest.TabVisible := False;
-    	LockWindowUpdate(0);
+      SwitchItemTab(TabSheetModA);
     end else
       ShowHttpError;
   except
@@ -2526,6 +2779,16 @@ begin
 			MsgBox(Handle, e.Message, CAP_MSG, MB_OK or MB_ICONERROR);
     end;
   end;
+end;
+
+
+procedure TDonguriForm.EnableModButton(newVal, cost, button: TPanel);
+begin
+  if (newVal.Caption <> '') and (cost.Caption <> '') then
+  	button.Enabled := True
+  else
+  	button.Enabled := False;
+  SetBtnCol(button);
 end;
 
 type
@@ -2540,22 +2803,24 @@ type
    idxmaCritic = 7,
    idxmaMarimo = 8,
    idxmaMod    = 9,
-   idxmaCount  = 10
+   idxmaDemod  = 10,
+   idxmaCount  = 11
   );
 
 procedure TDonguriForm.ShowModViewA(res: String);
 const
-  COL_NAME_MODA: array [0..9] of String = (
-    '　ID',
-    '　ランク',
-    '　タイプ',
-    '　名前',
-    '　DEF最小値',
-    '　DEF最大値',
-    '　WT.',
-    '　CRIT',
-    '　マリモ',
-    '　MOD'
+  COL_NAME_MODA: array [0..10] of String = (
+    'ID',
+    'ランク',
+    'タイプ',
+    '名前',
+    'DEF(最小値)',
+    'DEF(最大値)',
+    'WT.',
+    'CRIT',
+    'マリモ',
+    'MOD',
+    'DEMOD'
   );
   KW_IMG1_S  = '<div class="upgrade-option"><img';
   KW_IMG1_E  = '>';
@@ -2583,6 +2848,8 @@ const
   KW_MARI_E = '</span>';
   KW_MODC_S = '<span id="armorModCount">';
   KW_MODC_E = '</span>';
+  KW_DMDC_S = '<span id="armorDeModCount">';
+  KW_DMDC_E = '</span>';
   KW_FM_DFMN_S = '<form class="upgrade-option" action="https://donguri.5ch.net/modify/armor/deflow/';
   KW_FM_DFMN_E = '</form>';
   KW_FM_DFMX_S = '<form class="upgrade-option" action="https://donguri.5ch.net/modify/armor/defhigh/';
@@ -2591,35 +2858,73 @@ const
   KW_FM_WGHT_E = '</form>';
   KW_FM_CRIT_S = '<form class="upgrade-option" action="https://donguri.5ch.net/modify/armor/critical/';
   KW_FM_CRIT_E = '</form>';
+  KW_FM_DDMN_S = '<form class="upgrade-option" action="https://donguri.5ch.net/modify/armor/deflowdown/';
+  KW_FM_DDMN_E = '</form>';
+  KW_FM_DDMX_S = '<form class="upgrade-option " action="https://donguri.5ch.net/modify/armor/defhighdown/';
+  KW_FM_DDMX_E = '</form>';
+  KW_FM_DWWT_S = '<form class="upgrade-option " action="https://donguri.5ch.net/modify/armor/weightdown/';
+  KW_FM_DWWT_E = '</form>';
+  KW_FM_DCRT_S = '<form class="upgrade-option " action="https://donguri.5ch.net/modify/armor/criticaldown/';
+  KW_FM_DCRT_E = '</form>';
   KW_CURVAL_S  = '旧値:';
   KW_CURVAL_E  = '</span>';
   KW_NEWVAL_S  = '新値:';
   KW_NEWVAL_E  = '</span>';
   KW_MRCOST_S  = '<button type="submit">';
   KW_MRCOST_E  = 'マを消費して強化</button>';
+  KW_DWCOST_S  = '<button class="downgrade" type="submit">';
+  KW_DWCOST_E  = 'マを消費して降下</button>';
 var
 	i: Integer;
+	i2: Integer;
+	i3: Integer;
+  rowCnt1: Integer;
+  rowCnt2: Integer;
+  rowCnt3: Integer;
   tmp: String;
   tm2: String;
 begin
-	ModAGrid.RowCount := Integer(idxmaCount);
+  rowCnt1 := ModAGrid1.RowCount;
+  rowCnt2 := ModAGrid2.RowCount;
+  rowCnt3 := ModAGrid3.RowCount;
+  i2 := 0;
+  i3 := 0;
 	for i := 0 to Integer(idxmaCount) - 1 do begin
-	  ModAGrid.Cells[0, i] := COL_NAME_MODA[i];
-	  ModAGrid.Cells[1, i] := '';
+  	if i < rowCnt1 then begin
+      ModAGrid1.Cells[0, i] := COL_NAME_MODA[i];
+      ModAGrid1.Cells[1, i] := '';
+    end else if i2 < rowCnt2 then begin
+      ModAGrid2.Cells[0, i2] := COL_NAME_MODA[i];
+      ModAGrid2.Cells[1, i2] := '';
+      Inc(i2);
+    end else if i3 < rowCnt3 then begin
+      ModAGrid3.Cells[0, i3] := COL_NAME_MODA[i];
+      ModAGrid3.Cells[1, i3] := '';
+      Inc(i3);
+    end;
   end;
   ModAMarimoPanel.Caption := '';
   DefMinCurPanel.Caption := '';
   DefMinNewPanel.Caption := '';
+  DefMinDwnPanel.Caption := '';
   DefMinMrmPanel.Caption := '';
+  DefMinDMrPanel.Caption := '';
   DefMaxCurPanel.Caption := '';
   DefMaxNewPanel.Caption := '';
+  DefMaxDwnPanel.Caption := '';
   DefMaxMrmPanel.Caption := '';
+  DefMaxDMrPanel.Caption := '';
   WeightCurPanel.Caption := '';
   WeightNewPanel.Caption := '';
+  WeightDwnPanel.Caption := '';
   WeightMrmPanel.Caption := '';
+  WeightDMrPanel.Caption := '';
   CritACurPanel.Caption := '';
   CritANewPanel.Caption := '';
+  CritADwnPanel.Caption := '';
   CritAMrmPanel.Caption := '';
+  CritADMrPanel.Caption := '';
+  ModAImage.Visible := False;
 
 	if Pos('<html', res) < 1 then
   	Exit;
@@ -2632,34 +2937,37 @@ begin
 	  ModAMarimoPanel.Caption := TrimTag(tmp);
 
 	if Extract(KW_ID_S, KW_ID_E, res, tmp) then
-	  ModAGrid.Cells[1, Integer(idxmaID)] := tmp;
+	  ModAGrid1.Cells[1, Integer(idxmaID)] := tmp;
 
 	if Extract(KW_RANK_S, KW_RANK_E, res, tmp) then
-	  ModAGrid.Cells[1, Integer(idxmaRank)] := tmp;
+	  ModAGrid1.Cells[1, Integer(idxmaRank)] := tmp;
 
 	if Extract(KW_TYPE_S, KW_TYPE_E, res, tmp) then
-	  ModAGrid.Cells[1, Integer(idxmaType)] := tmp;
+	  ModAGrid1.Cells[1, Integer(idxmaType)] := tmp;
 
 	if Extract(KW_NAME_S, KW_NAME_E, res, tmp) then
-	  ModAGrid.Cells[1, Integer(idxmaName)] := tmp;
+	  ModAGrid1.Cells[1, Integer(idxmaName)] := tmp;
 
 	if Extract(KW_DFMN_S, KW_DFMN_E, res, tmp) then
-	  ModAGrid.Cells[1, Integer(idxmaDefMin)] := tmp;
+	  ModAGrid2.Cells[1, Integer(idxmaDefMin) - rowCnt1] := tmp;
 
 	if Extract(KW_DFMX_S, KW_DFMX_E, res, tmp) then
-	  ModAGrid.Cells[1, Integer(idxmaDefMax)] := tmp;
+	  ModAGrid2.Cells[1, Integer(idxmaDefMax) - rowCnt1] := tmp;
 
 	if Extract(KW_WGHT_S, KW_WGHT_E, res, tmp) then
-	  ModAGrid.Cells[1, Integer(idxmaWeight)] := tmp;
+	  ModAGrid2.Cells[1, Integer(idxmaWeight) - rowCnt1] := tmp;
 
 	if Extract(KW_CRIT_S, KW_CRIT_E, res, tmp) then
-	  ModAGrid.Cells[1, Integer(idxmaCritic)] := tmp;
+	  ModAGrid2.Cells[1, Integer(idxmaCritic) - rowCnt1] := tmp;
 
 	if Extract(KW_MARI_S, KW_MARI_E, res, tmp) then
-	  ModAGrid.Cells[1, Integer(idxmaMarimo)] := tmp;
+	  ModAGrid3.Cells[1, Integer(idxmaMarimo) - rowCnt1 - rowCnt2] := tmp;
 
 	if Extract(KW_MODC_S, KW_MODC_E, res, tmp) then
-	  ModAGrid.Cells[1, Integer(idxmaMod)] := tmp;
+	  ModAGrid3.Cells[1, Integer(idxmaMod)    - rowCnt1 - rowCnt2] := tmp;
+
+	if Extract(KW_DMDC_S, KW_DMDC_E, res, tmp) then
+	  ModAGrid3.Cells[1, Integer(idxmaDemod)  - rowCnt1 - rowCnt2] := tmp;
 
 	if Extract(KW_FM_DFMN_S, KW_FM_DFMN_E, res, tmp) then begin
 
@@ -2672,6 +2980,17 @@ begin
 		if Extract(KW_MRCOST_S, KW_MRCOST_E, tmp, tm2) then
 	    DefMinMrmPanel.Caption := TrimTag(tm2);
   end;
+  EnableModButton(DefMinNewPanel, DefMinMrmPanel, ModDefMinPnlButton);
+
+	if Extract(KW_FM_DDMN_S, KW_FM_DDMN_E, res, tmp) then begin
+
+		if Extract(KW_NEWVAL_S, KW_NEWVAL_E, tmp, tm2) then
+	    DefMinDwnPanel.Caption := TrimTag(tm2);
+
+		if Extract(KW_DWCOST_S, KW_DWCOST_E, tmp, tm2) then
+	    DefMinDMrPanel.Caption := TrimTag(tm2);
+  end;
+  EnableModButton(DefMinDwnPanel, DefMinDMrPanel, DwnDefMinPnlButton);
 
 	if Extract(KW_FM_DFMX_S, KW_FM_DFMX_E, res, tmp) then begin
 
@@ -2684,6 +3003,17 @@ begin
 		if Extract(KW_MRCOST_S, KW_MRCOST_E, tmp, tm2) then
 	    DefMaxMrmPanel.Caption := TrimTag(tm2);
   end;
+  EnableModButton(DefMaxNewPanel, DefMaxMrmPanel, ModDefMaxPnlButton);
+
+	if Extract(KW_FM_DDMX_S, KW_FM_DDMX_E, res, tmp) then begin
+
+		if Extract(KW_NEWVAL_S, KW_NEWVAL_E, tmp, tm2) then
+	    DefMaxDwnPanel.Caption := TrimTag(tm2);
+
+		if Extract(KW_DWCOST_S, KW_DWCOST_E, tmp, tm2) then
+	    DefMaxDMrPanel.Caption := TrimTag(tm2);
+  end;
+  EnableModButton(DefMaxDwnPanel, DefMaxDMrPanel, DwnDefMaxPnlButton);
 
 	if Extract(KW_FM_WGHT_S, KW_FM_WGHT_E, res, tmp) then begin
 
@@ -2696,6 +3026,17 @@ begin
 		if Extract(KW_MRCOST_S, KW_MRCOST_E, tmp, tm2) then
 	    WeightMrmPanel.Caption := TrimTag(tm2);
   end;
+  EnableModButton(WeightNewPanel, WeightMrmPanel, ModWeightPnlButton);
+
+	if Extract(KW_FM_DWWT_S, KW_FM_DWWT_E, res, tmp) then begin
+
+		if Extract(KW_NEWVAL_S, KW_NEWVAL_E, tmp, tm2) then
+	    WeightDwnPanel.Caption := TrimTag(tm2);
+
+		if Extract(KW_DWCOST_S, KW_DWCOST_E, tmp, tm2) then
+	    WeightDMrPanel.Caption := TrimTag(tm2);
+  end;
+  EnableModButton(WeightDwnPanel, WeightDMrPanel, DwnWeightPnlButton);
 
 	if Extract(KW_FM_CRIT_S, KW_FM_CRIT_E, res, tmp) then begin
 
@@ -2708,27 +3049,28 @@ begin
 		if Extract(KW_MRCOST_S, KW_MRCOST_E, tmp, tm2) then
 	    CritAMrmPanel.Caption := TrimTag(tm2);
   end;
+  EnableModButton(CritANewPanel, CritAMrmPanel, ModCritAPnlButton);
+
+	if Extract(KW_FM_DCRT_S, KW_FM_DCRT_E, res, tmp) then begin
+
+		if Extract(KW_NEWVAL_S, KW_NEWVAL_E, tmp, tm2) then
+	    CritADwnPanel.Caption := TrimTag(tm2);
+
+		if Extract(KW_DWCOST_S, KW_DWCOST_E, tmp, tm2) then
+	    CritADMrPanel.Caption := TrimTag(tm2);
+  end;
+  EnableModButton(CritADwnPanel, CritADMrPanel, DwnCritAPnlButton);
 
 end;
 
 procedure TDonguriForm.ModBackAPnlButtonClick(Sender: TObject);
 begin
-	LockWindowUpdate(PageControl.Handle);
-  TabSheetChest.TabVisible := True;
-  PageControl.ActivePage := TabSheetChest;
-  TabSheetModW.TabVisible := False;
-  TabSheetModA.TabVisible := False;
-	LockWindowUpdate(0);
+	SwitchItemTab(TabSheetChest);
 end;
 
 procedure TDonguriForm.ModBackWPnlButtonClick(Sender: TObject);
 begin
-	LockWindowUpdate(PageControl.Handle);
-  TabSheetChest.TabVisible := True;
-  PageControl.ActivePage := TabSheetChest;
-  TabSheetModW.TabVisible := False;
-  TabSheetModA.TabVisible := False;
-	LockWindowUpdate(0);
+	SwitchItemTab(TabSheetChest);
 end;
 
 procedure TDonguriForm.ModDmgMinPnlButtonClick(Sender: TObject);
@@ -2751,6 +3093,26 @@ begin
 	ModWeapon(mdwCrit);
 end;
 
+procedure TDonguriForm.DwnDmgMinPnlButtonClick(Sender: TObject);
+begin
+	ModWeapon(mdwDmgMinDwn);
+end;
+
+procedure TDonguriForm.DwnDmgMaxPnlButtonClick(Sender: TObject);
+begin
+	ModWeapon(mdwDmgMaxDwn);
+end;
+
+procedure TDonguriForm.DwnSpeedPnlButtonClick(Sender: TObject);
+begin
+	ModWeapon(mdwSpeedDwn);
+end;
+
+procedure TDonguriForm.DwnCritWPnlButtonClick(Sender: TObject);
+begin
+	ModWeapon(mdwCritDwn);
+end;
+
 procedure TDonguriForm.ModDefMinPnlButtonClick(Sender: TObject);
 begin
 	ModArmor(mdaDefMin);
@@ -2771,6 +3133,27 @@ begin
 	ModArmor(mdaCrit);
 end;
 
+procedure TDonguriForm.DwnDefMinPnlButtonClick(Sender: TObject);
+begin
+	ModArmor(mdaDefMinDwn);
+end;
+
+procedure TDonguriForm.DwnDefMaxPnlButtonClick(Sender: TObject);
+begin
+	ModArmor(mdaDefMaxDwn);
+end;
+
+procedure TDonguriForm.DwnWeightPnlButtonClick(Sender: TObject);
+begin
+	ModArmor(mdaWeightDwn);
+end;
+
+procedure TDonguriForm.DwnCritAPnlButtonClick(Sender: TObject);
+begin
+	ModArmor(mdaCritDwn);
+end;
+
+
 procedure TDonguriForm.ModArmor(modType: TModifyArmor);
 const
 	CAP_MSG = '防具強化';
@@ -2782,7 +3165,7 @@ begin
   	Exit;
 
 	try
-		itemNo := Trim(ModAGrid.Cells[1, Integer(idxmaID)]);
+		itemNo := Trim(ModAGrid1.Cells[1, Integer(idxmaID)]);
 
     if (itemNo = '') or (StrToIntDef(itemNo, -1) < 1) then begin
     	MsgBox(Handle, '防具の情報が正しくありません。', CAP_MSG, MB_OK or MB_ICONERROR);
@@ -2802,7 +3185,6 @@ begin
     end;
   end;
 end;
-
 
 
 procedure TDonguriForm.ModWPnlButtonClick(Sender: TObject);
@@ -2841,12 +3223,7 @@ begin
     if GikoSys.DonguriSys.ModWeaponView(itemNo, res) then begin
     	ShowModViewW(res);
 
-    	LockWindowUpdate(PageControl.Handle);
-      TabSheetModW.TabVisible := True;
-      PageControl.ActivePage := TabSheetModW;
-      TabSheetModA.TabVisible := False;
-      TabSheetChest.TabVisible := False;
-    	LockWindowUpdate(0);
+			SwitchItemTab(TabSheetModW);
     end else
       ShowHttpError;
   except
@@ -2869,22 +3246,24 @@ type
    idxmwCritic = 7,
    idxmwMarimo = 8,
    idxmwMod    = 9,
-   idxmwCount  = 10
+   idxmwDemod  = 10,
+   idxmwCount  = 11
   );
 
 procedure TDonguriForm.ShowModViewW(res: String);
 const
-  COL_NAME_MODW: array [0..9] of String = (
-    '　ID',
-    '　ランク',
-    '　タイプ',
-    '　名前',
-    '　DMG最小値',
-    '　DMG最大値',
-    '　SPD',
-    '　CRIT',
-    '　マリモ',
-    '　MOD'
+  COL_NAME_MODW: array [0..10] of String = (
+    'ID',
+    'ランク',
+    'タイプ',
+    '名前',
+    'DMG(最小値)',
+    'DMG(最大値)',
+    'SPD',
+    'CRIT',
+    'マリモ',
+    'MOD',
+    'DEMOD'
   );
   KW_IMG1_S  = '<div class="upgrade-option"><img';
   KW_IMG1_E  = '>';
@@ -2912,6 +3291,8 @@ const
   KW_MARI_E = '</span>';
   KW_MODC_S = '<span id="weaponModCount">';
   KW_MODC_E = '</span>';
+  KW_DMDC_S = '<span id="weaponDeModCount">';
+  KW_DMDC_E = '</span>';
   KW_FM_DMMN_S = '<form class="upgrade-option" action="https://donguri.5ch.net/modify/weapon/dmglow/';
   KW_FM_DMMN_E = '</form>';
   KW_FM_DMMX_S = '<form class="upgrade-option" action="https://donguri.5ch.net/modify/weapon/dmghigh/';
@@ -2920,35 +3301,72 @@ const
   KW_FM_WSPD_E = '</form>';
   KW_FM_CRIT_S = '<form class="upgrade-option" action="https://donguri.5ch.net/modify/weapon/critical/';
   KW_FM_CRIT_E = '</form>';
+  KW_FM_DDMN_S = '<form class="upgrade-option " action="https://donguri.5ch.net/modify/weapon/dmglowdown/';
+  KW_FM_DDMN_E = '</form>';
+  KW_FM_DDMX_S = '<form class="upgrade-option " action="https://donguri.5ch.net/modify/weapon/dmghighdown/';
+  KW_FM_DDMX_E = '</form>';
+  KW_FM_DWSP_S = '<form class="upgrade-option" action="https://donguri.5ch.net/modify/weapon/speeddown/';
+  KW_FM_DWSP_E = '</form>';
+  KW_FM_DCRT_S = '<form class="upgrade-option " action="https://donguri.5ch.net/modify/weapon/criticaldown/';
+  KW_FM_DCRT_E = '</form>';
   KW_CURVAL_S  = '旧値:';
   KW_CURVAL_E  = '</span>';
   KW_NEWVAL_S  = '新値:';
   KW_NEWVAL_E  = '</span>';
   KW_MRCOST_S  = '<button type="submit">';
   KW_MRCOST_E  = 'マを消費して強化</button>';
+  KW_DWCOST_S  = '<button class="downgrade" type="submit">';
+  KW_DWCOST_E  = 'マを消費して降下</button>';
 var
 	i: Integer;
+	i2: Integer;
+	i3: Integer;
+  rowCnt1: Integer;
+  rowCnt2: Integer;
+  rowCnt3: Integer;
   tmp: String;
   tm2: String;
 begin
-	ModWGrid.RowCount := Integer(idxmwCount);
+  rowCnt1 := ModWGrid1.RowCount;
+  rowCnt2 := ModWGrid2.RowCount;
+  rowCnt3 := ModWGrid3.RowCount;
+  i2 := 0;
+  i3 := 0;
 	for i := 0 to Integer(idxmwCount) - 1 do begin
-	  ModWGrid.Cells[0, i] := COL_NAME_MODW[i];
-	  ModWGrid.Cells[1, i] := '';
+  	if i < rowCnt1 then begin
+      ModWGrid1.Cells[0, i] := COL_NAME_MODW[i];
+      ModWGrid1.Cells[1, i] := '';
+    end else if i2 < rowCnt2 then begin
+      ModWGrid2.Cells[0, i2] := COL_NAME_MODW[i];
+      ModWGrid2.Cells[1, i2] := '';
+      Inc(i2);
+    end else if i3 < rowCnt3 then begin
+      ModWGrid3.Cells[0, i3] := COL_NAME_MODW[i];
+      ModWGrid3.Cells[1, i3] := '';
+      Inc(i3);
+    end;
   end;
   ModWMarimoPanel.Caption := '';
   DmgMinCurPanel.Caption := '';
   DmgMinNewPanel.Caption := '';
   DmgMinMrmPanel.Caption := '';
+  DmgMinDwnPanel.Caption := '';
+  DmgMinDMrPanel.Caption := '';
   DmgMaxCurPanel.Caption := '';
   DmgMaxNewPanel.Caption := '';
   DmgMaxMrmPanel.Caption := '';
+  DmgMaxDwnPanel.Caption := '';
+  DmgMaxDMrPanel.Caption := '';
   SpeedCurPanel.Caption := '';
   SpeedNewPanel.Caption := '';
   SpeedMrmPanel.Caption := '';
+  SpeedDwnPanel.Caption := '';
+  SpeedDMrPanel.Caption := '';
   CritWCurPanel.Caption := '';
   CritWNewPanel.Caption := '';
   CritWMrmPanel.Caption := '';
+  CritWDwnPanel.Caption := '';
+  CritWDMrPanel.Caption := '';
   ModWImage.Visible := False;
 
 	if Pos('<html', res) < 1 then
@@ -2962,34 +3380,37 @@ begin
 	  ModWMarimoPanel.Caption := TrimTag(tmp);
 
 	if Extract(KW_ID_S, KW_ID_E, res, tmp) then
-	  ModWGrid.Cells[1, Integer(idxmaID)] := tmp;
+	  ModWGrid1.Cells[1, Integer(idxmaID)] := tmp;
 
 	if Extract(KW_RANK_S, KW_RANK_E, res, tmp) then
-	  ModWGrid.Cells[1, Integer(idxmwRank)] := tmp;
+	  ModWGrid1.Cells[1, Integer(idxmwRank)] := tmp;
 
 	if Extract(KW_TYPE_S, KW_TYPE_E, res, tmp) then
-	  ModWGrid.Cells[1, Integer(idxmwType)] := tmp;
+	  ModWGrid1.Cells[1, Integer(idxmwType)] := tmp;
 
 	if Extract(KW_NAME_S, KW_NAME_E, res, tmp) then
-	  ModWGrid.Cells[1, Integer(idxmwName)] := tmp;
+	  ModWGrid1.Cells[1, Integer(idxmwName)] := tmp;
 
 	if Extract(KW_DMMN_S, KW_DMMN_E, res, tmp) then
-	  ModWGrid.Cells[1, Integer(idxmwDmgMin)] := tmp;
+	  ModWGrid2.Cells[1, Integer(idxmwDmgMin) - rowCnt1] := tmp;
 
 	if Extract(KW_DMMX_S, KW_DMMX_E, res, tmp) then
-	  ModWGrid.Cells[1, Integer(idxmwDmgMax)] := tmp;
+	  ModWGrid2.Cells[1, Integer(idxmwDmgMax) - rowCnt1] := tmp;
 
 	if Extract(KW_WSPD_S, KW_WSPD_E, res, tmp) then
-	  ModWGrid.Cells[1, Integer(idxmwSpeed)] := tmp;
+	  ModWGrid2.Cells[1, Integer(idxmwSpeed)  - rowCnt1] := tmp;
 
 	if Extract(KW_CRIT_S, KW_CRIT_E, res, tmp) then
-	  ModWGrid.Cells[1, Integer(idxmwCritic)] := tmp;
+	  ModWGrid2.Cells[1, Integer(idxmwCritic) - rowCnt1] := tmp;
 
 	if Extract(KW_MARI_S, KW_MARI_E, res, tmp) then
-	  ModWGrid.Cells[1, Integer(idxmwMarimo)] := tmp;
+	  ModWGrid3.Cells[1, Integer(idxmwMarimo) - rowCnt1 - rowCnt2] := tmp;
 
 	if Extract(KW_MODC_S, KW_MODC_E, res, tmp) then
-	  ModWGrid.Cells[1, Integer(idxmwMod)] := tmp;
+	  ModWGrid3.Cells[1, Integer(idxmwMod)    - rowCnt1 - rowCnt2] := tmp;
+
+	if Extract(KW_DMDC_S, KW_DMDC_E, res, tmp) then
+	  ModWGrid3.Cells[1, Integer(idxmwDemod)  - rowCnt1 - rowCnt2] := tmp;
 
 	if Extract(KW_FM_DMMN_S, KW_FM_DMMN_E, res, tmp) then begin
 
@@ -3002,6 +3423,17 @@ begin
 		if Extract(KW_MRCOST_S, KW_MRCOST_E, tmp, tm2) then
 	    DmgMinMrmPanel.Caption := TrimTag(tm2);
   end;
+  EnableModButton(DmgMinNewPanel, DmgMinMrmPanel, ModDmgMinPnlButton);
+
+	if Extract(KW_FM_DDMN_S, KW_FM_DDMN_E, res, tmp) then begin
+
+		if Extract(KW_NEWVAL_S, KW_NEWVAL_E, tmp, tm2) then
+	    DmgMinDwnPanel.Caption := TrimTag(tm2);
+
+		if Extract(KW_DWCOST_S, KW_DWCOST_E, tmp, tm2) then
+	    DmgMinDMrPanel.Caption := TrimTag(tm2);
+  end;
+  EnableModButton(DmgMinDwnPanel, DmgMinDMrPanel, DwnDmgMinPnlButton);
 
 	if Extract(KW_FM_DMMX_S, KW_FM_DMMX_E, res, tmp) then begin
 
@@ -3014,6 +3446,17 @@ begin
 		if Extract(KW_MRCOST_S, KW_MRCOST_E, tmp, tm2) then
 	    DmgMaxMrmPanel.Caption := TrimTag(tm2);
   end;
+  EnableModButton(DmgMaxNewPanel, DmgMaxMrmPanel, ModDmgMaxPnlButton);
+
+	if Extract(KW_FM_DDMX_S, KW_FM_DDMX_E, res, tmp) then begin
+
+		if Extract(KW_NEWVAL_S, KW_NEWVAL_E, tmp, tm2) then
+	    DmgMaxDwnPanel.Caption := TrimTag(tm2);
+
+		if Extract(KW_DWCOST_S, KW_DWCOST_E, tmp, tm2) then
+	    DmgMaxDMrPanel.Caption := TrimTag(tm2);
+  end;
+  EnableModButton(DmgMaxDwnPanel, DmgMaxDMrPanel, DwnDmgMaxPnlButton);
 
 	if Extract(KW_FM_WSPD_S, KW_FM_WSPD_E, res, tmp) then begin
 
@@ -3026,6 +3469,17 @@ begin
 		if Extract(KW_MRCOST_S, KW_MRCOST_E, tmp, tm2) then
 	    SpeedMrmPanel.Caption := TrimTag(tm2);
   end;
+  EnableModButton(SpeedNewPanel, SpeedMrmPanel, ModSpeedPnlButton);
+
+	if Extract(KW_FM_DWSP_S, KW_FM_DWSP_E, res, tmp) then begin
+
+		if Extract(KW_NEWVAL_S, KW_NEWVAL_E, tmp, tm2) then
+	    SpeedDwnPanel.Caption := TrimTag(tm2);
+
+		if Extract(KW_DWCOST_S, KW_DWCOST_E, tmp, tm2) then
+	    SpeedDMrPanel.Caption := TrimTag(tm2);
+  end;
+  EnableModButton(SpeedDwnPanel, SpeedDMrPanel, DwnSpeedPnlButton);
 
 	if Extract(KW_FM_CRIT_S, KW_FM_CRIT_E, res, tmp) then begin
 
@@ -3038,6 +3492,17 @@ begin
 		if Extract(KW_MRCOST_S, KW_MRCOST_E, tmp, tm2) then
 	    CritWMrmPanel.Caption := TrimTag(tm2);
   end;
+  EnableModButton(CritWNewPanel, CritWMrmPanel, ModCritWPnlButton);
+
+	if Extract(KW_FM_DCRT_S, KW_FM_DCRT_E, res, tmp) then begin
+
+		if Extract(KW_NEWVAL_S, KW_NEWVAL_E, tmp, tm2) then
+	    CritWDwnPanel.Caption := TrimTag(tm2);
+
+		if Extract(KW_DWCOST_S, KW_DWCOST_E, tmp, tm2) then
+	    CritWDMrPanel.Caption := TrimTag(tm2);
+  end;
+  EnableModButton(CritWDwnPanel, CritWDMrPanel, DwnCritWPnlButton);
 
 end;
 
@@ -3078,7 +3543,7 @@ begin
   	Exit;
 
 	try
-		itemNo := Trim(ModWGrid.Cells[1, Integer(idxmaID)]);
+		itemNo := Trim(ModWGrid1.Cells[1, Integer(idxmaID)]);
 
     if (itemNo = '') or (StrToIntDef(itemNo, -1) < 1) then begin
     	MsgBox(Handle, '武器の情報が正しくありません。', CAP_MSG, MB_OK or MB_ICONERROR);
