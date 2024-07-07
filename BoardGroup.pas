@@ -105,6 +105,7 @@ type
 		FTitle: string;								//ボードタイトル
 		FBBSID: string;								//BBSID
 		FURL: string;									//ボードURL
+    FitestURL: String;						//ボードURL(itest形式　5ch.netのみ)
 		FRound: Boolean;							//スレッド一覧巡回予約
 		FRoundName: string;						//巡回名
 		FRoundDate: TDateTime;				//スレッド一覧を取得した日時（巡回日時）
@@ -154,6 +155,7 @@ type
 		procedure SetKotehanName(s: string);
 		procedure SetKotehanMail(s: string);
 		procedure Init;
+    function GetURLitest: String;
 	public
 		constructor Create( inPlugIn : TBoardPlugIn; inURL : string );
 		destructor Destroy; override;
@@ -238,6 +240,7 @@ type
 
 		property Cookie: string 			read FCookie write FCookie;
 		property Expires: TDateTime 			read FExpires write FExpires;
+    property itestURL: String read GetURLitest;
 	end;
 
 	//スレ
@@ -267,7 +270,8 @@ type
 		FAgeSage: TGikoAgeSage;		//アイテムの上げ下げ
 		FUpdate: Boolean;
 		FExpand: Boolean;
-		FURL					: string;				// このスレをブラウザで表示する際の URL
+		FURL: string;							// このスレをブラウザで表示する際の URL
+    FitestURL: String;				//スレURL(itest形式　5ch.netのみ)
 		FJumpAddress : Integer; 	//レス番号指定URLを踏んだときに指定されるレスの番号が入る
 		procedure SetLastModified(d: TDateTime);
 		procedure SetRound(b: Boolean);
@@ -278,7 +282,8 @@ type
 		procedure SetScrollTop(i: Integer);
 		procedure Init;
 		function GetCreateDate: TDateTime;
-        function GetFilePath: String;
+		function GetFilePath: String;
+    function GetURLitest: String;
 	public
 		constructor Create(const inPlugIn : TBoardPlugIn; const inBoard : TBoard; inURL : string ); overload;
 		constructor Create(const inPlugIn : TBoardPlugIn; const inBoard : TBoard;
@@ -331,6 +336,7 @@ type
 		property	URL					: string				read FURL write FURL;
 		property	FilePath		: string	read GetFilePath;
 		property JumpAddress : Integer read FJumpAddress write FJumpAddress;
+    property itestURL: String read GetURLitest;
 	end;
 
 	TBoardGroup = class(TStringList)
@@ -1629,6 +1635,44 @@ begin
 	FUpdate := True;
 end;
 
+//! ５ちゃん板のitest URL取得
+function TBoard.GetURLitest: String;
+const
+	DOMAIN_5CH: String = '.5ch.net';
+  HOST_ITEST: String = 'itest.5ch.net';
+var
+  protocol, host, path, document, port, bookmark, board: String;
+  splitter: TStringList;
+begin
+	if FitestURL = '' then begin
+    if (not is2ch) or (Pos(DOMAIN_5CH, URL) < 1) then begin
+      Result := '';
+      Exit;
+    end;
+
+    GikoSys.ParseURI(URL, protocol, host, path, document, port, bookmark);
+
+    if host = HOST_ITEST then
+      Result := Format('%s://%s/%s', [protocol, host, path])
+    else begin
+      splitter := TStringList.Create;
+      try
+        splitter.Delimiter := '/';
+        splitter.DelimitedText := path;
+        if splitter.Count < 2 then
+          Exit;
+        board := splitter.Strings[1];
+        if board <> '' then
+          Result := Format('%s://%s/subback/%s', [protocol, HOST_ITEST, board]);
+      finally
+        splitter.Free;
+      end;
+    end;
+  end;
+
+	Result := FitestURL;
+end;
+
 //constructor TThreadItem.Create(AOwner: TComponent);
 procedure TThreadItem.Init;
 begin
@@ -2016,6 +2060,50 @@ var
 begin
 	path := ExtractFilePath(Self.ParentBoard.FilePath) + Self.FileName;
     Result := path;
+end;
+
+//! ５ちゃんスレのitest URL取得
+function TThreadItem.GetURLitest: String;
+const
+	DOMAIN_5CH: String = '.5ch.net';
+  HOST_ITEST: String = 'itest.5ch.net';
+var
+  protocol, host, path, document, port, bookmark, server, board, threadid: String;
+  splitter: TStringList;
+begin
+	if FitestURL = '' then begin
+    if Pos(DOMAIN_5CH, URL) < 1 then begin
+	    Result := '';
+      Exit;
+    end;
+
+    GikoSys.ParseURI(URL, protocol, host, path, document, port, bookmark);
+
+    if host = HOST_ITEST then
+      FitestURL := Format('%s://%s/%s/', [protocol, host, path])
+    else if Pos(DOMAIN_5CH, host) = Length(host) - Length(DOMAIN_5CH) + 1 then begin
+      splitter := TStringList.Create;
+      try
+        splitter.Delimiter := '.';
+        splitter.DelimitedText := Host;
+        if splitter.Count < 1 then
+          Exit;
+        server := splitter.Strings[0];
+        splitter.Delimiter := '/';
+        splitter.DelimitedText := path;
+        if splitter.Count < 5 then
+          Exit;
+        board    := splitter.Strings[3];
+        threadid := splitter.Strings[4];
+        if (server <> '') and (board <> '') and (threadid <> '') then
+          FitestURL := Format('%s://%s/%s/test/read.cgi/%s/%s', [protocol, HOST_ITEST, server, board, threadid]);
+      finally
+        splitter.Free;
+      end;
+    end;
+  end;
+
+  Result := FitestURL;
 end;
 
 destructor TBoardGroup.Destroy;

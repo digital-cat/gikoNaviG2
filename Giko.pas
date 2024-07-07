@@ -445,6 +445,7 @@ type
     DonguriGrdLoginMenu: TMenuItem;
     DonguriAuthMenu: TMenuItem;
     DonguriLogoutMenu: TMenuItem;
+    PATHINFOitest1: TMenuItem;
 		procedure FormCreate(Sender: TObject);
 		procedure FormDestroy(Sender: TObject);
 		procedure SaveSettingAll();
@@ -1210,7 +1211,7 @@ begin
 	LoadIcon;
 
 	//アドレス履歴読み込み
-	AddressHistoryDM.ReadHistory(AddressComboBox.Items, GikoSys.Setting.MaxRecordCount);
+	AddressHistoryDM.ReadHistory(AddressComboBox.Items, GikoSys.Setting.AddressHistoryCount);
 
 	EnabledCloseButton := True;
 
@@ -2048,7 +2049,7 @@ begin
 	//アドレス履歴保存
 	try
 		//AddressHistoryDMは自動生成フォームなので、解放は自動的にされる。
-		AddressHistoryDM.WriteHistory(AddressComboBox.Items, GikoSys.Setting.MaxRecordCount);
+		AddressHistoryDM.WriteHistory(AddressComboBox.Items, GikoSys.Setting.AddressHistoryCount);
 	except
 	end;
 
@@ -3192,6 +3193,7 @@ var
 	newBrowser	: TBrowserRecord;
 	ins : Integer;
 	title: WideString;
+  url: String;
 begin
 
 	Result := nil;
@@ -3321,8 +3323,13 @@ begin
 		SetContent(BrowserNullTab);
 	end;
 
-	if GikoSys.Setting.URLDisplay then
-		AddressComboBox.Text := ThreadItem.URL;
+	if GikoSys.Setting.URLDisplay then begin
+  	if GikoSys.Setting.URLitest then
+    	url := ThreadItem.itestURL;
+    if url = '' then
+    	url := ThreadItem.URL;
+		AddressComboBox.Text := url;
+  end;
 
 end;
 
@@ -4551,6 +4558,7 @@ procedure TGikoForm.BrowserTabChange(Sender: TObject);
 var
 	j: Integer;
 	idx: Integer;
+  url: String;
 begin
 	BrowserTabUC.Tabs.BeginUpdate;
 	try
@@ -4583,8 +4591,13 @@ begin
 				TOleControl(TBrowserRecord(BrowserTabUC.Tabs.Objects[idx]).Browser).BringToFront;
 				SetContent(TBrowserRecord(BrowserTabUC.Tabs.Objects[idx]));
 
-				if (GikoSys.Setting.URLDisplay) and (GetActiveContent <> nil) then
-					AddressComboBox.Text := GetActiveContent.URL;
+				if (GikoSys.Setting.URLDisplay) and (GetActiveContent <> nil) then begin
+          if GikoSys.Setting.URLitest then
+            url := GetActiveContent.itestURL;
+          if url = '' then
+            url := GetActiveContent.URL;
+					AddressComboBox.Text := url;
+        end;
 
 				if ((TreeViewUC.Visible) and (TreeViewUC.Focused)) or ((FavoriteTreeViewUC.Visible) and (FavoriteTreeViewUC.Focused)) or
 					(ListViewUC.Focused) or (SelectComboBoxUC.Focused) or (AddressComboBox.Focused)

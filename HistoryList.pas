@@ -65,7 +65,8 @@ begin
 	else
 		Self.Add( favItem );
 
-	while GikoSys.Setting.MaxRecordCount < Self.Count do begin
+	//while GikoSys.Setting.MaxRecordCount < Self.Count do begin
+	while GikoSys.Setting.AddressHistoryCount < Self.Count do begin
 		i := Self.Count - 1;
 		TObject( Self.Items[ i ] ).Free;
 		Self.Delete( i );
@@ -88,8 +89,8 @@ begin
 		Node.ImageIndex := ITEM_ICON_THREADLOG1;
 		Node.SelectedIndex := ITEM_ICON_THREADLOG2;
 		Node.Data := favItem;
-		//while GikoSys.Setting.AddressHistoryCount < TreeView.Items.Count do begin
-		while GikoSys.Setting.MaxRecordCount < TreeView.Items.Count do begin
+		while GikoSys.Setting.AddressHistoryCount < TreeView.Items.Count do begin
+		//while GikoSys.Setting.MaxRecordCount < TreeView.Items.Count do begin
 			i := TreeView.Items.Count - 1;
 			TreeView.Items.Item[ i ].Delete;
 		end;

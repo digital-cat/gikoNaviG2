@@ -139,9 +139,8 @@ type
 		GroupBox15: TGroupBox;
 		ShowDialogForEndCheckBox: TCheckBox;
 		AllTabCloseCheckBox: TCheckBox;
-		SambaGroupBox: TGroupBox;
+    Other1GroupBox: TGroupBox;
 		UseSambaCheckBox: TCheckBox;
-		TabAutoSaveLoad: TGroupBox;
 		TabLoadSave: TCheckBox;
 		SoundSheet: TTabSheet;
 		SoundEventGroupBox: TGroupBox;
@@ -190,10 +189,6 @@ type
 		Label8: TLabel;
 		BeCodeEdit: TEdit;
 		BeAutoLoginCheckBox: TCheckBox;
-		GroupBox19: TGroupBox;
-		Label17: TLabel;
-		MaxRecordCountEdit: TEdit;
-		Label18: TLabel;
 		UnFocusedBoldCheckBox: TCheckBox;
 		IgnoreKanaCheckBox: TCheckBox;
 		UseKatjuTypeSkinCheckBox: TCheckBox;
@@ -219,7 +214,6 @@ type
 		IgnoreLimitResCountCheckBox: TCheckBox;
 		GroupBox26: TGroupBox;
 		DispImageCheckBox: TCheckBox;
-		GroupBox27: TGroupBox;
 		ThreadTitleTrimCheckBox: TCheckBox;
 		GroupBox28: TGroupBox;
 		NGTextEditCheckBox: TCheckBox;
@@ -239,6 +233,8 @@ type
     DonAutoLgnComboBox: TComboBox;
     Label30: TLabel;
     ReplCharComboBox: TComboBox;
+    URLitestCheckBox: TCheckBox;
+    ReloadAfterWriteCheckBox: TCheckBox;
 		procedure FormCreate(Sender: TObject);
 		procedure FormDestroy(Sender: TObject);
 		procedure ApplyButtonClick(Sender: TObject);
@@ -287,7 +283,6 @@ type
 		procedure OddResNumCheckBoxClick(Sender: TObject);
 		procedure ResRangeHoldCheckBoxClick(Sender: TObject);
 		procedure CroutOptionClick(Sender: TObject);
-		procedure MaxRecordCountEditExit(Sender: TObject);
 	private
 		{ Private 宣言 }
 		FClose: Boolean;
@@ -400,7 +395,7 @@ begin
 	ReadPortEditExit(Sender);
 	WritePortEditExit(Sender);
 	AddressHistoryCountEditExit(Sender);
-	MaxRecordCountEditExit(Sender);
+	//MaxRecordCountEditExit(Sender);
 	PreviewWaitEditExit(Sender);
 
 	if not CheckFolder then begin
@@ -418,7 +413,7 @@ begin
 	ReadPortEditExit(Sender);
 	WritePortEditExit(Sender);
 	AddressHistoryCountEditExit(Sender);
-	MaxRecordCountEditExit(Sender);
+	//MaxRecordCountEditExit(Sender);
 	PreviewWaitEditExit(Sender);
 
 	if not CheckFolder then begin
@@ -922,15 +917,19 @@ begin
   PreviewStyleCheckBox.Checked := Gikosys.Setting.PreviewStyle;
   // お絵描き（画像添付）を有効にする
 	OekakiCheckBox.Checked := Gikosys.Setting.Oekaki;
+	// 書き込み成功時にスレッド一覧またはスレッドを再読み込みする
+  ReloadAfterWriteCheckBox.Checked := Gikosys.Setting.ReloadAfterWrite;
   // スレタイ特定文字列除去
   ThreadTitleTrimCheckBox.Checked := GikoSys.Setting.ThreadTitleTrim;
+  // 板／スレURLをコピーもしくはWEBブラウザで開く際にitest版URLを使用する
+  URLitestCheckBox.Checked := GikoSys.Setting.URLitest;
 
 	//Be2ch認証
 	BeUserIDEdit.Text := GikoSys.Setting.BeUserID;
 	BeCodeEdit.Text := GikoSys.Setting.BePassword;
 	BeAutoLoginCheckBox.Checked := GikoSys.Setting.BeAutoLogin;
 	//履歴の最大保存数
-	MaxRecordCountEdit.Text := IntToStr(GikoSys.Setting.MaxRecordCount);
+	//MaxRecordCountEdit.Text := IntToStr(GikoSys.Setting.MaxRecordCount);
   // 最小化時にタスクトレイに格納するか
   StoredTaskTrayCB.Checked := GikoSys.Setting.StoredTaskTray;
   // ブラウザタブの移動でループを許可するか
@@ -1258,7 +1257,7 @@ begin
 	GikoSys.Setting.BePassword := BeCodeEdit.Text;
 	GikoSys.Setting.BeAutoLogin := BeAutoLoginCheckBox.Checked;
 	//履歴の最大保存数
-	GikoSys.Setting.MaxRecordCount := Max(StrToInt64Def(MaxRecordCountEdit.Text,100),1);
+	//GikoSys.Setting.MaxRecordCount := Max(StrToInt64Def(MaxRecordCountEdit.Text,100),1);
 	GikoSys.Setting.StoredTaskTray := StoredTaskTrayCB.Checked;
 	GikoSys.Setting.LoopBrowserTabs := LoopBrowserTabsCB.Checked;
 
@@ -1270,8 +1269,12 @@ begin
 	Gikosys.Setting.PreviewStyle := PreviewStyleCheckBox.Checked;
   // お絵描き（画像添付）を有効にする
 	Gikosys.Setting.Oekaki := OekakiCheckBox.Checked;
+	// 書き込み成功時にスレッド一覧またはスレッドを再読み込みする
+  Gikosys.Setting.ReloadAfterWrite := ReloadAfterWriteCheckBox.Checked;
 	// スレタイ特定文字列除去
 	GikoSys.Setting.ThreadTitleTrim := ThreadTitleTrimCheckBox.Checked;
+  // 板／スレURLをコピーもしくはWEBブラウザで開く際にitest版URLを使用する
+  GikoSys.Setting.URLitest := URLitestCheckBox.Checked;
 
 end;
 
@@ -1749,14 +1752,6 @@ begin
 	finally
 		KuroutOption.Release;
 	end;
-end;
-
-procedure TOptionDialog.MaxRecordCountEditExit(Sender: TObject);
-begin
-	if not GikoSys.IsNumeric(MaxRecordCountEdit.Text) then
-		MaxRecordCountEdit.Text := '100'
-	else if StrToIntDef(MaxRecordCountEdit.Text, 100) <= 0 then
-        MaxRecordCountEdit.Text := '1';
 end;
 
 end.

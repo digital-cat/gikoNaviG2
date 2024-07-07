@@ -45,6 +45,8 @@ const
 	URL_MONAZILLA: string = 'www.monazilla.org/';   // このサイトは消滅
 	//! 2ちゃんねるのURL
 	URL_2ch: string = 'www.5ch.net/';
+	//! itest形式5ちゃんねるのURL
+	URL_ITEST2CH: string = 'itest.5ch.net/';
 	//! ギコナビWikiのURL
 	//URL_Wiki: string = 'sourceforge.jp/projects/gikonavi/wiki/FAQ';
 	URL_Wiki: string = 'ja.osdn.net/projects/gikonavi/wiki/FAQ';
@@ -268,6 +270,7 @@ type
     DonguriGrdLoginAction: TAction;
     DonguriLogoutAction: TAction;
     DonguriAuthAction: TAction;
+    konoURLitestAction: TAction;
 	procedure EditNGActionExecute(Sender: TObject);
 	procedure ReloadActionExecute(Sender: TObject);
 	procedure GoFowardActionExecute(Sender: TObject);
@@ -503,6 +506,8 @@ type
     procedure DonguriAuthActionExecute(Sender: TObject);
     procedure DonguriHntLoginActionUpdate(Sender: TObject);
     procedure DonguriGrdLoginActionUpdate(Sender: TObject);
+    procedure konoURLitestActionExecute(Sender: TObject);
+    procedure konoURLitestActionUpdate(Sender: TObject);
   private
 	{ Private 宣言 }
 	procedure ClearResFilter;
@@ -1193,10 +1198,15 @@ end;
 procedure TGikoDM.ShowThreadActionExecute(Sender: TObject);
 var
 	ThreadItem: TThreadItem;
+  url: String;
 begin
 	ThreadItem := GikoForm.GetActiveContent;
 	if ThreadItem = nil then Exit;
-	GikoSys.OpenBrowser(ThreadItem.URL, gbtAuto);
+  if GikoSys.Setting.URLitest then
+  	url := ThreadItem.itestURL;
+  if url = '' then
+		url := ThreadItem.URL;
+	GikoSys.OpenBrowser(url, gbtAuto);
 end;
 // *************************************************************************
 //! 現在表示しているスレッドの板をブラウザで表示する
@@ -1204,10 +1214,15 @@ end;
 procedure TGikoDM.ShowBoardActionExecute(Sender: TObject);
 var
 	ThreadItem: TThreadItem;
+  url: String;
 begin
 	ThreadItem := GikoForm.GetActiveContent;
 	if ThreadItem = nil then Exit;
-	GikoSys.OpenBrowser(ThreadItem.ParentBoard.URL, gbtAuto);
+  if GikoSys.Setting.URLitest then
+		url := ThreadItem.ParentBoard.itestURL;
+  if url = '' then
+		url := ThreadItem.ParentBoard.URL;
+	GikoSys.OpenBrowser(url, gbtAuto);
 end;
 // *************************************************************************
 //! 現在表示しているスレッドのURLをコピーする
@@ -1217,10 +1232,19 @@ var
 	s: string;
 begin
 	s := '';
-	if TObject(GikoForm.GetActiveContent) is TBoard then
-		s := s + TBoard(GikoForm.GetActiveContent).URL + #13#10
-	else if TObject(GikoForm.GetActiveContent) is TThreadItem then
-		s := s + TThreadItem(GikoForm.GetActiveContent).URL + #13#10;
+	if TObject(GikoForm.GetActiveContent) is TBoard then begin
+  	if GikoSys.Setting.URLitest then
+			s := TBoard(GikoForm.GetActiveContent).itestURL;
+    if s = '' then
+			s := TBoard(GikoForm.GetActiveContent).URL;
+		s := s + #13#10;
+  end else if TObject(GikoForm.GetActiveContent) is TThreadItem then begin
+  	if GikoSys.Setting.URLitest then
+			s := TThreadItem(GikoForm.GetActiveContent).itestURL;
+    if s = '' then
+			s := TThreadItem(GikoForm.GetActiveContent).URL;
+		s := s + #13#10;
+  end;
 	if s <> '' then
 		Clipboard.AsText := s;
 end;
@@ -1247,10 +1271,19 @@ var
 	s: string;
 begin
 	s := '';
-	if TObject(GikoForm.GetActiveContent) is TBoard then
-		s := s + TBoard(GikoForm.GetActiveContent).Title + #13#10 + TBoard(GikoForm.GetActiveContent).URL + #13#10
-	else if TObject(GikoForm.GetActiveContent) is TThreadItem then
-		s := s + TThreadItem(GikoForm.GetActiveContent).Title + #13#10 + TThreadItem(GikoForm.GetActiveContent).URL + #13#10;
+	if TObject(GikoForm.GetActiveContent) is TBoard then begin
+  	if GikoSys.Setting.URLitest then
+			s := TBoard(GikoForm.GetActiveContent).itestURL;
+    if s = '' then
+			s := TBoard(GikoForm.GetActiveContent).URL;
+		s := TBoard(GikoForm.GetActiveContent).Title + #13#10 + s + #13#10;
+  end else if TObject(GikoForm.GetActiveContent) is TThreadItem then begin
+  	if GikoSys.Setting.URLitest then
+			s := TThreadItem(GikoForm.GetActiveContent).itestURL;
+    if s = '' then
+			s := TThreadItem(GikoForm.GetActiveContent).URL;
+		s := TThreadItem(GikoForm.GetActiveContent).Title + #13#10 + s + #13#10;
+  end;
 	if s <> '' then
 		SetClipboardFromEncAnsi(s);
 end;
@@ -2274,32 +2307,38 @@ end;
 // *************************************************************************
 procedure TGikoDM.OpenURLs(AStringList: TStringList);
 var
-    GikoTab			: TGikoTabAppend;
-    i, bound : Integer;
-   	item        : TThreadItem;
+	GikoTab	: TGikoTabAppend;
+	i, bound: Integer;
+	item    : TThreadItem;
+  tabItem : TThreadItem;
+  url     : String;
 begin
-    if (AStringList <> nil) then begin
-        GikoTab := GikoSys.Setting.BrowserTabAppend;
-        try
-            bound    := AStringList.Count - 1;
-            if bound > -1 then begin
-                GikoSys.Setting.BrowserTabAppend := gtaLast;
-                for i := 0 to bound do begin
-                    item := BBSsFindThreadFromURL( AStringList[ i ] );
-                    if item <> nil then
-                        GikoForm.InsertBrowserTab( item, false );
-                end;
-                //最初の１枚に設定
-                if (GikoSys.Setting.URLDisplay) and
-                    (GikoForm.BrowserTabUC.Tabs.Count > 0) then begin
-					GikoForm.AddressComboBox.Text :=
-                        TBrowserRecord(GikoForm.BrowserTabUC.Tabs.Objects[0]).Thread.URL;
-                end;
-            end;
-        finally
-            GikoSys.Setting.BrowserTabAppend := GikoTab;
+  if (AStringList <> nil) then begin
+    GikoTab := GikoSys.Setting.BrowserTabAppend;
+    try
+      bound    := AStringList.Count - 1;
+      if bound > -1 then begin
+        GikoSys.Setting.BrowserTabAppend := gtaLast;
+        for i := 0 to bound do begin
+          item := BBSsFindThreadFromURL( AStringList[ i ] );
+          if item <> nil then
+            GikoForm.InsertBrowserTab( item, false );
         end;
+        //最初の１枚に設定
+        if (GikoSys.Setting.URLDisplay) and
+							(GikoForm.BrowserTabUC.Tabs.Count > 0) then begin
+        	tabItem := TBrowserRecord(GikoForm.BrowserTabUC.Tabs.Objects[0]).Thread;
+          if GikoSys.Setting.URLitest then
+            url := tabItem.itestURL;
+          if url = '' then
+            url := tabItem.URL;
+          GikoForm.AddressComboBox.Text := url;
+        end;
+      end;
+    finally
+      GikoSys.Setting.BrowserTabAppend := GikoTab;
     end;
+  end;
 end;
 // *************************************************************************
 //! タブの順番を復元
@@ -2626,7 +2665,10 @@ end;
 // *************************************************************************
 procedure TGikoDM.BBS2chWebPageActionExecute(Sender: TObject);
 begin
-	GikoSys.OpenBrowser(PROTOCOL_HTTP + URL_2ch, gbtAuto);
+	if GikoSys.Setting.URLitest then
+		GikoSys.OpenBrowser(PROTOCOL_HTTP + URL_ITEST2CH, gbtAuto)
+  else
+		GikoSys.OpenBrowser(PROTOCOL_HTTP + URL_2ch, gbtAuto);
 end;
 // *************************************************************************
 //! ギコナビのフォルダを開く
@@ -2929,7 +2971,10 @@ var
 	URL: string;
 begin
 	if GikoForm.GetActiveList is TBoard then begin
-		URL := TBoard(GikoForm.GetActiveList).URL;
+  	if GikoSys.Setting.URLitest then
+			URL := TBoard(GikoForm.GetActiveList).itestURL;
+  	if URL = '' then
+			URL := TBoard(GikoForm.GetActiveList).URL;
 		GikoSys.OpenBrowser(URL, gbtAuto);
 	end;
 end;
@@ -2941,16 +2986,27 @@ var
 	List: TList;
 	i: Integer;
 	s: string;
+  url: String;
 begin
 	s := '';
 	List := TList.Create;
 	try
 		GikoForm.SelectListItem(List);
 		for i := 0 to List.Count - 1 do begin
-			if TObject(List[i]) is TBoard then
-				s := s + TBoard(List[i]).URL + #13#10
-			else if TObject(List[i]) is TThreadItem then
-				s := s + TThreadItem(List[i]).URL + #13#10;
+    	url := '';
+			if TObject(List[i]) is TBoard then begin
+		  	if GikoSys.Setting.URLitest then
+					url := TBoard(List[i]).itestURL;
+        if url = '' then
+					url := TBoard(List[i]).URL;
+      end else if TObject(List[i]) is TThreadItem then begin
+		  	if GikoSys.Setting.URLitest then
+					url := TThreadItem(List[i]).itestURL;
+        if url = '' then
+					url := TThreadItem(List[i]).URL;
+      end;
+      if url <> '' then
+        s := s + url + #13#10;
 		end;
 		if s <> '' then
 			Clipboard.AsText := s;
@@ -3016,16 +3072,29 @@ var
 	List: TList;
 	i: Integer;
 	s: string;
+  url: String;
 begin
 	s := '';
 	List := TList.Create;
 	try
 		GikoForm.SelectListItem(List);
 		for i := 0 to List.Count - 1 do begin
-			if TObject(List[i]) is TBoard then
-				s := s + TBoard(List[i]).Title + #13#10 + TBoard(List[i]).URL + #13#10
-			else if TObject(List[i]) is TThreadItem then
-				s := s + TThreadItem(List[i]).Title + #13#10 + TThreadItem(List[i]).URL + #13#10;
+    	url := '';
+			if TObject(List[i]) is TBoard then begin
+		  	if GikoSys.Setting.URLitest then
+					url := TBoard(List[i]).itestURL;
+        if url = '' then
+					url := TBoard(List[i]).URL;
+				url := TBoard(List[i]).Title + #13#10 + url;
+      end else if TObject(List[i]) is TThreadItem then begin
+		  	if GikoSys.Setting.URLitest then
+					url := TThreadItem(List[i]).itestURL;
+        if url = '' then
+					url := TThreadItem(List[i]).URL;
+				url := TThreadItem(List[i]).Title + #13#10 + url;
+      end;
+      if url <> '' then
+        s := s + url + #13#10;
 		end;
 		if s <> '' then
 			SetClipboardFromEncAnsi(s);
@@ -4676,6 +4745,35 @@ begin
     end;
     Clipboard.SetTextBuf( PChar(URL) );
 end;
+
+//! このレスのitest URLコピー（PATH_INFO)
+procedure TGikoDM.konoURLitestActionExecute(Sender: TObject);
+var
+  No : Integer;
+  ThreadItem : TThreadItem;
+  URL: String;
+begin
+	No := GikoForm.KokoPopupMenu.Tag;
+	if No = 0 then Exit;
+
+  ThreadItem := GikoForm.KokoPopupThreadItem;
+  URL := ThreadItem.itestURL;
+  if URL <> '' then begin
+    if URL[Length(URL)] <> '/' then
+    	URL := URL + '/';
+    URL := URL + IntToStr(No);
+  end;
+	Clipboard.SetTextBuf( PChar(URL) );
+end;
+
+procedure TGikoDM.konoURLitestActionUpdate(Sender: TObject);
+var
+  ThreadItem : TThreadItem;
+begin
+  ThreadItem := GikoForm.KokoPopupThreadItem;
+	konoURLitestAction.Enabled := ThreadItem.ParentBoard.Is2ch and (Pos('.bbspink.com', ThreadItem.URL) < 1);
+end;
+
 //! このレスのURLコピー（Query_STRING)
 procedure TGikoDM.konoURLQueryActionExecute(Sender: TObject);
 var

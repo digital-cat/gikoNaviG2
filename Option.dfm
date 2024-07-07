@@ -60,7 +60,7 @@ object OptionDialog: TOptionDialog
     Top = 4
     Width = 509
     Height = 389
-    ActivePage = ThreadSheet
+    ActivePage = TabSheet4
     MultiLine = True
     TabOrder = 3
     OnChange = OptionTabChange
@@ -1170,7 +1170,7 @@ object OptionDialog: TOptionDialog
         Left = 12
         Top = 8
         Width = 477
-        Height = 105
+        Height = 108
         Caption = #12450#12489#12524#12473#12496#12540
         TabOrder = 0
         object Label3: TLabel
@@ -1182,7 +1182,7 @@ object OptionDialog: TOptionDialog
           FocusControl = AddressHistoryCountEdit
         end
         object Label11: TLabel
-          Left = 152
+          Left = 150
           Top = 82
           Width = 12
           Height = 12
@@ -1223,9 +1223,9 @@ object OptionDialog: TOptionDialog
       end
       object GroupBox15: TGroupBox
         Left = 12
-        Top = 116
+        Top = 124
         Width = 478
-        Height = 64
+        Height = 66
         Caption = #30906#35469#12480#12452#12450#12525#12464
         TabOrder = 1
         object ShowDialogForEndCheckBox: TCheckBox
@@ -1245,12 +1245,12 @@ object OptionDialog: TOptionDialog
           TabOrder = 1
         end
       end
-      object SambaGroupBox: TGroupBox
+      object Other1GroupBox: TGroupBox
         Left = 12
-        Top = 184
+        Top = 199
         Width = 477
-        Height = 44
-        Caption = 'Samba24'#23550#31574
+        Height = 130
+        Caption = #65298#12385#12419#12435#12397#12427
         TabOrder = 2
         object UseSambaCheckBox: TCheckBox
           Left = 12
@@ -1260,37 +1260,21 @@ object OptionDialog: TOptionDialog
           Caption = 'Samba24'#23550#31574#27231#33021#12434#20351#12358
           TabOrder = 0
         end
-      end
-      object TabAutoSaveLoad: TGroupBox
-        Left = 11
-        Top = 236
-        Width = 478
-        Height = 44
-        Caption = 'Tab'#33258#21205#20445#23384#12539#24489#20803
-        TabOrder = 3
-        object TabLoadSave: TCheckBox
-          Left = 12
-          Top = 18
-          Width = 212
-          Height = 17
-          Caption = #32066#20102#26178#12395#12479#12502#12398#38918#30058#12434#33258#21205#20445#23384#12539#24489#20803
-          TabOrder = 0
-        end
-      end
-      object GroupBox27: TGroupBox
-        Left = 11
-        Top = 288
-        Width = 478
-        Height = 44
-        Caption = #12473#12524#12479#12452
-        TabOrder = 4
         object ThreadTitleTrimCheckBox: TCheckBox
           Left = 12
-          Top = 18
+          Top = 38
           Width = 453
           Height = 17
           Caption = #12473#12524#12479#12452#12398'['#36578#36617#31105#27490']'#12392#12300'&&copy;2ch.net'#12301#12289#12300'&&copy;bbspink.com'#12301#12434#34920#31034#12375#12394#12356
-          TabOrder = 0
+          TabOrder = 1
+        end
+        object URLitestCheckBox: TCheckBox
+          Left = 12
+          Top = 58
+          Width = 435
+          Height = 17
+          Caption = 'URL'#12467#12500#12540#21450#12403'WEB'#12502#12521#12454#12470#34920#31034#12539#12450#12489#12524#12473#12496#12540#34920#31034#12395'itest'#29256'URL'#12434#20351#29992#12377#12427
+          TabOrder = 2
         end
       end
     end
@@ -1301,7 +1285,7 @@ object OptionDialog: TOptionDialog
         Left = 12
         Top = 8
         Width = 473
-        Height = 48
+        Height = 46
         Caption = #12473#12524#12483#12489#32094#36796#12415
         TabOrder = 0
         object UseUndecidedCheckBox: TCheckBox
@@ -1313,47 +1297,15 @@ object OptionDialog: TOptionDialog
           TabOrder = 0
         end
       end
-      object GroupBox19: TGroupBox
-        Left = 12
-        Top = 60
-        Width = 473
-        Height = 48
-        Caption = #23653#27508
-        TabOrder = 1
-        object Label17: TLabel
-          Left = 12
-          Top = 21
-          Width = 89
-          Height = 12
-          Caption = #12473#12524#12483#12489#20445#23384#25968'(&T)'
-          FocusControl = MaxRecordCountEdit
-        end
-        object Label18: TLabel
-          Left = 194
-          Top = 20
-          Width = 12
-          Height = 12
-          Caption = #20491
-        end
-        object MaxRecordCountEdit: TEdit
-          Left = 120
-          Top = 16
-          Width = 65
-          Height = 20
-          TabOrder = 0
-          Text = 'RecordMaxCountEdit'
-          OnExit = MaxRecordCountEditExit
-        end
-      end
       object GroupBox21: TGroupBox
         Left = 12
-        Top = 114
+        Top = 58
         Width = 473
-        Height = 48
+        Height = 46
         Caption = #26368#23567#21270#26178#12479#12473#12463#12488#12524#12452
-        TabOrder = 2
+        TabOrder = 1
         object StoredTaskTrayCB: TCheckBox
-          Left = 11
+          Left = 12
           Top = 20
           Width = 118
           Height = 17
@@ -1363,29 +1315,37 @@ object OptionDialog: TOptionDialog
       end
       object GroupBox22: TGroupBox
         Left = 12
-        Top = 170
+        Top = 108
         Width = 473
-        Height = 48
+        Height = 66
         Caption = #12502#12521#12454#12470#12479#12502
-        TabOrder = 3
-        object LoopBrowserTabsCB: TCheckBox
-          Left = 11
+        TabOrder = 2
+        object TabLoadSave: TCheckBox
+          Left = 12
           Top = 20
+          Width = 251
+          Height = 17
+          Caption = #32066#20102#26178#12395#12479#12502#12398#38918#30058#12434#33258#21205#20445#23384#12539#33258#21205#24489#20803
+          TabOrder = 0
+        end
+        object LoopBrowserTabsCB: TCheckBox
+          Left = 12
+          Top = 40
           Width = 134
           Height = 17
           Caption = #12523#12540#12503#12375#12390#31227#21205#12377#12427
-          TabOrder = 0
+          TabOrder = 1
         end
       end
       object GroupBox23: TGroupBox
         Left = 12
-        Top = 224
+        Top = 180
         Width = 473
         Height = 48
         Caption = #12510#12454#12473#12472#12455#12473#12481#12515#12540
-        TabOrder = 4
+        TabOrder = 3
         object IgnoreContextCheckBox: TCheckBox
-          Left = 11
+          Left = 12
           Top = 20
           Width = 294
           Height = 17
@@ -1395,13 +1355,13 @@ object OptionDialog: TOptionDialog
       end
       object GroupBox26: TGroupBox
         Left = 12
-        Top = 280
+        Top = 234
         Width = 473
-        Height = 48
+        Height = 94
         Caption = #12524#12473#12456#12487#12451#12479
-        TabOrder = 5
+        TabOrder = 4
         object PreviewStyleCheckBox: TCheckBox
-          Left = 11
+          Left = 12
           Top = 20
           Width = 274
           Height = 17
@@ -1409,12 +1369,20 @@ object OptionDialog: TOptionDialog
           TabOrder = 0
         end
         object OekakiCheckBox: TCheckBox
-          Left = 280
-          Top = 20
+          Left = 12
+          Top = 40
           Width = 177
           Height = 17
           Caption = #12362#32117#25551#12365#65288#30011#20687#28155#20184#65289#26377#21177
           TabOrder = 1
+        end
+        object ReloadAfterWriteCheckBox: TCheckBox
+          Left = 12
+          Top = 60
+          Width = 397
+          Height = 17
+          Caption = #26360#12365#36796#12415#25104#21151#26178#12395#23550#35937#12398#12473#12524#12483#12489#19968#35239#12414#12383#12399#12473#12524#12483#12489#12434#20877#35501#12415#36796#12415#12377#12427
+          TabOrder = 2
         end
       end
     end

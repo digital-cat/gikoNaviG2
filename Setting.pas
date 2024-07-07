@@ -263,6 +263,8 @@ type
     FIconImageDisplay: Boolean;
     // スレタイ特定文字列除去
     FThreadTitleTrim: Boolean;
+    // URLコピー及びWEBブラウザ表示でitest版URLを使用する
+    FURLitest: Boolean;
     // 文字&#78840;の扱い 0:何もしない 1:数値参照で表示 2:類似文字に置換
     FReplChar: Integer;
 
@@ -451,7 +453,7 @@ type
 		FBeAutoLogin: Boolean;
 		FBeLogin: Boolean;
 		//履歴の最大保存件数
-		FMaxRecordCount : Integer;
+		//FMaxRecordCount : Integer;
 
 		//スレッド一覧をダウンロード後にソートするか
 		FAutoSortThreadList : Boolean;
@@ -505,6 +507,8 @@ type
     FPreviewStyle: Boolean;
     //! お絵描き（画像添付）を有効にする
     FOekaki: Boolean;
+    //! 書き込み成功時にスレッド一覧またはスレッドを再読み込みする
+    FReloadAfterWrite: Boolean;
     //! 削除要請板を特別扱い
     FSakuBoard: Boolean;
 
@@ -761,6 +765,7 @@ type
 		property ResPopupHeaderBold: Boolean read FResPopupHeaderBold write FResPopupHeaderBold;
 		property IconImageDisplay: Boolean read FIconImageDisplay write FIconImageDisplay;
 		property ThreadTitleTrim: Boolean read FThreadTitleTrim write FThreadTitleTrim;
+    property URLitest: Boolean read FURLitest write FURLitest;
     property ReplChar: Integer read FReplChar write FReplChar;
 
 		property LogFolder: string read FLogFolder write WriteLogFolder;
@@ -905,7 +910,7 @@ type
 		property BePassword: string read FBePassword write FBePassword;
 		property BeAutoLogin: Boolean read FBeAutoLogin write FBeAutoLogin;
 		property BeLogin: Boolean read FBeLogin write FBeLogin;
-		property MaxRecordCount : Integer read FMaxRecordCount write FMaxRecordCount;
+		//property MaxRecordCount : Integer read FMaxRecordCount write FMaxRecordCount;
 		//! スレッド一覧ダウンロード後にスレッド名で昇順ソートするか
 		property AutoSortThreadList : Boolean read FAutoSortThreadList write FAutoSortThreadList;
 		//! InputAssistフォームの位置
@@ -954,6 +959,8 @@ type
     property PreviewStyle: Boolean read FPreviewStyle write FPreviewStyle;
     //! お絵描き（画像添付）を有効にする
     property Oekaki: Boolean read FOekaki write FOekaki;
+    //! 書き込み成功時にスレッド一覧またはスレッドを再読み込みする
+    property ReloadAfterWrite: Boolean read FReloadAfterWrite write FReloadAfterWrite;
     //! 削除要請板を特別扱い
     property SakuBoard: Boolean read FSakuBoard write FSakuBoard;
 		//! スレタイ検索ウィンドウ
@@ -1330,6 +1337,8 @@ begin
 		FIconImageDisplay := ini.ReadBool('Thread', 'IconImageDisplay', True);
 		// スレタイ特定文字列除去
 		FThreadTitleTrim := ini.ReadBool('Thread', 'ThreadTitleTrim', False);
+    // URLコピー及びWEBブラウザ表示でitest版URLを使用する
+    FURLitest := ini.ReadBool('Thread', 'UseItestURL', False);
     // 文字&#78840;の扱い 0:何もしない 1:数値参照で表示 2:類似文字に置換
     FReplChar := ini.ReadInteger('Thread','ReplaceChar', 0);
     if (FReplChar < 0) or (FReplChar > 2) then
@@ -1488,6 +1497,7 @@ begin
 		FUseUnicode     := True;//ini.ReadBool( 'Editor', 'UseUnicode', False );
     FPreviewStyle   := ini.ReadBool( 'Editor', 'PreviewStyle', False );
     FOekaki         := ini.ReadBool( 'Editor', 'Oekaki', True );
+    FReloadAfterWrite := ini.ReadBool( 'Editor', 'ReloadAfterWrite', False );
 
 		//Tab自動保存、読み込み
 		FTabAutoLoadSave    := ini.ReadBool('TabAuto', 'TabAutoLoadSave', False);
@@ -1517,7 +1527,7 @@ begin
 		FBePassword := Decrypt(ini.ReadString('Be', 'Password', ''));
 		FBeAutoLogin := ini.ReadBool('Be', 'AutoLogin', False);
 		//履歴の最大保存件数
-		FMaxRecordCount := Max(ini.ReadInteger('Recode', 'Max', 100), 1);
+		//FMaxRecordCount := Max(ini.ReadInteger('Recode', 'Max', 100), 1);
 
         //! 削除要請板を特別扱い
         FSakuBoard := ini.ReadBool('NewBoard', 'SakuSpecial', True);
@@ -1838,6 +1848,8 @@ begin
     ini.WriteBool('Thread', 'IconImageDisplay', FIconImageDisplay);
     // スレタイ特定文字列除去
     ini.WriteBool('Thread', 'ThreadTitleTrim', FThreadTitleTrim);
+    // URLコピー及びWEBブラウザ表示でitest版URLを使用する
+    ini.WriteBool('Thread', 'UseItestURL', FURLitest);
 		//ini.WriteString('BoardURL', '2ch', FBoardURL2ch);
     // 文字&#78840;の扱い 0:何もしない 1:数値参照で表示 2:類似文字に置換
     if (FReplChar < 0) or (FReplChar > 2) then
@@ -1997,6 +2009,7 @@ begin
 		//ini.WriteBool( 'Editor', 'UseUnicode',     FUseUnicode );
     ini.WriteBool( 'Editor', 'PreviewStyle',   FPreviewStyle );
     ini.WriteBool( 'Editor', 'Oekaki',         FOekaki );
+    ini.WriteBool( 'Editor', 'ReloadAfterWrite', FReloadAfterWrite );
 
     //! 削除要請板を特別扱い
     ini.WriteBool('NewBoard', 'SakuSpecial', FSakuBoard);
@@ -2029,7 +2042,7 @@ begin
 		ini.WriteBool('Be', 'AutoLogin', FBeAutoLogin);
 
 		//履歴の最大保存件数
-		ini.WriteInteger('Recode', 'Max', FMaxRecordCount);
+		//ini.WriteInteger('Recode', 'Max', FMaxRecordCount);
 		// 固定のCookie文字列
     ini.WriteString('Cookie', 'fixedString', FFixedCookie);
 
