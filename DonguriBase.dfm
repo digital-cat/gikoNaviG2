@@ -74,7 +74,7 @@ object DonguriForm: TDonguriForm
     Top = 28
     Width = 280
     Height = 510
-    ActivePage = TabSheetModW
+    ActivePage = TabSheetChest
     Align = alClient
     TabOrder = 0
     OnDrawTab = PageControlDrawTab
@@ -1064,7 +1064,7 @@ object DonguriForm: TDonguriForm
               BevelOuter = bvNone
               ColCount = 3
               Ctl3D = False
-              DefaultColWidth = 83
+              DefaultColWidth = 90
               DefaultRowHeight = 16
               DefaultDrawing = False
               Enabled = False
@@ -1085,7 +1085,7 @@ object DonguriForm: TDonguriForm
               BevelOuter = bvNone
               ColCount = 3
               Ctl3D = False
-              DefaultColWidth = 83
+              DefaultColWidth = 90
               DefaultRowHeight = 16
               DefaultDrawing = False
               Enabled = False
@@ -1106,7 +1106,7 @@ object DonguriForm: TDonguriForm
               BevelOuter = bvNone
               ColCount = 3
               Ctl3D = False
-              DefaultColWidth = 83
+              DefaultColWidth = 90
               DefaultRowHeight = 16
               DefaultDrawing = False
               Enabled = False
@@ -1127,7 +1127,7 @@ object DonguriForm: TDonguriForm
               BevelOuter = bvNone
               ColCount = 3
               Ctl3D = False
-              DefaultColWidth = 83
+              DefaultColWidth = 90
               DefaultRowHeight = 16
               DefaultDrawing = False
               Enabled = False
@@ -1148,7 +1148,7 @@ object DonguriForm: TDonguriForm
               BevelOuter = bvNone
               ColCount = 3
               Ctl3D = False
-              DefaultColWidth = 83
+              DefaultColWidth = 90
               DefaultRowHeight = 16
               DefaultDrawing = False
               Enabled = False
@@ -1169,7 +1169,7 @@ object DonguriForm: TDonguriForm
               BevelOuter = bvNone
               ColCount = 3
               Ctl3D = False
-              DefaultColWidth = 83
+              DefaultColWidth = 90
               DefaultRowHeight = 16
               DefaultDrawing = False
               Enabled = False
@@ -1186,7 +1186,7 @@ object DonguriForm: TDonguriForm
               Top = 2
               Width = 60
               Height = 22
-              Hint = #27494#22120#12434#24375#21270#12377#12427
+              Hint = #35013#20633#20013#12398#27494#22120#12434#24375#21270#12377#12427
               BevelInner = bvRaised
               Caption = #24375#21270
               Enabled = False
@@ -1202,7 +1202,7 @@ object DonguriForm: TDonguriForm
               Top = 140
               Width = 60
               Height = 22
-              Hint = #27494#22120#12434#24375#21270#12377#12427
+              Hint = #35013#20633#20013#12398#38450#20855#12434#24375#21270#12377#12427
               BevelInner = bvRaised
               Caption = #24375#21270
               Enabled = False
@@ -3068,7 +3068,7 @@ object DonguriForm: TDonguriForm
   object BagImageList: TImageList
     Left = 16
     Bitmap = {
-      494C01010A001400200110001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01010A001400280110001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000003000000001002000000000000030
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000

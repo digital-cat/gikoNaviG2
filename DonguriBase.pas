@@ -571,6 +571,7 @@ var
   hintText: String;
   mode: String;
 	sel: TGridRect;
+  colw: Integer;
 begin
 	FHunter := False;
 	FBag := TDonguriBag.Create;
@@ -622,7 +623,12 @@ begin
   ListViewArmor.Hint := hintText;
   ListViewArmor.ShowHint := True;
 
-  GridWeaponUsing1.ColWidths[1] := 170;
+  GridWeaponUsing1.ColWidths[1] := GridWeaponUsing1.Width - GridWeaponUsing1.DefaultColWidth;
+	colw := (GridWeaponUsing2.Width - GridWeaponUsing2.DefaultColWidth) div 2;
+  GridWeaponUsing2.ColWidths[1] := colw;
+  GridWeaponUsing2.ColWidths[2] := colw;
+  GridWeaponUsing3.ColWidths[1] := colw;
+  GridWeaponUsing3.ColWidths[2] := colw;
   GridWeaponUsing1.Selection := sel;
   GridWeaponUsing2.Selection := sel;
   GridWeaponUsing3.Selection := sel;
@@ -635,7 +641,13 @@ begin
   GridWeaponUsing3.Cells[0, 0] := 'ELEM';
   GridWeaponUsing3.Cells[1, 0] := 'MOD';
   GridWeaponUsing3.Cells[2, 0] := 'マリモ';
-  GridArmorUsing1.ColWidths[1] := 170;
+
+  GridArmorUsing1.ColWidths[1] := GridArmorUsing1.Width - GridArmorUsing1.DefaultColWidth;
+	colw := Integer(GridArmorUsing2.Width - GridArmorUsing2.DefaultColWidth) div 2;
+  GridArmorUsing2.ColWidths[1] := colw;
+  GridArmorUsing2.ColWidths[2] := colw;
+  GridArmorUsing3.ColWidths[1] := colw;
+  GridArmorUsing3.ColWidths[2] := colw;
   GridArmorUsing1.Selection := sel;
   GridArmorUsing2.Selection := sel;
   GridArmorUsing3.Selection := sel;
@@ -1935,11 +1947,14 @@ procedure TDonguriForm.DrawGridCell(Sender: TObject; ACol, ARow: Integer;
   Rect: TRect; State: TGridDrawState);
 const
   RARITY: array [0..4] of String = ('N', 'R', 'SR', 'SSR', 'UR');
+	UR_IDX: Integer = 4;		// 上記配列 RARITY における 'UR' のインデックス
+  UR_SN: String = 'UR [';
 var
   grid: TStringGrid;
   text: String;
   drwRct: TRect;
   imgIdx: Integer;
+  fmt: Cardinal;
 begin
 	if Sender is TStringGrid then
   	grid := TStringGrid(Sender)
@@ -1956,9 +1971,13 @@ begin
 
 	drwRct := Rect;
 	drwRct.Left := Rect.Left + 4;
+  if grid.Tag = 1 then
+		drwRct.Right := Rect.Right - 4;
 
 	if (ACol = 0) and (ARow = 1) and (grid.Cells[0, 0] = CAP_USING_TOP) then begin
   	imgIdx := IndexText(text, RARITY);
+    if (imgIdx < 0) and (Pos(UR_SN, text) = 1) then		// S/N付きUR
+			imgIdx := UR_IDX;
     if imgIdx >= 0 then begin
     	if (grid.ColCount >= 3) and (grid.Cells[2, 1] = '1') then
       	imgIdx := imgIdx + Length(RARITY);
@@ -1968,7 +1987,10 @@ begin
   end;
 
   grid.Canvas.Font := grid.Font;
-	DrawText(grid.Canvas.Handle, PChar(text), -1, drwRct, DT_SINGLELINE or DT_VCENTER);
+  fmt := DT_SINGLELINE or DT_VCENTER;
+  if grid.Tag = 1 then
+	  fmt := fmt or DT_CENTER;
+	DrawText(grid.Canvas.Handle, PChar(text), -1, drwRct, fmt);
 end;
 
 
@@ -2217,6 +2239,8 @@ var
   a: TDonguriArmor;
 begin
 	try
+  	ListViewWeapon.Items.BeginUpdate();
+    ListViewArmor.Items.BeginUpdate();
     ListViewWeapon.Items.Clear;
     ListViewArmor.Items.Clear;
 
@@ -2282,6 +2306,8 @@ begin
       MsgBox(Handle, e.Message, 'アイテムバッグ', MB_OK or MB_ICONERROR);
     end;
   end;
+  ListViewWeapon.Items.EndUpdate();
+  ListViewArmor.Items.EndUpdate();
 end;
 
 procedure TDonguriForm.SlotPnlButtonClick(Sender: TObject);
@@ -2492,7 +2518,7 @@ begin
       if item.Checked and (item.Data <> nil) and
       	 (TDonguriItem(item.Data).Lock = False) and
          (TDonguriItem(item.Data).ItemNo <> '') then
-      	itemNoList.Add(TDonguriItem(item.Data).ItemNo);
+				itemNoList.Add(TDonguriItem(item.Data).ItemNo);
     end;
 
 		if itemNoList.Count < 1 then begin
@@ -2832,6 +2858,8 @@ const
   KW_ID_E   = '</span>';
   KW_RANK_S = '<span id="armorRarity">';
   KW_RANK_E = '</span>';
+  KW_MINT_S = '<span id="armorMint">';
+  KW_MINT_E = '</span>';
   KW_TYPE_S = '<span id="armorType">';
   KW_TYPE_E = '</span>';
   KW_NAME_S = '<span id="armorNickName">';
@@ -2939,8 +2967,11 @@ begin
 	if Extract(KW_ID_S, KW_ID_E, res, tmp) then
 	  ModAGrid1.Cells[1, Integer(idxmaID)] := tmp;
 
-	if Extract(KW_RANK_S, KW_RANK_E, res, tmp) then
+	if Extract(KW_RANK_S, KW_RANK_E, res, tmp) then begin
+		if Extract(KW_MINT_S, KW_MINT_E, res, tm2) then
+    	tmp := tmp + tm2;
 	  ModAGrid1.Cells[1, Integer(idxmaRank)] := tmp;
+  end;
 
 	if Extract(KW_TYPE_S, KW_TYPE_E, res, tmp) then
 	  ModAGrid1.Cells[1, Integer(idxmaType)] := tmp;
@@ -3275,6 +3306,8 @@ const
   KW_ID_E   = '</span>';
   KW_RANK_S = '<span id="weaponRarity">';
   KW_RANK_E = '</span>';
+  KW_MINT_S = '<span id="weaponMint">';
+  KW_MINT_E = '</span>';
   KW_TYPE_S = '<span id="weaponType">';
   KW_TYPE_E = '</span>';
   KW_NAME_S = '<span id="weaponNickName">';
@@ -3382,8 +3415,11 @@ begin
 	if Extract(KW_ID_S, KW_ID_E, res, tmp) then
 	  ModWGrid1.Cells[1, Integer(idxmaID)] := tmp;
 
-	if Extract(KW_RANK_S, KW_RANK_E, res, tmp) then
+	if Extract(KW_RANK_S, KW_RANK_E, res, tmp) then begin
+		if Extract(KW_MINT_S, KW_MINT_E, res, tm2) then
+    	tmp := tmp + tm2;
 	  ModWGrid1.Cells[1, Integer(idxmwRank)] := tmp;
+  end;
 
 	if Extract(KW_TYPE_S, KW_TYPE_E, res, tmp) then
 	  ModWGrid1.Cells[1, Integer(idxmwType)] := tmp;

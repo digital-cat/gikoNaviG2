@@ -1393,7 +1393,6 @@ begin
 	Result := False;
   denied := False;
   response := '';
-  itemBag.Clear;
 
 	try
 	  ClearResponse;
@@ -1518,7 +1517,6 @@ var
   ret: Boolean;
 begin
 	Result := False;
-	itemBag.Clear;
 
 	try
 	  ClearResponse;
@@ -1544,7 +1542,6 @@ var
   param: TStringList;
 begin
 	Result := False;
-	itemBag.Clear;
 	param := TStringList.Create;
 
   try
@@ -1560,7 +1557,7 @@ begin
       ret := HttpPostCall(URL_DNG_CHESTOP, URL_DNG_CHEST, param, response);
 
       if ret and (Pos('<h1>アイテムバッグ</h1>', response) > 0) then
-        Result := ParceBag(response, itemBag)
+        Result := ParceBag(response, itemBag);
     end;
   except
     on e: Exception do begin
@@ -1578,7 +1575,6 @@ var
   ret: Boolean;
 begin
 	Result := False;
-	itemBag.Clear;
 
   try
 	  ClearResponse;
@@ -1604,7 +1600,6 @@ var
   ret: Boolean;
 begin
   ret := False;
-	itemBag.Clear;
 
   try
     for i := 0 to itemNoList.Count - 1 do begin
@@ -1612,10 +1607,9 @@ begin
 
       ret := HttpGetCall(URL_DNG_LOCK + itemNoList.Strings[i], res);
 
-      if ret and (Pos('<h1>アイテムバッグ</h1>', res) > 0) then begin
-				itemBag.Clear;
+      if ret and (Pos('<h1>アイテムバッグ</h1>', res) > 0) then
         ret := ParceBag(res, itemBag)
-      end else begin
+      else begin
       	ret := False;
         FErroeMessage := res;
       end;
@@ -1641,7 +1635,6 @@ var
   ret: Boolean;
 begin
   ret := False;
-	itemBag.Clear;
 
   try
     for i := 0 to itemNoList.Count - 1 do begin
@@ -1649,10 +1642,9 @@ begin
 
       ret := HttpGetCall(URL_DNG_UNLOCK + itemNoList.Strings[i], res);
 
-      if ret and (Pos('<h1>アイテムバッグ</h1>', res) > 0) then begin
-				itemBag.Clear;
+      if ret and (Pos('<h1>アイテムバッグ</h1>', res) > 0) then
         ret := ParceBag(res, itemBag)
-      end else begin
+      else begin
       	ret := False;
         FErroeMessage := res;
       end;
@@ -1677,7 +1669,6 @@ var
   ret: Boolean;
 begin
 	Result := False;
-	itemBag.Clear;
 
   try
 	  ClearResponse;
@@ -1703,7 +1694,6 @@ var
   ret: Boolean;
 begin
   ret := False;
-	itemBag.Clear;
 
   try
     for i := 0 to itemNoList.Count - 1 do begin
@@ -1711,10 +1701,9 @@ begin
 
       ret := HttpGetCall(URL_DNG_RECYCLE + itemNoList.Strings[i], res);
 
-      if ret and (Pos('<h1>アイテムバッグ</h1>', res) > 0) then begin
-				itemBag.Clear;
+      if ret and (Pos('<h1>アイテムバッグ</h1>', res) > 0) then
         ret := ParceBag(res, itemBag)
-      end else begin
+      else begin
       	ret := False;
         FErroeMessage := res;
       end;
@@ -2409,7 +2398,7 @@ begin
   else if Rarity = 'SSR' then
 		if Lock then Result := Ord(IDX_IMG_SSR_LOCK)
     else         Result := Ord(IDX_IMG_SSR_UNLOCK)
-  else if Rarity = 'UR' then
+  else if (Rarity = 'UR') or (Pos('UR [', Rarity) = 1) then
 		if Lock then Result := Ord(IDX_IMG_UR_LOCK)
     else         Result := Ord(IDX_IMG_UR_UNLOCK)
   else           Result := -1;
@@ -2493,8 +2482,11 @@ begin
         Name := Trim(TrimTag(tmp1));
         tmp2 := Trim(TrimTag(tmp2));
         tmp1 := '';
-        if Extract2('[', ']', tmp2, tmp1) then
+        if Extract2('[', ']', tmp2, tmp1) then begin
           Rarity := tmp1;
+          if Extract2('[', ']', tmp2, tmp1) then
+            Rarity := Format('%s [%s]', [Rarity, tmp1]);
+        end;
       end;
     	1: ATK := GetRangeValue(tmp1);
       2: SPD := Trim(TrimTag(tmp1));
@@ -2546,8 +2538,11 @@ begin
         Name := Trim(TrimTag(tmp1));
         tmp2 := Trim(TrimTag(tmp2));
         tmp1 := '';
-        if Extract2('[', ']', tmp2, tmp1) then
+        if Extract2('[', ']', tmp2, tmp1) then begin
           Rarity := tmp1;
+          if Extract2('[', ']', tmp2, tmp1) then
+            Rarity := Format('%s [%s]', [Rarity, tmp1]);
+        end;
       end;
     	1: DEF := GetRangeValue(tmp1);
       2: WT  := Trim(TrimTag(tmp1));
@@ -2600,12 +2595,22 @@ begin
     UseWeapon.Clear;
     UseArmor.Clear;
 
-    for i := 0 to WeaponList.Count - 1 do
-      TDonguriWeapon(WeaponList.Items[i]).Free;
+    for i := 0 to WeaponList.Count - 1 do begin
+      try
+      	if WeaponList.Items[i] <> nil then
+	        TDonguriWeapon(WeaponList.Items[i]).Free;
+      except
+      end;
+    end;
     WeaponList.Clear;
 
-    for i := 0 to ArmorList.Count - 1 do
-      TDonguriArmor(ArmorList.Items[i]).Free;
+    for i := 0 to ArmorList.Count - 1 do begin
+      try
+      	if ArmorList.Items[i] <> nil then
+	        TDonguriArmor(ArmorList.Items[i]).Free;
+      except
+      end;
+    end;
     ArmorList.Clear;
   except
   end;
