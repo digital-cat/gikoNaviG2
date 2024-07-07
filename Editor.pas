@@ -1455,6 +1455,10 @@ begin
 		GikoForm.PlaySound('ResEnd');
 		SaveSendFile;
 		AddFormMessageNew( gmiOK );
+		if Gikosys.Setting.ReloadAfterWrite then begin
+    	OpenSendTargetAction.Execute;	// 板／スレを表示
+      ReloadTargetAction.Execute;		// 板／スレを再読み込み
+    end;
 		if (not ContinueModeAction.Enabled) or (not ContinueModeAction.Checked) then begin
 			Close;
 			Exit;
@@ -1464,6 +1468,10 @@ begin
 		GikoForm.PlaySound('ResEnd');
 		SaveSendFile;
 		AddFormMessageNew( gmiOK );
+		if Gikosys.Setting.ReloadAfterWrite then begin
+    	OpenSendTargetAction.Execute;	// 板／スレを表示
+      ReloadTargetAction.Execute;		// 板／スレを再読み込み
+    end;
 		if (not ContinueModeAction.Enabled) or (not ContinueModeAction.Checked) then begin
 			Close;
 		end;
@@ -1771,6 +1779,10 @@ begin
 					SaveSendFile;
 					GikoForm.AddMessageList(FBoard.Title + ' ' + GikoSys.GetGikoMessage(gmNewSure), nil, gmiOK);
 					FWork := False;
+          if Gikosys.Setting.ReloadAfterWrite then begin
+            OpenSendTargetAction.Execute;	// 板／スレを表示
+            ReloadTargetAction.Execute;		// 板／スレを再読み込み
+          end;
 					if (not ContinueModeAction.Enabled) or (not ContinueModeAction.Checked) then
 						Close;
 				end else if State = gdsError then begin
@@ -1788,6 +1800,10 @@ begin
 					SaveSendFile;
 					GikoForm.AddMessageList(FThreadItem.Title + ' ' + GikoSys.GetGikoMessage(gmNewRes), nil, gmiOK);
 					FWork := False;
+          if Gikosys.Setting.ReloadAfterWrite then begin
+            OpenSendTargetAction.Execute;	// 板／スレを表示
+            ReloadTargetAction.Execute;		// 板／スレを再読み込み
+          end;
 					if (not ContinueModeAction.Enabled) or (not ContinueModeAction.Checked) then
 						Close;
 				end else if State = gdsError then begin
