@@ -1,6 +1,7 @@
 unit DonguriSystem;
 
 //{$DEFINE _DEBUG_MODE}
+{$DEFINE _TEST_MODE}
 
 interface
 
@@ -164,6 +165,9 @@ type
     function  ShowCannonMessage(msg: String; mbType: Cardinal): Integer;
     function ParceBag(html: String; var itemBag: TDonguriBag): Boolean;
 
+  	procedure CreateIndy;
+  	procedure FreeIndy;
+
     //procedure DebugLog(text: String);
   public
 
@@ -313,12 +317,12 @@ begin
   FProcessing := False;
 
   try
-    FHTTP := TIdHttp.Create(nil);
-    FSSL := TIdSSLIOHandlerSocketOpenSSL.Create(nil);
-    FSSL.SSLOptions.SSLVersions := [sslvTLSv1_2];
-    FSSL.SSLOptions.Method := sslvTLSv1_2;
-    FHTTP.IOHandler := FSSL;
-
+{$IFDEF _TEST_MODE}
+    FHTTP := nil;
+  	FSSL := nil;
+{$ELSE}
+  	CreateIndy;
+{$ENDIF}
 		FHome := TDonguriHome.Create;
   except
     //on e: Exception do begin
@@ -331,10 +335,7 @@ end;
 destructor TDonguriSys.Destroy;
 begin
   try
-    TIndyMdl.ClearHTTP(FHTTP);
-    FHTTP.Free;
-    FSSL.Free;
-
+		FreeIndy;
     FHome.Free;
   except
   end;
@@ -353,6 +354,9 @@ end;
 {$IFDEF _DEBUG_MODE}
   mode := mode + 'í≤ç∏ÉÇÅ[Éh';
 {$ENDIF}
+{$IFDEF _TEST_MODE}
+  mode := mode + 'é¿å±î≈';
+{$ENDIF}
 	Result := mode;
 end;
 
@@ -363,6 +367,34 @@ begin
 	FResponseText := '';
 	FResponseCode := 0;
 end;
+
+procedure TDonguriSys.CreateIndy;
+begin
+	FreeIndy;
+  FHTTP := TIdHttp.Create(nil);
+  FSSL := TIdSSLIOHandlerSocketOpenSSL.Create(nil);
+  FSSL.SSLOptions.SSLVersions := [sslvTLSv1_2];
+  FSSL.SSLOptions.Method := sslvTLSv1_2;
+  FHTTP.IOHandler := FSSL;
+end;
+
+procedure TDonguriSys.FreeIndy;
+begin
+	if FHTTP <> nil then begin
+    try
+      TIndyMdl.ClearHTTP(FHTTP);
+      FreeAndNil(FHTTP);
+    except
+    end;
+  end;
+  if FSSL <> nil then begin
+  	try
+	  	FreeAndNil(FSSL);
+    except
+    end;
+  end;
+end;
+
 
 // HTTP-GETèàóù
 function TDonguriSys.HttpGet(url, referer: String; gzip: Boolean; var response: String; var redirect: Boolean): Boolean;
@@ -402,6 +434,10 @@ begin
     end;
 
     url2 := GikoSys.GetActualURL(url);
+    
+{$IFDEF _TEST_MODE}
+  	CreateIndy;
+{$ENDIF}
 
     TIndyMdl.InitHTTP(FHTTP);
 
@@ -479,6 +515,9 @@ begin
     Result := ok;
 
   finally
+{$IFDEF _TEST_MODE}
+  	FreeIndy;
+{$ENDIF}
   	res.Free;
 	  FProcessing := False;
   end;
@@ -522,6 +561,10 @@ begin
     end;
 
     url2 := GikoSys.GetActualURL(url);
+
+{$IFDEF _TEST_MODE}
+  	CreateIndy;
+{$ENDIF}
 
     TIndyMdl.InitHTTP(FHTTP);
 
@@ -587,6 +630,9 @@ begin
     Result := ok;
 
   finally
+{$IFDEF _TEST_MODE}
+  	FreeIndy;
+{$ENDIF}
   	res.Free;
 	  FProcessing := False;
   end;
@@ -753,6 +799,10 @@ begin
 
     url2 := GikoSys.GetActualURL(url);
 
+{$IFDEF _TEST_MODE}
+  	CreateIndy;
+{$ENDIF}
+
     TIndyMdl.InitHTTP(FHTTP);
 
     FHTTP.AllowCookies    := True;
@@ -802,6 +852,9 @@ begin
     Result := ok;
 
   finally
+{$IFDEF _TEST_MODE}
+  	FreeIndy;
+{$ENDIF}
 	  FProcessing := False;
   end;
 end;
