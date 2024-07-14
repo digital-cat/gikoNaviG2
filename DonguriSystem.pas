@@ -1,7 +1,7 @@
 unit DonguriSystem;
 
 //{$DEFINE _DEBUG_MODE}
-{$DEFINE _TEST_MODE}
+//{$DEFINE _TEST_MODE}
 
 interface
 
@@ -317,12 +317,9 @@ begin
   FProcessing := False;
 
   try
-{$IFDEF _TEST_MODE}
     FHTTP := nil;
   	FSSL := nil;
-{$ELSE}
-  	CreateIndy;
-{$ENDIF}
+		//CreateIndy;
 		FHome := TDonguriHome.Create;
   except
     //on e: Exception do begin
@@ -435,9 +432,8 @@ begin
 
     url2 := GikoSys.GetActualURL(url);
     
-{$IFDEF _TEST_MODE}
-  	CreateIndy;
-{$ENDIF}
+    if GikoSys.Setting.DonguriReCreateIndy or (FHTTP = nil) or (FSSL = nil) then
+	  	CreateIndy;
 
     TIndyMdl.InitHTTP(FHTTP);
 
@@ -515,9 +511,8 @@ begin
     Result := ok;
 
   finally
-{$IFDEF _TEST_MODE}
-  	FreeIndy;
-{$ENDIF}
+    if GikoSys.Setting.DonguriReCreateIndy then
+	  	FreeIndy;
   	res.Free;
 	  FProcessing := False;
   end;
@@ -562,9 +557,8 @@ begin
 
     url2 := GikoSys.GetActualURL(url);
 
-{$IFDEF _TEST_MODE}
-  	CreateIndy;
-{$ENDIF}
+    if GikoSys.Setting.DonguriReCreateIndy or (FHTTP = nil) or (FSSL = nil) then
+	  	CreateIndy;
 
     TIndyMdl.InitHTTP(FHTTP);
 
@@ -630,9 +624,8 @@ begin
     Result := ok;
 
   finally
-{$IFDEF _TEST_MODE}
-  	FreeIndy;
-{$ENDIF}
+    if GikoSys.Setting.DonguriReCreateIndy then
+	  	FreeIndy;
   	res.Free;
 	  FProcessing := False;
   end;
@@ -799,9 +792,8 @@ begin
 
     url2 := GikoSys.GetActualURL(url);
 
-{$IFDEF _TEST_MODE}
-  	CreateIndy;
-{$ENDIF}
+    if GikoSys.Setting.DonguriReCreateIndy or (FHTTP = nil) or (FSSL = nil) then
+	  	CreateIndy;
 
     TIndyMdl.InitHTTP(FHTTP);
 
@@ -852,9 +844,8 @@ begin
     Result := ok;
 
   finally
-{$IFDEF _TEST_MODE}
-  	FreeIndy;
-{$ENDIF}
+    if GikoSys.Setting.DonguriReCreateIndy then
+	  	FreeIndy;
 	  FProcessing := False;
   end;
 end;
@@ -1618,7 +1609,7 @@ begin
     end;
   end;
 	param.Free;
-  
+
 end;
 
 // ロックされていない武器防具を全て分解する
@@ -1626,13 +1617,15 @@ function TDonguriSys.RecycleAll(var itemBag: TDonguriBag): Boolean;
 var
 	res: String;
   ret: Boolean;
+  param: TStringList;
 begin
 	Result := False;
+	param := TStringList.Create;
 
   try
 	  ClearResponse;
 
-		ret := HttpGetCall(URL_DNG_RECYALL, res);
+		ret := HttpPostCall(URL_DNG_RECYALL, URL_DNG_BAG, param, res);
 
     if ret and (Pos('<h1>アイテムバッグ</h1>', res) > 0) then
 			Result := ParceBag(res, itemBag)
@@ -1643,6 +1636,8 @@ begin
       FErroeMessage := e.Message;
     end;
   end;
+	param.Free;
+  
 end;
 
 // ロック
