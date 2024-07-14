@@ -545,6 +545,7 @@ type
     FDonguriMail: String;
     FDonguriPwd: String;
     FDonguriAutoLogin: Integer;
+    FDonguriReCreateIndy: Boolean;
 
 		function GetMainCoolSet(Index: Integer): TCoolSet;
 		function GetBoardCoolSet(Index: Integer): TCoolSet;
@@ -995,6 +996,7 @@ type
     property DonguriMail:    String  read FDonguriMail    write FDonguriMail;
     property DonguriPwd:     String  read FDonguriPwd     write FDonguriPwd;
     property DonguriAutoLogin: Integer read FDonguriAutoLogin write FDonguriAutoLogin;
+    property DonguriReCreateIndy: Boolean read FDonguriReCreateIndy write FDonguriReCreateIndy;
 	end;
 
 
@@ -1575,6 +1577,7 @@ begin
     FDonguriMail   := ini.ReadString( 'Donguri',      'Mail',    '');
     FDonguriPwd    := ini.ReadString( 'Donguri',      'Pwd',     '');
 		FDonguriAutoLogin := ini.ReadInteger('Donguri', 'AutoLogin', 0);
+    FDonguriReCreateIndy := ini.ReadBool('Donguri', 'ReCreateIndy', False);
 
 		// Cookieに付加する固定コード
 		FFixedCookie := ini.ReadString('Cookie', 'fixedString', FIXED_COOKIE);
@@ -2093,6 +2096,7 @@ begin
     ini.WriteString( 'Donguri',      'Mail',    FDonguriMail);
     ini.WriteString( 'Donguri',      'Pwd',     FDonguriPwd);
 		ini.WriteInteger('Donguri',    'AutoLogin', FDonguriAutoLogin);
+    ini.WriteBool(   'Donguri', 'ReCreateIndy', FDonguriReCreateIndy);
 
 
 		ini.UpdateFile;

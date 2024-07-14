@@ -74,7 +74,7 @@ object DonguriForm: TDonguriForm
     Top = 28
     Width = 280
     Height = 510
-    ActivePage = TabSheetChest
+    ActivePage = TabSheetSetting
     Align = alClient
     TabOrder = 0
     OnDrawTab = PageControlDrawTab
@@ -2977,7 +2977,7 @@ object DonguriForm: TDonguriForm
           Left = 12
           Top = 12
           Width = 245
-          Height = 154
+          Height = 192
           Caption = #12393#12435#12368#12426#12471#12473#12486#12512
           TabOrder = 0
           object Label8: TLabel
@@ -2994,6 +2994,13 @@ object DonguriForm: TDonguriForm
             Height = 13
             Caption = #65288#12495#12531#12479#12540#12399#24120#12395'ON'#65289
             Visible = False
+          end
+          object Label68: TLabel
+            Left = 32
+            Top = 170
+            Width = 198
+            Height = 13
+            Caption = #65288#32368#12426#36820#12375#12398#36890#20449#12391#30064#24120#12364#30330#29983#12377#12427#22580#21512#65289
           end
           object TaskBarCheckBox: TCheckBox
             Left = 12
@@ -3027,10 +3034,19 @@ object DonguriForm: TDonguriForm
             TabOrder = 0
             OnClick = AutoLoginCheckBoxClick
           end
+          object ReCreateIndyCheckBox: TCheckBox
+            Left = 12
+            Top = 150
+            Width = 216
+            Height = 17
+            Caption = #36890#20449#12514#12472#12517#12540#12523#12434#27598#22238#27083#31689#12375#30452#12377'(&C)'
+            TabOrder = 3
+            OnClick = ReCreateIndyCheckBoxClick
+          end
         end
         object CannonGroupBox: TGroupBox
           Left = 12
-          Top = 176
+          Top = 210
           Width = 245
           Height = 51
           Caption = #12393#12435#12368#12426#22823#30770
@@ -3068,7 +3084,7 @@ object DonguriForm: TDonguriForm
   object BagImageList: TImageList
     Left = 16
     Bitmap = {
-      494C01010A001400280110001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01010A0014002C0110001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000003000000001002000000000000030
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000

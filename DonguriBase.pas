@@ -295,6 +295,8 @@ type
     DwnCritAPnlButton: TPanel;
     ModUseWPnlButton: TPanel;
     ModUseAPnlButton: TPanel;
+    ReCreateIndyCheckBox: TCheckBox;
+    Label68: TLabel;
     procedure TimerInitTimer(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCreate(Sender: TObject);
@@ -392,6 +394,7 @@ type
     procedure DwnCritAPnlButtonClick(Sender: TObject);
     procedure ModUseWPnlButtonClick(Sender: TObject);
     procedure ModUseAPnlButtonClick(Sender: TObject);
+    procedure ReCreateIndyCheckBoxClick(Sender: TObject);
   private
     { Private declarations }
     FHunter: Boolean;
@@ -612,6 +615,7 @@ begin
 	ColorRadioGroup.ItemIndex := GikoSys.Setting.DonguriTheme;
 	SetColor;
   CannonMenuCheckBox.Checked := GikoSys.Setting.DonguriMenuTop;
+  ReCreateIndyCheckBox.Checked := GikoSys.Setting.DonguriReCreateIndy;
 
   ClearInfoValue;
 
@@ -2453,6 +2457,11 @@ begin
   	ShowHttpError;
 end;
 
+
+procedure TDonguriForm.ReCreateIndyCheckBoxClick(Sender: TObject);
+begin
+  GikoSys.Setting.DonguriReCreateIndy := ReCreateIndyCheckBox.Checked;
+end;
 
 procedure TDonguriForm.RecycleAllPnlButtonClick(Sender: TObject);
 const
