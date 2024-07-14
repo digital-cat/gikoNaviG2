@@ -179,11 +179,11 @@ var
 	ResStream: TMemoryStream;
 
 	URL: string;
-	CgiStatus: TCgiStatus;
+	//CgiStatus: TCgiStatus;
 	Modified: TDateTime;
 	//RangeStart: Integer;
 	AdjustLen: Integer;
-	Idx: Integer;
+	//Idx: Integer;
 	ATitle: string;
 	DownloadResult: Boolean;
 	boardPlugIn 	: TBoardPlugIn;
