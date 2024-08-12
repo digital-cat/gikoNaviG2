@@ -86,7 +86,11 @@ const
 	MAJOR_VERSION			= 1;
 	MINOR_VERSION			= 1;
 	RELEASE_VERSION		= 'beta';
-	REVISION_VERSION	= 26;
+	REVISION_VERSION	= 27;
+
+var
+	GBoardList : TStringList;		// 板リスト
+
 
 // =========================================================================
 // 雑用関数
@@ -324,6 +328,26 @@ begin
 end;
 
 // *************************************************************************
+// 鯖名のない板URLを完全な板URLにする
+// *************************************************************************
+function CompleteBoardURL(urlSub: String): String;
+var
+  i : Integer;
+begin
+  if GBoardList = nil then
+  	Exit;
+  try
+    for i := 1 to GBoardList.Count - 1 do begin
+      if Pos(urlSub, GBoardList.Strings[i]) > 0 then begin
+        Result := GBoardList.ValueFromIndex[i];
+        Break;
+      end;
+    end;
+  except
+  end;
+end;
+
+// *************************************************************************
 // 指定した URL をBoardのURLに変換
 // *************************************************************************
 procedure OnExtractBoardURL(
@@ -331,12 +355,15 @@ procedure OnExtractBoardURL(
 	var outURL	: PChar
 ); stdcall;
 var
-	uri			: TIdURI;
-	uriList		: TStringList;
-	URL         : String;
+	uri     : TIdURI;
+	uriList : TStringList;
+	URL     : String;
+  urlSub  : String;
 const
 	THREAD_MARK	= '/bbs/read.pl';
-    THREAD_MARK2= '/bbs/read.cgi';
+	THREAD_MARK2= '/bbs/read.cgi';
+  HOST21 = '.machi.to';
+  HOST22 = 'machi.to';
 begin
 	URL := string(inURL);
 	if AnsiPos(THREAD_MARK, URL) > 0 then begin
@@ -364,20 +391,29 @@ begin
 		else
 			uri := TIdURI.Create( URL + '/' );
 
-        uriList := TStringList.Create;
+		uriList := TStringList.Create;
 		try
 			// http://kanto.machi.to/bbs/read.cgi/kana/1215253035/l50
 			// http://kanto.machi.to/kana/
-            uriList.Delimiter := '/';
-            uriList.DelimitedText  := uri.Path;
-			URL := uri.Protocol + '://' + uri.Host + '/';
-            if (uriList.Count >= 4) then begin
-                URL := URL + uriList[3] + '/';
-            end;
+			uriList.Delimiter := '/';
+			uriList.DelimitedText  := uri.Path;
+      URL := '';
+      if (uri.Host = HOST22) and (uriList.Count >= 4) then begin		// ホスト名省略（ドメイン名のみ）
+        // URLの分かる部分
+      	urlSub := HOST21 + '/' + uriList[3] + '/';
+        // ホスト名のある板URLに変換
+        URL := CompleteBoardURL(urlSub);
+      end;
+      if URL = '' then begin
+        URL := uri.Protocol + '://' + uri.Host + '/';
+        if (uriList.Count >= 4) then begin
+          URL := URL + uriList[3] + '/';
+        end;
+      end;
 			outURL := CreateResultString(URL);
 		finally
 			uri.Free;
-            uriList.Free;
+			uriList.Free;
 		end;
 	end else begin
     	outURL := CreateResultString(URL);
@@ -764,10 +800,15 @@ end;
 // この ThreadItem が属する板の URL を要求された
 // *************************************************************************
 function	TMachiBBSThreadItem.GetBoardURL : string;
+const
+  HOST21 = '.machi.to';
+  HOST22 = 'machi.to';
 var
 	uri						: TIdURI;
 	uriList				: TStringList;
 	tmp: PChar;
+  urlFull: String;
+  urlSub: String;
 begin
     tmp := nil;
 	if Copy( URL, Length( URL ), 1 ) = '/' then
@@ -782,8 +823,13 @@ begin
 		FileName := uriList.Values[ 'KEY' ] + '.dat';
 		// http://hokkaido.machi.to/bbs/read.pl?BBS=hokkaidou&KEY=1061764446
 		// http://hokkaido.machi.to/hokkaidou/
-		tmp		:= CreateResultString(
-			uri.Protocol + '://' + uri.Host + '/' + uriList.Values[ 'BBS' ] + '/' );
+		urlSub := uri.Host + '/' + uriList.Values[ 'BBS' ] + '/';
+    if uri.Host = HOST22 then
+			urlFull := CompleteBoardURL(urlSub);
+    if urlFull <> '' then
+      tmp := CreateResultString(urlFull)
+    else
+			tmp := CreateResultString(uri.Protocol + '://' + urlSub);
 		Result := string(tmp);
 	finally
 		DisposeResultString(tmp);
@@ -1449,6 +1495,7 @@ procedure DLLEntry(
 );
 var
 	module : HMODULE;
+  path : String;
 begin
 
 	case ul_reason_for_call of
@@ -1469,9 +1516,23 @@ begin
 			// ===== インスタンスの取り扱いを TBoardItem から TMachiBBSBoardItem に変更する
 			BoardItemOnCreate		:= BoardItemOnCreateOfTMachiBBSBoardItem;
 			BoardItemOnDispose	:= BoardItemOnDisposeOfTMachiBBSBoardItem;
+
+    	// 板リスト読み込み
+      path := PreferencesFolder + '\Board\まちBBS.txt';
+      if FileExists(path) then begin
+				GBoardList := TStringList.Create;
+        try
+          GBoardList.LoadFromFile(path);
+        except
+        end;
+      end;
+
 		end;
 		DLL_PROCESS_DETACH:
-			;
+    begin
+    	if GBoardList <> nil then
+      	FreeAndNil(GBoardList);
+    end;
 		DLL_THREAD_ATTACH:
 			;
 		DLL_THREAD_DETACH:
