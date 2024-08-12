@@ -73,7 +73,8 @@ type
   protected
     procedure SetModify(html: String; wpn: Boolean);
     procedure SetMarimo(html: String);
-    procedure SetState(html: String);
+    procedure SetEquip(html: String);
+    procedure SetLock(html: String);
     function GetRangeValue(html: String): String;
     function TrimBracket(src: String): String;
   public
@@ -2408,15 +2409,26 @@ begin
   Marimo := Trim(tmp);
 end;
 
-procedure TDonguriItem.SetState(html: String);
+procedure TDonguriItem.SetEquip(html: String);
+begin
+  Used := (Pos('[外す]', html) > 0);	// バッグ内アイテムリストの場合は使用中かどうかの情報がない
+end;
+
+procedure TDonguriItem.SetLock(html: String);
 var
 	tmp: String;
 begin
-  Used := (Pos('[外す]', html) > 0);	// バッグ内アイテムリストの場合は使用中かどうかの情報がない
-  if Used = False then
-    Lock := (Pos('[解錠]', html) > 0);	// 使用中リストにはロック中かどうかの情報がない
-  if Extract2('<a href="https://donguri.5ch.net/equip/', '">', html, tmp) then
-		ItemNo := tmp;	// 使用中リストにはこれがない
+	// 使用中リストにはこの情報はない
+  Lock := (Pos('[解錠]', html) > 0);
+  if ItemNo = '' then begin
+    if Lock then begin
+      if Extract2('href="https://donguri.5ch.net/unlock/', '">', html, tmp) then
+        ItemNo := tmp;
+    end else begin
+      if Extract2('href="https://donguri.5ch.net/lock/', '">', html, tmp) then
+        ItemNo := tmp;
+    end;
+  end;
 end;
 
 function TDonguriItem.GetRangeValue(html: String): String;
@@ -2512,7 +2524,7 @@ var
   tmp1: String;
   tmp2: String;
 begin
-  for i := 0 to 7 do begin
+  for i := 0 to 8 do begin
     if Extract2('<td ', '</td>', html, tmp1) = False then
 	    Break;
     idx := Pos('>', tmp1);
@@ -2542,7 +2554,8 @@ begin
       4: ELEM := Trim(TrimTag(tmp1));
       5: SetModify(tmp1, True);
       6: SetMarimo(tmp1);
-      7: SetState(tmp1);
+      7: SetEquip(tmp1);
+      8: SetLock(tmp1);
     end;
   end;
 end;
@@ -2568,7 +2581,7 @@ var
   tmp1: String;
   tmp2: String;
 begin
-  for i := 0 to 7 do begin
+  for i := 0 to 8 do begin
     if Extract2('<td ', '</td>', html, tmp1) = False then
 	    Break;
     idx := Pos('>', tmp1);
@@ -2598,7 +2611,8 @@ begin
       4: ELEM := Trim(TrimTag(tmp1));
       5: SetModify(tmp1, False);
       6: SetMarimo(tmp1);
-      7: SetState(tmp1);
+      7: SetEquip(tmp1);
+      8: SetLock(tmp1);
     end;
   end;
 end;
