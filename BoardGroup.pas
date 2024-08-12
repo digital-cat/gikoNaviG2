@@ -2182,11 +2182,17 @@ function TThreadNgList.IsNG(const Title: String; Invisible: Boolean): Boolean;
 var
   Cnt: Integer;
   MaxCnt: Integer;
+  pts, pte, pss, pse: PChar;
 begin
   if Invisible = GikoSys.Setting.NGThreadInvis then begin
+    pts := PChar(Title);
+    pte := pts + Length(Title);
     MaxCnt := Count - 1;
     for Cnt := 0 to MaxCnt do begin
-      if (Pos(Strings[Cnt], Title) > 0) then begin
+//      if (Pos(Strings[Cnt], Title) > 0) then begin
+      pss := PChar(Strings[Cnt]);
+      pse := pss + Length(Strings[Cnt]);
+      if StrPosEx(pts, pte, pss, pse) <> nil then begin
         Result := True;
         Exit;
       end;
