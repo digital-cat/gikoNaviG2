@@ -538,6 +538,7 @@ type
     FDonguriTaskBar: Boolean;
 		//! どんぐり関連
     FDonguriMenuTop: Boolean;
+    FDonguriRPCost: Integer;
     FDonguriKYCost: Integer;
     FDonguriCBCost: Integer;
     FDonguriRNCost: String;
@@ -989,6 +990,7 @@ type
     property DonguriTaskBar: Boolean read FDonguriTaskBar write FDonguriTaskBar;
 		//! どんぐり関連
     property DonguriMenuTop: Boolean read FDonguriMenuTop write FDonguriMenuTop;
+    property DonguriRPCost:  Integer read FDonguriRPCost  write FDonguriRPCost;
     property DonguriKYCost:  Integer read FDonguriKYCost  write FDonguriKYCost;
     property DonguriCBCost:  Integer read FDonguriCBCost  write FDonguriCBCost;
     property DonguriRNCost:  String  read FDonguriRNCost  write FDonguriRNCost;
@@ -1570,8 +1572,9 @@ begin
     FDonguriTaskBar:= ini.ReadBool(   'DonguriSystem', 'TaskBar',False);
 		//! どんぐり関連
     FDonguriMenuTop:= ini.ReadBool(   'Donguri',      'MenuTop', False);
+    FDonguriRPCost := ini.ReadInteger('Donguri',      'RPCost',  1);
     FDonguriKYCost := ini.ReadInteger('Donguri',      'KYCost',  15);
-    FDonguriCBCost := ini.ReadInteger('Donguri',      'CBCost',  100);
+    FDonguriCBCost := ini.ReadInteger('Donguri',      'CBCost',  24);
     FDonguriRNCost := ini.ReadString( 'Donguri',      'RNCost',  '0.001');
     FDonguriTRCost := ini.ReadString( 'Donguri',      'TRCost',  '0.001');
     FDonguriMail   := ini.ReadString( 'Donguri',      'Mail',    '');
@@ -2089,6 +2092,7 @@ begin
     ini.WriteBool(   'DonguriSystem', 'TaskBar',FDonguriTaskBar);
 		//! どんぐり関連
     ini.WriteBool(   'Donguri',      'MenuTop', FDonguriMenuTop);
+    ini.WriteInteger('Donguri',      'RPCost',  FDonguriRPCost);
     ini.WriteInteger('Donguri',      'KYCost',  FDonguriKYCost);
     ini.WriteInteger('Donguri',      'CBCost',  FDonguriCBCost);
     ini.WriteString( 'Donguri',      'RNCost',  FDonguriRNCost);
