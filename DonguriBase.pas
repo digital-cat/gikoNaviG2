@@ -121,7 +121,6 @@ type
     NewNameEdit: TEdit;
     Label17: TLabel;
     TabSheetLink: TTabSheet;
-    LinkPanel: TPanel;
     Label18: TLabel;
     LabelHomeLink: TLabel;
     Label20: TLabel;
@@ -147,7 +146,6 @@ type
     ManuItemOpen: TMenuItem;
     Panel1: TPanel;
     Panel2: TPanel;
-    Panel3: TPanel;
     PanelSetting: TPanel;
     Panel4: TPanel;
     Panel5: TPanel;
@@ -297,6 +295,20 @@ type
     ModUseAPnlButton: TPanel;
     ReCreateIndyCheckBox: TCheckBox;
     Label68: TLabel;
+    Label69: TLabel;
+    LabelArenaLink: TLabel;
+    LinkScrollBox: TScrollBox;
+    Label70: TLabel;
+    LabelALogLink: TLabel;
+    LabelDummy: TLabel;
+    CraftRPGroupBox: TGroupBox;
+    Label71: TLabel;
+    RPAmountComboBox: TComboBox;
+    Label72: TLabel;
+    RPKeyLabel: TLabel;
+    Label74: TLabel;
+    RPCostLabel: TLabel;
+    CraftRPPnlButton: TPanel;
     procedure TimerInitTimer(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCreate(Sender: TObject);
@@ -395,6 +407,8 @@ type
     procedure ModUseWPnlButtonClick(Sender: TObject);
     procedure ModUseAPnlButtonClick(Sender: TObject);
     procedure ReCreateIndyCheckBoxClick(Sender: TObject);
+    procedure RPAmountComboBoxChange(Sender: TObject);
+    procedure CraftRPPnlButtonClick(Sender: TObject);
   private
     { Private declarations }
     FHunter: Boolean;
@@ -550,6 +564,8 @@ const
   URL_ALERT : String = 'https://donguri.5ch.net/alert';
   URL_SHOP  : String = 'https://donguri.5ch.net/keyshop';
   URL_UPLIFT: String = 'https://uplift.5ch.net/';
+  URL_ARENA : String = 'https://donguri.5ch.net/arena';
+  URL_ALOGS : String = 'https://donguri.5ch.net/arenalogs';
 
 //  CAP_USING_TOP: String = 'ﾛｯｸ／ﾚｱﾘﾃｨ';
   CAP_USING_TOP: String = 'レアリティ';
@@ -692,6 +708,8 @@ begin
   LabelAlertLink.Caption  := URL_ALERT;
   LabelShopLink.Caption   := URL_SHOP;
   LabelUpliftLink.Caption := URL_UPLIFT;
+  LabelArenaLink.Caption  := URL_ARENA;
+  LabelALogLink.Caption   := URL_ALOGS;
 
   KYCostLabel.Caption := IntToStr(GikoSys.Setting.DonguriKYCost);
   CBCostLabel.Caption := IntToStr(GikoSys.Setting.DonguriCBCost);
@@ -1534,6 +1552,7 @@ begin
 
         TabSheetService.Font.Color := clWindowText;
 			  SetColors(PanelService,        clBtnFace, clWindowText);
+        SetColors(RPAmountComboBox,    clWindow,  clWindowText);
         SetColors(KYAmountComboBox,    clWindow,  clWindowText);
 			  SetColors(CBAmountComboBox,    clWindow,  clWindowText);
         SetColors(NewNameEdit,         clWindow,  clWindowText);
@@ -1607,7 +1626,7 @@ begin
       	TabSheetSetting.Font.Color := clWindowText;
 
         TabSheetLink.Font.Color := clWindowText;
-      	SetColors(LinkPanel,           clBtnFace, clWindowText);
+      	SetColors(LinkScrollBox, clBtnFace, clWindowText);
         LabelHomeLink.Font.Color   := COL_LGHT_LINK;
         LabelFaqLink.Font.Color    := COL_LGHT_LINK;
         LabelApiLink.Font.Color    := COL_LGHT_LINK;
@@ -1619,6 +1638,8 @@ begin
         LabelAlertLink.Font.Color  := COL_LGHT_LINK;
         LabelShopLink.Font.Color   := COL_LGHT_LINK;
         LabelUpliftLink.Font.Color := COL_LGHT_LINK;
+        LabelArenaLink.Font.Color  := COL_LGHT_LINK;
+        LabelALogLink.Font.Color   := COL_LGHT_LINK;
 
       end;
       1: begin
@@ -1643,6 +1664,7 @@ begin
 
         TabSheetService.Font.Color := COL_DARK_TEXT;
 			  SetColors(PanelService,        COL_DARK_BKG1, COL_DARK_TEXT);
+        SetColors(RPAmountComboBox,    COL_DARK_BKG2, COL_DARK_TEXT);
         SetColors(KYAmountComboBox,    COL_DARK_BKG2, COL_DARK_TEXT);
 			  SetColors(CBAmountComboBox,    COL_DARK_BKG2, COL_DARK_TEXT);
         SetColors(NewNameEdit,         COL_DARK_BKG2, COL_DARK_TEXT);
@@ -1716,7 +1738,7 @@ begin
       	TabSheetSetting.Font.Color := COL_DARK_TEXT;
 
         TabSheetLink.Font.Color := COL_DARK_TEXT;
-      	SetColors(LinkPanel,           COL_DARK_BKG1, COL_DARK_TEXT);
+      	SetColors(LinkScrollBox, COL_DARK_BKG1, COL_DARK_TEXT);
         LabelHomeLink.Font.Color   := COL_DARK_LINK;
         LabelFaqLink.Font.Color    := COL_DARK_LINK;
         LabelApiLink.Font.Color    := COL_DARK_LINK;
@@ -1728,6 +1750,8 @@ begin
         LabelAlertLink.Font.Color  := COL_DARK_LINK;
         LabelShopLink.Font.Color   := COL_DARK_LINK;
         LabelUpliftLink.Font.Color := COL_DARK_LINK;
+        LabelArenaLink.Font.Color  := COL_DARK_LINK;
+        LabelALogLink.Font.Color   := COL_DARK_LINK;
       end;
     end;
 
@@ -1763,6 +1787,9 @@ begin
   end else if control is TListView then begin
     TListView(control).Color := bkg;
     TListView(control).Font.Color := txt;
+  end else if control is TScrollBox then begin
+    TScrollBox(control).Color := bkg;
+    TScrollBox(control).Font.Color := txt;
   end;
 end;
 
@@ -1831,6 +1858,7 @@ begin
   SetButtonColors(RenamePnlButton,    bkg, txt, dtx);
 	SetButtonColors(TransferPnlButton,  bkg, txt, dtx);
   SetButtonColors(CraftPnlButton,     bkg, txt, dtx);
+	SetButtonColors(CraftRPPnlButton,   bkg, txt, dtx);
   SetButtonColors(CraftKYPnlButton,   bkg, txt, dtx);
   SetButtonColors(CraftCBPnlButton,   bkg, txt, dtx);
   SetButtonColors(BagPnlButton,       bkg, txt, dtx);
@@ -2041,6 +2069,7 @@ procedure TDonguriForm.CraftPnlButtonClick(Sender: TObject);
 var
   res: String;
   tmp: String;
+  rpc: Integer;
   kyc: Integer;
   cbc: Integer;
   rnc: String;
@@ -2049,10 +2078,18 @@ begin
 	if GikoSys.DonguriSys.Processing then
   	Exit;
 
+  rpc := -1;
   kyc := -1;
   cbc := -1;
 
   if GikoSys.DonguriSys.Craft(res) then begin
+		if DonguriSystem.Extract('各資源パックを開くには、', 'つの鉄のキーが必要です。', res, tmp) then begin
+      rpc := StrToIntDef(tmp, -1);
+      if rpc > 0 then begin
+				GikoSys.Setting.DonguriRPCost := rpc;
+        RPCostLabel.Caption := IntToStr(GikoSys.Setting.DonguriRPCost);
+      end;
+    end;
 		if DonguriSystem.Extract('鉄のキーを作るには鉄が', '必要です。', res, tmp) then begin
       kyc := StrToIntDef(tmp, -1);
       if kyc > 0 then begin
@@ -2094,6 +2131,12 @@ begin
   end;
 
   tmp := 'サービスコスト確認結果' + #10 +
+				 '　資源パック作成：';
+  if rpc > 0 then
+    tmp := tmp + Format('鉄のキー%d', [rpc])
+  else
+    tmp := tmp + '確認できませんでした。';
+  tmp := tmp + #10 +
          '　鉄のキー作成：';
   if kyc > 0 then
     tmp := tmp + Format('鉄%d', [kyc])
@@ -2203,6 +2246,49 @@ begin
   	Exit;
 
   if GikoSys.DonguriSys.CraftKY(amount, res) then
+  	MsgBox(Handle, res, CAP_MSG, MB_OK or MB_ICONINFORMATION)
+  else
+  	ShowHttpError;
+end;
+
+procedure TDonguriForm.RPAmountComboBoxChange(Sender: TObject);
+var
+	amount: Integer;
+  ikey: Integer;
+begin
+	try
+  	ikey := 0;
+		amount := GetCmbAmount(RPAmountComboBox);
+    if amount > 0 then
+      ikey := amount * GikoSys.Setting.DonguriRPCost;
+  	RPKeyLabel.Caption := IntToStr(ikey);
+  except
+  end;
+end;
+
+procedure TDonguriForm.CraftRPPnlButtonClick(Sender: TObject);
+const
+  CAP_MSG: String = '資源パック作成';
+var
+	amount: Integer;
+  res: String;
+begin
+	if GikoSys.DonguriSys.Processing then
+  	Exit;
+
+	amount := GetCmbAmount(RPAmountComboBox);
+  if amount < 1 then begin
+    MsgBox(Handle, '資源パックの作成数を入力してください。', CAP_MSG,
+          	MB_OK or MB_ICONINFORMATION);
+    Exit;
+  end;
+
+  if MsgBox(Handle, Format('資源パック%dを作成するには鉄のキー%dが必要です。%s作成しますか？',
+  												[amount, amount * GikoSys.Setting.DonguriRPCost, #10]),
+						CAP_MSG, MB_YESNO or MB_ICONQUESTION) <> IDYES then
+  	Exit;
+
+  if GikoSys.DonguriSys.CraftRP(amount, res) then
   	MsgBox(Handle, res, CAP_MSG, MB_OK or MB_ICONINFORMATION)
   else
   	ShowHttpError;

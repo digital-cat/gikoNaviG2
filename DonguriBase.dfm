@@ -74,7 +74,7 @@ object DonguriForm: TDonguriForm
     Top = 28
     Width = 280
     Height = 510
-    ActivePage = TabSheetSetting
+    ActivePage = TabSheetService
     Align = alClient
     TabOrder = 0
     OnDrawTab = PageControlDrawTab
@@ -584,7 +584,7 @@ object DonguriForm: TDonguriForm
         TabOrder = 0
         object ResurrectPnlButton: TPanel
           Left = 12
-          Top = 12
+          Top = 6
           Width = 100
           Height = 25
           BevelInner = bvRaised
@@ -596,50 +596,50 @@ object DonguriForm: TDonguriForm
         end
         object CraftKYGroupBox: TGroupBox
           Left = 12
-          Top = 42
+          Top = 116
           Width = 250
-          Height = 85
+          Height = 70
           Caption = #37444#12398#12461#12540#20316#25104
-          TabOrder = 1
+          TabOrder = 3
           object Label14: TLabel
             Left = 16
-            Top = 24
+            Top = 20
             Width = 52
             Height = 13
             Caption = #20316#25104#25968'(&M)'
             FocusControl = KYAmountComboBox
           end
           object Label15: TLabel
-            Left = 150
-            Top = 24
+            Left = 156
+            Top = 20
             Width = 40
             Height = 13
             Caption = #37444#12398#37327#65306
           end
           object KYIronLabel: TLabel
-            Left = 192
-            Top = 24
+            Left = 198
+            Top = 20
             Width = 6
             Height = 13
             Caption = '0'
           end
           object Label4: TLabel
             Left = 16
-            Top = 56
+            Top = 47
             Width = 87
             Height = 13
             Caption = '1'#20491#24403#12383#12426#37444#12398#37327#65306
           end
           object KYCostLabel: TLabel
             Left = 106
-            Top = 56
+            Top = 47
             Width = 12
             Height = 13
             Caption = '15'
           end
           object KYAmountComboBox: TComboBox
             Left = 76
-            Top = 20
+            Top = 16
             Width = 60
             Height = 21
             ImeMode = imClose
@@ -658,9 +658,9 @@ object DonguriForm: TDonguriForm
               '30')
           end
           object CraftKYPnlButton: TPanel
-            Left = 150
-            Top = 47
-            Width = 83
+            Left = 156
+            Top = 38
+            Width = 77
             Height = 25
             BevelInner = bvRaised
             Caption = #20316#25104
@@ -672,50 +672,50 @@ object DonguriForm: TDonguriForm
         end
         object CraftCBGroupBox: TGroupBox
           Left = 12
-          Top = 134
+          Top = 192
           Width = 250
-          Height = 85
+          Height = 70
           Caption = #37444#12398#22823#30770#12398#29577#20316#25104
-          TabOrder = 2
+          TabOrder = 4
           object Label6: TLabel
             Left = 16
-            Top = 24
+            Top = 20
             Width = 51
             Height = 13
             Caption = #20316#25104#25968'(&A)'
             FocusControl = CBAmountComboBox
           end
           object Label7: TLabel
-            Left = 150
-            Top = 24
+            Left = 156
+            Top = 20
             Width = 40
             Height = 13
             Caption = #37444#12398#37327#65306
           end
           object CBIronLabel: TLabel
-            Left = 192
-            Top = 24
+            Left = 198
+            Top = 20
             Width = 6
             Height = 13
             Caption = '0'
           end
           object Label5: TLabel
             Left = 16
-            Top = 56
+            Top = 47
             Width = 87
             Height = 13
             Caption = '1'#20491#24403#12383#12426#37444#12398#37327#65306
           end
           object CBCostLabel: TLabel
             Left = 106
-            Top = 56
-            Width = 18
+            Top = 47
+            Width = 12
             Height = 13
-            Caption = '100'
+            Caption = '24'
           end
           object CBAmountComboBox: TComboBox
             Left = 76
-            Top = 20
+            Top = 16
             Width = 60
             Height = 21
             ImeMode = imClose
@@ -735,9 +735,9 @@ object DonguriForm: TDonguriForm
               '30')
           end
           object CraftCBPnlButton: TPanel
-            Left = 150
-            Top = 47
-            Width = 83
+            Left = 156
+            Top = 38
+            Width = 77
             Height = 25
             BevelInner = bvRaised
             Caption = #20316#25104
@@ -749,14 +749,14 @@ object DonguriForm: TDonguriForm
         end
         object RenameGroupBox: TGroupBox
           Left = 12
-          Top = 225
+          Top = 268
           Width = 250
-          Height = 107
+          Height = 90
           Caption = #12495#12531#12479#12540#12493#12540#12512#22793#26356
-          TabOrder = 3
+          TabOrder = 5
           object Label16: TLabel
             Left = 16
-            Top = 24
+            Top = 18
             Width = 113
             Height = 13
             Caption = #26032#12375#12356#12495#12531#12479#12540#12493#12540#12512'(&N)'
@@ -764,22 +764,22 @@ object DonguriForm: TDonguriForm
           end
           object Label17: TLabel
             Left = 16
-            Top = 78
+            Top = 69
             Width = 42
             Height = 13
             Caption = #25163#25968#26009#65306
           end
           object RNCostLabel: TLabel
             Left = 60
-            Top = 78
+            Top = 69
             Width = 66
             Height = 13
             Caption = '0.001 '#12393#12435#12368#12426
           end
           object RenamePnlButton: TPanel
-            Left = 150
-            Top = 69
-            Width = 83
+            Left = 156
+            Top = 58
+            Width = 77
             Height = 25
             BevelInner = bvRaised
             Caption = #22793#26356
@@ -790,7 +790,7 @@ object DonguriForm: TDonguriForm
           end
           object NewNameEdit: TEdit
             Left = 16
-            Top = 42
+            Top = 34
             Width = 217
             Height = 21
             TabOrder = 1
@@ -798,14 +798,14 @@ object DonguriForm: TDonguriForm
         end
         object TransferGroupBox: TGroupBox
           Left = 12
-          Top = 339
+          Top = 364
           Width = 250
-          Height = 110
+          Height = 96
           Caption = #12393#12435#12368#12426#36578#36865
-          TabOrder = 4
+          TabOrder = 6
           object Label2: TLabel
             Left = 16
-            Top = 24
+            Top = 20
             Width = 62
             Height = 13
             Caption = #21463#21462#20154'ID(&R)'
@@ -813,7 +813,7 @@ object DonguriForm: TDonguriForm
           end
           object Label10: TLabel
             Left = 16
-            Top = 48
+            Top = 44
             Width = 85
             Height = 13
             Caption = #36578#36865#12393#12435#12368#12426#38989'(&T)'
@@ -821,21 +821,21 @@ object DonguriForm: TDonguriForm
           end
           object Label11: TLabel
             Left = 16
-            Top = 80
+            Top = 73
             Width = 42
             Height = 13
             Caption = #25163#25968#26009#65306
           end
           object TRCostLabel: TLabel
             Left = 60
-            Top = 80
+            Top = 73
             Width = 66
             Height = 13
             Caption = '0.001 '#12393#12435#12368#12426
           end
           object TransferPnlButton: TPanel
             Left = 142
-            Top = 71
+            Top = 64
             Width = 91
             Height = 25
             BevelInner = bvRaised
@@ -847,7 +847,7 @@ object DonguriForm: TDonguriForm
           end
           object RIDEdit: TEdit
             Left = 110
-            Top = 20
+            Top = 16
             Width = 85
             Height = 21
             Hint = #12495#12531#12479#12540'ID'#12414#12383#12399#35686#20633#21729'ID'
@@ -858,7 +858,7 @@ object DonguriForm: TDonguriForm
           end
           object TAmountEdit: TEdit
             Left = 110
-            Top = 44
+            Top = 40
             Width = 85
             Height = 21
             Hint = #23567#25968#28857#25968#12391#25351#23450#65288#12393#12435#12368#12426#27531#39640#12398#31684#22258#20869#65289
@@ -870,7 +870,7 @@ object DonguriForm: TDonguriForm
         end
         object CraftPnlButton: TPanel
           Left = 144
-          Top = 12
+          Top = 6
           Width = 118
           Height = 25
           Hint = #12469#12540#12499#12473#12395#24517#35201#12394#37444#12398#37327#12420#12393#12435#12368#12426#12434#21462#24471#12377#12427
@@ -878,10 +878,89 @@ object DonguriForm: TDonguriForm
           Caption = #12469#12540#12499#12473#12467#12473#12488#30906#35469
           ParentShowHint = False
           ShowHint = True
-          TabOrder = 5
+          TabOrder = 1
           OnClick = CraftPnlButtonClick
           OnMouseDown = PanelButtonMouseDown
           OnMouseUp = PanelButtonMouseUp
+        end
+        object CraftRPGroupBox: TGroupBox
+          Left = 12
+          Top = 40
+          Width = 250
+          Height = 70
+          Hint = #36039#28304#12497#12483#12463'1'#12388#12391#26408#26448'7'#12289#37444'7'#12434#21462#24471
+          Caption = #36039#28304#12497#12483#12463#20316#25104
+          ParentShowHint = False
+          ShowHint = True
+          TabOrder = 2
+          object Label71: TLabel
+            Left = 16
+            Top = 20
+            Width = 50
+            Height = 13
+            Caption = #20316#25104#25968'(&K)'
+            FocusControl = RPAmountComboBox
+          end
+          object Label72: TLabel
+            Left = 150
+            Top = 20
+            Width = 70
+            Height = 13
+            Caption = #37444#12398#12461#12540#12398#37327#65306
+          end
+          object RPKeyLabel: TLabel
+            Left = 222
+            Top = 20
+            Width = 6
+            Height = 13
+            Caption = '0'
+          end
+          object Label74: TLabel
+            Left = 16
+            Top = 47
+            Width = 117
+            Height = 13
+            Caption = '1'#20491#24403#12383#12426#37444#12398#12461#12540#12398#37327#65306
+          end
+          object RPCostLabel: TLabel
+            Left = 136
+            Top = 47
+            Width = 6
+            Height = 13
+            Caption = '1'
+          end
+          object RPAmountComboBox: TComboBox
+            Left = 76
+            Top = 16
+            Width = 60
+            Height = 21
+            ImeMode = imClose
+            ItemHeight = 13
+            TabOrder = 0
+            OnChange = RPAmountComboBoxChange
+            Items.Strings = (
+              '1'
+              '2'
+              '3'
+              '4'
+              '5'
+              '10'
+              '15'
+              '20'
+              '30')
+          end
+          object CraftRPPnlButton: TPanel
+            Left = 156
+            Top = 38
+            Width = 77
+            Height = 25
+            BevelInner = bvRaised
+            Caption = #20316#25104
+            TabOrder = 1
+            OnClick = CraftRPPnlButtonClick
+            OnMouseDown = PanelButtonMouseDown
+            OnMouseUp = PanelButtonMouseUp
+          end
         end
       end
       object Panel1: TPanel
@@ -2680,24 +2759,28 @@ object DonguriForm: TDonguriForm
     object TabSheetLink: TTabSheet
       Caption = #12522#12531#12463
       ImageIndex = 3
-      object LinkPanel: TPanel
+      object LinkScrollBox: TScrollBox
         Left = 0
         Top = 0
         Width = 272
-        Height = 472
-        Align = alTop
+        Height = 482
+        VertScrollBar.ParentColor = False
+        VertScrollBar.Tracking = True
+        Align = alClient
+        BevelInner = bvNone
         BevelOuter = bvNone
+        BorderStyle = bsNone
         TabOrder = 0
         object Label18: TLabel
           Left = 12
-          Top = 36
+          Top = 26
           Width = 122
           Height = 13
           Caption = #12393#12435#12368#12426#12471#12473#12486#12512'WEB'#12469#12452#12488
         end
         object LabelHomeLink: TLabel
           Left = 22
-          Top = 52
+          Top = 42
           Width = 70
           Height = 13
           Cursor = crHandPoint
@@ -2714,21 +2797,21 @@ object DonguriForm: TDonguriForm
         end
         object Label20: TLabel
           Left = 22
-          Top = 68
-          Width = 239
+          Top = 58
+          Width = 195
           Height = 13
-          Caption = #8251#26410#30331#37682#35686#20633#21729#12450#12459#12454#12531#12488#12391#12399#12525#12464#12452#12531#12391#12365#12414#12379#12435#12290
+          Caption = #8251#26410#30331#37682#35686#20633#21729#12391#12399#12525#12464#12452#12531#12391#12365#12414#12379#12435#12290
         end
         object Label21: TLabel
           Left = 12
-          Top = 90
+          Top = 118
           Width = 94
           Height = 13
           Caption = #12393#12435#12368#12426#12471#12473#12486#12512'FAQ'
         end
         object LabelFaqLink: TLabel
           Left = 22
-          Top = 106
+          Top = 134
           Width = 61
           Height = 13
           Cursor = crHandPoint
@@ -2745,21 +2828,21 @@ object DonguriForm: TDonguriForm
         end
         object Label19: TLabel
           Left = 12
-          Top = 8
+          Top = 4
           Width = 161
           Height = 13
           Caption = 'WEB'#12502#12521#12454#12470#12391#12522#12531#12463#12434#34920#31034#12375#12414#12377#12290
         end
         object Label22: TLabel
           Left = 12
-          Top = 128
+          Top = 156
           Width = 76
           Height = 13
           Caption = #12393#12435#12368#12426#22823#30770'API'
         end
         object LabelApiLink: TLabel
           Left = 22
-          Top = 144
+          Top = 172
           Width = 58
           Height = 13
           Cursor = crHandPoint
@@ -2776,14 +2859,14 @@ object DonguriForm: TDonguriForm
         end
         object Label23: TLabel
           Left = 12
-          Top = 166
+          Top = 194
           Width = 80
           Height = 13
           Caption = #12393#12435#12368#12426#12521#12531#12461#12531#12464
         end
         object LabelRankLink: TLabel
           Left = 22
-          Top = 182
+          Top = 210
           Width = 67
           Height = 13
           Cursor = crHandPoint
@@ -2800,14 +2883,14 @@ object DonguriForm: TDonguriForm
         end
         object Label25: TLabel
           Left = 12
-          Top = 204
+          Top = 232
           Width = 77
           Height = 13
           Caption = #12393#12435#12368#12426#22823#30770#12525#12464
         end
         object LabelCLogLink: TLabel
           Left = 22
-          Top = 220
+          Top = 248
           Width = 67
           Height = 13
           Cursor = crHandPoint
@@ -2824,14 +2907,14 @@ object DonguriForm: TDonguriForm
         end
         object Label27: TLabel
           Left = 12
-          Top = 242
+          Top = 270
           Width = 89
           Height = 13
           Caption = #12393#12435#12368#12426#22823#20081#38360#12525#12464
         end
         object LabelFLogLink: TLabel
           Left = 22
-          Top = 258
+          Top = 286
           Width = 66
           Height = 13
           Cursor = crHandPoint
@@ -2848,14 +2931,14 @@ object DonguriForm: TDonguriForm
         end
         object Label29: TLabel
           Left = 12
-          Top = 280
+          Top = 346
           Width = 70
           Height = 13
           Caption = #12450#12452#12486#12512#12454#12457#12483#12481
         end
         object LabelItemWLink: TLabel
           Left = 22
-          Top = 296
+          Top = 362
           Width = 75
           Height = 13
           Cursor = crHandPoint
@@ -2872,14 +2955,14 @@ object DonguriForm: TDonguriForm
         end
         object Label31: TLabel
           Left = 12
-          Top = 318
+          Top = 384
           Width = 64
           Height = 13
           Caption = #33618#12425#12375#12450#12521#12540#12488
         end
         object LabelAlertLink: TLabel
           Left = 22
-          Top = 334
+          Top = 400
           Width = 66
           Height = 13
           Cursor = crHandPoint
@@ -2896,14 +2979,14 @@ object DonguriForm: TDonguriForm
         end
         object Label33: TLabel
           Left = 12
-          Top = 410
+          Top = 476
           Width = 34
           Height = 13
           Caption = 'UPLIFT'
         end
         object LabelUpliftLink: TLabel
           Left = 22
-          Top = 426
+          Top = 492
           Width = 68
           Height = 13
           Cursor = crHandPoint
@@ -2920,14 +3003,14 @@ object DonguriForm: TDonguriForm
         end
         object Label28: TLabel
           Left = 12
-          Top = 356
+          Top = 422
           Width = 145
           Height = 13
           Caption = #12393#12435#12368#12426#12471#12519#12483#12503#65288#37444#12398#12461#12540#36092#20837#65289
         end
         object LabelShopLink: TLabel
           Left = 22
-          Top = 372
+          Top = 438
           Width = 67
           Height = 13
           Cursor = crHandPoint
@@ -2944,21 +3027,66 @@ object DonguriForm: TDonguriForm
         end
         object Label32: TLabel
           Left = 22
-          Top = 388
-          Width = 227
+          Top = 454
+          Width = 183
           Height = 13
-          Caption = #8251#26410#30331#37682#35686#20633#21729#12450#12459#12454#12531#12488#12391#12399#21033#29992#12391#12365#12414#12379#12435#12290
+          Caption = #8251#26410#30331#37682#35686#20633#21729#12391#12399#21033#29992#12391#12365#12414#12379#12435#12290
         end
-      end
-      object Panel3: TPanel
-        Left = 0
-        Top = 472
-        Width = 272
-        Height = 10
-        Align = alClient
-        BevelOuter = bvLowered
-        ParentColor = True
-        TabOrder = 1
+        object Label69: TLabel
+          Left = 12
+          Top = 80
+          Width = 71
+          Height = 13
+          Caption = #12393#12435#12368#12426#12450#12522#12540#12490
+        end
+        object LabelArenaLink: TLabel
+          Left = 22
+          Top = 96
+          Width = 72
+          Height = 13
+          Cursor = crHandPoint
+          Caption = 'LabelArenaLink'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlue
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = [fsUnderline]
+          ParentFont = False
+          PopupMenu = PopupMenuLink
+          OnClick = LabelLinkClick
+          OnContextPopup = LabelLinkContextPopup
+        end
+        object Label70: TLabel
+          Left = 12
+          Top = 308
+          Width = 89
+          Height = 13
+          Caption = #12393#12435#12368#12426#12450#12522#12540#12490#12525#12464
+        end
+        object LabelALogLink: TLabel
+          Left = 22
+          Top = 324
+          Width = 67
+          Height = 13
+          Cursor = crHandPoint
+          Caption = 'LabelALogLink'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlue
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = [fsUnderline]
+          ParentFont = False
+          PopupMenu = PopupMenuLink
+          OnClick = LabelLinkClick
+          OnContextPopup = LabelLinkContextPopup
+        end
+        object LabelDummy: TLabel
+          Left = 184
+          Top = 514
+          Width = 8
+          Height = 13
+          Caption = #12288
+        end
       end
     end
     object TabSheetSetting: TTabSheet
@@ -3084,7 +3212,7 @@ object DonguriForm: TDonguriForm
   object BagImageList: TImageList
     Left = 16
     Bitmap = {
-      494C01010A0014002C0110001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01010A0014003C0110001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000003000000001002000000000000030
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
