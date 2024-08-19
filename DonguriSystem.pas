@@ -201,6 +201,7 @@ type
     function Craft(var response: String): Boolean;
     function CraftCB(amount: Integer; var response: String): Boolean;
     function CraftKY(amount: Integer; var response: String): Boolean;
+    function CraftRP(amount: Integer; var response: String): Boolean;
     function Bag(var itemBag: TDonguriBag; var response: String; var denied: Boolean): Boolean;
     function AddSlots(var response: String): Boolean;
     function Unequip(var itemBag: TDonguriBag; weapon: Boolean): Boolean;
@@ -264,6 +265,7 @@ const
   URL_DNG_CRAFT   = 'https://donguri.5ch.net/craft';								// 工作センター
   URL_DNG_CRAFTCB = 'https://donguri.5ch.net/craft/cannonball';			// 工作センター鉄の大砲の玉作成
 	URL_DNG_CRAFTKY = 'https://donguri.5ch.net/craft/key';						// 工作センター鉄のキー作成
+  URL_DNG_CRAFTRP = 'https://donguri.5ch.net/craft/resource';				// 工作センター資源パック作成
   URL_DNG_BAG     = 'https://donguri.5ch.net/bag';									// アイテムバッグ
   URL_DNG_ADDSLOT = 'https://donguri.5ch.net/addslots';							// スロット追加
   URL_DNG_UNEQW   = 'https://donguri.5ch.net/unequip/weapon';				// 装備中の武器を外す
@@ -1429,6 +1431,24 @@ begin
   end;
 end;
 
+// 資源パック作成
+function TDonguriSys.CraftRP(amount: Integer; var response: String): Boolean;
+var
+	postParam: TStringList;
+  redirect: Boolean;
+begin
+	Result := False;
+  response := '';
+
+	postParam := TStringList.Create;
+  try
+  	postParam.Add('resourceamt=' + IntToStr(amount));
+  	Result := HttpPost(URL_DNG_CRAFTRP, URL_DNG_CRAFT, postParam, True, response, redirect);
+  finally
+  	postParam.Free;
+  end;
+end;
+
 // アイテムバッグ
 function TDonguriSys.Bag(var itemBag: TDonguriBag; var response: String; var denied: Boolean): Boolean;
 var
@@ -2519,11 +2539,13 @@ end;
 
 procedure TDonguriWeapon.SetItems(html: String);
 var
-	i: Integer;
+	i, j: Integer;
   idx: Integer;
   tmp1: String;
   tmp2: String;
+  equip: Boolean;
 begin
+	equip := False;
   for i := 0 to 8 do begin
     if Extract2('<td ', '</td>', html, tmp1) = False then
 	    Break;
@@ -2548,14 +2570,25 @@ begin
             Rarity := Format('%s [%s]', [Rarity, tmp1]);
         end;
       end;
-    	1: ATK := GetRangeValue(tmp1);
-      2: SPD := Trim(TrimTag(tmp1));
-      3: CRIT := Trim(TrimTag(tmp1));
-      4: ELEM := Trim(TrimTag(tmp1));
-      5: SetModify(tmp1, True);
-      6: SetMarimo(tmp1);
-      7: SetEquip(tmp1);
-      8: SetLock(tmp1);
+      1: equip := (Pos(URL_DNG_EQUIP, tmp1) < 1);
+    end;
+
+  	if i > 0 then begin
+      if equip then	// 装備中
+        j := i + 2
+      else					// 一覧
+        j := i;
+
+      case j of
+        1: SetEquip(tmp1);
+        2: SetLock(tmp1);
+        3: ATK := GetRangeValue(tmp1);
+        4: SPD := Trim(TrimTag(tmp1));
+        5: CRIT := Trim(TrimTag(tmp1));
+        6: ELEM := Trim(TrimTag(tmp1));
+        7: SetModify(tmp1, True);
+        8: SetMarimo(tmp1);
+      end;
     end;
   end;
 end;
@@ -2576,11 +2609,13 @@ end;
 
 procedure TDonguriArmor.SetItems(html: String);
 var
-	i: Integer;
+	i, j: Integer;
   idx: Integer;
   tmp1: String;
   tmp2: String;
+  equip: Boolean;
 begin
+	equip := False;
   for i := 0 to 8 do begin
     if Extract2('<td ', '</td>', html, tmp1) = False then
 	    Break;
@@ -2605,14 +2640,25 @@ begin
             Rarity := Format('%s [%s]', [Rarity, tmp1]);
         end;
       end;
-    	1: DEF := GetRangeValue(tmp1);
-      2: WT  := Trim(TrimTag(tmp1));
-      3: CRIT := Trim(TrimTag(tmp1));
-      4: ELEM := Trim(TrimTag(tmp1));
-      5: SetModify(tmp1, False);
-      6: SetMarimo(tmp1);
-      7: SetEquip(tmp1);
-      8: SetLock(tmp1);
+      1: equip := (Pos(URL_DNG_EQUIP, tmp1) < 1);
+    end;
+
+  	if i > 0 then begin
+      if equip then	// 装備中
+        j := i + 2
+      else					// 一覧
+        j := i;
+
+      case j of
+        1: SetEquip(tmp1);
+        2: SetLock(tmp1);
+        3: DEF := GetRangeValue(tmp1);
+        4: WT  := Trim(TrimTag(tmp1));
+        5: CRIT := Trim(TrimTag(tmp1));
+        6: ELEM := Trim(TrimTag(tmp1));
+        7: SetModify(tmp1, False);
+        8: SetMarimo(tmp1);
+      end;
     end;
   end;
 end;
