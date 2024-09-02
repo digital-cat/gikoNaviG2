@@ -534,6 +534,7 @@ type
 		FDonguriWidth: Integer;
 		FDonguriHeight: Integer;
 		FDonguriStay: Boolean;
+		FDonguriReload: Boolean;
     FDonguriTheme: Integer;
     FDonguriTaskBar: Boolean;
 		//! どんぐり関連
@@ -986,6 +987,7 @@ type
 		property DonguriWidth: Integer read FDonguriWidth write FDonguriWidth;
 		property DonguriHeight: Integer read FDonguriHeight write FDonguriHeight;
 		property DonguriStay: Boolean read FDonguriStay write FDonguriStay;
+    property DonguriReload: Boolean read FDonguriReload write FDonguriReload;
     property DonguriTheme: Integer read FDonguriTheme write FDonguriTheme;
     property DonguriTaskBar: Boolean read FDonguriTaskBar write FDonguriTaskBar;
 		//! どんぐり関連
@@ -1568,6 +1570,7 @@ begin
 		FDonguriWidth  := ini.ReadInteger('DonguriSystem', 'Width',  296);
 		FDonguriHeight := ini.ReadInteger('DonguriSystem', 'Height', 566);
 		FDonguriStay   := ini.ReadBool(   'DonguriSystem', 'Stay',   False);
+    FDonguriReload := ini.ReadBool(   'DonguriSystem', 'AutoReload', False);
     FDonguriTheme  := ini.ReadInteger('DonguriSystem', 'Theme',  0);
     FDonguriTaskBar:= ini.ReadBool(   'DonguriSystem', 'TaskBar',False);
 		//! どんぐり関連
@@ -2088,6 +2091,7 @@ begin
 		ini.WriteInteger('DonguriSystem', 'Width',  FDonguriWidth);
 		ini.WriteInteger('DonguriSystem', 'Height', FDonguriHeight);
 		ini.WriteBool(   'DonguriSystem', 'Stay',   FDonguriStay);
+    ini.WriteBool(   'DonguriSystem', 'AutoReload', FDonguriReload);
     ini.WriteInteger('DonguriSystem', 'Theme',  FDonguriTheme);
     ini.WriteBool(   'DonguriSystem', 'TaskBar',FDonguriTaskBar);
 		//! どんぐり関連
