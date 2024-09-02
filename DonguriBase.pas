@@ -309,6 +309,9 @@ type
     Label74: TLabel;
     RPCostLabel: TLabel;
     CraftRPPnlButton: TPanel;
+    DspTypeRadioGroup: TRadioGroup;
+    SpeedButtonReload: TSpeedButton;
+    TimerReload: TTimer;
     procedure TimerInitTimer(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCreate(Sender: TObject);
@@ -409,6 +412,9 @@ type
     procedure ReCreateIndyCheckBoxClick(Sender: TObject);
     procedure RPAmountComboBoxChange(Sender: TObject);
     procedure CraftRPPnlButtonClick(Sender: TObject);
+    procedure DspTypeRadioGroupClick(Sender: TObject);
+    procedure TimerReloadTimer(Sender: TObject);
+    procedure SpeedButtonReloadClick(Sender: TObject);
   private
     { Private declarations }
     FHunter: Boolean;
@@ -735,7 +741,36 @@ begin
   	SetWindowPos(Handle, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE + SWP_NOSIZE);
     SpeedButtonTopMost.Down := True;
   end;
+	SpeedButtonReload.Down := GikoSys.Setting.DonguriReload;
   ShowRoot;
+end;
+
+procedure TDonguriForm.TimerReloadTimer(Sender: TObject);
+var
+  res: String;
+begin
+	TimerReload.Enabled := False;
+	if GikoSys.Setting.DonguriReload then begin
+
+    if GikoSys.DonguriSys.Processing then begin
+			TimerReload.Interval := 30 * 1000;	// 30秒後にリトライ
+			TimerReload.Enabled := True;
+      Exit;
+    end;
+
+		//GikoSys.DonguriSys.DebugLog('TDonguriForm.TimerReloadTimer()');
+
+    if GikoSys.DonguriSys.Root(res) then
+      SetHomeInfo(res);
+    //else
+    //  ShowHttpError;
+
+    // SetHomeInfo()内でタイマーが始動しなかった場合
+    if not TimerReload.Enabled then begin
+      TimerReload.Interval := 30 * 60 * 1000;
+      TimerReload.Enabled := True;
+    end;
+  end;
 end;
 
 procedure TDonguriForm.FormClose(Sender: TObject; var Action: TCloseAction);
@@ -778,6 +813,20 @@ begin
   if h <> 0 then begin
     Windows.InvalidateRect(h, nil, True);
 		Windows.UpdateWindow(h);
+  end;
+end;
+
+procedure TDonguriForm.SpeedButtonReloadClick(Sender: TObject);
+begin
+	TimerReload.Enabled := False;
+	if GikoSys.Setting.DonguriReload then begin
+    SpeedButtonReload.Down := False;
+		GikoSys.Setting.DonguriReload := False;
+  end else begin
+  	TimerReload.Interval := 30 * 60 * 1000;
+  	TimerReload.Enabled := True;
+    SpeedButtonReload.Down := True;
+		GikoSys.Setting.DonguriReload := True;
   end;
 end;
 
@@ -911,6 +960,21 @@ begin
     end;
     LoginPnlButton.ShowHint := True;
     AutoLoginCheckBox.Tag := 0;
+    // ハンター識別
+    DspTypeRadioGroup.Tag := 1;
+    if FHunter and (home.DisplayType = dstOn) then
+    	DspTypeRadioGroup.ItemIndex := 0
+    else
+    	DspTypeRadioGroup.ItemIndex := 1;
+    DspTypeRadioGroup.Enabled := FHunter;
+    DspTypeRadioGroup.Tag := 0;
+
+    // 自動更新
+		TimerReload.Enabled := False;
+    if GikoSys.Setting.DonguriReload then begin
+    	TimerReload.Interval := 30 * 60 * 1000;
+			TimerReload.Enabled := True;
+    end;
 
     if home.Error <> '' then
       MsgBox(Handle, home.Error, CAP_MSG, MB_OK or MB_ICONERROR);
@@ -968,6 +1032,21 @@ begin
   	Exit;
 
   if GikoSys.DonguriSys.ToggleAutoLogin(res) then
+  	SetHomeInfo(res)
+  else
+  	ShowHttpError;
+end;
+
+procedure TDonguriForm.DspTypeRadioGroupClick(Sender: TObject);
+var
+  res: String;
+begin
+	if DspTypeRadioGroup.Tag <> 0 then
+  	Exit;
+	if GikoSys.DonguriSys.Processing then
+  	Exit;
+
+  if GikoSys.DonguriSys.ToggleDisplayType(res) then
   	SetHomeInfo(res)
   else
   	ShowHttpError;

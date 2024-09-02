@@ -68,13 +68,53 @@ object DonguriForm: TDonguriForm
       ShowHint = True
       OnClick = SpeedButtonTopMostClick
     end
+    object SpeedButtonReload: TSpeedButton
+      Left = 218
+      Top = 2
+      Width = 23
+      Height = 22
+      Hint = #12507#12540#12512#30011#38754#12434#33258#21205#26356#26032
+      AllowAllUp = True
+      GroupIndex = 2
+      Flat = True
+      Glyph.Data = {
+        36030000424D3603000000000000360000002800000010000000100000000100
+        18000000000000030000C30E0000C30E00000000000000000000800080800080
+        8000808000808000808000808000808000808000808000808000808000808000
+        8080008080008080008080008080008080008080008080008080008080008080
+        0080800080800080800080800080800080800080800080800080FF0000FF0000
+        FF0000FF0000FF0000FF0000FF0000FF0000FF0000FF0000FF0000FF0000FF00
+        00FF0000800080800080FF0000C3C3C3FFFFFFC3C3C3FFFFFFC3C3C3FFFFFFC3
+        C3C3FFFFFFC3C3C3FFFFFFC3C3C3FFFFFFFF0000800080800080FF0000FFFFFF
+        C3C3C3FFFFFFC3C3C3FFFFFFC3C3C3FFFFFFC3C3C3FFFFFFC3C3C3FFFFFFC3C3
+        C3FF0000800080800080FF0000C3C3C3FFFFFFC3C3C3241CED241CED241CEDC3
+        C3C3FFFFFFC3C3C3FFFFFFC3C3C3FFFFFFFF0000800080800080FF0000FFFFFF
+        C3C3C3241CED241CEDFFFFFFC3C3C3FFFFFFC3C3C3FFFFFF241CEDFFFFFFC3C3
+        C3FF0000800080800080FF0000C3C3C3FFFFFF241CEDFFFFFFC3C3C3FFFFFFC3
+        C3C3FFFFFF241CED241CED241CEDFFFFFFFF0000800080800080FF0000241CED
+        241CED241CED241CED241CEDC3C3C3FFFFFF241CED241CED241CED241CED241C
+        EDFF0000800080800080FF0000C3C3C3241CED241CED241CEDC3C3C3FFFFFFC3
+        C3C3FFFFFFC3C3C3241CEDC3C3C3FFFFFFFF0000800080800080FF0000FFFFFF
+        C3C3C3241CEDC3C3C3FFFFFFC3C3C3FFFFFFC3C3C3241CED241CEDFFFFFFC3C3
+        C3FF0000800080800080FF0000C3C3C3FFFFFFC3C3C3FFFFFFC3C3C3FFFFFF24
+        1CED241CED241CEDFFFFFFC3C3C3FFFFFFFF0000800080800080FF0000FFFFFF
+        C3C3C3FFFFFFC3C3C3FFFFFFC3C3C3FFFFFFC3C3C3FFFFFFC3C3C3FFFFFFC3C3
+        C3FF0000800080800080FF0000C3C3C3FFFFFFC3C3C3FFFFFFC3C3C3FFFFFFC3
+        C3C3FFFFFFC3C3C3FFFFFFC3C3C3FFFFFFFF0000800080800080FF0000FF0000
+        FF0000FF0000FF0000FF0000FF0000FF0000FF0000FF0000FF0000FF0000FF00
+        00FF000080008080008080008080008080008080008080008080008080008080
+        0080800080800080800080800080800080800080800080800080}
+      ParentShowHint = False
+      ShowHint = True
+      OnClick = SpeedButtonReloadClick
+    end
   end
   object PageControl: TPageControl
     Left = 0
     Top = 28
     Width = 280
     Height = 510
-    ActivePage = TabSheetService
+    ActivePage = TabSheetHome
     Align = alClient
     TabOrder = 0
     OnDrawTab = PageControlDrawTab
@@ -574,6 +614,10 @@ object DonguriForm: TDonguriForm
     object TabSheetService: TTabSheet
       Caption = #12469#12540#12499#12473
       ImageIndex = 1
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object PanelService: TPanel
         Left = 0
         Top = 0
@@ -643,7 +687,7 @@ object DonguriForm: TDonguriForm
             Width = 60
             Height = 21
             ImeMode = imClose
-            ItemHeight = 13
+            ItemHeight = 0
             TabOrder = 0
             OnChange = KYAmountComboBoxChange
             Items.Strings = (
@@ -719,7 +763,7 @@ object DonguriForm: TDonguriForm
             Width = 60
             Height = 21
             ImeMode = imClose
-            ItemHeight = 13
+            ItemHeight = 0
             MaxLength = 4
             TabOrder = 0
             OnChange = CBAmountComboBoxChange
@@ -935,7 +979,7 @@ object DonguriForm: TDonguriForm
             Width = 60
             Height = 21
             ImeMode = imClose
-            ItemHeight = 13
+            ItemHeight = 0
             TabOrder = 0
             OnChange = RPAmountComboBoxChange
             Items.Strings = (
@@ -977,6 +1021,10 @@ object DonguriForm: TDonguriForm
     object TabSheetChest: TTabSheet
       Caption = #12450#12452#12486#12512
       ImageIndex = 2
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object BagTopPanel: TPanel
         Left = 0
         Top = 0
@@ -1080,6 +1128,10 @@ object DonguriForm: TDonguriForm
         OnDrawTab = PageControlItemBagDrawTab
         object TabSheetUsing: TTabSheet
           Caption = #35013#20633#20013
+          ExplicitLeft = 0
+          ExplicitTop = 0
+          ExplicitWidth = 0
+          ExplicitHeight = 0
           object UsingPanel: TPanel
             Left = 0
             Top = 0
@@ -1307,6 +1359,10 @@ object DonguriForm: TDonguriForm
         object TabSheetWeapon: TTabSheet
           Caption = #27494#22120
           ImageIndex = 1
+          ExplicitLeft = 0
+          ExplicitTop = 0
+          ExplicitWidth = 0
+          ExplicitHeight = 0
           object WeaponTopPanel: TPanel
             Left = 0
             Top = 0
@@ -1472,6 +1528,10 @@ object DonguriForm: TDonguriForm
         object TabSheetArmor: TTabSheet
           Caption = #38450#20855
           ImageIndex = 2
+          ExplicitLeft = 0
+          ExplicitTop = 0
+          ExplicitWidth = 0
+          ExplicitHeight = 0
           object ArmorTopPanel: TPanel
             Left = 0
             Top = 0
@@ -1639,6 +1699,10 @@ object DonguriForm: TDonguriForm
     object TabSheetModW: TTabSheet
       Caption = #27494#22120#24375#21270
       ImageIndex = 5
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object ModWPanel: TPanel
         Left = 0
         Top = 0
@@ -2199,6 +2263,10 @@ object DonguriForm: TDonguriForm
     object TabSheetModA: TTabSheet
       Caption = #38450#20855#24375#21270
       ImageIndex = 6
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object ModAPanel: TPanel
         Left = 0
         Top = 0
@@ -2759,6 +2827,10 @@ object DonguriForm: TDonguriForm
     object TabSheetLink: TTabSheet
       Caption = #12522#12531#12463
       ImageIndex = 3
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object LinkScrollBox: TScrollBox
         Left = 0
         Top = 0
@@ -3092,6 +3164,10 @@ object DonguriForm: TDonguriForm
     object TabSheetSetting: TTabSheet
       Caption = #35373#23450
       ImageIndex = 4
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object PanelSetting: TPanel
         Left = 0
         Top = 0
@@ -3105,12 +3181,12 @@ object DonguriForm: TDonguriForm
           Left = 12
           Top = 12
           Width = 245
-          Height = 192
+          Height = 244
           Caption = #12393#12435#12368#12426#12471#12473#12486#12512
           TabOrder = 0
           object Label8: TLabel
             Left = 32
-            Top = 78
+            Top = 126
             Width = 204
             Height = 13
             Caption = #65288#12371#12398#30011#38754#12434#38281#12376#12390#20877#24230#34920#31034#12377#12427#12392#26377#21177#21270#65289
@@ -3125,23 +3201,23 @@ object DonguriForm: TDonguriForm
           end
           object Label68: TLabel
             Left = 32
-            Top = 170
+            Top = 218
             Width = 198
             Height = 13
             Caption = #65288#32368#12426#36820#12375#12398#36890#20449#12391#30064#24120#12364#30330#29983#12377#12427#22580#21512#65289
           end
           object TaskBarCheckBox: TCheckBox
             Left = 12
-            Top = 58
+            Top = 106
             Width = 213
             Height = 17
             Caption = #12479#12473#12463#12496#12540#12395#12450#12452#12467#12531#34920#31034'(&I)'
-            TabOrder = 1
+            TabOrder = 2
             OnClick = TaskBarCheckBoxClick
           end
           object ColorRadioGroup: TRadioGroup
             Left = 12
-            Top = 98
+            Top = 146
             Width = 220
             Height = 45
             Caption = #12454#12452#12531#12489#12454#37197#33394
@@ -3150,7 +3226,8 @@ object DonguriForm: TDonguriForm
             Items.Strings = (
               #12521#12452#12488
               #12480#12540#12463)
-            TabOrder = 2
+            TabOrder = 3
+            TabStop = True
             OnClick = ColorRadioGroupClick
           end
           object AutoLoginCheckBox: TCheckBox
@@ -3164,17 +3241,36 @@ object DonguriForm: TDonguriForm
           end
           object ReCreateIndyCheckBox: TCheckBox
             Left = 12
-            Top = 150
+            Top = 198
             Width = 216
             Height = 17
             Caption = #36890#20449#12514#12472#12517#12540#12523#12434#27598#22238#27083#31689#12375#30452#12377'(&C)'
-            TabOrder = 3
+            TabOrder = 4
             OnClick = ReCreateIndyCheckBoxClick
+          end
+          object DspTypeRadioGroup: TRadioGroup
+            Tag = 1
+            Left = 12
+            Top = 58
+            Width = 216
+            Height = 40
+            Hint = #12495#12531#12479#12540#12364#35686#20633#21729#12434#35013#12387#12390#26360#12365#36796#12416#12363#12393#12358#12363
+            Caption = #26360#12365#36796#12415#26178#12398#35672#21029
+            Columns = 2
+            ItemIndex = 0
+            Items.Strings = (
+              #12495#12531#12479#12540
+              #35686#20633#21729)
+            ParentShowHint = False
+            ShowHint = True
+            TabOrder = 1
+            TabStop = True
+            OnClick = DspTypeRadioGroupClick
           end
         end
         object CannonGroupBox: TGroupBox
           Left = 12
-          Top = 210
+          Top = 260
           Width = 245
           Height = 51
           Caption = #12393#12435#12368#12426#22823#30770
@@ -3212,7 +3308,7 @@ object DonguriForm: TDonguriForm
   object BagImageList: TImageList
     Left = 16
     Bitmap = {
-      494C01010A0014003C0110001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01010A001400480110001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000003000000001002000000000000030
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -3640,5 +3736,10 @@ object DonguriForm: TDonguriForm
       Caption = #35686#20633#21729#12392#12375#12390#12513#12540#12523#12525#12464#12452#12531'(&G)'
       OnClick = MItemGrdLoginClick
     end
+  end
+  object TimerReload: TTimer
+    Enabled = False
+    OnTimer = TimerReloadTimer
+    Left = 176
   end
 end

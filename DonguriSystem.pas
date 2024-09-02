@@ -13,6 +13,7 @@ uses
 
 type
   TDonguriAutoLogin = (atlOn, atlOff, atlUnknown);
+  TDonguriDsplayType = (dstOn, dstOff, dstUnknown);
   TModifyWeapon = (mdwDmgMin, mdwDmgMax, mdwSpeed,  mdwCrit, mdwDmgMinDwn, mdwDmgMaxDwn, mdwSpeedDwn,  mdwCritDwn);
   TModifyArmor  = (mdaDefMin, mdaDefMax, mdaWeight, mdaCrit, mdaDefMinDwn, mdaDefMaxDwn, mdaWeightDwn, mdaCritDwn);
 
@@ -60,8 +61,10 @@ type
     HP:         Integer;
   	// 設定
     AutoLogin:  TDonguriAutoLogin;
+    DisplayType:TDonguriDsplayType;
     ////
     Error:      String;
+    LastUpdate: TDateTime;
 
 		constructor Create;
     procedure Clear;
@@ -169,7 +172,6 @@ type
   	procedure CreateIndy;
   	procedure FreeIndy;
 
-    //procedure DebugLog(text: String);
   public
 
 		constructor Create;
@@ -186,6 +188,7 @@ type
     function RegisterSubmit(mail, pwd: String; var response: String): Boolean;
     function RegisterVerify(link: String; var response: String): Boolean;
     function ToggleAutoLogin(var response: String): Boolean;
+    function ToggleDisplayType(var response: String): Boolean;
 
     function Exploration(var response: String): Boolean;
     function Mining(var response: String): Boolean;
@@ -234,6 +237,8 @@ type
   	// ビルドモード
 		function GetBuildMode: String;
     property BuildMode: String read GetBuildMode;
+
+    //procedure DebugLog(text: String);
   end;
 
 
@@ -253,6 +258,7 @@ const
   URL_DNG_LOGOUT  = 'https://donguri.5ch.net/logout';
   URL_DNG_REGIST  = 'https://donguri.5ch.net/register';
   URL_DNG_SET_ALN = 'https://donguri.5ch.net/setting/autologin';
+  URL_DNG_SET_DST = 'https://donguri.5ch.net/setting/displaytype';	// 識別切り替え
 
   URL_DNG_EXPLOR  = 'https://donguri.5ch.net/focus/exploration';    // 探検
   URL_DNG_MINING  = 'https://donguri.5ch.net/focus/mining';         // 採掘
@@ -886,9 +892,16 @@ begin
     if Result then
       FHome.Parsing(response);
 
+//    if Result then
+//			DebugLog('TDonguriSys.Root() OK')
+//    else
+//			DebugLog('TDonguriSys.Root() ERROR');
+
   except
     on e: Exception do begin
       FErroeMessage := e.Message;
+
+//			DebugLog('TDonguriSys.Root() Exception:' + FErroeMessage);
     end;
   end;
 end;
@@ -1052,6 +1065,30 @@ begin
 	  ClearResponse;
 
   	Result := HttpGetCall(URL_DNG_SET_ALN, response);
+
+    if Result then
+      FHome.Parsing(response);
+
+  except
+    on e: Exception do begin
+      FErroeMessage := e.Message;
+    end;
+  end;
+end;
+
+// 識別切り替え
+function TDonguriSys.ToggleDisplayType(var response: String): Boolean;
+begin
+	Result := False;
+  response := '';
+
+	try
+	  ClearResponse;
+
+  	Result := HttpGetCall(URL_DNG_SET_DST, response);
+
+    if Result then
+      FHome.Parsing(response);
 
   except
     on e: Exception do begin
@@ -2139,7 +2176,9 @@ begin
   IronCB     := 0;
   HP         := 0;
   AutoLogin  := atlUnknown;
+	DisplayType:= dstUnknown;
   Error      := '';
+	LastUpdate := 0.0;
 end;
 
 function TDonguriHome.Parsing(html: String): Boolean;
@@ -2204,6 +2243,9 @@ const
   TAG_ALN_H = '<div>自動ログイン：ON<br>';
   TAG_ALN_S = '<a href="https://donguri.5ch.net/setting/autologin">自動ログイン：';
   TAG_ALN_E = '</a>';
+  TAG_DST_G = '<div>ハンターとして識別する：OFF<br>';
+  TAG_DST_S = '<a href="https://donguri.5ch.net/setting/displaytype">ハンターとして識別する：';
+  TAG_DST_E = '</a>';
 
   MODE_NAME: array[0..6] of String = (
     '不明',
@@ -2330,7 +2372,20 @@ begin
     else
     	AutoLogin := atlOff;
 
+    // ハンター識別
+		DisplayType := dstUnknown;
+  	if Hunter then begin
+      if DonguriSystem.Extract(TAG_DST_S, TAG_DST_E, html, tmp) then begin
+      	if tmp = 'ON' then
+	      	DisplayType := dstOn
+        else if tmp = 'OFF' then
+	      	DisplayType := dstOff;
+      end;
+    end else if Pos(TAG_DST_G, html) > 0 then
+			DisplayType := dstOff;
+
     //Error := (mode = 0) or (UserID = '') or (UserName = '') or (Level = '');
+		LastUpdate := Now();
 
     Result := True;
   except
@@ -2809,7 +2864,7 @@ var
   dst: TextFile;
   path: String;
 begin
-	path := ChangeFileExt(Application.ExeName, '.cannon.log');
+	path := 'd:\log\debug.log';
 
   try
     AssignFile(dst, path);
@@ -2818,7 +2873,7 @@ begin
     else
       Rewrite(dst);
 
-		Writeln(dst, text);
+		Writeln(dst, FormatDateTime('YYYY/MM/DD HH:NN:SS', Now) + ' ' + text);
 
   finally
 		CloseFile(dst);
