@@ -5,7 +5,7 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Jpeg, Controls, Forms,
   Dialogs, StdCtrls, ExtCtrls, Grids, StrUtils, ComCtrls, Buttons, DonguriSystem,
-  ImgList, Menus, Clipbrd;
+  ImgList, Menus, Clipbrd, CommCtrl;
 
 type
   TColumnType = (ctString, ctInteger, ctIntStr);
@@ -1324,16 +1324,18 @@ const
   CAP_MSG: String = 'どんぐりシステム';
 var
   res: String;
+  parse: Boolean;
   dlg: TDonguriRegForm;
 begin
 	try
     if GikoSys.DonguriSys.Processing then
       Exit;
 
-    if GikoSys.DonguriSys.RegisterPage(res) then begin
+  	parse := False;
+    if GikoSys.DonguriSys.RegisterPage(res, parse) then begin
       if Pos('<html', res) < 1 then
         MsgBox(Handle, res, CAP_MSG, MB_OK or MB_ICONINFORMATION)
-      else if (Pos('<h1>警備員登録サービス</h1>', res) > 0) and (Pos('<input type="submit"', res) > 0) then begin
+      else if parse then begin
 			  dlg := TDonguriRegForm.Create(Self);
         try
           dlg.ShowModal;
@@ -1850,6 +1852,8 @@ begin
 end;
 
 procedure TDonguriForm.SetColors(control: TControl; bkg, txt: TColor);
+var
+	hdl: HWnd;
 begin
   if control is TPanel then begin
     TPanel(control).Color := bkg;
@@ -1866,6 +1870,12 @@ begin
   end else if control is TListView then begin
     TListView(control).Color := bkg;
     TListView(control).Font.Color := txt;
+    hdl := TListView(control).Handle;
+    if hdl <> 0 then begin
+    	ListView_SetBkColor(    hdl, ColorToRGB(bkg));
+      ListView_SetTextBkColor(hdl, ColorToRGB(bkg));
+      //ListView_SetTextColor(  hdl, ColorToRGB(txt));
+    end;
   end else if control is TScrollBox then begin
     TScrollBox(control).Color := bkg;
     TScrollBox(control).Font.Color := txt;

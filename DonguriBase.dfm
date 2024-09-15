@@ -114,7 +114,7 @@ object DonguriForm: TDonguriForm
     Top = 28
     Width = 280
     Height = 510
-    ActivePage = TabSheetHome
+    ActivePage = TabSheetChest
     Align = alClient
     TabOrder = 0
     OnDrawTab = PageControlDrawTab
@@ -614,10 +614,6 @@ object DonguriForm: TDonguriForm
     object TabSheetService: TTabSheet
       Caption = #12469#12540#12499#12473
       ImageIndex = 1
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object PanelService: TPanel
         Left = 0
         Top = 0
@@ -687,7 +683,7 @@ object DonguriForm: TDonguriForm
             Width = 60
             Height = 21
             ImeMode = imClose
-            ItemHeight = 0
+            ItemHeight = 13
             TabOrder = 0
             OnChange = KYAmountComboBoxChange
             Items.Strings = (
@@ -763,7 +759,7 @@ object DonguriForm: TDonguriForm
             Width = 60
             Height = 21
             ImeMode = imClose
-            ItemHeight = 0
+            ItemHeight = 13
             MaxLength = 4
             TabOrder = 0
             OnChange = CBAmountComboBoxChange
@@ -979,7 +975,7 @@ object DonguriForm: TDonguriForm
             Width = 60
             Height = 21
             ImeMode = imClose
-            ItemHeight = 0
+            ItemHeight = 13
             TabOrder = 0
             OnChange = RPAmountComboBoxChange
             Items.Strings = (
@@ -1021,10 +1017,6 @@ object DonguriForm: TDonguriForm
     object TabSheetChest: TTabSheet
       Caption = #12450#12452#12486#12512
       ImageIndex = 2
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object BagTopPanel: TPanel
         Left = 0
         Top = 0
@@ -1122,7 +1114,7 @@ object DonguriForm: TDonguriForm
         Top = 126
         Width = 272
         Height = 356
-        ActivePage = TabSheetUsing
+        ActivePage = TabSheetWeapon
         Align = alClient
         TabOrder = 1
         OnDrawTab = PageControlItemBagDrawTab
@@ -1359,10 +1351,6 @@ object DonguriForm: TDonguriForm
         object TabSheetWeapon: TTabSheet
           Caption = #27494#22120
           ImageIndex = 1
-          ExplicitLeft = 0
-          ExplicitTop = 0
-          ExplicitWidth = 0
-          ExplicitHeight = 0
           object WeaponTopPanel: TPanel
             Left = 0
             Top = 0
@@ -3308,7 +3296,7 @@ object DonguriForm: TDonguriForm
   object BagImageList: TImageList
     Left = 16
     Bitmap = {
-      494C01010A001400480110001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01010A001400540110001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000003000000001002000000000000030
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
