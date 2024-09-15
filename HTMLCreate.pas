@@ -50,8 +50,8 @@ type
 		pANCHORs, pANCHORe  : PChar;
 		pCTAGLs,  pCTAGLe   : PChar;
 		pCTAGUs,  pCTAGUe   : PChar;
-		pREF_MARKSs : array[0..11] of PChar;
-		pREF_MARKSe : array[0..11] of PChar;
+		pREF_MARKSs : array of PChar;
+		pREF_MARKSe : array of PChar;
 		constructor Create;
 
 		function AddBeProfileLink(AID : string; ANum: Integer):string ;
@@ -118,9 +118,12 @@ const
 	CLOSE_TAGAL = '</a>';
 	CLOSE_TAGAU = '</A>';
 	RES_REF			= '&gt;&gt;';
-	REF_MARK: array[0..12] of string = ('sssp://', 'http://', 'ttp://', 'tp://',
-									 'ms-help://','p://', 'https://', 'ttps://', 'tps://',        // for https
+	REF_MARK: array[0..15] of string = ('sssp://', 'http://', 'ttp://', 'tp://',
+									 'ms-help://','p://', 'https://', 'ttps://', 'tps://', 'ps://', 's://', '://',
 									 'www.', 'ftp://','news://','rtsp://');
+	REF_MARK_HEAD: array[0..15] of String = ('',   '',        'h',      'ht',
+  								 '',          'htt',  '',         'h',       'ht',     'htt',   'http', 'https',
+									 'https://', '',  '',       '');
 
 constructor THTMLCreate.Create;
 var
@@ -138,7 +141,9 @@ begin
 	pCTAGLe   := pCTAGLs + 4;
 	pCTAGUs   := PChar(CLOSE_TAGAU);
 	pCTAGUe   := pCTAGUs + 4;
-	for j := 0 to 11 do begin
+	SetLength(pREF_MARKSs, Length(REF_MARK));
+	SetLength(pREF_MARKSe, Length(REF_MARK));
+	for j := Low(REF_MARK) to High(REF_MARK) do begin
 		pREF_MARKSs[j] := PChar(REF_MARK[j]);
 		pREF_MARKSe[j] := pREF_MARKSs[j] + Length(REF_MARK[j]);
 	end;
@@ -270,8 +275,6 @@ end;
  *************************************************************************)
 procedure THTMLCreate.AddAnchorTag(PRes: PResRec);
 const
-	_HEAD : array[0..12] of String =
-		('', '', 'h', 'ht', '', 'htt', '', 'h', 'ht', 'https://', '', '', '');  // for https
     EMOTICONS: String = 'sssp://img.2ch.net/';
     EMOTICONS5: String = 'sssp://img.5ch.net/';   // for 5ch
 var
@@ -297,7 +300,7 @@ begin
 		pp := PChar(s);
 		pe := pp + Length(s);
 
-		for j := 0 to 12 do begin
+		for j := Low(REF_MARK) to High(REF_MARK) do begin
 			pos := AnsiStrPosEx(pp, pe, pREF_MARKSs[j], pREF_MARKSe[j]);
 			if pos <> nil then begin
 				tmp := pos - pp + 1;
@@ -352,7 +355,7 @@ begin
             if (AnsiPos(REF_MARK[0], url) = 1) then
                 href := 'https' + Copy(url, 5, urllen - 4)  // sssp:// -> https://
             else
-                href := Format('%s%s', [_HEAD[idx2], url]);
+                href := Format('%s%s', [REF_MARK_HEAD[idx2], url]);
             GikoSys.Regulate2chURL(href);      // for 5ch
 
             if (GikoSys.Setting.IconImageDisplay = True) and
