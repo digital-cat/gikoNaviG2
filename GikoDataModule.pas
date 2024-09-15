@@ -271,6 +271,7 @@ type
     DonguriLogoutAction: TAction;
     DonguriAuthAction: TAction;
     konoURLitestAction: TAction;
+    KoreDatCopy: TAction;
 	procedure EditNGActionExecute(Sender: TObject);
 	procedure ReloadActionExecute(Sender: TObject);
 	procedure GoFowardActionExecute(Sender: TObject);
@@ -508,6 +509,7 @@ type
     procedure DonguriGrdLoginActionUpdate(Sender: TObject);
     procedure konoURLitestActionExecute(Sender: TObject);
     procedure konoURLitestActionUpdate(Sender: TObject);
+    procedure KoreDatCopyExecute(Sender: TObject);
   private
 	{ Private 宣言 }
 	procedure ClearResFilter;
@@ -2480,6 +2482,15 @@ procedure TGikoDM.KoreCopyExecute(Sender: TObject);
 begin
 	GikoForm.KonoresCopy(GikoForm.KokoPopupMenu.Tag, true);
 end;
+
+// *************************************************************************
+//! 選択したレスのdatをコピーする
+// *************************************************************************
+procedure TGikoDM.KoreDatCopyExecute(Sender: TObject);
+begin
+	GikoForm.KonoDatCopy(GikoForm.KokoPopupMenu.Tag, true);
+end;
+
 // *************************************************************************
 //! 選択したレスをコピーする
 // *************************************************************************

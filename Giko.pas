@@ -446,6 +446,7 @@ type
     DonguriAuthMenu: TMenuItem;
     DonguriLogoutMenu: TMenuItem;
     PATHINFOitest1: TMenuItem;
+    dat5: TMenuItem;
 		procedure FormCreate(Sender: TObject);
 		procedure FormDestroy(Sender: TObject);
 		procedure SaveSettingAll();
@@ -854,6 +855,8 @@ type
 		procedure SelectListItem(List: TList);
 		//指定したレスをコピーする
 		procedure KonoresCopy(Number: Integer; ReplaceTag : Boolean);
+		//指定したレスのdatをコピーする
+		procedure KonoDatCopy(Number: Integer; ReplaceTag : Boolean);
 		///
 		procedure ModifySelectList;
 		///
@@ -6982,6 +6985,37 @@ begin
 			Header := Header + Body;
 
 			Clipboard.SetTextBuf( PChar(Header) );
+		end;
+	end;
+end;
+
+
+//指定したレスのdatをコピーする
+procedure TGikoForm.KonoDatCopy(Number: Integer; ReplaceTag : Boolean);
+var
+	ThreadItem: TThreadItem;
+	tmp: string;
+	FileName: string;
+	boardPlugIn : TBoardPlugIn;
+begin
+	if Number = 0 then Exit;
+	ThreadItem := GetActiveContent(True);
+
+	if ThreadItem <> nil then begin
+		if ThreadItem.ParentBoard.IsBoardPlugInAvailable then begin
+			//===== プラグインによる表示
+			boardPlugIn		:= ThreadItem.ParentBoard.BoardPlugIn;
+
+			// フォントやサイズの設定
+			// 文字コードはプラグインに任せる
+			//ここで２ちゃんねるのdatの形式で１行読み込めれば･･･。
+			tmp := boardPlugIn.GetDat( DWORD( threadItem ), Number );
+		end else begin
+      FileName := ThreadItem.FilePath;
+      tmp := GikoSys.ReadThreadFile(FileName, Number);
+		end;
+		if tmp <> '' then begin
+			Clipboard.SetTextBuf( PChar(tmp) );
 		end;
 	end;
 end;

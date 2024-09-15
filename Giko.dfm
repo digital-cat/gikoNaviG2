@@ -328,14 +328,14 @@ object GikoForm: TGikoForm
                 Control = ListToolBar
                 ImageIndex = -1
                 MinHeight = 22
-                Width = 603
+                Width = 606
               end
               item
                 Break = False
                 Control = ListNameToolBar
                 ImageIndex = -1
                 MinHeight = 18
-                Width = 12
+                Width = 9
               end>
             EdgeBorders = [ebLeft, ebTop, ebRight]
             EdgeInner = esLowered
@@ -345,7 +345,7 @@ object GikoForm: TGikoForm
             object ListToolBar: TToolBar
               Left = 9
               Top = 0
-              Width = 590
+              Width = 597
               Height = 22
               AutoSize = True
               ButtonWidth = 25
@@ -437,9 +437,9 @@ object GikoForm: TGikoForm
               end
             end
             object ListNameToolBar: TToolBar
-              Left = 614
+              Left = 621
               Top = 2
-              Width = 7
+              Width = 0
               Height = 18
               AutoSize = True
               ButtonHeight = 16
@@ -539,20 +539,20 @@ object GikoForm: TGikoForm
                 Control = BrowserToolBar
                 ImageIndex = -1
                 MinHeight = 18
-                Width = 559
+                Width = 565
               end
               item
                 Break = False
                 Control = BrowserNameToolBar
                 ImageIndex = -1
                 MinHeight = 18
-                Width = 56
+                Width = 54
               end
               item
                 Control = BrowserTabToolBar
                 ImageIndex = -1
                 MinHeight = 20
-                Width = 619
+                Width = 621
               end>
             EdgeBorders = [ebLeft, ebTop, ebRight]
             EdgeInner = esLowered
@@ -562,7 +562,7 @@ object GikoForm: TGikoForm
             object BrowserToolBar: TToolBar
               Left = 9
               Top = 0
-              Width = 546
+              Width = 552
               Height = 18
               AutoSize = True
               ButtonWidth = 24
@@ -577,9 +577,9 @@ object GikoForm: TGikoForm
               OnResize = BrowserToolBarResize
             end
             object BrowserNameToolBar: TToolBar
-              Left = 570
+              Left = 576
               Top = 0
-              Width = 51
+              Width = 45
               Height = 18
               AutoSize = True
               ButtonHeight = 16
@@ -648,7 +648,7 @@ object GikoForm: TGikoForm
               Top = 20
               Width = 612
               Height = 20
-              ButtonHeight = 18
+              ButtonHeight = 20
               Caption = 'BrowserTabToolBar'
               TabOrder = 2
               OnResize = BrowserTabToolBarResize
@@ -656,7 +656,7 @@ object GikoForm: TGikoForm
                 Left = 0
                 Top = 0
                 Width = 625
-                Height = 18
+                Height = 20
                 Align = alClient
                 Font.Charset = SHIFTJIS_CHARSET
                 Font.Color = clWindowText
@@ -830,7 +830,7 @@ object GikoForm: TGikoForm
             ImageIndex = -1
             MinHeight = 22
             Visible = False
-            Width = 413
+            Width = 419
           end
           item
             Break = False
@@ -838,7 +838,7 @@ object GikoForm: TGikoForm
             ImageIndex = -1
             MinHeight = 22
             Text = #12450#12489#12524#12473
-            Width = 316
+            Width = 310
           end
           item
             Control = LinkToolBar
@@ -871,7 +871,7 @@ object GikoForm: TGikoForm
         object StdToolBar: TToolBar
           Left = 9
           Top = 20
-          Width = 400
+          Width = 406
           Height = 22
           AutoSize = True
           ButtonWidth = 25
@@ -887,9 +887,9 @@ object GikoForm: TGikoForm
           OnResize = MenuToolBarResize
         end
         object AddressToolBar: TToolBar
-          Left = 468
+          Left = 474
           Top = 20
-          Width = 267
+          Width = 261
           Height = 22
           ButtonWidth = 51
           HotImages = HotToobarImageList
@@ -942,7 +942,7 @@ object GikoForm: TGikoForm
     Left = 4
     Top = 212
     Bitmap = {
-      494C010113001800940010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C0101130018009C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000005000000001002000000000000050
       0000000000000000000000000000000000000000000000000000848484008484
       8400848484008484840084848400848484008484840084848400848484008484
@@ -1615,7 +1615,7 @@ object GikoForm: TGikoForm
     Left = 36
     Top = 212
     Bitmap = {
-      494C01010F001300940020002000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01010F0013009C0020002000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000800000008000000001002000000000000000
       0100000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -3738,7 +3738,7 @@ object GikoForm: TGikoForm
     Left = 4
     Top = 244
     Bitmap = {
-      494C01013F008000940010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01013F0080009C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000000001000001002000000000000000
       0100000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -5861,7 +5861,7 @@ object GikoForm: TGikoForm
     Left = 4
     Top = 276
     Bitmap = {
-      494C010103000400940010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C0101030004009C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000001000000001002000000000000010
       0000000000000000000000000000000000008400840084008400000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -6006,7 +6006,7 @@ object GikoForm: TGikoForm
     Left = 36
     Top = 276
     Bitmap = {
-      494C010104000900940020000C00FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C0101040009009C0020000C00FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000800000001800000001002000000000000030
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -6414,7 +6414,7 @@ object GikoForm: TGikoForm
     Left = 4
     Top = 308
     Bitmap = {
-      494C01010400090094000B001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C0101040009009C000B001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       00000000000036000000280000002C0000002000000001002000000000000016
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -6609,7 +6609,7 @@ object GikoForm: TGikoForm
     Left = 4
     Top = 340
     Bitmap = {
-      494C010102000400940010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C0101020004009C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000001000000001002000000000000010
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -7567,6 +7567,9 @@ object GikoForm: TGikoForm
     end
     object N63: TMenuItem
       Action = GikoDM.KoreCopy
+    end
+    object dat5: TMenuItem
+      Action = GikoDM.KoreDatCopy
     end
     object N41: TMenuItem
       Caption = '-'
