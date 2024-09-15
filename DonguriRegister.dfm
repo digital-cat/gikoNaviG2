@@ -95,10 +95,6 @@ object DonguriRegForm: TDonguriRegForm
     object TabSheet2: TTabSheet
       Caption = #30331#37682
       ImageIndex = 1
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object PanelReg: TPanel
         Left = 0
         Top = 0
@@ -214,6 +210,10 @@ object DonguriRegForm: TDonguriRegForm
     object TabSheet3: TTabSheet
       Caption = #30331#37682#30906#35469
       ImageIndex = 2
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object PanelLink: TPanel
         Left = 0
         Top = 0

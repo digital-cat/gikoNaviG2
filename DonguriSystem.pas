@@ -184,7 +184,7 @@ type
 		function Login(var response: String): Boolean;
 		function MailLogin(mail, pwd: String; var response: String): Boolean;
 		function Logout(var response: String): Boolean;
-    function RegisterPage(var response: String): Boolean;
+    function RegisterPage(var response: String; var parse: Boolean): Boolean;
     function RegisterSubmit(mail, pwd: String; var response: String): Boolean;
     function RegisterVerify(link: String; var response: String): Boolean;
     function ToggleAutoLogin(var response: String): Boolean;
@@ -997,15 +997,42 @@ begin
 end;
 
 // アカウント登録トップページ
-function TDonguriSys.RegisterPage(var response: String): Boolean;
+function TDonguriSys.RegisterPage(var response: String; var parse: Boolean): Boolean;
+var
+	form: string;
+  tag: string;
+  email: Boolean;
+  password: Boolean;
+  submit: Boolean;
 begin
 	Result := False;
   response := '';
+  parse := False;
 
 	try
 	  ClearResponse;
 
   	Result := HttpGetCall(URL_DNG_REGIST, response);
+
+    if Result and (Pos('<html', response) > 0) then begin
+	  	if Extract('<form ', '</form>', response, form) and
+	  		 (Pos('action="' + URL_DNG_REGIST, form) > 0) then begin
+        email := False;
+        password := False;
+        submit := False;
+        while True do begin
+        	if not Extract2('<input ', '>', form, tag) then
+            Break;
+          if (Pos('name="email"',    tag) > 0) then
+          	email := True;
+          if (Pos('name="password"', tag) > 0) then
+          	password := True;
+          if (Pos('type="submit"',   tag) > 0) then
+          	submit := True;
+        end;
+        parse := (email and password and submit);
+      end;
+    end;
 
   except
     on e: Exception do begin
