@@ -118,12 +118,63 @@ const
 	CLOSE_TAGAL = '</a>';
 	CLOSE_TAGAU = '</A>';
 	RES_REF			= '&gt;&gt;';
-	REF_MARK: array[0..15] of string = ('sssp://', 'http://', 'ttp://', 'tp://',
-									 'ms-help://','p://', 'https://', 'ttps://', 'tps://', 'ps://', 's://', '://',
-									 'www.', 'ftp://','news://','rtsp://');
-	REF_MARK_HEAD: array[0..15] of String = ('',   '',        'h',      'ht',
-  								 '',          'htt',  '',         'h',       'ht',     'htt',   'http', 'https',
-									 'https://', '',  '',       '');
+  REF_MARK: array[0..16] of string = (
+    'sssp://',
+    'https://',
+    'ttps://',
+    'http://',
+    'ttp://',
+    'ms-help://',
+    'ftp://',
+    'news://',
+    'rtsp://',
+    'tps://',
+    'ps://',
+    's://',
+    'tp://',
+    'p://',
+    '://',
+    'www.',
+    'i.imgur.com/'
+    );
+  REF_MARK_HEAD: array[0..16] of String = (
+    '',					// sssp://
+    '',					// https://
+    'h',				// ttps://
+    '',					// http://
+    'h',				// ttp://
+    '',					// ms-help://
+    '',					// ftp://
+    '',					// news://
+    '',					// rtsp://
+    'ht',				// tps://
+    'htt',			// ps://
+    'http',			// s://
+    'ht',				// tp://
+    'htt',			// p://
+    'https',		// ://
+    'https://',	// www.
+    'https://'	// i.imgur.com/
+    );
+  REF_MARK_LEN: array[0..16] of Integer = (
+    7,			// sssp://
+    8,			// https://
+    7,			// ttps://
+    7,			// http://
+    6,			// ttp://
+    10,			// ms-help://
+    6,			// ftp://
+    7,			// news://
+    7,			// rtsp://
+    6,			// tps://
+    5,			// ps://
+    4,			// s://
+    5,			// tp://
+    4,			// p://
+    3,			// ://
+    4,			// www.
+    0				// i.imgur.com/
+    );
 
 constructor THTMLCreate.Create;
 var
@@ -289,6 +340,7 @@ var
 	len : Integer;
   urllen: Integer;
   url5ch, ok: Boolean;
+  chk: SmallInt;
 begin
 	s := PRes.FBody;
 	PRes.FBody := '';
@@ -302,6 +354,13 @@ begin
 
 		for j := Low(REF_MARK) to High(REF_MARK) do begin
 			pos := AnsiStrPosEx(pp, pe, pREF_MARKSs[j], pREF_MARKSe[j]);
+			if (pos <> nil) and (REF_MARK_LEN[j] > 0) then begin
+      	chk := Ord(pos[REF_MARK_LEN[j]]);
+				if (not ((chk >= $30) and (chk <= $39))) and
+					 (not ((chk >= $41) and (chk <= $5A))) and
+					 (not ((chk >= $61) and (chk <= $7A))) then
+        	pos := nil;
+      end;
 			if pos <> nil then begin
 				tmp := pos - pp + 1;
 				idx := Min(tmp, idx);
