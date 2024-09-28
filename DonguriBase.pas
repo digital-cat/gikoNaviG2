@@ -312,6 +312,7 @@ type
     DspTypeRadioGroup: TRadioGroup;
     SpeedButtonReload: TSpeedButton;
     TimerReload: TTimer;
+    ImeDontCareCheckBox: TCheckBox;
     procedure TimerInitTimer(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCreate(Sender: TObject);
@@ -415,6 +416,7 @@ type
     procedure DspTypeRadioGroupClick(Sender: TObject);
     procedure TimerReloadTimer(Sender: TObject);
     procedure SpeedButtonReloadClick(Sender: TObject);
+    procedure ImeDontCareCheckBoxClick(Sender: TObject);
   private
     { Private declarations }
     FHunter: Boolean;
@@ -459,6 +461,7 @@ type
     function SetImageFromURL(image: TImage; url: String): Boolean;
     procedure EnableModButton(newVal, cost, button: TPanel);
     procedure SwitchItemTab(showTab: TTabSheet);
+    procedure SetImeMode;
 	protected
 		procedure CreateParams(var Params: TCreateParams); override;
   public
@@ -635,6 +638,8 @@ begin
 
   TaskBarCheckBox.Checked   := GikoSys.Setting.DonguriTaskBar;
 	ColorRadioGroup.ItemIndex := GikoSys.Setting.DonguriTheme;
+  ImeDontCareCheckBox.Checked := GikoSys.Setting.DonguriImeDontCare;
+  SetImeMode;
 	SetColor;
   CannonMenuCheckBox.Checked := GikoSys.Setting.DonguriMenuTop;
   ReCreateIndyCheckBox.Checked := GikoSys.Setting.DonguriReCreateIndy;
@@ -2152,6 +2157,29 @@ function TDonguriForm.GetCmbAmount(cmb: TComboBox): Integer;
 begin
 	Result := StrToIntDef(Trim(cmb.Text), 0);
 end;
+
+procedure TDonguriForm.ImeDontCareCheckBoxClick(Sender: TObject);
+begin
+	GikoSys.Setting.DonguriImeDontCare := ImeDontCareCheckBox.Checked;
+  SetImeMode;
+end;
+
+procedure TDonguriForm.SetImeMode;
+var
+	mode: TImeMode;
+begin
+  if GikoSys.Setting.DonguriImeDontCare then
+  	mode := imDontCare
+  else
+  	mode := imClose;
+
+	RPAmountComboBox.ImeMode := mode;
+  KYAmountComboBox.ImeMode := mode;
+  CBAmountComboBox.ImeMode := mode;
+  RIDEdit.ImeMode          := mode;
+  TAmountEdit.ImeMode      := mode;
+end;
+
 
 // 工作コストチェック
 procedure TDonguriForm.CraftPnlButtonClick(Sender: TObject);

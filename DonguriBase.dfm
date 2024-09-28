@@ -114,12 +114,16 @@ object DonguriForm: TDonguriForm
     Top = 28
     Width = 280
     Height = 510
-    ActivePage = TabSheetChest
+    ActivePage = TabSheetService
     Align = alClient
     TabOrder = 0
     OnDrawTab = PageControlDrawTab
     object TabSheetHome: TTabSheet
       Caption = #12507#12540#12512
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object PanelHome: TPanel
         Left = 0
         Top = 0
@@ -891,7 +895,7 @@ object DonguriForm: TDonguriForm
             Width = 85
             Height = 21
             Hint = #12495#12531#12479#12540'ID'#12414#12383#12399#35686#20633#21729'ID'
-            ImeMode = imDisable
+            ImeMode = imClose
             ParentShowHint = False
             ShowHint = True
             TabOrder = 1
@@ -902,7 +906,7 @@ object DonguriForm: TDonguriForm
             Width = 85
             Height = 21
             Hint = #23567#25968#28857#25968#12391#25351#23450#65288#12393#12435#12368#12426#27531#39640#12398#31684#22258#20869#65289
-            ImeMode = imDisable
+            ImeMode = imClose
             ParentShowHint = False
             ShowHint = True
             TabOrder = 2
@@ -1017,6 +1021,10 @@ object DonguriForm: TDonguriForm
     object TabSheetChest: TTabSheet
       Caption = #12450#12452#12486#12512
       ImageIndex = 2
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object BagTopPanel: TPanel
         Left = 0
         Top = 0
@@ -1351,6 +1359,10 @@ object DonguriForm: TDonguriForm
         object TabSheetWeapon: TTabSheet
           Caption = #27494#22120
           ImageIndex = 1
+          ExplicitLeft = 0
+          ExplicitTop = 0
+          ExplicitWidth = 0
+          ExplicitHeight = 0
           object WeaponTopPanel: TPanel
             Left = 0
             Top = 0
@@ -3169,7 +3181,7 @@ object DonguriForm: TDonguriForm
           Left = 12
           Top = 12
           Width = 245
-          Height = 244
+          Height = 268
           Caption = #12393#12435#12368#12426#12471#12473#12486#12512
           TabOrder = 0
           object Label8: TLabel
@@ -3255,10 +3267,19 @@ object DonguriForm: TDonguriForm
             TabStop = True
             OnClick = DspTypeRadioGroupClick
           end
+          object ImeDontCareCheckBox: TCheckBox
+            Left = 12
+            Top = 238
+            Width = 213
+            Height = 17
+            Caption = #12461#12540#20837#21147#38917#30446#12391'IME'#12434#21046#24481#12375#12394#12356'(&K)'
+            TabOrder = 5
+            OnClick = ImeDontCareCheckBoxClick
+          end
         end
         object CannonGroupBox: TGroupBox
           Left = 12
-          Top = 260
+          Top = 286
           Width = 245
           Height = 51
           Caption = #12393#12435#12368#12426#22823#30770
@@ -3296,7 +3317,7 @@ object DonguriForm: TDonguriForm
   object BagImageList: TImageList
     Left = 16
     Bitmap = {
-      494C01010A001400540110001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01010A0014005C0110001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000003000000001002000000000000030
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
