@@ -447,6 +447,9 @@ type
     DonguriLogoutMenu: TMenuItem;
     PATHINFOitest1: TMenuItem;
     dat5: TMenuItem;
+    N89: TMenuItem;
+    N90: TMenuItem;
+    N410: TMenuItem;
 		procedure FormCreate(Sender: TObject);
 		procedure FormDestroy(Sender: TObject);
 		procedure SaveSettingAll();
@@ -734,6 +737,8 @@ type
 //		procedure LoadPopupMenu();
 		procedure FavoriteTreeViewUCEdited(Sender: TObject; Node: TTntTreeNode;
 			var S: WideString);
+		//! ファイル拡張子抽出
+		function ExtractFileExt2(path: String): String;
 	protected
 		procedure CreateParams(var Params: TCreateParams); override;
 		procedure WndProc(var Message: TMessage); override;
@@ -878,6 +883,8 @@ type
 		procedure StoredTaskTray;
 		//! 同IDレスアンカー表示
 		procedure ShowSameIDAncher(const AID: String);
+		//! 同ワッチョイレスアンカー表示
+		procedure ShowSameWacchoiAncher(AResNo: Integer; ALow4: Boolean);
 		//! スレタイ表示更新
 		procedure UpdateThreadTitle;
 		//! フォームキャプション設定
@@ -2511,10 +2518,10 @@ begin
         Exit;
     end;
 	s := '';
-	Ext := AnsiLowerCase(ExtractFileExt(Text2));
+	Ext := AnsiLowerCase(ExtractFileExt2(Text2));
 //	if (Pos('http://', Text2) = 1) and (GikoSys.Setting.PreviewVisible) and
 	if ((Pos('http://', Text2) = 1) or (Pos('https://', Text2) = 1)) and (GikoSys.Setting.PreviewVisible) and
-			((Ext = '.jpg') or (Ext = '.jpeg') or (Ext = '.gif') or (Ext = '.png')) or
+			((Ext = '.jpg') or (Ext = '.jpeg') or (Ext = '.gif') or (Ext = '.png') or (Ext = '.jpg:large')) or
         (Pos('http://www.nicovideo.jp/watch/', Text2) = 1)  then begin
 		if FPreviewBrowser = nil then begin
 			FPreviewBrowser := TPreviewBrowser.Create(Self);
@@ -2642,6 +2649,27 @@ begin
             end;
         end;
 	end;
+end;
+
+//! ファイル拡張子抽出
+function TGikoForm.ExtractFileExt2(path: String): String;
+var
+	i: Integer;
+	len: Integer;
+	ext: PChar;
+	ppath: PChar;
+begin
+	Result := '';
+	ppath := PChar(path);
+	ext := nil;
+	len := Length(path);
+	for i := 1 to len do begin
+		if ppath^ = '.' then
+			ext := ppath;
+		Inc(ppath, 1);
+	end;
+	if ext <> nil then
+		Result := ext;
 end;
 
 procedure TGikoForm.SetEnabledCloseButton(Enabled: Boolean);
@@ -7452,6 +7480,36 @@ begin
         numbers.Free;
     end;
 end;
+
+//! 同ワッチョイレスアンカー表示
+procedure TGikoForm.ShowSameWacchoiAncher(AResNo: Integer; ALow4: Boolean);
+const
+	LIMIT = 20;
+var
+	numbers : TStringList;
+	limited : Integer;
+begin
+  numbers := TStringList.Create;
+  try
+		GikoSys.GetSameWacchoiRes(AResNo, FActiveContent.Thread, ALow4, numbers);
+		limited := LIMIT;
+		if not (GikoSys.Setting.LimitResCountMessage) then begin
+			limited := -1;
+		end else if (numbers.Count > LIMIT) then begin
+			if (GikoUtil.MsgBox(Handle,
+                  IntToStr(LIMIT) + '個以上ありますが、すべて表示しますか？',
+                  'IDポップアップ警告',
+                  MB_YESNO or MB_ICONQUESTION) = ID_YES) then begin
+				limited := -1;
+			end
+		end;
+		FActiveContent.IDAnchorPopup(
+							GikoSys.CreateResAnchor(numbers, FActiveContent.Thread, limited));
+	finally
+		numbers.Free;
+	end;
+end;
+
 //スレッド一覧を最大化してフォーカスを当てる
 procedure TGikoForm.SelectTimerTimer(Sender: TObject);
 begin

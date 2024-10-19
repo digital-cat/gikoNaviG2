@@ -539,20 +539,20 @@ object GikoForm: TGikoForm
                 Control = BrowserToolBar
                 ImageIndex = -1
                 MinHeight = 18
-                Width = 565
+                Width = 568
               end
               item
                 Break = False
                 Control = BrowserNameToolBar
                 ImageIndex = -1
                 MinHeight = 18
-                Width = 54
+                Width = 47
               end
               item
                 Control = BrowserTabToolBar
                 ImageIndex = -1
                 MinHeight = 20
-                Width = 621
+                Width = 619
               end>
             EdgeBorders = [ebLeft, ebTop, ebRight]
             EdgeInner = esLowered
@@ -562,7 +562,7 @@ object GikoForm: TGikoForm
             object BrowserToolBar: TToolBar
               Left = 9
               Top = 0
-              Width = 552
+              Width = 555
               Height = 18
               AutoSize = True
               ButtonWidth = 24
@@ -577,9 +577,9 @@ object GikoForm: TGikoForm
               OnResize = BrowserToolBarResize
             end
             object BrowserNameToolBar: TToolBar
-              Left = 576
+              Left = 579
               Top = 0
-              Width = 45
+              Width = 42
               Height = 18
               AutoSize = True
               ButtonHeight = 16
@@ -830,7 +830,7 @@ object GikoForm: TGikoForm
             ImageIndex = -1
             MinHeight = 22
             Visible = False
-            Width = 419
+            Width = 422
           end
           item
             Break = False
@@ -838,7 +838,7 @@ object GikoForm: TGikoForm
             ImageIndex = -1
             MinHeight = 22
             Text = #12450#12489#12524#12473
-            Width = 310
+            Width = 307
           end
           item
             Control = LinkToolBar
@@ -871,7 +871,7 @@ object GikoForm: TGikoForm
         object StdToolBar: TToolBar
           Left = 9
           Top = 20
-          Width = 406
+          Width = 409
           Height = 22
           AutoSize = True
           ButtonWidth = 25
@@ -887,9 +887,9 @@ object GikoForm: TGikoForm
           OnResize = MenuToolBarResize
         end
         object AddressToolBar: TToolBar
-          Left = 474
+          Left = 477
           Top = 20
-          Width = 261
+          Width = 258
           Height = 22
           ButtonWidth = 51
           HotImages = HotToobarImageList
@@ -942,7 +942,7 @@ object GikoForm: TGikoForm
     Left = 4
     Top = 212
     Bitmap = {
-      494C0101130018009C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010113001800A00010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000005000000001002000000000000050
       0000000000000000000000000000000000000000000000000000848484008484
       8400848484008484840084848400848484008484840084848400848484008484
@@ -1615,7 +1615,7 @@ object GikoForm: TGikoForm
     Left = 36
     Top = 212
     Bitmap = {
-      494C01010F0013009C0020002000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01010F001300A00020002000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000800000008000000001002000000000000000
       0100000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -3738,7 +3738,7 @@ object GikoForm: TGikoForm
     Left = 4
     Top = 244
     Bitmap = {
-      494C01013F0080009C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01013F008000A00010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000000001000001002000000000000000
       0100000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -5861,7 +5861,7 @@ object GikoForm: TGikoForm
     Left = 4
     Top = 276
     Bitmap = {
-      494C0101030004009C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010103000400A00010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000001000000001002000000000000010
       0000000000000000000000000000000000008400840084008400000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -6006,7 +6006,7 @@ object GikoForm: TGikoForm
     Left = 36
     Top = 276
     Bitmap = {
-      494C0101040009009C0020000C00FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010104000900A00020000C00FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000800000001800000001002000000000000030
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -6414,7 +6414,7 @@ object GikoForm: TGikoForm
     Left = 4
     Top = 308
     Bitmap = {
-      494C0101040009009C000B001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010104000900A0000B001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       00000000000036000000280000002C0000002000000001002000000000000016
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -6609,7 +6609,7 @@ object GikoForm: TGikoForm
     Left = 4
     Top = 340
     Bitmap = {
-      494C0101020004009C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010102000400A00010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000001000000001002000000000000010
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -7625,6 +7625,15 @@ object GikoForm: TGikoForm
     end
     object N83: TMenuItem
       Action = GikoDM.DereferenceResAction
+    end
+    object N89: TMenuItem
+      Caption = #21516#12527#12483#12481#12519#12452#12408#12398#12524#12473#12450#12531#12459#12540#34920#31034
+      object N90: TMenuItem
+        Action = GikoDM.SameWcAllResAnchorAction
+      end
+      object N410: TMenuItem
+        Action = GikoDM.SameWcLast4ResAnchorAction
+      end
     end
     object N85: TMenuItem
       Caption = '-'
