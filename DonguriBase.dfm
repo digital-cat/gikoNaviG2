@@ -114,16 +114,12 @@ object DonguriForm: TDonguriForm
     Top = 28
     Width = 280
     Height = 510
-    ActivePage = TabSheetService
+    ActivePage = TabSheetSetting
     Align = alClient
     TabOrder = 0
     OnDrawTab = PageControlDrawTab
     object TabSheetHome: TTabSheet
       Caption = #12507#12540#12512
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object PanelHome: TPanel
         Left = 0
         Top = 0
@@ -1021,10 +1017,6 @@ object DonguriForm: TDonguriForm
     object TabSheetChest: TTabSheet
       Caption = #12450#12452#12486#12512
       ImageIndex = 2
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object BagTopPanel: TPanel
         Left = 0
         Top = 0
@@ -1128,10 +1120,6 @@ object DonguriForm: TDonguriForm
         OnDrawTab = PageControlItemBagDrawTab
         object TabSheetUsing: TTabSheet
           Caption = #35013#20633#20013
-          ExplicitLeft = 0
-          ExplicitTop = 0
-          ExplicitWidth = 0
-          ExplicitHeight = 0
           object UsingPanel: TPanel
             Left = 0
             Top = 0
@@ -1359,10 +1347,6 @@ object DonguriForm: TDonguriForm
         object TabSheetWeapon: TTabSheet
           Caption = #27494#22120
           ImageIndex = 1
-          ExplicitLeft = 0
-          ExplicitTop = 0
-          ExplicitWidth = 0
-          ExplicitHeight = 0
           object WeaponTopPanel: TPanel
             Left = 0
             Top = 0
@@ -1528,10 +1512,6 @@ object DonguriForm: TDonguriForm
         object TabSheetArmor: TTabSheet
           Caption = #38450#20855
           ImageIndex = 2
-          ExplicitLeft = 0
-          ExplicitTop = 0
-          ExplicitWidth = 0
-          ExplicitHeight = 0
           object ArmorTopPanel: TPanel
             Left = 0
             Top = 0
@@ -1699,10 +1679,6 @@ object DonguriForm: TDonguriForm
     object TabSheetModW: TTabSheet
       Caption = #27494#22120#24375#21270
       ImageIndex = 5
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object ModWPanel: TPanel
         Left = 0
         Top = 0
@@ -2263,10 +2239,6 @@ object DonguriForm: TDonguriForm
     object TabSheetModA: TTabSheet
       Caption = #38450#20855#24375#21270
       ImageIndex = 6
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object ModAPanel: TPanel
         Left = 0
         Top = 0
@@ -2827,10 +2799,6 @@ object DonguriForm: TDonguriForm
     object TabSheetLink: TTabSheet
       Caption = #12522#12531#12463
       ImageIndex = 3
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object LinkScrollBox: TScrollBox
         Left = 0
         Top = 0
@@ -3164,10 +3132,6 @@ object DonguriForm: TDonguriForm
     object TabSheetSetting: TTabSheet
       Caption = #35373#23450
       ImageIndex = 4
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object PanelSetting: TPanel
         Left = 0
         Top = 0
@@ -3177,11 +3141,20 @@ object DonguriForm: TDonguriForm
         BevelOuter = bvNone
         ParentColor = True
         TabOrder = 0
+        object Label73: TLabel
+          Left = 18
+          Top = 410
+          Width = 230
+          Height = 47
+          AutoSize = False
+          Caption = #12495#12531#12479#12540#12414#12383#12399#30331#37682#28168#12415#35686#20633#21729#12392#12375#12390#12525#12464#12452#12531#12377#12427#22580#21512#12399#12289#12458#12503#12471#12519#12531#30011#38754#12398#65339#65298#12385#12419#12435#12397#12427#65341#12506#12540#12472#12395#12450#12459#12454#12531#12488#12434#35373#23450#12375#12390#12367#12384#12373#12356#12290
+          WordWrap = True
+        end
         object SystemGroupBox: TGroupBox
           Left = 12
           Top = 12
           Width = 245
-          Height = 268
+          Height = 269
           Caption = #12393#12435#12368#12426#12471#12473#12486#12512
           TabOrder = 0
           object Label8: TLabel
@@ -3279,7 +3252,7 @@ object DonguriForm: TDonguriForm
         end
         object CannonGroupBox: TGroupBox
           Left = 12
-          Top = 286
+          Top = 285
           Width = 245
           Height = 51
           Caption = #12393#12435#12368#12426#22823#30770
@@ -3317,7 +3290,7 @@ object DonguriForm: TDonguriForm
   object BagImageList: TImageList
     Left = 16
     Bitmap = {
-      494C01010A0014005C0110001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01010A001400640110001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000003000000001002000000000000030
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000

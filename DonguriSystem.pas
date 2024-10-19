@@ -16,7 +16,22 @@ type
   TDonguriDsplayType = (dstOn, dstOff, dstUnknown);
   TModifyWeapon = (mdwDmgMin, mdwDmgMax, mdwSpeed,  mdwCrit, mdwDmgMinDwn, mdwDmgMaxDwn, mdwSpeedDwn,  mdwCritDwn);
   TModifyArmor  = (mdaDefMin, mdaDefMax, mdaWeight, mdaCrit, mdaDefMinDwn, mdaDefMaxDwn, mdaWeightDwn, mdaCritDwn);
+  TLoginMode = (
+    loginUnknown  = 0,
+    loginHunter   = 1,
+    loginGuardReg = 2,
+    loginGuard    = 3
+  );
 
+const
+  LOGIN_MODE: array[0..3] of String = (
+    '不明',
+    'ハンター',
+    '警備員●',
+    '警備員○'
+  );
+
+type
 	TDonguriHome = class(TObject)
   protected
     function GetProgressPosition(var html: String; const kws: String; const kwe: String): Integer;
@@ -24,6 +39,7 @@ type
 												const pbs: String; const pbe: String; var Sel: Boolean; var Value: Integer; var Rate: Integer);
   public
   	Hunter:     Boolean;
+    LoginMode:  TLoginMode;
     UserMode:   String;
     UserID:     String;
     UserName:   String;
@@ -2169,6 +2185,7 @@ end;
 procedure TDonguriHome.Clear;
 begin
 	Hunter     := False;
+  LoginMode  := loginUnknown;
   UserMode   := '';
   UserID     := '';
   UserName   := '';
@@ -2274,22 +2291,12 @@ const
   TAG_DST_S = '<a href="https://donguri.5ch.net/setting/displaytype">ハンターとして識別する：';
   TAG_DST_E = '</a>';
 
-  MODE_NAME: array[0..6] of String = (
-    '不明',
-    'ハンター',
-    'ハンター●',
-    'ハンター○',
-    '警備員',
-    '警備員●',
-    '警備員○'
-  );
   COL_NAME_ACRN : String = '　どんぐり残高';
   COL_NAME_SEED : String = '　種子残高';
 
 var
   tmp: String;
   tm2: String;
-  mode: Integer;
   err: Boolean;
   auto: Boolean;
 begin
@@ -2306,17 +2313,17 @@ begin
       UserName := Trim(TrimTag(tmp));
 
   	tmp := '';
-    mode := 0;
-    if      DonguriSystem.Extract(TAG_HID_S, TAG_HID_E, html, tmp) then mode := 1
-    else if DonguriSystem.Extract(TAG_HID1S, TAG_HID_E, html, tmp) then mode := 2
-    else if DonguriSystem.Extract(TAG_HID2S, TAG_HID_E, html, tmp) then mode := 3
-    else if DonguriSystem.Extract(TAG_GID_S, TAG_GID_E, html, tmp) then mode := 4
-    else if DonguriSystem.Extract(TAG_GID1S, TAG_GID_E, html, tmp) then mode := 5
-    else if DonguriSystem.Extract(TAG_GID2S, TAG_GID_E, html, tmp) then mode := 6;
+		LoginMode := loginUnknown;
+    if      DonguriSystem.Extract(TAG_HID_S, TAG_HID_E, html, tmp) then LoginMode := loginHunter
+    else if DonguriSystem.Extract(TAG_HID1S, TAG_HID_E, html, tmp) then LoginMode := loginHunter
+    else if DonguriSystem.Extract(TAG_HID2S, TAG_HID_E, html, tmp) then LoginMode := loginHunter
+    else if DonguriSystem.Extract(TAG_GID_S, TAG_GID_E, html, tmp) then LoginMode := loginGuard
+    else if DonguriSystem.Extract(TAG_GID1S, TAG_GID_E, html, tmp) then LoginMode := loginGuardReg
+    else if DonguriSystem.Extract(TAG_GID2S, TAG_GID_E, html, tmp) then LoginMode := loginGuard;
 
-		Hunter := (mode >= 1) and (mode <= 3);
+		Hunter := (LoginMode = loginHunter);
 		UserID := Trim(tmp);
-		UserMode := MODE_NAME[mode];
+		UserMode := LOGIN_MODE[Integer(LoginMode)];
 
     if Extract(TAG_DNG_S, TAG_DNG_E, html, tmp) then begin
       Acorntitle := COL_NAME_ACRN;

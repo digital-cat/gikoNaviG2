@@ -313,6 +313,7 @@ type
     SpeedButtonReload: TSpeedButton;
     TimerReload: TTimer;
     ImeDontCareCheckBox: TCheckBox;
+    Label73: TLabel;
     procedure TimerInitTimer(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCreate(Sender: TObject);
@@ -918,6 +919,14 @@ begin
 
     FHunter             := home.Hunter;
 		ModePanel.Caption   := home.UserMode;
+    case home.LoginMode of
+      loginUnknown:  ModePanel.Hint := '';
+      loginHunter:   ModePanel.Hint := GikoSys.Setting.UserID;
+      loginGuardReg: ModePanel.Hint := GikoSys.Setting.DonguriMail;
+      loginGuard:    ModePanel.Hint := '登録メールアドレスでログインしていません。';
+    end;
+		ModePanel.ShowHint := (home.LoginMode <> loginUnknown);
+
 		EditName.Text       := home.UserName;
 		EditID.Text         := home.UserID;
 		EditLevel.Text      := home.Level;
