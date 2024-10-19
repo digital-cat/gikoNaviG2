@@ -162,12 +162,15 @@ end;
 \param URL プレビューするイメージファイル
 }
 function TPreviewBrowser.makeHTML(const URL, Host, Document : String): String;
+const
+  HDR_NO_CACHE: String = '<meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Cache-Control" content="no-cache"><meta http-equiv="Expires" content="0">'#13#10;
 var
     point :TPoint;
     rect  :TRect;
 begin
     if (Pos('https://www.nicovideo.jp/watch/', URL) <> 1) then begin
     	Result := '<html><head>'#13#10
+        + HDR_NO_CACHE
 				+ '<SCRIPT>'#13#10
 				+ 'function init() {'#13#10
 				+ '	if ((document.body.clientHeight >= Image1.height) && (document.body.clientWidth >= Image1.width)) {'#13#10
@@ -200,6 +203,7 @@ begin
         rect := GetWindowRect(point);
 
         Result := '<html><head>'#13#10
+				        + HDR_NO_CACHE
                 + '<SCRIPT>'#13#10
                 + 'function init() {'#13#10
                 + '	Message.style.display = "none";'#13#10
