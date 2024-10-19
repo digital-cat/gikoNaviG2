@@ -118,9 +118,10 @@ const
 	CLOSE_TAGAL = '</a>';
 	CLOSE_TAGAU = '</A>';
 	RES_REF			= '&gt;&gt;';
-  REF_MARK: array[0..16] of string = (
+  REF_MARK: array[0..18] of string = (
     'sssp://',
     'https://',
+    'ht&#116;&#112;s://',
     'ttps://',
     'http://',
     'ttp://',
@@ -135,11 +136,13 @@ const
     'p://',
     '://',
     'www.',
-    'i.imgur.com/'
+    'i.imgur.com/',
+    'x.com/'
     );
-  REF_MARK_HEAD: array[0..16] of String = (
+  REF_MARK_HEAD: array[0..18] of String = (
     '',					// sssp://
     '',					// https://
+    '',					// ht&#116;&#112;s://
     'h',				// ttps://
     '',					// http://
     'h',				// ttp://
@@ -154,11 +157,13 @@ const
     'htt',			// p://
     'https',		// ://
     'https://',	// www.
-    'https://'	// i.imgur.com/
+    'https://',	// i.imgur.com/
+    'https://'	// x.com/
     );
-  REF_MARK_LEN: array[0..16] of Integer = (
+  REF_MARK_LEN: array[0..18] of Integer = (
     7,			// sssp://
     8,			// https://
+    18,			// ht&#116;&#112;s://
     7,			// ttps://
     7,			// http://
     6,			// ttp://
@@ -173,7 +178,8 @@ const
     4,			// p://
     3,			// ://
     4,			// www.
-    0				// i.imgur.com/
+    0,			// i.imgur.com/
+    0				// x.com/
     );
 
 constructor THTMLCreate.Create;
@@ -358,7 +364,8 @@ begin
       	chk := Ord(pos[REF_MARK_LEN[j]]);
 				if (not ((chk >= $30) and (chk <= $39))) and
 					 (not ((chk >= $41) and (chk <= $5A))) and
-					 (not ((chk >= $61) and (chk <= $7A))) then
+					 (not ((chk >= $61) and (chk <= $7A))) and
+           (chk <> $26) then		// 文字参照で規制を回避するパターンが多いから除外
         	pos := nil;
       end;
 			if pos <> nil then begin
@@ -445,6 +452,8 @@ begin
     else if (AnsiPos('.jpg', Url) = urllen - 3) then
         Result := True
     else if (AnsiPos('.jpeg', Url) = urllen - 4) then
+        Result := True
+    else if (AnsiPos('.jpg:large', Url) = urllen - 9) then
         Result := True
     else
         Result := False;
