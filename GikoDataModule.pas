@@ -272,6 +272,8 @@ type
     DonguriAuthAction: TAction;
     konoURLitestAction: TAction;
     KoreDatCopy: TAction;
+    SameWcAllResAnchorAction: TAction;
+    SameWcLast4ResAnchorAction: TAction;
 	procedure EditNGActionExecute(Sender: TObject);
 	procedure ReloadActionExecute(Sender: TObject);
 	procedure GoFowardActionExecute(Sender: TObject);
@@ -510,6 +512,8 @@ type
     procedure konoURLitestActionExecute(Sender: TObject);
     procedure konoURLitestActionUpdate(Sender: TObject);
     procedure KoreDatCopyExecute(Sender: TObject);
+    procedure SameWcAllResAnchorActionExecute(Sender: TObject);
+    procedure SameWcLast4ResAnchorActionExecute(Sender: TObject);
   private
 	{ Private 宣言 }
 	procedure ClearResFilter;
@@ -2492,7 +2496,7 @@ begin
 end;
 
 // *************************************************************************
-//! 選択したレスをコピーする
+//! 同IDへのレスアンカー表示
 // *************************************************************************
 procedure TGikoDM.SameIDResAnchorActionExecute(Sender: TObject);
 const
@@ -2512,6 +2516,35 @@ begin
         GikoForm.ShowSameIDAncher(AID);
     end;
 end;
+
+// *************************************************************************
+//! ワッチョイ全体が同じレスのアンカー表示
+// *************************************************************************
+procedure TGikoDM.SameWcAllResAnchorActionExecute(Sender: TObject);
+var
+	No : Integer;
+begin
+	No := GikoForm.KokoPopupMenu.Tag;
+	if (No < 1) or
+		 (GikoForm.KokoPopupThreadItem = nil) then
+		Exit;
+	GikoForm.ShowSameWacchoiAncher(No, False);
+end;
+
+// *************************************************************************
+//! ワッチョイ下4桁が同じレスのアンカー表示
+// *************************************************************************
+procedure TGikoDM.SameWcLast4ResAnchorActionExecute(Sender: TObject);
+var
+	No : Integer;
+begin
+	No := GikoForm.KokoPopupMenu.Tag;
+	if (No < 1) or
+		 (GikoForm.KokoPopupThreadItem = nil) then
+		Exit;
+	GikoForm.ShowSameWacchoiAncher(No, True);
+end;
+
 // *************************************************************************
 //! このレスあぼ～ん　（通常）
 // *************************************************************************

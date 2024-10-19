@@ -109,6 +109,16 @@ type
     FileVer: String;		//! ファイルバージョン番号		1.75.0.887
   end;
 
+	//! ワッチョイレコード
+	TWchRec = record
+		FNName: String;		// 妙なニックネーム
+		FHigh4: String;		// 上4桁（IPアドレス）
+		FLow4: String;		// 下4桁（User-Agent）
+	end;
+
+	//! ワッチョイレコードへのポインタ
+	PWchRec = ^TWchRec;
+
 	TGikoSys = class(TObject)
 	private
 		{ Private 宣言 }
@@ -191,6 +201,7 @@ type
 		function DateTimeToInt(ADate: TDateTime): Int64;
 
 		function ReadThreadFile(FileName: string; Line: Integer): string;
+		procedure ReadThreadFileAll(FileName: string; var Threads: TStringList);
 
 		procedure MenuFont(Font: TFont);
 
@@ -233,6 +244,10 @@ type
 		procedure GetSameIDRes(AIDNum : Integer; ThreadItem: TThreadItem;var body: TStringList); overload;
     function GetResID(AIDNum: Integer; ThreadItem: TThreadItem): String;
     function ExtructResID(ADateStr: String): String;
+
+		procedure GetSameWacchoiRes(AResNo: Integer; ThreadItem: TThreadItem; ALow4: Boolean; var ANumbers: TStringList);
+    function ExtructWacchoi(AName: String; PWch: PWchRec): Boolean;
+
 		//! 単語解析
 		procedure SpamCountWord( const text : string; wordCount : TWordCount );
 		//! 学習クリア
@@ -1445,6 +1460,17 @@ begin
 		finally
 			fileTmp.Free;
 		end;
+	end;
+end;
+
+procedure TGikoSys.ReadThreadFileAll(FileName: string; var Threads: TStringList);
+begin
+	if FileExists(FileName) then begin
+    try
+      Threads.LoadFromFile( FileName );
+    except
+      //on EFOpenError do Result := '';
+    end;
 	end;
 end;
 
@@ -3165,6 +3191,114 @@ begin
         end;
     end;
 end;
+
+
+function TGikoSys.ExtructWacchoi(AName: String; PWch: PWchRec): Boolean;
+const
+  WC_S: String = '</b>(';
+  WC_E: String = ')<b>';
+var
+	ps, pe: PChar;
+	pmss, pmse: PChar;
+	pmes, pmee: PChar;
+  poss, pose: PChar;
+	len, lens: Integer;
+  idx: Integer;
+  wch: String;
+  spc: Integer;
+begin
+	Result := False;
+  // ワッチョイ目印
+  lens := Length(WC_S);
+  pmss := PChar(WC_S);
+  pmse := pmss + lens;
+  pmes := PChar(WC_E);
+  pmee := pmes + Length(WC_E);
+  // 名前
+  ps := PChar(AName);
+  pe := ps + Length(AName);
+  // 開始位置
+  poss := AnsiStrPosEx(ps, pe, pmss, pmse);
+  if poss = nil then
+    Exit;
+  poss := poss + lens;
+  // 終了位置
+  pose := AnsiStrPosEx(poss, pe, pmes, pmee);
+  if (pose = nil) or (poss = pose) then
+    Exit;
+
+  idx := poss - ps;
+  len := pose - poss;
+  if len < 12 then	// 最低12文字？
+    Exit;
+
+  // ワッチョイ切り出し
+  wch := Copy(AName, idx + 1, len);
+  spc := Pos(' ', wch);
+  if (spc < 2) or (spc + 9 > len) or (wch[spc + 5] <> '-') then
+  	Exit;
+	PWch.FNName := Copy(wch, 1, spc - 1);
+  PWch.FHigh4 := Copy(wch, spc + 1, 4);
+  PWch.FLow4  := Copy(wch, spc + 6, 4);
+	Result := True;
+end;
+
+procedure TGikoSys.GetSameWacchoiRes(AResNo: Integer; ThreadItem: TThreadItem; ALow4: Boolean; var ANumbers: TStringList);
+var
+	Res: TResRec;
+	//boardPlugIn: TBoardPlugIn;
+  wch: TWchRec;
+  wchChk: TWchRec;
+  threads: TStringList;
+	i: Integer;
+begin
+	if (ThreadItem = nil) or
+  	 (not ThreadItem.IsLogFile) or
+     (AResNo < 1) or
+     (AResNo > ThreadItem.Count) then
+		Exit;
+
+  if ThreadItem.ParentBoard.IsBoardPlugInAvailable then begin
+    //===== プラグインによる表示
+    //boardPlugIn := ThreadItem.ParentBoard.BoardPlugIn;
+    //THTMLCreate.DivideStrLine(boardPlugIn.GetDat(DWORD( threadItem ), AResNo), @Res);
+    Exit;	// 取りあえず５ちゃんのみ
+  end;
+
+  threads := TStringList.Create;
+  try
+    ReadThreadFileAll(ThreadItem.GetThreadFileName, threads);
+    if threads.Count < AResNo then
+      Exit;	// 読み込んだレスがおかしい
+
+    // 指定のレス
+    THTMLCreate.DivideStrLine(threads.Strings[AResNo - 1], @Res);
+    // ワッチョイ切り出し
+    if not ExtructWacchoi(Res.FName, @wch) then
+      Exit;	// ワッチョイなし
+
+    // 他の全レスチェック
+    for i := 1 to threads.Count do begin
+      THTMLCreate.DivideStrLine(threads.Strings[i - 1], @Res);
+      if ExtructWacchoi(Res.FName, @wchChk) then begin
+        if ALow4 then begin
+          // 下4桁のみ一致
+          if wch.FLow4 = wchChk.FLow4 then
+            ANumbers.Add(IntToStr(i));
+        end else begin
+          // 全体一致
+          if (wch.FNName = wchChk.FNName) and
+             (wch.FHigh4 = wchChk.FHigh4) and
+             (wch.FLow4  = wchChk.FLow4) then
+            ANumbers.Add(IntToStr(i));
+        end;
+      end;
+    end;
+  finally
+    threads.Free;
+  end;
+end;
+
 
 {!
 \brief スパム:語数をカウント
