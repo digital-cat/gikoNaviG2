@@ -1,5 +1,7 @@
 unit Round;
 
+{$DEFINE LOOSENUP}
+
 interface
 
 uses
@@ -24,7 +26,7 @@ type
 	AllCancelButton: TButton;
 	RoundDeleteButton: TButton;
 	Panel4: TPanel;
-	Button1: TButton;
+    ButtonCancel: TButton;
 	RoundButton: TButton;
 	StatusBar1: TStatusBar;
 	RoundListView: TListView;
@@ -42,13 +44,18 @@ type
       Item2: TListItem; Data: Integer; var Compare: Integer);
     procedure RoundListViewColumnRightClick(Sender: TObject;
       Column: TListColumn; Point: TPoint);
+    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+    procedure ButtonCancelClick(Sender: TObject);
 	private
 		{ Private 宣言 }
 		FColumnToSort: Integer;
 		FSortOrder:	Boolean;
+    FProcessing: Boolean;
+
 		function GetRoundCount: Integer;
 		procedure SetRoundItem(RoundName: string);
 		function CompareTime(Time1: TDateTime; Time2: TDateTime; MarginMin: Integer): Boolean;
+    procedure EnableControls;
 	public
 		{ Public 宣言 }
 	end;
@@ -62,6 +69,13 @@ uses
 {$R *.DFM}
 
 procedure TRoundDialog.RoundButtonClick(Sender: TObject);
+const
+{$IFDEF LOOSENUP}
+	ROUND_INTERVAL: Integer = 10;	// 制限が弱い場合：未ログインでの巡回間隔分数
+{$ELSE}
+  TARGET_MAX: Integer = 100;		// 制限が強い場合：未ログインでの巡回件数上限
+{$ENDIF}
+  LOGIN_NAME: String = 'UPLIFT';
 var
 	i: Integer;
 	cnt: Integer;
@@ -77,7 +91,7 @@ begin
 {$IFNDEF LOOSENUP}	//巡回制限を緩めることにしてたら{$ELSE}の方を使う
 	if not GikoDM.LoginAction.Checked then begin
 		if GikoSys.Setting.UserID <> '' then begin
-			msg := 'ログインしないと巡回は出来ません' + #13#10
+			msg := LOGIN_NAME + 'にログインしないと巡回は出来ません' + #13#10
 				+ '今ログインしますか';
 			if MsgBox(Handle, msg, '確認', MB_YESNO or MB_ICONQUESTION or MB_DEFBUTTON2) <> IDYES then begin
 				Exit;
@@ -85,27 +99,28 @@ begin
 			GikoDM.LoginAction.Execute;
 		end;
 		if not GikoDM.LoginAction.Checked then begin
-			msg := 'ログインしないと巡回は出来ません';
+			msg := LOGIN_NAME + 'にログインしないと巡回は出来ません';
 			MsgBox(Handle, msg, 'エラー', MB_OK or MB_ICONSTOP);
 			Exit;
 		end;
 	end;
 {$ELSE}
 	//規制を緩めたほうは、スレ一覧のみ巡回可能
-	if not GikoDM.LoginAction.Checked then begin
+{	if not GikoDM.LoginAction.Checked then begin
 		if GikoSys.Setting.UserID <> '' then begin
-			msg := 'ログインしないとスレッドの巡回は出来ません' + #13#10
+			msg := LOGIN_NAME + 'にログインしないとスレッドの巡回は出来ません' + #13#10
 				+ '今ログインしますか';
 			if MsgBox(Handle, msg, '確認', MB_YESNO or MB_ICONQUESTION or MB_DEFBUTTON2) <> IDYES then begin
 				Exit;
 			end;
 			GikoDM.LoginAction.Execute;
 		end;
-	end;
-	//●なし巡回は15分以上の間隔を必要とする
+	end; }
+	//●なし巡回は一定分数以上の間隔を必要とする
 	if not GikoDM.LoginAction.Checked then begin
-		if CompareTime(GikoForm.LastRoundTime, Now, 30) then begin
-			msg := '一度巡回すると３０分間巡回は出来ません';
+		if CompareTime(GikoForm.LastRoundTime, Now, ROUND_INTERVAL) then begin
+			msg := Format('%s未ログインの場合、前回の巡回から%d分間待つ必要があります',
+      							[LOGIN_NAME, ROUND_INTERVAL]);
 			MsgBox(Handle, msg, 'エラー', MB_OK or MB_ICONSTOP);
 			Exit;
 		end;
@@ -123,49 +138,58 @@ begin
 {$IFNDEF LOOSENUP}
 	//●なし巡回は１度に100個までにする
 	if not GikoDM.LoginAction.Checked then begin
-		if cnt > 100 then begin
-			msg := '１００個以上は一度に巡回できません';
+		if cnt > TARGET_MAX then begin
+			msg := Format('%s未ログインの場合、%d件までしか巡回できません',
+      							[LOGIN_NAME, TARGET_MAX]);
 			MsgBox(Handle, msg, 'エラー', MB_OK or MB_ICONSTOP);
 			Exit;
 		end;
 	end;
 {$ENDIF}
 
-	//巡回に登録されている板の数だけまわす
-	for i := 0 to RoundList.Count[grtBoard] - 1 do begin
-		RoundItem := RoundList.Items[i, grtBoard];
-		//巡回のチェックがついていなければスルー
-		if not RoundItem.BoolData then Continue;
-		//確実に板のはずだけどチェック
-		if RoundItem.RoundType = grtBoard then begin
-			Board := TBoard( RoundItem.Item );
-			//Boardのオブジェクトが存在すれば、DLする
-			if Board <> nil then begin
-				if not Board.IsThreadDatRead then
-					GikoSys.ReadSubjectFile(Board);
-				GikoForm.DownloadList(Board);
-			end;
-		end;
-	end;
-	for i := 0 to RoundList.Count[grtItem] - 1 do begin
-		RoundItem := RoundList.Items[i, grtItem];
-		//巡回のチェックがついていなければスルー
-		if not RoundItem.BoolData then Continue;
+	FProcessing := True;
+  EnableControls;
+  try
+    //巡回に登録されている板の数だけまわす
+    for i := 0 to RoundList.Count[grtBoard] - 1 do begin
+      RoundItem := RoundList.Items[i, grtBoard];
+      //巡回のチェックがついていなければスルー
+      if not RoundItem.BoolData then Continue;
+      //確実に板のはずだけどチェック
+      if RoundItem.RoundType = grtBoard then begin
+        Board := TBoard( RoundItem.Item );
+        //Boardのオブジェクトが存在すれば、DLする
+        if Board <> nil then begin
+          if not Board.IsThreadDatRead then
+            GikoSys.ReadSubjectFile(Board);
+          GikoForm.DownloadList(Board);
+        end;
+      end;
+    end;
+    for i := 0 to RoundList.Count[grtItem] - 1 do begin
+      RoundItem := RoundList.Items[i, grtItem];
+      //巡回のチェックがついていなければスルー
+      if not RoundItem.BoolData then Continue;
 {$IFDEF LOOSENUP}
-		//●なし巡回はスレッドはできないことにする
-		if not GikoDM.LoginAction.Checked then begin
-			msg := 'ログインしないとスレッドの巡回はできません。';
-			MsgBox(Handle, msg, 'エラー', MB_OK or MB_ICONSTOP);
-			break;
-		end;
+      //●なし巡回はスレッドはできないことにする
+{      if not GikoDM.LoginAction.Checked then begin
+        msg := LOGIN_NAME + 'にログインしないとスレッドの巡回はできません。';
+        MsgBox(Handle, msg, 'エラー', MB_OK or MB_ICONSTOP);
+        break;
+      end; }
 {$ENDIF}
-		if RoundItem.RoundType = grtItem then begin
-			ThreadItem := TThreadItem( RoundItem.Item );
-			if ThreadItem <> nil then begin
-				GikoForm.DownloadContent(ThreadItem);
-			end;
-		end;
-	end;
+      if RoundItem.RoundType = grtItem then begin
+        ThreadItem := TThreadItem( RoundItem.Item );
+        if ThreadItem <> nil then begin
+          GikoForm.DownloadContent(ThreadItem);
+        end;
+      end;
+    end;
+  finally
+		FProcessing := False;
+	  EnableControls;
+  end;
+
 	GikoForm.LastRoundTime := Now;
 	Close;
 end;
@@ -198,6 +222,29 @@ begin
 	Result := Time2 < d;
 end;
 
+procedure TRoundDialog.EnableControls;
+begin
+	RoundNameComboBox.Enabled := not FProcessing;
+  RoundListView.Enabled     := not FProcessing;
+  AllSelectButton.Enabled   := not FProcessing;
+  AllCancelButton.Enabled   := not FProcessing;
+  RoundDeleteButton.Enabled := not FProcessing;
+	RoundButton.Enabled       := not FProcessing;
+  ButtonCancel.Enabled      := not FProcessing;
+end;
+
+procedure TRoundDialog.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+begin
+  if FProcessing then
+		CanClose := False;
+end;
+
+procedure TRoundDialog.ButtonCancelClick(Sender: TObject);
+begin
+  if not FProcessing then
+	  ModalResult := mrCancel;
+end;
+
 procedure TRoundDialog.FormCreate(Sender: TObject);
 var
 	i: Integer;
@@ -211,6 +258,8 @@ begin
         Left := (Screen.Width - Width) div 2;
         Top := (Screen.Height - Height) div 2;
     end;
+
+  FProcessing := False;
 
 	//現在の巡回データをファイルアウトする
 	RoundList.SaveRoundFile;
