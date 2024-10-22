@@ -885,6 +885,8 @@ type
 		procedure ShowSameIDAncher(const AID: String);
 		//! 同ワッチョイレスアンカー表示
 		procedure ShowSameWacchoiAncher(AResNo: Integer; ALow4: Boolean);
+		//! 同ワッチョイレスアンカー表示
+		procedure ShowSameWacchoiAncher2(AInnerText: String; ALow4: Boolean);
 		//! スレタイ表示更新
 		procedure UpdateThreadTitle;
 		//! フォームキャプション設定
@@ -7448,6 +7450,9 @@ begin
 		if (e.className = 'date') or (e.id = 'date') then begin
 			AID := GikoSys.ExtructResID(e.innerText);
             ShowSameIDAncher(AID);
+		end else if (e.className = 'name')      or (e.id = 'name') or
+     					  (e.className = 'name_mail') or (e.id = 'name_mail') then begin
+			ShowSameWacchoiAncher2(string(e.innerText), False);
 		end;
 	except
 	end;
@@ -7492,6 +7497,35 @@ begin
   numbers := TStringList.Create;
   try
 		GikoSys.GetSameWacchoiRes(AResNo, FActiveContent.Thread, ALow4, numbers);
+		limited := LIMIT;
+		if not (GikoSys.Setting.LimitResCountMessage) then begin
+			limited := -1;
+		end else if (numbers.Count > LIMIT) then begin
+			if (GikoUtil.MsgBox(Handle,
+                  IntToStr(LIMIT) + '個以上ありますが、すべて表示しますか？',
+                  'IDポップアップ警告',
+                  MB_YESNO or MB_ICONQUESTION) = ID_YES) then begin
+				limited := -1;
+			end
+		end;
+		FActiveContent.IDAnchorPopup(
+							GikoSys.CreateResAnchor(numbers, FActiveContent.Thread, limited));
+	finally
+		numbers.Free;
+	end;
+end;
+
+//! 同ワッチョイレスアンカー表示
+procedure TGikoForm.ShowSameWacchoiAncher2(AInnerText: String; ALow4: Boolean);
+const
+	LIMIT = 20;
+var
+	numbers : TStringList;
+	limited : Integer;
+begin
+  numbers := TStringList.Create;
+  try
+		GikoSys.GetSameWacchoiRes2(AInnerText, FActiveContent.Thread, ALow4, numbers);
 		limited := LIMIT;
 		if not (GikoSys.Setting.LimitResCountMessage) then begin
 			limited := -1;

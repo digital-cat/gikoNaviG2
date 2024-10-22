@@ -246,7 +246,9 @@ type
     function ExtructResID(ADateStr: String): String;
 
 		procedure GetSameWacchoiRes(AResNo: Integer; ThreadItem: TThreadItem; ALow4: Boolean; var ANumbers: TStringList);
+		procedure GetSameWacchoiRes2(AInnerText: String; ThreadItem: TThreadItem; ALow4: Boolean; var ANumbers: TStringList);
     function ExtructWacchoi(AName: String; PWch: PWchRec): Boolean;
+    function ExtructWacchoi2(AName: String; PWch: PWchRec): Boolean;
 
 		//! 単語解析
 		procedure SpamCountWord( const text : string; wordCount : TWordCount );
@@ -3243,6 +3245,44 @@ begin
 	Result := True;
 end;
 
+function TGikoSys.ExtructWacchoi2(AName: String; PWch: PWchRec): Boolean;
+var
+  i, sIdx, eIdx: Integer;
+	len, lens: Integer;
+  wch: String;
+  spc: Integer;
+begin
+	Result := False;
+  sIdx := 0;
+  eIdx := 0;
+  len := Length(AName);
+
+  for i := 1 to len do begin
+    case AName[i] of
+    '(': sIdx := i;
+    ')': eIdx := i;
+    end;
+  end;
+
+  if (sIdx < 3) or (eIdx < sIdx) then
+  	Exit;
+
+	len := eIdx - sIdx - 1;
+  if len < 12 then	// 最低12文字？
+  	Exit;
+
+  // ワッチョイ切り出し
+  wch := Copy(AName, sIdx + 1, len);
+  spc := Pos(' ', wch);
+  if (spc < 2) or (spc + 9 > len) or (wch[spc + 5] <> '-') then
+  	Exit;
+	PWch.FNName := Copy(wch, 1, spc - 1);
+  PWch.FHigh4 := Copy(wch, spc + 1, 4);
+  PWch.FLow4  := Copy(wch, spc + 6, 4);
+	Result := True;
+end;
+
+
 procedure TGikoSys.GetSameWacchoiRes(AResNo: Integer; ThreadItem: TThreadItem; ALow4: Boolean; var ANumbers: TStringList);
 var
 	Res: TResRec;
@@ -3298,6 +3338,60 @@ begin
     threads.Free;
   end;
 end;
+
+procedure TGikoSys.GetSameWacchoiRes2(AInnerText: String; ThreadItem: TThreadItem; ALow4: Boolean; var ANumbers: TStringList);
+var
+	Res: TResRec;
+	//boardPlugIn: TBoardPlugIn;
+  wch: TWchRec;
+  wchChk: TWchRec;
+  threads: TStringList;
+	i: Integer;
+begin
+	if (ThreadItem = nil) or
+  	 (not ThreadItem.IsLogFile) or
+     (Length(AInnerText) < 14) then
+		Exit;
+
+  if ThreadItem.ParentBoard.IsBoardPlugInAvailable then begin
+    //===== プラグインによる表示
+    //boardPlugIn := ThreadItem.ParentBoard.BoardPlugIn;
+    //THTMLCreate.DivideStrLine(boardPlugIn.GetDat(DWORD( threadItem ), AResNo), @Res);
+    Exit;	// 取りあえず５ちゃんのみ
+  end;
+
+  // ワッチョイ切り出し
+  if not ExtructWacchoi2(AInnerText, @wch) then
+    Exit;	// ワッチョイなし
+
+  threads := TStringList.Create;
+  try
+    ReadThreadFileAll(ThreadItem.GetThreadFileName, threads);
+    if threads.Count < 1 then
+      Exit;
+
+    // 他の全レスチェック
+    for i := 1 to threads.Count do begin
+      THTMLCreate.DivideStrLine(threads.Strings[i - 1], @Res);
+      if ExtructWacchoi(Res.FName, @wchChk) then begin
+        if ALow4 then begin
+          // 下4桁のみ一致
+          if wch.FLow4 = wchChk.FLow4 then
+            ANumbers.Add(IntToStr(i));
+        end else begin
+          // 全体一致
+          if (wch.FNName = wchChk.FNName) and
+             (wch.FHigh4 = wchChk.FHigh4) and
+             (wch.FLow4  = wchChk.FLow4) then
+            ANumbers.Add(IntToStr(i));
+        end;
+      end;
+    end;
+  finally
+    threads.Free;
+  end;
+end;
+
 
 
 {!
