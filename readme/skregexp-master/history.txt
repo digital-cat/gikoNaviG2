@@ -1,0 +1,32 @@
+﻿SkRegExp hisotry
+
+   3.1.12 2015/11/7
+       Fix) Optimization of repetition.
+   3.1.11 2015/11/5
+       Fix) Fixed a bug that may not match the selection, including the fixed string of
+            different lengths.
+            The cause, it is using to optimize the calculation of character position of
+            the fixed string was wrong.
+   3.1.10 2015/10/12
+       Fix) Warning.
+       Fix) Redundant code in TREMatchEngine.SetupLeadStrings method.
+   3.1.9 2015/10/11
+       Fix) numeric specification repeatedly in Fixed a bug that may fall into an infinite loop.
+   3.1.8 2015/8/10
+       Add) Add {$HIGHCHARUNICODE ON} to the conditions defined.
+       Del) Delete a condition defined {$IF CompilerVersion> = 16.0}.
+            It is not necessary to the conditional branch and the version number is incorrect.
+   3.1.7 2015/8/9
+       Fix) It does not match if you specify less than $128 characters in the character class at Delphi XE8.
+   3.1.6 2015/8/2
+       Fix) It had access to nil string terminating in TREQuickSearch.Match.
+   3.1.5 2015/8/1
+       Fix) Character class does not match a modified mistake in 3.1.4.
+   3.1.4 2015/7/31
+       Fix) There was a case that does not match the range specified negative character class.
+       Fix) The value of CONST_VERSION was wrong.
+   3.1.3 2015/7/16
+       Fix) It is an infinite loop in TRECharClassCode.Find Method.
+   3.1.2 2015/7/14
+       Fix) Range specification of IsLeadChar function was wrong.
+       Fix) \b and \B did not support surrogate pair

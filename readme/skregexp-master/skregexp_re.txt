@@ -1,0 +1,209 @@
+SkRegExp Regular Expressions Version 3.0.4
+
+1. NEWLINE CONVENTION
+
+These are recognized only at the very start of the pattern or after option settings with a similar syntax.
+
+  (*CR)           carriage return only
+  (*LF)           linefeed only
+  (*CRLF)         carriage return followed by linefeed
+  (*ANYCRLF)      all three of the above
+  (*ANY)          any Unicode newline sequence
+
+2. MODIFIERS
+
+  m  Multiline mode - ^ and $ match internal lines
+  s  match as a Single line - . matches \n
+  i  case-Insensitive
+  x  eXtended legibility - free whitespace and comments
+  a  restrict \d, \s, \w and [:posix:] to match ASCII only
+  aa (two a's) also /i matches exclude ASCII/non-ASCII
+  l, u, d  match according to Unicode rules
+       
+3. SYNTAX
+
+  \       Escapes the character immediately following it
+  .       Matches any single character except a newline (unless /s is
+                      used)
+  ^       Matches at the beginning of the string (or line, if /m is used)
+  $       Matches at the end of the string (or line, if /m is used)
+  *       Matches the preceding element 0 or more times
+  +       Matches the preceding element 1 or more times
+  ?       Matches the preceding element 0 or 1 times
+  {...}   Specifies a range of occurrences for the element preceding it
+  [...]   Matches any one of the characters contained within the brackets
+  (...)   Groups subexpressions for capturing to $1, $2...
+  (?:...) Groups subexpressions without capturing (cluster)
+  |       Matches either the subexpression preceding or following it
+  \g1 or \g{1}, \g2 ...    Matches the text from the Nth group
+  \1, \2, \3 ...           Matches the text from the Nth group
+  \g-1 or \g{-1}, \g-2 ... Matches the text from the Nth previous group
+  \g{name}     Named backreference
+  \g<1>           Recurse into subpattern number N
+  \g<-1>, \g<+1>  Recurse into Nth previous/next subpattern
+  \g<name>        Recurse into a named subpattern
+  \k<name>     Named backreference
+  \k'name'     Named backreference
+  (?P=name)    Named backreference (python syntax)
+
+4. ESCAPE SEQUENCES 
+
+  \a       Alarm (beep)
+  \e       Escape
+  \f       Formfeed
+  \n       Newline
+  \r       Carriage return
+  \t       Tab
+  \037     Char whose ordinal is the 3 octal digits, max \777
+  \o{2307} Char whose ordinal is the octal number, unrestricted
+  \x7f     Char whose ordinal is the 2 hex digits, max \xFF
+  \x{263a} Char whose ordinal is the hex number, unrestricted
+  \cx      Control-x
+  \Q  Disable pattern metacharacters until \E
+  \E  End modification
+
+5. CARACTER CLASSES
+
+  [amy]    Match 'a', 'm' or 'y'
+  [f-j]    Dash specifies "range"
+  [f-j-]   Dash escaped or at start or end means 'dash'
+  [^f-j]   Caret indicates "match any character _except_ these"
+
+  \d      A digit
+  \D      A nondigit
+  \w      A word character
+  \W      A non-word character
+  \s      A whitespace character
+  \S      A non-whitespace character
+  \h      An horizontal whitespace
+  \H      A non horizontal whitespace
+  \N      A non newline (it's like '.' without /s modifier)
+  \v      A vertical whitespace
+  \V      A non vertical whitespace
+  \R      A generic newline           (?>\v|\x0D\x0A)
+  \pP     Match P-named (Unicode) property
+  \p{...} Match Unicode property with name longer than 1 character
+  \PP     Match non-P
+  \P{...} Match lack of Unicode property with name longer than 1 char
+  \X      Match Unicode extended grapheme cluster
+
+6. THE POSIX CHARACTER CLASS SYNTAX
+
+  [:class:]
+  [:^class:]  non class
+
+  [[:...:]]	\p{...}		backslash
+
+  alpha       IsAlpha
+  alnum       IsAlnum
+  ascii       IsASCII
+  blank
+  cntrl       IsCntrl
+  digit       IsDigit        \d
+  graph       IsGraph
+  lower       IsLower
+  print       IsPrint
+  punct       IsPunct
+  space       IsSpace
+              IsSpacePerl    \s
+  upper       IsUpper
+  word        IsWord
+  xdigit      IsXDigit
+
+7. ANCHOR
+
+  ^  Match string start (or line, if /m is used)
+  $  Match string end (or line, if /m is used) or before newline
+  \b Match word boundary (between \w and \W)
+  \B Match except at word boundary (between \w and \w or \W and \W)
+  \A Match string start (regardless of /m)
+  \Z Match string end (before optional newline)
+  \z Match absolute string end
+  \K Keep the stuff left of the \K, don't include it in $&
+
+8. QUANTIFIERS
+
+  greedy
+  
+  *	   Match 0 or more times
+  +	   Match 1 or more times
+  ?	   Match 1 or 0 times
+  {n}    Match exactly n times
+  {n,}   Match at least n times
+  {n,m}  Match at least n but not more than m times
+  
+  minimal
+
+  *?     Match 0 or more times, not greedily
+  +?     Match 1 or more times, not greedily
+  ??     Match 0 or 1 time, not greedily
+  {n}?   Match exactly n times, not greedily
+  {n,}?  Match at least n times, not greedily
+  {n,m}? Match at least n but not more than m times, not greedily
+
+  possessive 
+
+  *+     Match 0 or more times and give nothing back
+  ++     Match 1 or more times and give nothing back
+  ?+     Match 0 or 1 time and give nothing back
+  {n}+   Match exactly n times and give nothing back (redundant)
+  {n,}+  Match at least n times and give nothing back
+  {n,m}+ Match at least n but not more than m times and give nothing back
+  
+9. EXTENDED CONSTRUCTS
+
+  (?#text)          A comment
+  (?:...)           Groups subexpressions without capturing (cluster)
+  (?pimsx-imsx:...) Enable/disable option (as per m// modifiers)
+  (?=...)           Zero-width positive lookahead assertion
+  (?!...)           Zero-width negative lookahead assertion
+  (?<=...)          Zero-width positive lookbehind assertion
+  (?<!...)          Zero-width negative lookbehind assertion
+  (?>...)           Grab what we can, prohibit backtracking
+  (?|...)           Branch reset
+  (?<name>...)      Named capture
+  (?'name'...)      Named capture
+  (?P<name>...)     Named capture (python syntax)
+  (?N)              Recurse into subpattern number N
+  (?-N), (?+N)      Recurse into Nth previous/next subpattern
+  (?R), (?0)        Recurse at the beginning of the whole pattern
+  (?&name)          Recurse into a named subpattern
+  (?P>name)         Recurse into a named subpattern (python syntax)
+  (?(cond)yes|no)
+  (?(cond)yes)      Conditional expression, where "cond" can be:
+                     (?=pat)   look-ahead
+                     (?!pat)   negative look-ahead
+                     (?<=pat)  look-behind
+                     (?<!pat)  negative look-behind
+                     (N)       subpattern N has matched something
+                     (<name>)  named subpattern has matched something
+                     ('name')  named subpattern has matched something
+                     (R)       true if recursing
+                     (RN)      true if recursing into Nth subpattern
+                     (R&name)  true if recursing into named subpattern
+                     (DEFINE)  always false, no no-pattern allowed
+
+10. CALLOUTS
+
+  (?C)      callout
+  (?Cn)     callout with data n
+
+11. BACKTRACKING CONTROL
+
+The following act immediately they are reached:
+
+  (*ACCEPT)       force successful match
+  (*FAIL)         force backtrack; synonym (*F)
+  (*MARK:NAME)    set name to be passed back; synonym (*:NAME)
+
+The following act only when a subsequent match failure causes a backtrack to reach them. They all force a match failure, but they differ in what happens afterwards. Those that advance the start-of-match point do so only if the pattern is not anchored.
+
+  (*COMMIT)       overall failure, no advance of starting point
+  (*PRUNE)        advance to next starting character
+  (*PRUNE:NAME)   equivalent to (*MARK:NAME)(*PRUNE)
+  (*SKIP)         advance to current matching position
+  (*SKIP:NAME)    advance to position corresponding to an earlier
+                  (*MARK:NAME); if not found, the (*SKIP) is ignored
+  (*THEN)         local failure, backtrack to next alternation
+  (*THEN:NAME)    equivalent to (*MARK:NAME)(*THEN)
+
