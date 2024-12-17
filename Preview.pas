@@ -126,6 +126,22 @@ begin
 			WindowWidth := 640;
 			WindowHeight := 480;
 		end;
+		gpsXLarge2: begin
+			WindowWidth := 800;
+			WindowHeight := 600;
+		end;
+		gpsXLarge3: begin
+			WindowWidth := 1024;
+			WindowHeight := 768;
+		end;
+		gpsXLarge4: begin
+			WindowWidth := 1280;
+			WindowHeight := 1024;
+		end;
+		gpsXLarge5: begin
+			WindowWidth := 1600;
+			WindowHeight := 1200;
+		end;
 		else begin	//gpsMedium
 			WindowWidth := 384;
 			WindowHeight := 288;
