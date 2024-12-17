@@ -235,6 +235,7 @@ type
     ReplCharComboBox: TComboBox;
     URLitestCheckBox: TCheckBox;
     ReloadAfterWriteCheckBox: TCheckBox;
+    CapUserCheckBox: TCheckBox;
 		procedure FormCreate(Sender: TObject);
 		procedure FormDestroy(Sender: TObject);
 		procedure ApplyButtonClick(Sender: TObject);
@@ -758,6 +759,8 @@ begin
 	ResRangeHoldComboBox.Enabled := GikoSys.Setting.ResRangeHold;
 	// 文字&#78840;の扱い 0:何もしない 1:数値参照で表示 2:類似文字に置換
   ReplCharComboBox.ItemIndex := GikoSys.Setting.ReplChar;
+  // CAP_USERの日時・ID欄を強調表示する
+  CapUserCheckBox.Checked := GikoSys.Setting.CapUser;
 
 	//タブ追加位置
 	TabAddRadioGroup.ItemIndex := Ord(GikoSys.Setting.BrowserTabAppend);
@@ -841,6 +844,10 @@ begin
 	PreviewWaitEdit.Text := IntToStr(GikoSys.Setting.PreviewWait);
 	PreviewSizeComboBox.ItemIndex := 2;
 	case GikoSys.Setting.PreviewSize of
+		gpsXLarge5: PreviewSizeComboBox.ItemIndex := 8;
+		gpsXLarge4: PreviewSizeComboBox.ItemIndex := 7;
+		gpsXLarge3: PreviewSizeComboBox.ItemIndex := 6;
+		gpsXLarge2: PreviewSizeComboBox.ItemIndex := 5;
 		gpsXLarge: PreviewSizeComboBox.ItemIndex := 4;
 		gpsLarge: PreviewSizeComboBox.ItemIndex := 3;
 		gpsMedium: PreviewSizeComboBox.ItemIndex := 2;
@@ -1088,9 +1095,13 @@ begin
 	        3: GikoSys.Setting.ResRange := Ord( grrNew );
 	end;
 	// 文字&#78840;の扱い 0:何もしない 1:数値参照で表示 2:類似文字に置換
+  if GikoSys.Setting.ReplChar <> ReplCharComboBox.ItemIndex then FRepaintThread := true;
   GikoSys.Setting.ReplChar := ReplCharComboBox.ItemIndex;
   if (GikoSys.Setting.ReplChar < 0) or (GikoSys.Setting.ReplChar > 2) then
   	GikoSys.Setting.ReplChar := 0;
+  // CAP_USERの日時・ID欄を強調表示する
+  if GikoSys.Setting.CapUser <> CapUserCheckBox.Checked then FRepaintThread := true;
+  GikoSys.Setting.CapUser := CapUserCheckBox.Checked;
 
 	GikoSys.Setting.BrowserTabAppend := TGikoTabAppend(TabAddRadioGroup.ItemIndex);
 
@@ -1163,6 +1174,10 @@ begin
 		2: GikoSys.Setting.PreviewSize := gpsMedium;
 		3: GikoSys.Setting.PreviewSize := gpsLarge;
 		4: GikoSys.Setting.PreviewSize := gpsXLarge;
+		5: GikoSys.Setting.PreviewSize := gpsXLarge2;
+		6: GikoSys.Setting.PreviewSize := gpsXLarge3;
+		7: GikoSys.Setting.PreviewSize := gpsXLarge4;
+		8: GikoSys.Setting.PreviewSize := gpsXLarge5;
 	end;
 
 	//スレッド一覧更新アイコン

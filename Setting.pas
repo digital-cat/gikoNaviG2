@@ -24,7 +24,7 @@ type
 												gppLeft, gppCenter, gppRight,
 												gppLeftBottom, gppBottom, gppRightBottom);
 																												//プレビューサイズ
-	TGikoPreviewSize = (gpsXLarge, gpsLarge, gpsMedium, gpsSmall, gpsXSmall);
+	TGikoPreviewSize = (gpsXLarge, gpsLarge, gpsMedium, gpsSmall, gpsXSmall, gpsXLarge2, gpsXLarge3, gpsXLarge4, gpsXLarge5);
 	TGikoBrowserAutoMaximize	= (gbmNone, gbmClick, gbmDoubleClick);
 																												// ブラウザを自動的に最大化する条件
 	/// レス表示範囲。10 ～ 65535 は最新 n レス扱い。
@@ -267,6 +267,8 @@ type
     FURLitest: Boolean;
     // 文字&#78840;の扱い 0:何もしない 1:数値参照で表示 2:類似文字に置換
     FReplChar: Integer;
+    // CAP_USERの日時・ID欄を強調表示する
+    FCapUser: Boolean;
 
 		//ログフォルダ
 		FLogFolder: string;
@@ -771,6 +773,7 @@ type
 		property ThreadTitleTrim: Boolean read FThreadTitleTrim write FThreadTitleTrim;
     property URLitest: Boolean read FURLitest write FURLitest;
     property ReplChar: Integer read FReplChar write FReplChar;
+    property CapUser: Boolean read FCapUser write FCapUser;
 
 		property LogFolder: string read FLogFolder write WriteLogFolder;
 		property LogFolderP: string read FLogFolderP;
@@ -1351,7 +1354,9 @@ begin
     FReplChar := ini.ReadInteger('Thread','ReplaceChar', 0);
     if (FReplChar < 0) or (FReplChar > 2) then
     	FReplChar := 0;
-    
+    // CAP_USERの日時・ID欄を強調表示する
+    FCapUser := ini.ReadBool('Thread', 'CapUser', False);
+
 		//削除確認
 		FDeleteMsg := ini.ReadBool('Function', 'LogDeleteMessage', True);
 		//終了確認
@@ -1867,6 +1872,8 @@ begin
     if (FReplChar < 0) or (FReplChar > 2) then
     	FReplChar := 0;
     ini.WriteInteger('Thread','ReplaceChar', FReplChar);
+    // CAP_USERの日時・ID欄を強調表示する
+    ini.WriteBool('Thread', 'CapUser', FCapUser);
 
 		//認証用ユーザID・パスワード
 		ini.WriteString('Attestation', 'UserID', FUserID);
