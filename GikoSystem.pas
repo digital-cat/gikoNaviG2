@@ -245,6 +245,7 @@ type
     function GetResID(AIDNum: Integer; ThreadItem: TThreadItem): String;
     function ExtructResID(ADateStr: String): String;
 
+    function GetResWacchoi(AIDNum: Integer; ThreadItem: TThreadItem; ALow4: Boolean): String;
 		procedure GetSameWacchoiRes(AResNo: Integer; ThreadItem: TThreadItem; ALow4: Boolean; var ANumbers: TStringList);
 		procedure GetSameWacchoiRes2(AInnerText: String; ThreadItem: TThreadItem; ALow4: Boolean; var ANumbers: TStringList);
     function ExtructWacchoi(AName: String; PWch: PWchRec): Boolean;
@@ -3195,6 +3196,39 @@ begin
     end;
 end;
 
+
+function TGikoSys.GetResWacchoi(AIDNum: Integer; ThreadItem: TThreadItem; ALow4: Boolean): String;
+var
+	Res: TResRec;
+	boardPlugIn : TBoardPlugIn;
+  wch: TWchRec;
+begin
+  Result := '';
+
+	if (ThreadItem = nil) or (not ThreadItem.IsLogFile) or (AIDNum <= 0) or (AIDNum > ThreadItem.Count) then
+    Exit;
+
+  //if ThreadItem.IsBoardPlugInAvailable then begin
+  if ThreadItem.ParentBoard.IsBoardPlugInAvailable then begin
+    //===== プラグインによる表示
+    ////boardPlugIn		:= ThreadItem.BoardPlugIn;
+    //boardPlugIn := ThreadItem.ParentBoard.BoardPlugIn;
+    //THTMLCreate.DivideStrLine(boardPlugIn.GetDat(DWORD( threadItem ), AIDNum), @Res);
+    Exit;	// 取りあえず５ちゃんのみ
+  end;
+
+  THTMLCreate.DivideStrLine( ReadThreadFile(ThreadItem.GetThreadFileName, AIDNum), @Res);
+
+  // ワッチョイ切り出し
+  if (not ExtructWacchoi(Res.FName, @wch)) or (wch.FLow4 = '') then
+    Exit;	// ワッチョイなし
+
+  if ALow4 then   // 下4桁
+    Result := wch.FLow4
+  else if (wch.FNName <> '') and (wch.FHigh4 <> '') then begin  // 全体
+    Result := Format('%s %s-%s', [wch.FNName, wch.FHigh4, wch.FLow4]);
+  end;
+end;
 
 function TGikoSys.ExtructWacchoi(AName: String; PWch: PWchRec): Boolean;
 const
