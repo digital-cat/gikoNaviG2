@@ -539,14 +539,14 @@ object GikoForm: TGikoForm
                 Control = BrowserToolBar
                 ImageIndex = -1
                 MinHeight = 18
-                Width = 571
+                Width = 582
               end
               item
                 Break = False
                 Control = BrowserNameToolBar
                 ImageIndex = -1
                 MinHeight = 18
-                Width = 44
+                Width = 33
               end
               item
                 Control = BrowserTabToolBar
@@ -562,7 +562,7 @@ object GikoForm: TGikoForm
             object BrowserToolBar: TToolBar
               Left = 9
               Top = 0
-              Width = 558
+              Width = 569
               Height = 18
               AutoSize = True
               ButtonWidth = 24
@@ -577,9 +577,9 @@ object GikoForm: TGikoForm
               OnResize = BrowserToolBarResize
             end
             object BrowserNameToolBar: TToolBar
-              Left = 582
+              Left = 593
               Top = 0
-              Width = 39
+              Width = 28
               Height = 18
               AutoSize = True
               ButtonHeight = 16
@@ -830,7 +830,7 @@ object GikoForm: TGikoForm
             ImageIndex = -1
             MinHeight = 22
             Visible = False
-            Width = 425
+            Width = 436
           end
           item
             Break = False
@@ -838,7 +838,7 @@ object GikoForm: TGikoForm
             ImageIndex = -1
             MinHeight = 22
             Text = #12450#12489#12524#12473
-            Width = 304
+            Width = 293
           end
           item
             Control = LinkToolBar
@@ -871,7 +871,7 @@ object GikoForm: TGikoForm
         object StdToolBar: TToolBar
           Left = 9
           Top = 20
-          Width = 412
+          Width = 423
           Height = 22
           AutoSize = True
           ButtonWidth = 25
@@ -887,9 +887,9 @@ object GikoForm: TGikoForm
           OnResize = MenuToolBarResize
         end
         object AddressToolBar: TToolBar
-          Left = 480
+          Left = 491
           Top = 20
-          Width = 255
+          Width = 244
           Height = 22
           ButtonWidth = 51
           HotImages = HotToobarImageList
@@ -942,7 +942,7 @@ object GikoForm: TGikoForm
     Left = 4
     Top = 212
     Bitmap = {
-      494C010113001800A40010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010113001800B40010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000005000000001002000000000000050
       0000000000000000000000000000000000000000000000000000848484008484
       8400848484008484840084848400848484008484840084848400848484008484
@@ -1615,7 +1615,7 @@ object GikoForm: TGikoForm
     Left = 36
     Top = 212
     Bitmap = {
-      494C01010F001300A40020002000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01010F001300B40020002000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000800000008000000001002000000000000000
       0100000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -3738,7 +3738,7 @@ object GikoForm: TGikoForm
     Left = 4
     Top = 244
     Bitmap = {
-      494C01013F008000A40010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01013F008000B40010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000000001000001002000000000000000
       0100000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -5861,7 +5861,7 @@ object GikoForm: TGikoForm
     Left = 4
     Top = 276
     Bitmap = {
-      494C010103000400A40010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010103000400B40010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000001000000001002000000000000010
       0000000000000000000000000000000000008400840084008400000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -6006,7 +6006,7 @@ object GikoForm: TGikoForm
     Left = 36
     Top = 276
     Bitmap = {
-      494C010104000900A40020000C00FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010104000900B40020000C00FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000800000001800000001002000000000000030
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -6414,7 +6414,7 @@ object GikoForm: TGikoForm
     Left = 4
     Top = 308
     Bitmap = {
-      494C010104000900A4000B001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010104000900B4000B001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       00000000000036000000280000002C0000002000000001002000000000000016
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -6609,7 +6609,7 @@ object GikoForm: TGikoForm
     Left = 4
     Top = 340
     Bitmap = {
-      494C010102000400A40010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010102000400B40010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000001000000001002000000000000010
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -7606,6 +7606,45 @@ object GikoForm: TGikoForm
       end
       object IDNG2: TMenuItem
         Action = GikoDM.AddIDtoNGWord0Action
+      end
+    end
+    object N91: TMenuItem
+      Caption = #12371#12398#12524#12473#12398#12527#12483#12481#12519#12452
+      object N92: TMenuItem
+        Caption = #12527#12483#12481#12519#12452#20840#20307
+        object N93: TMenuItem
+          Action = GikoDM.IndividualAbon1WcAllAction
+        end
+        object N94: TMenuItem
+          Action = GikoDM.IndividualAbon0WcAllAction
+        end
+        object N97: TMenuItem
+          Caption = '-'
+        end
+        object NG3: TMenuItem
+          Action = GikoDM.AddWcAlltoNGWord1Action
+        end
+        object NG4: TMenuItem
+          Action = GikoDM.AddWcAlltoNGWord0Action
+        end
+      end
+      object N411: TMenuItem
+        Caption = #12527#12483#12481#12519#12452#19979'4'#26689
+        object N95: TMenuItem
+          Action = GikoDM.IndividualAbon1WcLs4Action
+        end
+        object N96: TMenuItem
+          Action = GikoDM.IndividualAbon0WcLs4Action
+        end
+        object N98: TMenuItem
+          Caption = '-'
+        end
+        object N4NG1: TMenuItem
+          Action = GikoDM.AddWcLs4toNGWord1Action
+        end
+        object N4NG2: TMenuItem
+          Action = GikoDM.AddWcLs4toNGWord0Action
+        end
       end
     end
     object N52: TMenuItem

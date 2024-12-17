@@ -450,6 +450,19 @@ type
     N89: TMenuItem;
     N90: TMenuItem;
     N410: TMenuItem;
+    N91: TMenuItem;
+    N92: TMenuItem;
+    N411: TMenuItem;
+    N93: TMenuItem;
+    N94: TMenuItem;
+    N95: TMenuItem;
+    N96: TMenuItem;
+    N97: TMenuItem;
+    NG3: TMenuItem;
+    NG4: TMenuItem;
+    N98: TMenuItem;
+    N4NG1: TMenuItem;
+    N4NG2: TMenuItem;
 		procedure FormCreate(Sender: TObject);
 		procedure FormDestroy(Sender: TObject);
 		procedure SaveSettingAll();
@@ -818,10 +831,14 @@ type
 		procedure	CoolBarResized(Sender: TObject; CoolBar: TCoolBar);
 		//同一IDのあぼ～ん
 		procedure IndividualAbonID(Atype : Integer);
+		//同一ワッチョイのあぼ～ん
+		procedure IndividualAbonWacchoi(Atype : Integer; ALow4: Boolean);
 		//このレスあぼ～ん
 		procedure IndividualAbon(Atag, Atype : Integer);
 		//同一IDをNGワードに登録
 		procedure AddIDtoNGWord(invisible : boolean);
+		//同一ワッチョイをNGワードに登録
+		procedure AddWacchoitoNGWord(invisible : boolean; ALow4: Boolean);
 		//範囲あぼ～ん
 		procedure RangeAbon(Atag: Integer);
 		//ブラウザの再描画 true:全てのタブ false:アクティブなタブのみ
@@ -2523,8 +2540,9 @@ begin
 	Ext := AnsiLowerCase(ExtractFileExt2(Text2));
 //	if (Pos('http://', Text2) = 1) and (GikoSys.Setting.PreviewVisible) and
 	if ((Pos('http://', Text2) = 1) or (Pos('https://', Text2) = 1)) and (GikoSys.Setting.PreviewVisible) and
-			((Ext = '.jpg') or (Ext = '.jpeg') or (Ext = '.gif') or (Ext = '.png') or (Ext = '.jpg:large')) or
-        (Pos('http://www.nicovideo.jp/watch/', Text2) = 1)  then begin
+			((Ext = '.jpg') or (Ext = '.jpeg') or (Ext = '.gif') or (Ext = '.png') or (Ext = '.jpg:large') or (Ext = '.jpg:orig') or
+			 (Pos('?format=jpg', Text2) > 0) or (Pos('?format=png', Text2) > 0) or
+			 (Pos('http://www.nicovideo.jp/watch/', Text2) = 1)) then begin
 		if FPreviewBrowser = nil then begin
 			FPreviewBrowser := TPreviewBrowser.Create(Self);
 			ShowWindow(FPreviewBrowser.Handle, SW_HIDE);
@@ -7447,7 +7465,7 @@ begin
 		if not Assigned(e) then
 			Exit;
 
-		if (e.className = 'date') or (e.id = 'date') then begin
+		if (e.className = 'date') or (e.className = 'date capuser') or (e.id = 'date') then begin
 			AID := GikoSys.ExtructResID(e.innerText);
             ShowSameIDAncher(AID);
 		end else if (e.className = 'name')      or (e.id = 'name') or
@@ -8051,6 +8069,79 @@ begin
     end;
 end;
 
+//同一ワッチョイをNGワードに登録
+procedure TGikoForm.AddWacchoitoNGWord(invisible : boolean; ALow4: Boolean);
+var
+  doc : IHTMLDocument2;
+	ThreadItem : TThreadItem;
+	No : Integer;
+{$IFDEF SPAM_FILTER_ENABLED}
+	body : TStringList;
+	ReadList		: TStringList;
+	wordCount		: TWordCount;
+{$ENDIF}
+  wc, dateStr: String;
+  ThreadTitle: String;
+  Idx: Integer;
+  len: Integer;
+begin
+	No := KokoPopupMenu.Tag;
+	if No = 0 then Exit;
+	ThreadItem := GikoForm.KokoPopupThreadItem;
+	if ThreadItem = nil then Exit;
+
+    wc := GikoSys.GetResWacchoi(No, ThreadItem, ALow4);
+    if wc <> '' then begin
+        ThreadTitle := ThreadItem.Title;
+        while (True) do begin
+            Idx := Pos(#9, ThreadTitle);
+            if (Idx < 1) then
+                Break;
+            Delete(ThreadTitle, Idx, 1);
+        end;
+        // コメントとして、スレッド名と今日の日付を追加
+        DateTimeToString(dateStr, 'yyyymmdd', Now);
+        wc := wc + #9'>>add ' + dateStr + ',' + ThreadTitle;
+        if (GikoSys.FAbon.AddToken(wc, invisible)) then begin
+            GikoSys.FAbon.ReLoadFromNGwordFile;
+            FActiveContent.Repaint := True;
+        end;
+    end else begin
+      ShowMessage('ワッチョイを取得できませんでした。');
+    end;
+{$IFDEF SPAM_FILTER_ENABLED}
+    body := TStringList.Create;
+    try
+        GikoSys.GetSameWacchoiRes(No, ThreadItem, ALow4, body);
+        ReadList		:= TStringList.Create;
+        wordCount		:= TWordCount.Create;
+        try
+            // スパムに設定
+            ReadList.LoadFromFile( ThreadItem.GetThreadFileName );
+            for i := 0 to body.Count - 1 do begin
+                GikoSys.SpamCountWord( ReadList[ i ], wordCount );
+                GikoSys.SpamForget( wordCount, False );	// ハムを解除
+                GikoSys.SpamLearn( wordCount, True );		// スパムに設定
+            end;
+        finally
+            wordCount.Free;
+            ReadList.Free;
+        end;
+    finally
+        body.Free;
+    end;
+{$ENDIF}
+    if (FActiveContent.Repaint) then begin
+        doc := FActiveContent.Browser.ControlInterface.Document as IHTMLDocument2;
+
+        if not Assigned(doc) then
+            Exit;
+        ThreadItem.ScrollTop := (doc.body as IHTMLElement2).ScrollTop;
+        if ThreadItem <> nil then
+            InsertBrowserTab( ThreadItem, True );
+    end;
+end;
+
 //同一IDのあぼ～ん
 procedure TGikoForm.IndividualAbonID(Atype : Integer);
 var
@@ -8097,6 +8188,54 @@ begin
 	end;
 
 end;
+
+//同一ワッチョイのあぼ～ん
+procedure TGikoForm.IndividualAbonWacchoi(Atype : Integer; ALow4: Boolean);
+var
+	ThreadItem : TThreadItem;
+	i, No : Integer;
+	body : TStringList;
+	ReadList		: TStringList;
+	wordCount		: TWordCount;
+begin
+	No := KokoPopupMenu.Tag;
+	if No = 0 then Exit;
+	ThreadItem := GikoForm.KokoPopupThreadItem;
+	if ThreadItem = nil then Exit;
+	body := TStringList.Create;
+	try
+		//GikoSys.GetSameIDRes(No, ThreadItem, body);
+    GikoSys.GetSameWacchoiRes(No, ThreadItem, ALow4, body);
+
+		ReadList		:= TStringList.Create;
+		wordCount		:= TWordCount.Create;
+		try
+			ThreadItem.ScrollTop := FActiveContent.Browser.OleObject.Document.Body.ScrollTop;
+{$IFDEF SPAM_FILTER_ENABLED}
+			// スパムに設定
+			ReadList.LoadFromFile( ThreadItem.GetThreadFileName );
+{$ENDIF}
+			for i := 0 to body.Count - 1 do begin
+{$IFDEF SPAM_FILTER_ENABLED}
+				GikoSys.SpamCountWord( ReadList[ i ], wordCount );
+				GikoSys.SpamForget( wordCount, False );	// ハムを解除
+				GikoSys.SpamLearn( wordCount, True );		// スパムに設定
+{$ENDIF}
+				// あぼーんに設定
+				GikoSys.FAbon.AddIndividualAbon(StrToInt(body[i]), Atype, ChangeFileExt(ThreadItem.GetThreadFileName, '.NG'));
+			end;
+		finally
+			wordCount.Free;
+			ReadList.Free;
+		end;
+		FActiveContent.Repaint := true;
+		if ThreadItem <> nil then
+			InsertBrowserTab( ThreadItem, True );
+	finally
+		body.Free;
+	end;
+end;
+
 //範囲あぼ～ん
 procedure TGikoForm.RangeAbon(Atag: Integer);
 var
