@@ -118,7 +118,7 @@ const
 	CLOSE_TAGAL = '</a>';
 	CLOSE_TAGAU = '</A>';
 	RES_REF			= '&gt;&gt;';
-  REF_MARK: array[0..18] of string = (
+  REF_MARK: array[0..21] of string = (
     'sssp://',
     'https://',
     'ht&#116;&#112;s://',
@@ -137,9 +137,12 @@ const
     '://',
     'www.',
     'i.imgur.com/',
-    'x.com/'
+    'x.com/',
+    'pbs.twimg.com/',
+    'video.twimg.com/',
+    'youtu.be/'
     );
-  REF_MARK_HEAD: array[0..18] of String = (
+  REF_MARK_HEAD: array[0..21] of String = (
     '',					// sssp://
     '',					// https://
     '',					// ht&#116;&#112;s://
@@ -158,9 +161,12 @@ const
     'https',		// ://
     'https://',	// www.
     'https://',	// i.imgur.com/
-    'https://'	// x.com/
+    'https://',	// x.com/
+    'https://',	// pbs.twimg.com/
+    'https://',	// video.twimg.com/
+    'https://'	// youtu.be/
     );
-  REF_MARK_LEN: array[0..18] of Integer = (
+  REF_MARK_LEN: array[0..21] of Integer = (
     7,			// sssp://
     8,			// https://
     18,			// ht&#116;&#112;s://
@@ -179,7 +185,10 @@ const
     3,			// ://
     4,			// www.
     0,			// i.imgur.com/
-    0				// x.com/
+    0,			// x.com/
+    0,			// pbs.twimg.com/
+    0,			// video.twimg.com/
+    0				// youtu.be/
     );
 
 constructor THTMLCreate.Create;
@@ -452,8 +461,6 @@ begin
     else if (AnsiPos('.jpg', Url) = urllen - 3) then
         Result := True
     else if (AnsiPos('.jpeg', Url) = urllen - 4) then
-        Result := True
-    else if (AnsiPos('.jpg:large', Url) = urllen - 9) then
         Result := True
     else
         Result := False;
@@ -931,17 +938,17 @@ procedure THTMLCreate.CreateUseCSSHTML(html:TBufferedWebBrowser; ThreadItem: TTh
 const
 	FORMAT_NOMAIL  = '<a name="%s"></a><div class="header"><span class="no"><a href="menu:%s">%s</a></span>'
 					+ '<span class="name_label"> 名前： </span> <span class="name"><b>%s</b></span>'
-					+ '<span class="date_label"> 投稿日：</span> <span class="date">%s</span></div>'
+					+ '<span class="date_label"> 投稿日：</span> <span class="date%s">%s</span></div>'
 					+ '<div class="mes">%s</div>';
 
 	FORMAT_SHOWMAIL = '<a name="%s"></a><div class="header"><span class="no"><a href="menu:%s">%s</a></span>'
 					+ '<span class="name_label"> 名前： </span><a class="name_mail" href="mailto:%s">'
 					+ '<b>%s</b></a><span class="mail"> [%s]</span><span class="date_label"> 投稿日：</span>'
-					+ '<span class="date"> %s</span></div><div class="mes">%s</div>';
+					+ '<span class="date%s"> %s</span></div><div class="mes">%s</div>';
 
 	FORMAT_NOSHOW = '<a name="%s"></a><div class="header"><span class="no"><a href="menu:%s">%s</a></span>'
 					+ '<span class="name_label"> 名前： </span><a class="name_mail" href="mailto:%s">'
-					+ '<b>%s</b></a><span class="date_label"> 投稿日：</span><span class="date"> %s</span></div>'
+					+ '<b>%s</b></a><span class="date_label"> 投稿日：</span><span class="date%s"> %s</span></div>'
 					+ '<div class="mes">%s</div>';
 var
 	i: integer;
@@ -952,6 +959,7 @@ var
 	UserOptionalStyle: string;
 	ThreadName :String;
 	ResLink :TResLinkRec;
+  CapUser: String;
 begin
 	NewReceiveNo := ThreadItem.NewReceive;
 	ThreadName := ChangeFileExt(ThreadItem.FileName, '');
@@ -988,16 +996,20 @@ begin
 			if (Trim(ReadList[i]) <> '') then begin
 				No := IntToStr(i + 1);
 				DivideStrLine(ReadList[i], @Res);
-                AddAnchorTag(@Res);
-                ConvRes(@Res, @ResLink);
-                Res.FDateTime := AddBeProfileLink(Res.FDateTime, i + 1);
-                if Res.FMailTo = '' then
-                    html.Add(Format(FORMAT_NOMAIL, [No, No, No, Res.FName, Res.FDateTime, Res.FBody]))
-                else if GikoSys.Setting.ShowMail then
-                    html.Add(Format(FORMAT_SHOWMAIL, [No, No, No, Res.FMailTo, Res.FName, Res.FMailTo, Res.FDateTime, Res.FBody]))
-                else
-                    html.Add(Format(FORMAT_NOSHOW, [No, No, No, Res.FMailTo, Res.FName, Res.FDateTime, Res.FBody]));
-            end;
+				AddAnchorTag(@Res);
+				ConvRes(@Res, @ResLink);
+				Res.FDateTime := AddBeProfileLink(Res.FDateTime, i + 1);
+				if GikoSys.Setting.CapUser and (Pos('ID:CAP_USER', Res.FDateTime) > 0) then
+          CapUser := ' capuser'
+        else
+          CapUser := '';
+				if Res.FMailTo = '' then
+				  html.Add(Format(FORMAT_NOMAIL, [No, No, No, Res.FName, CapUser, Res.FDateTime, Res.FBody]))
+				else if GikoSys.Setting.ShowMail then
+				  html.Add(Format(FORMAT_SHOWMAIL, [No, No, No, Res.FMailTo, Res.FName, Res.FMailTo, CapUser, Res.FDateTime, Res.FBody]))
+				else
+				  html.Add(Format(FORMAT_NOSHOW, [No, No, No, Res.FMailTo, Res.FName, CapUser, Res.FDateTime, Res.FBody]));
+      end;
 			if ThreadItem.Kokomade = (i + 1) then begin
 				html.Add('<a name="koko"></a><div class="koko">ココまで読んだ</div>');
 			end;
@@ -1062,6 +1074,7 @@ function THTMLCreate.GetResString(index: Integer; const Line: String; PResLink :
 var
     No : String;
     Res: TResRec;
+  CapUser: String;
 begin
     No := IntToStr(index + 1);
     DivideStrLine(Line, @Res);
@@ -1069,12 +1082,16 @@ begin
     AddAnchorTag(@Res);
     ConvRes(@Res, PResLink);
     Res.FDateTime := AddBeProfileLink(Res.FDateTime, index + 1);
-    if Res.FMailTo = '' then
-        Result := '<a name="' + No + '"></a><dt><a href="menu:' + No + '">' + No + '</a> 名前：<font color="forestgreen"><b> ' + Res.FName + ' </b></font> 投稿日： <span class="date">' + Res.FDateTime+ '</span><br><dd>' + Res.Fbody + ' <br><br><br>'#13#10
-    else if GikoSys.Setting.ShowMail then
-        Result := '<a name="' + No + '"></a><dt><a href="menu:' + No + '">' + No + '</a> 名前：<a href="mailto:' + Res.FMailTo + '"><b> ' + Res.FName + ' </B></a> [' + Res.FMailTo + '] 投稿日： <span class="date">' + Res.FDateTime+ '</span><br><dd>' + Res.Fbody + ' <br><br><br>'#13#10
+    if GikoSys.Setting.CapUser and (Pos('ID:CAP_USER', Res.FDateTime) > 0) then
+      CapUser := ' capuser'
     else
-        Result := '<a name="' + No + '"></a><dt><a href="menu:' + No + '">' + No + '</a> 名前：<a href="mailto:' + Res.FMailTo + '"><b> ' + Res.FName + ' </B></a> 投稿日： <span class="date">' + Res.FDateTime+ '</span><br><dd>' + Res.Fbody + ' <br><br><br>'#13#10;
+      CapUser := '';
+    if Res.FMailTo = '' then
+        Result := '<a name="' + No + '"></a><dt><a href="menu:' + No + '">' + No + '</a> 名前：<font color="forestgreen"><b> ' + Res.FName + ' </b></font> 投稿日： <span class="date' + CapUser + '">' + Res.FDateTime+ '</span><br><dd>' + Res.Fbody + ' <br><br><br>'#13#10
+    else if GikoSys.Setting.ShowMail then
+        Result := '<a name="' + No + '"></a><dt><a href="menu:' + No + '">' + No + '</a> 名前：<a href="mailto:' + Res.FMailTo + '"><b> ' + Res.FName + ' </B></a> [' + Res.FMailTo + '] 投稿日： <span class="date' + CapUser + '">' + Res.FDateTime+ '</span><br><dd>' + Res.Fbody + ' <br><br><br>'#13#10
+    else
+        Result := '<a name="' + No + '"></a><dt><a href="menu:' + No + '">' + No + '</a> 名前：<a href="mailto:' + Res.FMailTo + '"><b> ' + Res.FName + ' </B></a> 投稿日： <span class="date' + CapUser + '">' + Res.FDateTime+ '</span><br><dd>' + Res.Fbody + ' <br><br><br>'#13#10;
 end;
 procedure THTMLCreate.CreateHTML2(Browser: TWebBrowser; ThreadItem: TThreadItem; var sTitle: string);
 var
@@ -1172,6 +1189,7 @@ var
 	ThreadName: String;
 	ResLink : TResLinkRec;
     ThreadInfo: TAbonThread;
+  CapUser: String;
 
 	function LoadSkin( fileName: string ): string;
 	begin
@@ -1327,13 +1345,17 @@ begin
 								AddAnchorTag(@Res);
 								ConvRes(@Res, @ResLink, true);
 								ConvertResAnchor(@Res);
+								if GikoSys.Setting.CapUser and (Pos('ID:CAP_USER', Res.FDateTime) > 0) then
+								  CapUser := ' capuser'
+								else
+								  CapUser := '';
 								if Res.FMailTo = '' then
 									html.Append('<a name="' + No + '"></a>'
 													+ '<div class="header"><span class="no"><a href="menu:' + No + '">' + No + '</a></span> '
 													+ '<span class="name_label">名前：</span> '
 													+ '<span class="name"><b>' + Res.FName + '</b></span> '
 													+ '<span class="date_label">投稿日：</span> '
-													+ '<span class="date">' + Res.FDateTime+ '</span></div>'
+													+ '<span class="date' + CapUser + '">' + Res.FDateTime+ '</span></div>'
 																								+ '<div class="mes">' + Res.FBody + ' </div>')
 								else if GikoSys.Setting.ShowMail then
 									html.Append('<a name="' + No + '"></a>'
@@ -1342,7 +1364,7 @@ begin
 													+ '<a class="name_mail" href="mailto:' + Res.FMailTo + '">'
 													+ '<b>' + Res.FName + '</b></a><span class="mail"> [' + Res.FMailTo + ']</span>'
 													+ '<span class="date_label"> 投稿日：</span>'
-													+ '<span class="date"> ' + Res.FDateTime+ '</span></div>'
+													+ '<span class="date' + CapUser + '"> ' + Res.FDateTime+ '</span></div>'
 													+ '<div class="mes">' + Res.FBody + ' </div>')
 								else
 									html.Append('<a name="' + No + '"></a>'
@@ -1351,7 +1373,7 @@ begin
 													+ '<a class="name_mail" href="mailto:' + Res.FMailTo + '">'
 													+ '<b>' + Res.FName + '</b></a>'
 													+ '<span class="date_label"> 投稿日：</span>'
-													+ '<span class="date"> ' + Res.FDateTime+ '</span></div>'
+													+ '<span class="date' + CapUser + '"> ' + Res.FDateTime+ '</span></div>'
 																								+ '<div class="mes">' + Res.FBody + ' </div>');
 							end;
 						end;
