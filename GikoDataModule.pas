@@ -274,6 +274,14 @@ type
     KoreDatCopy: TAction;
     SameWcAllResAnchorAction: TAction;
     SameWcLast4ResAnchorAction: TAction;
+    IndividualAbon1WcAllAction: TAction;
+    IndividualAbon0WcAllAction: TAction;
+    IndividualAbon1WcLs4Action: TAction;
+    IndividualAbon0WcLs4Action: TAction;
+    AddWcAlltoNGWord1Action: TAction;
+    AddWcAlltoNGWord0Action: TAction;
+    AddWcLs4toNGWord1Action: TAction;
+    AddWcLs4toNGWord0Action: TAction;
 	procedure EditNGActionExecute(Sender: TObject);
 	procedure ReloadActionExecute(Sender: TObject);
 	procedure GoFowardActionExecute(Sender: TObject);
@@ -514,6 +522,14 @@ type
     procedure KoreDatCopyExecute(Sender: TObject);
     procedure SameWcAllResAnchorActionExecute(Sender: TObject);
     procedure SameWcLast4ResAnchorActionExecute(Sender: TObject);
+    procedure IndividualAbon1WcLs4ActionExecute(Sender: TObject);
+    procedure IndividualAbon0WcLs4ActionExecute(Sender: TObject);
+    procedure IndividualAbon1WcAllActionExecute(Sender: TObject);
+    procedure IndividualAbon0WcAllActionExecute(Sender: TObject);
+    procedure AddWcAlltoNGWord1ActionExecute(Sender: TObject);
+    procedure AddWcAlltoNGWord0ActionExecute(Sender: TObject);
+    procedure AddWcLs4toNGWord1ActionExecute(Sender: TObject);
+    procedure AddWcLs4toNGWord0ActionExecute(Sender: TObject);
   private
 	{ Private 宣言 }
 	procedure ClearResFilter;
@@ -2013,12 +2029,9 @@ var
 	TmpCursor: TCursor;
 //	msg : String;
 begin
-  if Session5ch = nil then
-		Exit;
-
-	if Session5ch.Connected then begin
+	if Session5ch_Connected then begin
 		//ログアウト
-		Session5ch.Disconnect;
+		Session5ch_Disconnect;
 		LoginAction.Checked := False;
 		GikoForm.AddMessageList(GikoSys.GetGikoMessage(gmLogout), nil, gmiOK);
 		LoginAction.Caption := 'ログイン(&L)';
@@ -2027,14 +2040,14 @@ begin
 		GikoForm.ScreenCursor := crHourGlass;
 		try
 			//通常ログイン
-      if Session5ch.Connect then begin
+      if Session5ch_Connect then begin
         LoginAction.Checked := True;
         GikoForm.AddMessageList(GikoSys.GetGikoMessage(gmLogin) + GikoSys.Setting.UserID, nil, gmiOK);
         LoginAction.Caption := 'ログアウト(&L)';
         //LoginToolButton.Style := tbsCheck;
       end else begin
 		//			MsgBox(Handle, 'ログイン出来ませんでした', 'エラー', MB_OK or MB_ICONSTOP);
-        GikoForm.AddMessageList(Session5ch.ErrorMsg, nil, gmiNG);
+        GikoForm.AddMessageList(Session5ch_ErrorMsg, nil, gmiNG);
         GikoForm.PlaySound('Error');
         LoginAction.Checked := False;
         //LoginToolButton.Down := False;
@@ -2552,6 +2565,7 @@ procedure TGikoDM.IndividualAbon1ActionExecute(Sender: TObject);
 begin
 	GikoForm.IndividualAbon(GikoForm.KokoPopupMenu.Tag, 1);
 end;
+
 // *************************************************************************
 //! このレスあぼ～ん　（透明）
 // *************************************************************************
@@ -2559,6 +2573,7 @@ procedure TGikoDM.IndividualAbon0ActionExecute(Sender: TObject);
 begin
 	GikoForm.IndividualAbon(GikoForm.KokoPopupMenu.Tag, 0);
 end;
+
 // *************************************************************************
 //! このレスあぼ～ん解除
 // *************************************************************************
@@ -2682,6 +2697,41 @@ procedure TGikoDM.ThreadRangeAbonActionExecute(Sender: TObject);
 begin
   GikoForm.RangeAbon(0);
 end;
+
+
+// *************************************************************************
+//! ワッチョイ全体が同じレスをあぼ～ん
+// *************************************************************************
+procedure TGikoDM.IndividualAbon1WcAllActionExecute(Sender: TObject);
+begin
+  GikoForm.IndividualAbonWacchoi(1, False);
+end;
+
+// *************************************************************************
+//! ワッチョイ全体が同じレスを透明あぼ～ん
+// *************************************************************************
+procedure TGikoDM.IndividualAbon0WcAllActionExecute(Sender: TObject);
+begin
+  GikoForm.IndividualAbonWacchoi(0, False);
+end;
+
+// *************************************************************************
+//! ワッチョイ下4桁が同じレスをあぼ～ん
+// *************************************************************************
+procedure TGikoDM.IndividualAbon1WcLs4ActionExecute(Sender: TObject);
+begin
+  GikoForm.IndividualAbonWacchoi(1, True);
+end;
+
+// *************************************************************************
+//! ワッチョイ下4桁が同じレスを透明あぼ～ん
+// *************************************************************************
+procedure TGikoDM.IndividualAbon0WcLs4ActionExecute(Sender: TObject);
+begin
+  GikoForm.IndividualAbonWacchoi(0, True);
+end;
+
+
 ////////////////////////////////ブラウザポップアップまでおしまい/////////////////////
 // *************************************************************************
 //! ギコナビのウェブサイトを表示する
@@ -4641,6 +4691,31 @@ procedure TGikoDM.AddIDtoNGWord1ActionExecute(Sender: TObject);
 begin
     GikoForm.AddIDtoNGWord(false);
 end;
+
+//! このレスのワッチョイ全体をNGワードに追加する
+procedure TGikoDM.AddWcAlltoNGWord1ActionExecute(Sender: TObject);
+begin
+  GikoForm.AddWacchoitoNGWord(False, False);
+end;
+
+//! このレスのワッチョイ全体をNGワードに追加する（透明)
+procedure TGikoDM.AddWcAlltoNGWord0ActionExecute(Sender: TObject);
+begin
+  GikoForm.AddWacchoitoNGWord(True, False);
+end;
+
+//! このレスのワッチョイ下4桁をNGワードに追加する
+procedure TGikoDM.AddWcLs4toNGWord1ActionExecute(Sender: TObject);
+begin
+  GikoForm.AddWacchoitoNGWord(False, True);
+end;
+
+//! このレスのワッチョイ下4桁をNGワードに追加する（透明)
+procedure TGikoDM.AddWcLs4toNGWord0ActionExecute(Sender: TObject);
+begin
+  GikoForm.AddWacchoitoNGWord(True, True);
+end;
+
 //! クリップボードの文字列をIDとして同一IDレスアンカー表示
 procedure TGikoDM.ExtractSameIDActionExecute(Sender: TObject);
 var
