@@ -69,10 +69,11 @@ const
 
 
 procedure DebugLog(text: String);
-var
+{var
   dst: TextFile;
-  path: String;
+  path: String;}
 begin
+{
   path := 'd:\log\uplift.log';
 
   try
@@ -87,6 +88,7 @@ begin
   finally
     CloseFile(dst);
   end;
+}
 end;
 
 function Session5ch_Connected: Boolean;
