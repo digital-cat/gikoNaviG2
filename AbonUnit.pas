@@ -128,7 +128,7 @@ implementation
 
 uses MojuUtils, GikoSystem, GikoBayesian, Setting,
   NgEditor,
-  bmRegExp;
+  bmRegExp, SkRegExpW;
 
 function InvidiAbonListSort( item1, item2 : Pointer ) : Integer;
 begin
@@ -379,11 +379,11 @@ var
 	i : Integer;
 	pos : Integer;
 	buftoken : String;
-    RegExp: Boolean;
-    Target: String;
+  RegExp: Integer;
+  Target: String;
 begin
 	bufstl := TStringList.Create;
-    RegExp := False;
+  RegExp := 0;
 	try
 		if Length(argline) > 0 then begin
 			pos := AnsiPos(#9,argline);
@@ -391,49 +391,53 @@ begin
 				buftoken := Copy(argline,1,pos-1);
 				Delete(argline,1,pos);
 				if Length(buftoken) > 0 then begin
-                    // 正規表現
-                    if (buftoken = DEF_REGEXP) then begin
-                        RegExp := True;
-                    // 板・スレ指定
-                    end else if ((AnsiPos(DEF_THREAD, buftoken) = 1) or
-                                 (AnsiPos(DEF_BOARD,  buftoken) = 1)) and
-                                 (AnsiPos(DEF_END, buftoken) > 1) then begin
-                        Target := buftoken;
-                    // >> で始まるトークンはコメント扱いで無視する
-                    end else if AnsiPos('>>', buftoken) <> 1 then begin
-    				    bufstl.Append(buftoken);
-                    end;
+          // 正規表現
+          if (buftoken = DEF_REGEXP) then
+              RegExp := 1
+          // 正規表現
+          else if (buftoken = DEF_REGEX2) then
+              RegExp := 2
+          // 板・スレ指定
+          else if ((AnsiPos(DEF_THREAD, buftoken) = 1) or
+                   (AnsiPos(DEF_BOARD,  buftoken) = 1)) and
+                   (AnsiPos(DEF_END,    buftoken) > 1) then
+              Target := buftoken
+          // >> で始まるトークンはコメント扱いで無視する
+          else if AnsiPos('>>', buftoken) <> 1 then
+              bufstl.Append(buftoken);
 				end else if ( bufstl.Count = 0 ) then begin
 					bufstl.Append('');
 				end;
 				pos := AnsiPos(#9,argline);
 			end;
 			if Length(argline) > 0 then begin
-                // >> で始まるトークンはコメント扱いで無視する
-                if AnsiPos('>>', argline) <> 1 then begin
-    				bufstl.Append(argline);
-                end;
+        // >> で始まるトークンはコメント扱いで無視する
+        if AnsiPos('>>', argline) <> 1 then
+          bufstl.Append(argline);
 			end;
-            // 各種指定の順位：透明→板・スレ→正規表現
-            if (RegExp = True) then begin
-                if (bufstl.Count > 0) and (bufstl.Strings[0] = '') then
-                    bufstl.Insert(1, DEF_REGEXP)    // 透明指定の後に正規表現指定を置く
-                else
-                    bufstl.Insert(0, DEF_REGEXP);   // 正規表現指定は先頭に置く
-            end;
-            if (Target <> '') then begin
-                if (bufstl.Count > 0) and (bufstl.Strings[0] = '') then
-                    bufstl.Insert(1, Target)    // 透明指定の後に板・スレ指定を置く
-                else
-                    bufstl.Insert(0, Target);   // 板・スレ指定は先頭に置く
-            end;
+      // 各種指定の順位：透明→板・スレ→正規表現
+      if (RegExp > 0) then begin
+        i := 0;   // 0:正規表現指定は先頭に置く
+        if (bufstl.Count > 0) and (bufstl.Strings[0] = '') then
+          i := 1; // 1:透明指定の後に正規表現指定を置く
+        case RegExp of
+          1: bufstl.Insert(i, DEF_REGEXP);
+          2: bufstl.Insert(i, DEF_REGEX2);
+        end;
+      end;
+      if (Target <> '') then begin
+          if (bufstl.Count > 0) and (bufstl.Strings[0] = '') then
+              bufstl.Insert(1, Target)    // 透明指定の後に板・スレ指定を置く
+          else
+              bufstl.Insert(0, Target);   // 板・スレ指定は先頭に置く
+      end;
 			ret := bufstl.Count;
 			SetLength(Ftokens[index],ret);
 			for i := 0 to ret - 1  do begin
-                if IgnoreKana then
-                    Ftokens[index][i] := ZenToHan(bufstl.Strings[i])
-                else
-                    Ftokens[index][i] := bufstl.Strings[i];
+        if IgnoreKana then
+            Ftokens[index][i] := ZenToHan(bufstl.Strings[i])
+        else
+            Ftokens[index][i] := bufstl.Strings[i];
 			end;
 		end;
 	finally
@@ -471,13 +475,14 @@ var
 	pos : PChar;
 	pts, pte : PChar;
 	trgLen : Integer;
-    RegExp: Boolean;
-    AWKStr: TAWKStr;
+  RegExp: Integer;
+  AWKStr: TAWKStr;
+  SkRegExp: TSkRegExp;
 	RStart: Integer;
 	RLength: Integer;
-    TokenCnt: Integer;
-    Chk: Integer;
-    CheckTarget: Boolean;
+  TokenCnt: Integer;
+  Chk: Integer;
+  CheckTarget: Boolean;
 begin
 	hit := false;
 	if AnsiStrPosEx(PChar(line), PChar(line)+Length(line), FpAbons, FpAbone) = nil then begin
@@ -488,83 +493,103 @@ begin
 			target := line;
 
 		trgLen := Length(target);
-        AWKStr := nil;
+    AWKStr := nil;
+    SkRegExp := nil;
 
-		for lines := 0 to High(Ftokens) do begin
-            if Length(Ftokens[lines]) = 0 then begin
-                Continue;
+    try
+      for lines := 0 to High(Ftokens) do begin
+        if Length(Ftokens[lines]) = 0 then begin
+          Continue;
+        end;
+        hit := False;
+        bufline := target;
+        pts := PChar(bufline);
+        pte := pts + trgLen;
+        RegExp := 0;
+        Invisible := False;
+        start := 0;
+        CheckTarget := True;
+
+        TokenCnt := Length(Ftokens[lines]);
+        for Chk := 0 to 2 do begin
+          if (Chk >= TokenCnt) then
+            Break;
+          if (Chk = 0) and (Ftokens[lines][0] = '') then begin
+            Invisible := True;
+            start := 1;
+          end else if ((AnsiPos(DEF_THREAD, Ftokens[lines][Chk]) = 1) or
+                       (AnsiPos(DEF_BOARD,  Ftokens[lines][Chk]) = 1))
+                   and (AnsiPos(DEF_END,    Ftokens[lines][Chk]) > 1) then begin
+              CheckTarget := ThreadInfo.IsTarget(Ftokens[lines][Chk]);
+              if (CheckTarget = False) then
+                  Break;
+              Inc(start);     // 対象の板・スレ
+          end else if (Ftokens[lines][Chk] = DEF_REGEXP) then begin
+              RegExp := 1; // 正規表現
+              Inc(start);
+          end else if (Ftokens[lines][Chk] = DEF_REGEX2) then begin
+              RegExp := 2; // 正規表現2
+              Inc(start);
+          end else begin
+              Break;
+          end;
+        end;
+        if (CheckTarget = False) then begin     // 対象の板・スレではない
+            Continue;
+        end;
+
+        hit := True;
+        if (RegExp = 1) and (AWKStr = nil) then
+          AWKStr := TAWKStr.Create(nil)
+        else if (RegExp = 2) and (SkRegExp = nil) then
+          SkRegExp := TSkRegExp.Create;
+
+        for cells := start to High(Ftokens[lines]) do begin
+          case RegExp of
+            0: begin
+              pos := AnsiStrPosEx(pts, pte,
+                      PChar(Ftokens[lines][cells]), PChar(Ftokens[lines][cells]) + Length(Ftokens[lines][cells]));
+              if pos = nil then begin
+                  hit := false;
+              end else begin
+                  Delete(bufline, pos - pte + 1, Length(Ftokens[lines][cells]));
+                  pts := PChar(bufline);
+                  pte := pts + Length(bufline);
+              end;
             end;
-			hit := False;
-			bufline := target;
-			pts := PChar(bufline);
-			pte := pts + trgLen;
-            RegExp := False;
-            Invisible := False;
-            start := 0;
-            CheckTarget := True;
-
-            TokenCnt := Length(Ftokens[lines]);
-            for Chk := 0 to 2 do begin
-                if (Chk >= TokenCnt) then
-                    Break;
-                if (Chk = 0) and (Ftokens[lines][0] = '') then begin
-    				Invisible := True;
-                    start := 1;
-                end else if ((AnsiPos(DEF_THREAD, Ftokens[lines][Chk]) = 1) or
-                             (AnsiPos(DEF_BOARD,  Ftokens[lines][Chk]) = 1))
-                         and (AnsiPos(DEF_END,    Ftokens[lines][Chk]) > 1) then begin
-                    CheckTarget := ThreadInfo.IsTarget(Ftokens[lines][Chk]);
-                    if (CheckTarget = False) then
-                        Break;
-                    Inc(start);     // 対象の板・スレ
-                end else if (Ftokens[lines][Chk] = DEF_REGEXP) then begin
-                    RegExp := True; // 正規表現
-                    Inc(start);
-                end else begin
-                    Break;
-                end;
+            1: begin
+              try
+                AWKStr.RegExp := Ftokens[lines][cells];
+                if (AWKStr.Match(AWKStr.ProcessEscSeq(target), RStart, RLength) < 1) then
+                  hit := False;   // マッチしない
+              except
+                hit := False;
+              end;
             end;
-            if (CheckTarget = False) then begin     // 対象の板・スレではない
-                Continue;
+            2: begin
+              try
+                SkRegExp.Expression := Ftokens[lines][cells];
+                SkRegExp.NamedGroupOnly := True;
+                hit := SkRegExp.Exec(target);
+              except
+                hit := False;
+              end;
             end;
-
-			hit := True;
-            if (RegExp = True) and (AWKStr = nil) then begin
-            	AWKStr := TAWKStr.Create(nil);
-            end;
-
-			for cells := start to High(Ftokens[lines]) do begin
-                if (RegExp = False) then begin
-                    pos := AnsiStrPosEx(pts, pte,
-                            PChar(Ftokens[lines][cells]), PChar(Ftokens[lines][cells]) + Length(Ftokens[lines][cells]));
-                    if pos = nil then begin
-                        hit := false;
-                        break;
-                    end else begin
-                        Delete(bufline, pos - pte + 1, Length(Ftokens[lines][cells]));
-                        pts := PChar(bufline);
-                        pte := pts + Length(bufline);
-                    end;
-                end else begin
-                    try
-                        AWKStr.RegExp := Ftokens[lines][cells];
-                        if (AWKStr.Match(AWKStr.ProcessEscSeq(target), RStart, RLength) < 1) then
-                            hit := False;   // マッチしない
-                	except
-                        hit := False;
-                    end;
-                    if (hit = False) then
-                        Break;      // 1つでもマッチしない場合はあぼーんしない
-                end;
-			end;
-			if hit = true then begin
-				NGwordsLineNum := lines + 1;
-				break;
-			end;
-		end;
-
-        if (AWKStr <> nil) then
-    	    FreeAndNil(AWKStr);
+          end;
+          if (hit = False) then
+            Break;      // 1つでもマッチしない場合はあぼーんしない
+        end;
+        if hit = true then begin
+          NGwordsLineNum := lines + 1;
+          break;
+        end;
+      end;
+    finally
+      if (AWKStr <> nil) then
+        FreeAndNil(AWKStr);
+      if (SkRegExp <> nil) then
+        FreeAndNil(SkRegExp);
+    end;
 	end;
 	Result := hit;
 end;

@@ -7,7 +7,7 @@ uses
 
 type
   TAbonType = (atStandard, stTransparent);
-  TCompType = (ctStandard, ctRegexp);
+  TCompType = (ctStandard, ctRegexp, ctRegexp2);
   TTargetType = (ttAll, ttThread, ttBoard);
 
   TLineInfo = class(TObject)
@@ -35,6 +35,7 @@ type
 
 const
     DEF_REGEXP:  String = '{{REGEXP}}';
+    DEF_REGEX2:  String = '{{REGEX2}}';
     DEF_THREAD:  String = '{{THREAD:';
     DEF_BOARD:   String = '{{BOARD:';
     DEF_END:     String = '}}';
@@ -114,6 +115,7 @@ begin
     case CompType of
         ctStandard:    dst := dst + '通常比較・';
         ctRegexp:      dst := dst + '正規表現・';
+        ctRegexp2:     dst := dst + '正規表現2・';
         else           dst := dst + '・';
     end;
     case TargetType of
