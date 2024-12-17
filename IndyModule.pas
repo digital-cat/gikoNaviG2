@@ -415,7 +415,7 @@ var
 begin
 	try
   	// UPLIFTログイン済みの場合はセッションID期限切れ確認を行う
-  	uplift := Session5ch.Connected;
+  	uplift := Session5ch_Connected;
 
     for i := FCookieCollection.Count - 1 downto 0 do begin
       if delFlgs[i] then begin

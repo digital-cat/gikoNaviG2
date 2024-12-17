@@ -8,7 +8,7 @@ uses
 	GikoSystem, BoardGroup, ExternalBoardManager, ExternalBoardPlugInMain,
   IdStack, IdExceptionCore, IndyModule,   // for Indy10
   IdIOHandler, IdIOHandlerSocket, IdIOHandlerStack, IdSSL, IdSSLOpenSSL,  // for https
-	Sort, SyncObjs, bmRegExp;
+	Sort, SyncObjs, bmRegExp, StrUtils;
 
 type
 	TDownloadItem = class;
@@ -1050,7 +1050,7 @@ end;
 
 procedure TDownloadThread.GetSessionID;
 begin
-	FSessionID := Session5ch.SessionID;
+	FSessionID := Session5ch_SessionID;
 end;
 
 procedure TDownloadThread.Abort;

@@ -21,8 +21,6 @@ type
 
 		function GetSessionID: string;
 		function GetUserAgent: string;
-		function GetErrorCode: Integer;
-		function GetErrorMsg:  string;
     function Login: Boolean;
     procedure Clear;
   public
@@ -35,12 +33,19 @@ type
 		property  Connected: Boolean read  FConnected;
 		property  SessionID: string  read  GetSessionID;
 		property  UserAgent: string  read  GetUserAgent;
-		property  ErrorCode: Integer read  GetErrorCode;
-		property  ErrorMsg:  string  read  GetErrorMsg;
+		property  ErrorCode: Integer read  FErrorCode;
+		property  ErrorMsg:  string  read  FErrorString;
   end;
 
 var
   Session5ch: TSession5ch;
+
+  function Session5ch_Connected:  Boolean;
+  function Session5ch_Connect:    Boolean;
+  function Session5ch_Disconnect: Boolean;
+  function Session5ch_SessionID:  String;
+  function Session5ch_ErrorMsg:   String;
+  function Session5ch_ErrorCode:  Integer;
 
 implementation
 
@@ -59,6 +64,110 @@ const
   LOGIN_5CH_SID     = 'sid';
   LOGIN_5CH_ERRMSG  = 'Error: ログインできませんでした。';
   ROOT_5CH_URL			= 'https://5ch.net/';
+
+
+
+
+procedure DebugLog(text: String);
+var
+  dst: TextFile;
+  path: String;
+begin
+  path := 'd:\log\uplift.log';
+
+  try
+    AssignFile(dst, path);
+    if FileExists(path) then
+      Append(dst)
+    else
+      Rewrite(dst);
+
+    Writeln(dst, FormatDateTime('YYYY/MM/DD HH:NN:SS', Now) + ' ' + text);
+
+  finally
+    CloseFile(dst);
+  end;
+end;
+
+function Session5ch_Connected: Boolean;
+begin
+  if Session5ch = nil then
+    Result := False
+  else
+    Result := Session5ch.Connected;
+end;
+
+function Session5ch_Connect: Boolean;
+var
+  i: Integer;
+begin
+
+  if Session5ch_Connected then begin
+    Result := True;
+    Exit;
+  end;
+
+  for i := 0 to 2 do begin
+
+    if i > 0 then begin
+      DebugLog(Format('Session5ch_Connect() リトライ[%d]', [i]));
+      Sleep(1000);
+    end;
+
+    if Session5ch <> nil then
+      FreeAndNil(Session5ch);
+
+      Session5ch := TSession5ch.Create(nil);
+
+      Result := Session5ch.Connect;
+    if Result then begin
+      DebugLog('Session5ch_Connect() UPLIFTログイン成功');
+      Exit;		// 成功
+    end;
+
+    DebugLog(Format('Session5ch_Connect() UPLIFTログイン失敗[%d][%s]', [Session5ch.ErrorCode, Session5ch.ErrorMsg]));
+
+    if Session5ch.ErrorCode <> 405 then
+      Exit;		// 405以外はリトライしない
+  end;
+end;
+
+function Session5ch_Disconnect: Boolean;
+begin
+  if Session5ch <> nil then
+    Result := Session5ch.Disconnect
+  else begin
+    IndyMdl.DelUpliftCookie;
+    Result := True;
+  end;
+end;
+
+function Session5ch_SessionID: String;
+begin
+  if Session5ch <> nil then
+    Result := Session5ch.SessionID
+  else
+    Result := '';
+end;
+
+function Session5ch_ErrorMsg: String;
+begin
+  if Session5ch <> nil then begin
+    if (Session5ch.ErrorMsg = '') and (not Session5ch.Connected) then
+      Result := LOGIN_5CH_ERRMSG
+    else
+      Result := Session5ch.ErrorMsg;
+  end else
+    Result := '';
+end;
+
+function Session5ch_ErrorCode: Integer;
+begin
+  if (Session5ch <> nil) and (not Session5ch.Connected) then
+    Result := Session5ch.ErrorCode
+  else
+    Result := 0;
+end;
 
 
 { コンストラクタ }
@@ -94,8 +203,15 @@ begin
     Clear;
 		if Login then
 			Result := True
-		else
-			Disconnect;
+		else begin
+			DebugLog(Format('UPLIFTログインエラー[%d][%s]', [FErrorCode, FErrorString]));
+
+			//Disconnect;
+      FConnected   := False;
+      FSessionID   := '';
+      FUserAgent   := '';
+		  IndyMdl.DelUpliftCookie;
+		end;
 	end;
 end;
 
@@ -228,47 +344,5 @@ begin
   else
     Result := '';
 end;
-
-{ エラーコード取得 }
-function TSession5ch.GetErrorCode: Integer;
-begin
-	if FConnected then
-		Result := ErrorCode
-	else
-		Result := 0;
-end;
-
-{ エラーメッセージ取得 }
-function TSession5ch.GetErrorMsg:  string;
-begin
-	if FConnected then
-		Result := FErrorString
-	else
-    //Result := 'Error: IDかパスワードが正しくありません。';
-    Result := LOGIN_5CH_ERRMSG;
-end;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 end.

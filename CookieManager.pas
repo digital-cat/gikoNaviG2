@@ -150,7 +150,7 @@ begin
 
   	if item.SubItems.Count >= 5 then begin
     	if item.SubItems.Strings[4] = 'UPLIFT' then begin
-      	if Session5ch.Connected and		// ログイン中
+      	if Session5ch_Connected and		// ログイン中
 					(MsgBox(Handle, 'UPLIFTからログアウトします。' + #10 +
            								'よろしいですか？', Caption, MB_YESNO or MB_ICONQUESTION) = IDYES) then begin
             GikoDM.LoginAction.Execute;

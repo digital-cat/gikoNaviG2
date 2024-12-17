@@ -1043,7 +1043,7 @@ begin
 		MsgBox(Handle, Msg, ERROR, MB_OK or MB_ICONSTOP);
 		Result := False;
 	end else begin
-		if (not Session5ch.Connected) and (AnsiPos('●', GetNameText) <> 0) then begin
+		if (not Session5ch_Connected) and (AnsiPos('●', GetNameText) <> 0) then begin
 			Msg := 'ログインしていないので●の機能は利用出来ません。'#13#10
 					 + 'このまま送信してもよろしいですか？';
 			rc := MsgBox(Handle, Msg, '確認', MB_YESNO or MB_ICONQUESTION);
@@ -1636,7 +1636,7 @@ begin
 	end;
 
   if Board.Is2ch then
-		SessionID := Session5ch.SessionID;
+		SessionID := Session5ch_SessionID;
 	if SessionID <> '' then
 		s := 'sid=' + HttpEncode(SessionID) + '&'
 	else
@@ -3386,8 +3386,8 @@ begin
       if Length(GikoSys.Setting.FixedCookie) > 0 then
 		  	SetCookiesList(GikoSys.Setting.FixedCookie, names, values);
     	// UPLIFTログイン済み
-			if Session5ch.Connected then
-	      SetCookieList('sid', Session5ch.SessionID, names, values);
+      if Session5ch_Connected then
+        SetCookieList('sid', Session5ch_SessionID, names, values);
     	// Beログイン済み
       if (GikoSys.Belib.Connected) then begin
 	      SetCookieList('MDMD', GikoSys.Belib.MDMD, names, values);
