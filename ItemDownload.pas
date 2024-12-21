@@ -8,7 +8,7 @@ uses
 	GikoSystem, BoardGroup, ExternalBoardManager, ExternalBoardPlugInMain,
   IdStack, IdExceptionCore, IndyModule,   // for Indy10
   IdIOHandler, IdIOHandlerSocket, IdIOHandlerStack, IdSSL, IdSSLOpenSSL,  // for https
-	Sort, SyncObjs, bmRegExp;
+	Sort, SyncObjs, bmRegExp, StrUtils;
 
 type
 	TDownloadItem = class;
@@ -179,11 +179,11 @@ var
 	ResStream: TMemoryStream;
 
 	URL: string;
-	CgiStatus: TCgiStatus;
+	//CgiStatus: TCgiStatus;
 	Modified: TDateTime;
 	//RangeStart: Integer;
 	AdjustLen: Integer;
-	Idx: Integer;
+	//Idx: Integer;
 	ATitle: string;
 	DownloadResult: Boolean;
 	boardPlugIn 	: TBoardPlugIn;
@@ -317,7 +317,7 @@ begin
 							ATitle := '（名称不明）';
 						FMsg := '★強制取得を行います - [' + ATitle + ']';
 						FIcon := gmiWhat;
-						if FileExists(ChangeFileExt(Item.FThreadItem.GetThreadFileName,'.NG')) = true then
+						if (not GikoSys.Setting.KeepNgFile) and FileExists(ChangeFileExt(Item.FThreadItem.GetThreadFileName,'.NG')) then
 							DeleteFile(ChangeFileExt(Item.FThreadItem.GetThreadFileName,'.NG'));
 						if Assigned(OnDownloadMsg) then
 							Synchronize(FireDownloadMsg);
@@ -374,7 +374,7 @@ begin
 						AdjustLen := 0;
 						FMsg := '★「あぼーん」を検出したので再取得を行います - [' + ATitle + ']';
 						FIcon := gmiWhat;
-						if FileExists(ChangeFileExt(Item.FThreadItem.GetThreadFileName,'.NG')) = true then
+						if (not GikoSys.Setting.KeepNgFile) and FileExists(ChangeFileExt(Item.FThreadItem.GetThreadFileName,'.NG')) then
 							DeleteFile(ChangeFileExt(Item.FThreadItem.GetThreadFileName,'.NG'));
 						if Assigned(OnDownloadMsg) then
 							Synchronize(FireDownloadMsg);
@@ -624,7 +624,7 @@ begin
               AdjustLen := 0;
               FMsg := '★「あぼーん」を検出したので再取得を行います - [' + ATitle + ']';
               FIcon := gmiWhat;
-              if FileExists(ChangeFileExt(Item.FThreadItem.GetThreadFileName,'.NG')) = true then
+              if (not GikoSys.Setting.KeepNgFile) and FileExists(ChangeFileExt(Item.FThreadItem.GetThreadFileName,'.NG')) then
                 DeleteFile(ChangeFileExt(Item.FThreadItem.GetThreadFileName,'.NG'));
               if Assigned(OnDownloadMsg) then
                 Synchronize(FireDownloadMsg);
@@ -945,9 +945,12 @@ function TDownloadThread.DatDownload(ItemType: TGikoDownloadType; URL: string; M
 var
 	ResponseCode: Integer;
 	ResStream: TMemoryStream;
+  url2: String;
 begin
   GikoSys.Regulate2chURL(URL);  // for 5ch
+	url2 := GikoSys.GetActualURL(URL);
 	ResponseCode := -1;
+
 	if (ItemType = gdtThread) and (RangeStart > 0) then begin
 		//FIndy.Request.ContentRangeStart := RangeStart + AdjustLen;
 		//FIndy.Request.ContentRangeEnd := 0;
@@ -973,15 +976,17 @@ begin
 		try
 			ResStream.Clear;
 			{$IFDEF DEBUG}
-			Writeln('URL: ' + URL);
+			Writeln('URL: ' + url2);
 			{$ENDIF}
-			FIndy.Get(URL, ResStream);
-            Item.Content := GikoSys.GzipDecompress(ResStream, FIndy.Response.ContentEncoding);
+			FIndy.Get(url2, ResStream);
+			IndyMdl.SaveCookies(FIndy);
+      
+			Item.Content := GikoSys.GzipDecompress(ResStream, FIndy.Response.ContentEncoding);
 			Item.ContentLength := Length(Item.Content) + AdjustLen;
-            // 置換する
-            if GikoSys.Setting.ReplaceDat then begin
-                Item.Content := ReplaceDM.Replace(Item.Content);
-            end;
+			// 置換する
+			if GikoSys.Setting.ReplaceDat then begin
+				Item.Content := ReplaceDM.Replace(Item.Content);
+			end;
 			Item.LastModified := FIndy.Response.LastModified;
 			if Item.Content = '' then
 				Result := False
@@ -1045,7 +1050,7 @@ end;
 
 procedure TDownloadThread.GetSessionID;
 begin
-	FSessionID := Session5ch.SessionID;
+	FSessionID := Session5ch_SessionID;
 end;
 
 procedure TDownloadThread.Abort;

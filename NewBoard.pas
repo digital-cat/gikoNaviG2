@@ -20,24 +20,25 @@ type
 		Label1: TLabel;
 		MessageMemo: TMemo;
 		UpdateButton: TButton;
-	CloseButton: TButton;
+		CloseButton: TButton;
 		Indy: TIdHTTP;
 		StopButton: TButton;
-	BoardURLComboBox: TComboBox;
-	Label13: TLabel;
-	EditIgnoreListsButton: TButton;
-	Label2: TLabel;
+    BoardURLComboBox: TComboBox;
+    Label13: TLabel;
+    EditIgnoreListsButton: TButton;
+    Label2: TLabel;
     SakuCheckBox: TCheckBox;
     IdSSLIOHandlerSocketOpenSSL: TIdSSLIOHandlerSocketOpenSSL;
 		procedure UpdateButtonClick(Sender: TObject);
 		procedure StopButtonClick(Sender: TObject);
 		procedure CloseButtonClick(Sender: TObject);
 		procedure FormCreate(Sender: TObject);
-	procedure EditIgnoreListsButtonClick(Sender: TObject);
-	procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure EditIgnoreListsButtonClick(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
 	private
 		{ Private 宣言 }
 		IgnoreLists : TStringList;
+		IgnoreBoards : TStringList;
 		FAbort: Boolean;
 		function BoardDownload(const URL: String): TNewBoardItem;
 		function BoardLoardFromFile(const FilePath: String): String;
@@ -45,7 +46,9 @@ type
 		procedure SetIgnoreCategory(b: boolean);
 		procedure EditIgnoreList(Sender: TObject);
 		procedure UpdateIgnoreList(Sender: TObject);
-        function CheckDeleteItem(ini: TMemIniFile): Boolean;
+		function CheckDeleteItem(ini: TMemIniFile): Boolean;
+    procedure SetIgnoreBoards;
+    procedure FreeIgnoreBoards;
 	public
 		{ Public 宣言 }
 	end;
@@ -123,7 +126,10 @@ var
 	Stream: TMemoryStream;
 	s: string;
 	i: Integer;
+  url2: String;
 begin
+	url2 := GikoSys.GetActualURL(URL);
+
   TIndyMdl.InitHTTP(Indy);
 
 	Indy.Request.Referer := '';
@@ -143,7 +149,7 @@ begin
 			//IdAntiFreeze.Active := True;
       IndyMdl.StartAntiFreeze(20);    // for Indy10
 			try
-				Indy.Get(URL, Stream);
+				Indy.Get(url2, Stream);
 			finally
 				//IdAntiFreeze.Active := False;
         IndyMdl.EndAntiFreeze;        // for Indy10
@@ -189,6 +195,7 @@ var
 	idx: Integer;
 	idx1: Integer;
 	idx2: Integer;
+	idx3: Integer;
 	tmp: string;
 	URL: string;
 	Title: string;
@@ -199,7 +206,9 @@ var
 	ini: TMemIniFile;
 	oldURLs : TStringList;
 	newURLs : TStringList;
-    SakuIdx: Integer;
+	SakuIdx: Integer;
+  ignBoards: TStringList;
+  ign: Boolean;
 begin
 	Change := False;
 	MessageMemo.Lines.Add('新板、板URL変更チェックを開始します');
@@ -240,9 +249,10 @@ begin
 					tmp := Copy(s, idx1, (idx - idx1) + 4);
 					tmp := CustomStringReplace(tmp, '<b>', '');
 					tmp := CustomStringReplace(tmp, '</b>', '');
+          tmp := Trim(tmp);
 					Ignore := false;
 					for i := 0 to IgnoreLists.Count - 1 do begin
-						if tmp = Trim(IgnoreLists[i]) then begin
+						if tmp = IgnoreLists[i] then begin
 							cate := '';
 							s := Copy(s, idx + 5, Length(s));
 							Ignore := True;
@@ -276,11 +286,11 @@ begin
 						tmp := Copy(s, idx2, (idx - idx2) + 4);
 						tmp := CustomStringReplace(tmp, '<a href=', '');
 						tmp := CustomStringReplace(tmp, '</a>', '');
-                        tmp := CustomStringReplace(tmp, 'TARGET=_blank', '');
+						tmp := CustomStringReplace(tmp, 'TARGET=_blank', '');
 						i := AnsiPos('>', tmp);
 						if i <> 0 then begin
 							URL := Trim(Copy(tmp, 1, i - 1));
-							Title := Copy(tmp, i + 1, Length(tmp));
+							Title := Trim(Copy(tmp, i + 1, Length(tmp)));
 
               // URLダブルクォーテーション外し
               i := Length(URL);
@@ -302,28 +312,40 @@ begin
                   if (SakuIdx > 0) then
                       URL := Copy(URL, 1, SakuIdx - 1) + '.5ch.net/saku2ch/';
               end;
-              // BBSsが空対策
-              if Length(BBSs) = 0 then begin
-                  Board := nil;
-              end else begin
-                  Board := BBSs[ 0 ].FindBoardFromTitleAndCategory(cate, Title);
-                  if Board = nil then
-                      Board := BBSs[ 0 ].FindBoardFromURLAndCategory(cate, URL);
+
+              // カテゴリ\板名での除外リストチェック
+              ign := False;
+              idx3 := IgnoreBoards.IndexOf(cate);
+              if (idx3 >= 0) and (IgnoreBoards.Objects[idx3] <> nil) then begin
+								ignBoards := TStringList(IgnoreBoards.Objects[idx3]);
+                if ignBoards.IndexOf(Title) >= 0 then
+                	ign := True;
               end;
-              if Board = nil then begin
-                MessageMemo.Lines.Add('新板追加「' + Title + '(' + URL + ')」');
-                  ini.WriteString(cate, Title, URL);
-                  Change := True;
-              end else begin
-                if Board.URL <> URL then begin
-                    MessageMemo.Lines.Add('URL変更「' + Board.Title + '(' + URL +')」');
-                      ini.WriteString(cate, Title, URL);
-                      oldURLs.Add(Board.URL);
-                      newURLs.Add(URL);
-                      Change := True;
-                  end else begin
-                    ini.WriteString(cate, Title, URL);
-                  end;
+
+              if ign = False then begin		// 除外じゃない
+								// BBSsが空対策
+								if Length(BBSs) = 0 then begin
+									Board := nil;
+								end else begin
+									Board := BBSs[ 0 ].FindBoardFromTitleAndCategory(cate, Title);
+									if Board = nil then
+										Board := BBSs[ 0 ].FindBoardFromURLAndCategory(cate, URL);
+								end;
+								if Board = nil then begin
+									MessageMemo.Lines.Add('新板追加「' + Title + '(' + URL + ')」');
+									ini.WriteString(cate, Title, URL);
+									Change := True;
+								end else begin
+									if Board.URL <> URL then begin
+										MessageMemo.Lines.Add('URL変更「' + Board.Title + '(' + URL +')」');
+										ini.WriteString(cate, Title, URL);
+										oldURLs.Add(Board.URL);
+										newURLs.Add(URL);
+										Change := True;
+									end else begin
+										ini.WriteString(cate, Title, URL);
+									end;
+								end;
               end;
 						end else begin
 							s := Copy(s, idx2 + 2, Length(s));
@@ -333,27 +355,27 @@ begin
 					end;
 				end;
 			end;
-            // カテゴリ/板が減っただけだとChangeフラグがたたないときの対策
-            if not Change then begin
-                Change := CheckDeleteItem(ini);
-            end;
+			// カテゴリ/板が減っただけだとChangeフラグがたたないときの対策
+			if not Change then begin
+				Change := CheckDeleteItem(ini);
+			end;
 		finally
 			if Change then
 				ini.UpdateFile;
 			ini.Free;
 		end;
 		MessageMemo.Lines.Add('');
-	    if Change then begin
-            GikoForm.FavoritesURLReplace(oldURLs, newURLs);
-            GikoForm.RoundListURLReplace(oldURLs, newURLs);
-            GikoForm.TabFileURLReplace(oldURLs, newURLs);
+		if Change then begin
+			GikoForm.FavoritesURLReplace(oldURLs, newURLs);
+			GikoForm.RoundListURLReplace(oldURLs, newURLs);
+			GikoForm.TabFileURLReplace(oldURLs, newURLs);
 			MessageMemo.Lines.Add('新板、板URL変更チェックが完了しました');
 			MessageMemo.Lines.Add('「閉じる」ボタンを押してください');
 		end else
 			MessageMemo.Lines.Add('新板、板URL変更は ありませんでした');
-    finally
-    	oldURLs.Free;
-    	newURLs.Free;
+  finally
+    oldURLs.Free;
+    newURLs.Free;
 	end;
 	Result := Change;
 end;
@@ -444,6 +466,10 @@ begin
 		IgnoreLists.Add('運営案内');
 		IgnoreLists.Add('ツール類');
 		IgnoreLists.Add('他のサイト');
+		IgnoreLists.Add('ニュース\公式アンテナ');
+		IgnoreLists.Add('ニュース\公式X');
+		IgnoreLists.Add('BBSPINK\TOPページ');
+		IgnoreLists.Add('BBSPINK\RONIN');
 	end else begin
 		try
 			IgnoreLists.LoadFromFile(GikoSys.Setting.GetIgnoreFileName);
@@ -452,6 +478,49 @@ begin
 			SetIgnoreCategory(true);
 		end;
 	end;
+  SetIgnoreBoards;
+end;
+
+procedure TNewBoardDialog.SetIgnoreBoards;
+var
+	i: Integer;
+  idx: Integer;
+  tmp: String;
+  ctg: String;
+  brd: String;
+  brdList: TStringList;
+begin
+	IgnoreBoards := TStringList.Create;
+
+  try
+    for i := IgnoreLists.Count - 1 downto 0 do begin
+    	tmp := Trim(IgnoreLists[i]);
+      if tmp = '' then begin
+	      IgnoreLists.Delete(i);
+        Continue;
+      end;
+      IgnoreLists[i] := tmp;
+      idx := Pos('\', tmp);
+      if idx < 2 then
+        Continue;
+
+      ctg := Trim(Copy(tmp, 1, idx - 1));
+      brd := Trim(Copy(tmp, idx + 1));
+      if (ctg = '') or (brd = '') then
+        Continue;
+
+      IgnoreLists.Delete(i);
+
+      idx := IgnoreBoards.IndexOf(ctg);
+      if idx < 0 then begin
+        brdList := TStringList.Create;
+        brdList.Add(brd);
+        IgnoreBoards.InsertObject(0, ctg, brdList);
+      end else
+        (TStringList(IgnoreBoards.Objects[idx])).Insert(0, brd);
+    end;
+  finally
+  end;
 end;
 
 procedure TNewBoardDialog.EditIgnoreListsButtonClick(Sender: TObject);
@@ -462,14 +531,25 @@ end;
 procedure TNewBoardDialog.EditIgnoreList(Sender: TObject);
 var
 	i: Integer;
+  j: Integer;
+  ctg: String;
+  brd: TStringList;
 begin
 	EditIgnoreListsButton.Caption := '除外カテゴリー更新';
-	Label2.Caption := '各１行にカテゴリ名を記入してください。（改行はCtrl+Enter）';
+	Label2.Caption := '各1行にカテゴリ名又はカテゴリ名\板名の形式で記入してください。（改行はCtrl+Enter）';
 	UpdateButton.Enabled := false;
 	//MessageMemo.ReadOnly := false;
 	MessageMemo.Clear;
 	for i := 0 to IgnoreLists.Count - 1 do
 		MessageMemo.Lines.Add(IgnoreLists[i]);
+  for i := 0 to IgnoreBoards.Count - 1 do begin
+	  brd := TStringList(IgnoreBoards.Objects[i]);
+    if brd <> nil then begin
+	    ctg := IgnoreBoards[i];
+    	for j := 0 to brd.Count - 1 do
+				MessageMemo.Lines.Add(ctg + '\' + brd[j]);
+    end;
+  end;
 end;
 procedure TNewBoardDialog.UpdateIgnoreList(Sender: TObject);
 var
@@ -492,9 +572,30 @@ end;
 procedure TNewBoardDialog.FormClose(Sender: TObject;
   var Action: TCloseAction);
 begin
-    GikoSys.Setting.SakuBoard := SakuCheckBox.Checked;
+	GikoSys.Setting.SakuBoard := SakuCheckBox.Checked;
 	IgnoreLists.Free;
+  FreeIgnoreBoards;
 end;
+
+procedure TNewBoardDialog.FreeIgnoreBoards;
+var
+	i: Integer;
+begin
+  if IgnoreBoards = nil then
+		Exit;
+  try
+    for i := 0 to IgnoreBoards.Count - 1 do begin
+      if IgnoreBoards.Objects[i] <> nil then begin
+        (TStringList(IgnoreBoards.Objects[i])).Free;
+        IgnoreBoards.Objects[i] := nil;
+      end;
+    end;
+  finally
+    IgnoreBoards.Free;
+    IgnoreBoards := nil;
+  end;
+end;
+
 //! ローカルファイルをロードする
 function TNewBoardDialog.BoardLoardFromFile(const FilePath: String): String;
 var

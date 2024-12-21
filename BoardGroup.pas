@@ -105,6 +105,7 @@ type
 		FTitle: string;								//ボードタイトル
 		FBBSID: string;								//BBSID
 		FURL: string;									//ボードURL
+    FitestURL: String;						//ボードURL(itest形式　5ch.netのみ)
 		FRound: Boolean;							//スレッド一覧巡回予約
 		FRoundName: string;						//巡回名
 		FRoundDate: TDateTime;				//スレッド一覧を取得した日時（巡回日時）
@@ -154,6 +155,7 @@ type
 		procedure SetKotehanName(s: string);
 		procedure SetKotehanMail(s: string);
 		procedure Init;
+    function GetURLitest: String;
 	public
 		constructor Create( inPlugIn : TBoardPlugIn; inURL : string );
 		destructor Destroy; override;
@@ -238,6 +240,7 @@ type
 
 		property Cookie: string 			read FCookie write FCookie;
 		property Expires: TDateTime 			read FExpires write FExpires;
+    property itestURL: String read GetURLitest;
 	end;
 
 	//スレ
@@ -267,7 +270,8 @@ type
 		FAgeSage: TGikoAgeSage;		//アイテムの上げ下げ
 		FUpdate: Boolean;
 		FExpand: Boolean;
-		FURL					: string;				// このスレをブラウザで表示する際の URL
+		FURL: string;							// このスレをブラウザで表示する際の URL
+    FitestURL: String;				//スレURL(itest形式　5ch.netのみ)
 		FJumpAddress : Integer; 	//レス番号指定URLを踏んだときに指定されるレスの番号が入る
 		procedure SetLastModified(d: TDateTime);
 		procedure SetRound(b: Boolean);
@@ -278,7 +282,8 @@ type
 		procedure SetScrollTop(i: Integer);
 		procedure Init;
 		function GetCreateDate: TDateTime;
-        function GetFilePath: String;
+		function GetFilePath: String;
+    function GetURLitest: String;
 	public
 		constructor Create(const inPlugIn : TBoardPlugIn; const inBoard : TBoard; inURL : string ); overload;
 		constructor Create(const inPlugIn : TBoardPlugIn; const inBoard : TBoard;
@@ -331,6 +336,7 @@ type
 		property	URL					: string				read FURL write FURL;
 		property	FilePath		: string	read GetFilePath;
 		property JumpAddress : Integer read FJumpAddress write FJumpAddress;
+    property itestURL: String read GetURLitest;
 	end;
 
 	TBoardGroup = class(TStringList)
@@ -352,12 +358,12 @@ type
     // スレッド名NGワードリスト
 	TThreadNgList = class(TStringList)
     private
-        FFilePath: String;
+			FFilePath: String;
     public
 		constructor Create;
-        procedure Load;
-        procedure Save;
-        function IsNG(const Title: String): Boolean;
+			procedure Load;
+			procedure Save;
+			function IsNG(const Title: String; Invisible: Boolean): Boolean;
     end;
 
 	function	BBSsFindBoardFromBBSID( inBBSID : string ) : TBoard;
@@ -398,28 +404,29 @@ const
 //! ログを持っているなら真を返す
 function CountLog(Item: TThreadItem): Boolean;
 begin
-	Result := Item.IsLogFile;
+	Result := Item.IsLogFile and (not ThreadNgList.IsNG(Item.Title, True));
 end;
 //! 新着なら真を返す
 function CountNew(Item: TThreadItem): Boolean;
 begin
-	Result := Item.NewArrival;
+	Result := Item.NewArrival and (not ThreadNgList.IsNG(Item.Title, True));
 end;
 //! DAT落ちなら真を返す
 function CountDat(Item: TThreadItem): Boolean;
 begin
-	Result := (Item.AgeSage = gasArch);
+	Result := (Item.AgeSage = gasArch) and (not ThreadNgList.IsNG(Item.Title, True));
 end;
 //! 生存スレなら真を返す
 function CountLive(Item: TThreadItem): Boolean;
 begin
-	Result := (Item.AgeSage <> gasArch);
+	Result := (Item.AgeSage <> gasArch) and (not ThreadNgList.IsNG(Item.Title, True));
 end;
 
 //! 常に真
 function CountAll(Item: TThreadItem): Boolean;
 begin
-    Result := True;
+    //Result := True;
+    Result := not ThreadNgList.IsNG(Item.Title, True);
 end;
 
 
@@ -459,8 +466,29 @@ pluginを使用するならば、ExtractBoardURL( inURL )
 function	BBSsFindBoardFromURL(
 	inURL	: string
 ) : TBoard;
+
+  function BoardGroupsFind(grp: TBoardGroup; inURL: String; var idx: Integer): Boolean;
+  const
+    PROTOCOLS_HTTP: array [0..1] of String = ('https:', 'http:');
+  var
+    i: Integer;
+  	url: String;
+  begin
+  	idx := -1;
+
+  	for i := 0 to 1 do begin
+      if Pos(PROTOCOLS_HTTP[i], inURL) = 1 then begin
+      	url := Copy(inURL, Length(PROTOCOLS_HTTP[i]) + 1, Length(inURL) - Length(PROTOCOLS_HTTP[i]));
+        Break;
+      end;
+    end;
+
+		Result := grp.Find(PROTOCOLS_HTTP[0] + url, idx) or
+    	 			  grp.Find(PROTOCOLS_HTTP[1] + url, idx);
+  end;
+
 var
-	i,p			: Integer;
+	i,p : Integer;
 	accept		: TAcceptType;
 	protocol, host, path, document, port, bookmark : string;
 begin
@@ -468,12 +496,14 @@ begin
 	for i := Length(BoardGroups) - 1 downto 1 do begin
 		accept := BoardGroups[i].BoardPlugIn.AcceptURL(inURL);
 		if (accept = atBoard) or (accept = atThread) then begin
-			if BoardGroups[i].Find(inURL, p) then begin
+			//if BoardGroups[i].Find(inURL, p) then begin
+			if BoardGroupsFind(BoardGroups[i], inURL, p) then begin
 				Result := TBoard(BoardGroups[i].Objects[p]);
 				Exit;
 			end else begin
 				inURL := BoardGroups[i].BoardPlugIn.ExtractBoardURL(inURL);
-				if BoardGroups[i].Find(inURL, p) then begin
+				//if BoardGroups[i].Find(inURL, p) then begin
+				if BoardGroupsFind(BoardGroups[i], inURL, p) then begin
 					Result := TBoard(BoardGroups[i].Objects[p]);
 					Exit;
 				end;
@@ -481,9 +511,10 @@ begin
 		end;
 	end;
 	//ここにきたら、pluginを使わないやつらを調べる
-	if BoardGroups[0].Find(inURL, p) then
+	//if BoardGroups[0].Find(inURL, p) then
+	if BoardGroupsFind(BoardGroups[0], inURL, p) then
 		Result := TBoard(BoardGroups[0].Objects[p]);
-		
+
 	if (Result = nil) then begin
 		GikoSys.ParseURI( inURL, protocol, host, path, document, port, bookmark );
 		//ホストが2chならBBSIDで調べる
@@ -1604,6 +1635,44 @@ begin
 	FUpdate := True;
 end;
 
+//! ５ちゃん板のitest URL取得
+function TBoard.GetURLitest: String;
+const
+	DOMAIN_5CH: String = '.5ch.net';
+  HOST_ITEST: String = 'itest.5ch.net';
+var
+  protocol, host, path, document, port, bookmark, board: String;
+  splitter: TStringList;
+begin
+	if FitestURL = '' then begin
+    if (not is2ch) or (Pos(DOMAIN_5CH, URL) < 1) then begin
+      Result := '';
+      Exit;
+    end;
+
+    GikoSys.ParseURI(URL, protocol, host, path, document, port, bookmark);
+
+    if host = HOST_ITEST then
+      Result := Format('%s://%s/%s', [protocol, host, path])
+    else begin
+      splitter := TStringList.Create;
+      try
+        splitter.Delimiter := '/';
+        splitter.DelimitedText := path;
+        if splitter.Count < 2 then
+          Exit;
+        board := splitter.Strings[1];
+        if board <> '' then
+          Result := Format('%s://%s/subback/%s', [protocol, HOST_ITEST, board]);
+      finally
+        splitter.Free;
+      end;
+    end;
+  end;
+
+	Result := FitestURL;
+end;
+
 //constructor TThreadItem.Create(AOwner: TComponent);
 procedure TThreadItem.Init;
 begin
@@ -1993,6 +2062,50 @@ begin
     Result := path;
 end;
 
+//! ５ちゃんスレのitest URL取得
+function TThreadItem.GetURLitest: String;
+const
+	DOMAIN_5CH: String = '.5ch.net';
+  HOST_ITEST: String = 'itest.5ch.net';
+var
+  protocol, host, path, document, port, bookmark, server, board, threadid: String;
+  splitter: TStringList;
+begin
+	if FitestURL = '' then begin
+    if Pos(DOMAIN_5CH, URL) < 1 then begin
+	    Result := '';
+      Exit;
+    end;
+
+    GikoSys.ParseURI(URL, protocol, host, path, document, port, bookmark);
+
+    if host = HOST_ITEST then
+      FitestURL := Format('%s://%s/%s/', [protocol, host, path])
+    else if Pos(DOMAIN_5CH, host) = Length(host) - Length(DOMAIN_5CH) + 1 then begin
+      splitter := TStringList.Create;
+      try
+        splitter.Delimiter := '.';
+        splitter.DelimitedText := Host;
+        if splitter.Count < 1 then
+          Exit;
+        server := splitter.Strings[0];
+        splitter.Delimiter := '/';
+        splitter.DelimitedText := path;
+        if splitter.Count < 5 then
+          Exit;
+        board    := splitter.Strings[3];
+        threadid := splitter.Strings[4];
+        if (server <> '') and (board <> '') and (threadid <> '') then
+          FitestURL := Format('%s://%s/%s/test/read.cgi/%s/%s', [protocol, HOST_ITEST, server, board, threadid]);
+      finally
+        splitter.Free;
+      end;
+    end;
+  end;
+
+  Result := FitestURL;
+end;
+
 destructor TBoardGroup.Destroy;
 begin
 	Clear;
@@ -2065,19 +2178,27 @@ begin
 	end;
 end;
 
-function TThreadNgList.IsNG(const Title: String): Boolean;
+function TThreadNgList.IsNG(const Title: String; Invisible: Boolean): Boolean;
 var
-    Cnt: Integer;
-    MaxCnt: Integer;
+  Cnt: Integer;
+  MaxCnt: Integer;
+  pts, pte, pss, pse: PChar;
 begin
+  if Invisible = GikoSys.Setting.NGThreadInvis then begin
+    pts := PChar(Title);
+    pte := pts + Length(Title);
     MaxCnt := Count - 1;
     for Cnt := 0 to MaxCnt do begin
-        if (Pos(Strings[Cnt], Title) > 0) then begin
-            Result := True;
-            Exit;
-        end;
+//      if (Pos(Strings[Cnt], Title) > 0) then begin
+      pss := PChar(Strings[Cnt]);
+      pse := pss + Length(Strings[Cnt]);
+      if StrPosEx(pts, pte, pss, pse) <> nil then begin
+        Result := True;
+        Exit;
+      end;
     end;
-    Result := False;
+  end;
+	Result := False;
 end;
 
 end.

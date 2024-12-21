@@ -16,7 +16,7 @@ uses
 	{HttpApp,} URLMon, IdGlobal, IdURI, {Masks,}
 	Setting, BoardGroup, gzip, {Dolib,} bmRegExp, AbonUnit,
 	ExternalBoardManager, ExternalBoardPlugInMain,
-	GikoBayesian, GikoMessage, Belib;
+	GikoBayesian, GikoMessage, Belib, DonguriSystem;
 
 type
 	TVerResourceKey = (
@@ -103,6 +103,22 @@ type
 		FNoParam: Boolean;  //!< レス番パラメータなし
 	end;
 
+  //! User-Agentバージョン固定情報
+  TUAVer = record
+    BetaVer: Integer;		//! BETA_VERSION						74
+    FileVer: String;		//! ファイルバージョン番号		1.75.0.887
+  end;
+
+	//! ワッチョイレコード
+	TWchRec = record
+		FNName: String;		// 妙なニックネーム
+		FHigh4: String;		// 上4桁（IPアドレス）
+		FLow4: String;		// 下4桁（User-Agent）
+	end;
+
+	//! ワッチョイレコードへのポインタ
+	PWchRec = ^TWchRec;
+
 	TGikoSys = class(TObject)
 	private
 		{ Private 宣言 }
@@ -113,11 +129,12 @@ type
 		FBayesian	: TGikoBayesian;	//!< ベイジアンフィルタ
 		FVersion : String;		      //!< ファイルバージョン
 		FGikoMessage: TGikoMessage;
-        FBelib: TBelib;
+    FBelib: TBelib;
+    FDonguriSys: TDonguriSys;
 		//! あるセパレータで区切られた文字列からｎ番目の文字列を取り出す
 		function ChooseString(const Text, Separator: string; Index: integer): string;
-        //! 一時ファイルからの復旧
-        procedure RestoreThreadData(Board: TBoard);
+    //! 一時ファイルからの復旧
+    procedure RestoreThreadData(Board: TBoard);
 	public
 		{ Public 宣言 }
 		FAbon : TAbon;
@@ -141,7 +158,7 @@ type
 		function GetTempFolder: string;
 		function GetSentFileName: string;
 		function GetConfigDir: string;
-        function GetNGWordsDir: string;
+    function GetNGWordsDir: string;
 		function GetSkinDir: string;
 		function GetSkinHeaderFileName: string;
 		function GetSkinFooterFileName: string;
@@ -152,7 +169,8 @@ type
 		function GetStyleSheetDir: string;
 		function GetOutBoxFileName: string;
 		function GetUserAgent: string;
-				function GetSambaFileName : string;
+		procedure GetUAVerList(list: TStrings);
+		function GetSambaFileName : string;
 
 		function GetMainKeyFileName : String;
 		function GetEditorKeyFileName: String;
@@ -169,6 +187,7 @@ type
 		property Setting: TSetting read FSetting write FSetting;
 //		property Dolib: TDolib read FDolib write FDolib;
 		property Belib: TBelib read FBelib write FBelib;
+    property DonguriSys: TDonguriSys read FDonguriSys;
 
 		function UrlToID(url: string): string;
 		function UrlToServer(url: string): string;
@@ -182,6 +201,7 @@ type
 		function DateTimeToInt(ADate: TDateTime): Int64;
 
 		function ReadThreadFile(FileName: string; Line: Integer): string;
+		procedure ReadThreadFileAll(FileName: string; var Threads: TStringList);
 
 		procedure MenuFont(Font: TFont);
 
@@ -219,11 +239,18 @@ type
 		procedure GetPopupResNumber(URL : string; var stRes, endRes : Int64);
 
 		property Bayesian : TGikoBayesian read FBayesian write FBayesian;
-        function CreateResAnchor(var Numbers: TStringList; ThreadItem: TThreadItem; limited: Integer):string;
+    function CreateResAnchor(var Numbers: TStringList; ThreadItem: TThreadItem; limited: Integer):string;
 		procedure GetSameIDRes(const AID : string; ThreadItem: TThreadItem;var body: TStringList); overload;
 		procedure GetSameIDRes(AIDNum : Integer; ThreadItem: TThreadItem;var body: TStringList); overload;
-        function GetResID(AIDNum: Integer; ThreadItem: TThreadItem): String;
-        function ExtructResID(ADateStr: String): String;
+    function GetResID(AIDNum: Integer; ThreadItem: TThreadItem): String;
+    function ExtructResID(ADateStr: String): String;
+
+    function GetResWacchoi(AIDNum: Integer; ThreadItem: TThreadItem; ALow4: Boolean): String;
+		procedure GetSameWacchoiRes(AResNo: Integer; ThreadItem: TThreadItem; ALow4: Boolean; var ANumbers: TStringList);
+		procedure GetSameWacchoiRes2(AInnerText: String; ThreadItem: TThreadItem; ALow4: Boolean; var ANumbers: TStringList);
+    function ExtructWacchoi(AName: String; PWch: PWchRec): Boolean;
+    function ExtructWacchoi2(AName: String; PWch: PWchRec): Boolean;
+
 		//! 単語解析
 		procedure SpamCountWord( const text : string; wordCount : TWordCount );
 		//! 学習クリア
@@ -248,29 +275,29 @@ type
 		function GetGikoMessage(MesType: TGikoMessageListType): String;
 		//! GMTの時刻をTDateTimeに変換する
 		function  DateStrToDateTime(const DateStr: string): TDateTime;
-        //! User32.dllが利用できるか
-        function CanUser32DLL: Boolean;
-        //! OE引用符取得
-        function GetOEIndentChar : string;
-        //! 置換設定ファイル取得
-        function GetReplaceFileName: String;
-        //! インデックスにないdat（はぐれdat）の追加
-        procedure AddOutofIndexDat(Board: TBoard; DatList: TStringList; AllCreate: boolean = True);
-        //! ファイル名からのスレッド作成日の取得
-        function GetCreateDateFromName(FileName: String): TDateTime;
-        function GetExtpreviewFileName: String;
+    //! User32.dllが利用できるか
+    function CanUser32DLL: Boolean;
+    //! OE引用符取得
+    function GetOEIndentChar : string;
+    //! 置換設定ファイル取得
+    function GetReplaceFileName: String;
+    //! インデックスにないdat（はぐれdat）の追加
+    procedure AddOutofIndexDat(Board: TBoard; DatList: TStringList; AllCreate: boolean = True);
+    //! ファイル名からのスレッド作成日の取得
+    function GetCreateDateFromName(FileName: String): TDateTime;
+    function GetExtpreviewFileName: String;
 
-        procedure ShowRefCount(msg: String; unk: IUnknown);
-        //! 冒険の書Cookie取得
-        function GetBoukenCookie(AURL: String): String;
-        //! 冒険の書Cookie設定
-        procedure SetBoukenCookie(ACookieValue, ADomain: String);
-        //! 冒険の書Cookie削除
-        procedure DelBoukenCookie(ADomain: String);
-        //! 冒険の書Domain一覧取得
-        procedure GetBoukenDomain(var ADomain: TStringList);
-        //! 冒険の書ドメイン名Cookie取得
-        function GetBouken(AURL: String; var Domain: String): String;
+    procedure ShowRefCount(msg: String; unk: IUnknown);
+    //! 冒険の書Cookie取得
+    function GetBoukenCookie(AURL: String): String;
+    //! 冒険の書Cookie設定
+    procedure SetBoukenCookie(ACookieValue, ADomain: String);
+    //! 冒険の書Cookie削除
+    procedure DelBoukenCookie(ADomain: String);
+    //! 冒険の書Domain一覧取得
+    procedure GetBoukenDomain(var ADomain: TStringList);
+    //! 冒険の書ドメイン名Cookie取得
+    function GetBouken(AURL: String; var Domain: String): String;
     //! 指定文字列削除
     procedure DelString(del: String; var str: String);
     //! 2ch/5chのURLを実際に呼べる形にする
@@ -279,6 +306,12 @@ type
     function Is2chURL(url: String; shortening: Boolean = False): Boolean;
     //! したらばのURLかどうか
     function IsShitarabaURL(url: String): Boolean;
+    //! 実際に使うURL取得（IPv6/v4確認と変換）
+    function GetActualURL(url: String): String;
+    //! 実際に使うホスト名取得（IPv6/v4確認と変換）
+    function GetActualHost(host: String; var modified: Boolean): String;
+  	//! UTF-8文字列をShift-JIS文字列へ変換
+    function UTF8toSJIS(pUtf8: PChar): String;
 	end;
 
 var
@@ -288,7 +321,7 @@ const
 	ZERO_DATE: Integer	= 25569;
 	BETA_VERSION_NAME_E = 'beta';
 	BETA_VERSION_NAME_J = 'ﾊﾞﾀ';
-	BETA_VERSION				= 74;
+	BETA_VERSION				= 75;
 	BETA_VERSION_BUILD	= '';				//!< debug版など
 	APP_NAME						= 'gikoNavi';
 	BE_PHP_URL = 'https://be.5ch.net/test/p.php?i=';
@@ -326,6 +359,39 @@ const
 		  'ProductVersion',
 		  'SpecialBuild');
 
+	UAVers: array[0..29] of TUAVer = (
+      (BetaVer:  0; FileVer: ''),
+      (BetaVer: 74; FileVer: '1.75.0.881'),
+      (BetaVer: 74; FileVer: '1.75.0.883'),
+      (BetaVer: 74; FileVer: '1.75.0.884'),
+      (BetaVer: 74; FileVer: '1.75.0.885'),
+      (BetaVer: 74; FileVer: '1.75.0.886'),
+      (BetaVer: 74; FileVer: '1.75.0.887'),
+      (BetaVer: 74; FileVer: '1.75.0.888'),
+      (BetaVer: 74; FileVer: '1.75.0.889'),
+      (BetaVer: 74; FileVer: '1.75.0.890'),
+      (BetaVer: 74; FileVer: '1.75.0.891'),
+      (BetaVer: 74; FileVer: '1.75.0.892'),
+      (BetaVer: 74; FileVer: '1.75.0.893'),
+      (BetaVer: 74; FileVer: '1.75.0.894'),
+      (BetaVer: 74; FileVer: '1.75.0.895'),
+      (BetaVer: 74; FileVer: '1.75.0.896'),
+      (BetaVer: 74; FileVer: '1.75.0.897'),
+      (BetaVer: 74; FileVer: '1.75.0.898'),
+      (BetaVer: 74; FileVer: '1.75.0.899'),
+      (BetaVer: 74; FileVer: '1.75.0.900'),
+      (BetaVer: 74; FileVer: '1.75.0.901'),
+      (BetaVer: 74; FileVer: '1.75.0.902'),
+      (BetaVer: 74; FileVer: '1.75.0.903'),
+      (BetaVer: 74; FileVer: '1.75.0.904'),
+      (BetaVer: 74; FileVer: '1.75.0.905'),
+      (BetaVer: 74; FileVer: '1.75.0.906'),
+      (BetaVer: 74; FileVer: '1.75.0.907'),
+      (BetaVer: 74; FileVer: '1.75.0.908'),
+      (BetaVer: 74; FileVer: '1.75.0.910'),
+      (BetaVer: 75; FileVer: '1.75.1.911')
+	);	// 当面リリースの度にバージョン情報を追加していく
+
 // *************************************************************************
 //! GikoSysコンストラクタ
 // *************************************************************************
@@ -361,6 +427,7 @@ begin
 	//FBoardURLList := TStringList.Create;
 	//メッセージの作成
 	FGikoMessage := TGikoMessage.Create;
+  FDonguriSys := TDonguriSys.Create;
 end;
 
 // *************************************************************************
@@ -543,6 +610,9 @@ end;
 
 //! UserAgent取得
 function TGikoSys.GetUserAgent: string;
+var
+  betaVer: Integer;
+  fileVer: String;
 begin
 //	if Dolib.Connected then begin
 //		Result := Format('%s %s/%s%d/%s', [
@@ -552,14 +622,46 @@ begin
 //								BETA_VERSION,
 //								Version]);
 //	end else begin
-		Result := Format('%s/%s %s/%s%d/%s', [
-								USER_AGENT,
-								USER_AGENT_VERSION,
-								APP_NAME,
-								BETA_VERSION_NAME_E,
-								BETA_VERSION,
-								Version]);
+
+  if (Setting.UAVersion < 0) or (Setting.UAVersion >= Length(UAVers)) then
+  	Setting.UAVersion := 0;
+
+  if Setting.UAVersion = 0 then begin
+		// UAバージョン固定しない場合は現在のバージョン
+    betaVer := BETA_VERSION;
+    fileVer := Version;
+  end else begin
+		// UAバージョン固定
+    betaVer := UAVers[Setting.UAVersion].BetaVer;
+    fileVer := UAVers[Setting.UAVersion].FileVer;
+  end;
+
+  Result := Format('%s/%s %s/%s%d/%s', [
+              USER_AGENT,
+              USER_AGENT_VERSION,
+              APP_NAME,
+              BETA_VERSION_NAME_E,
+              betaVer,	//BETA_VERSION,
+              fileVer		//Version
+              ]);
 //	end;
+end;
+
+procedure TGikoSys.GetUAVerList(list: TStrings);
+var
+	i:Integer;
+begin
+  if (Setting.UAVersion < 0) or (Setting.UAVersion >= Length(UAVers)) then
+  	Setting.UAVersion := 0;
+
+	list.Clear;
+	for i := Low(UAVers) to High(UAVers) do	begin
+    if i = 0 then
+	  	list.Add('固定しない')
+    else
+	  	list.Add(Format('%s%d(%s)',
+      						[BETA_VERSION_NAME_J, UAVers[i].BetaVer, UAVers[i].FileVer]));
+  end;
 end;
 
 {!
@@ -1364,6 +1466,17 @@ begin
 		finally
 			fileTmp.Free;
 		end;
+	end;
+end;
+
+procedure TGikoSys.ReadThreadFileAll(FileName: string; var Threads: TStringList);
+begin
+	if FileExists(FileName) then begin
+    try
+      Threads.LoadFromFile( FileName );
+    except
+      //on EFOpenError do Result := '';
+    end;
 	end;
 end;
 
@@ -3085,6 +3198,238 @@ begin
     end;
 end;
 
+
+function TGikoSys.GetResWacchoi(AIDNum: Integer; ThreadItem: TThreadItem; ALow4: Boolean): String;
+var
+	Res: TResRec;
+  wch: TWchRec;
+begin
+  Result := '';
+
+	if (ThreadItem = nil) or (not ThreadItem.IsLogFile) or (AIDNum <= 0) or (AIDNum > ThreadItem.Count) then
+    Exit;
+
+  //if ThreadItem.IsBoardPlugInAvailable then begin
+  if ThreadItem.ParentBoard.IsBoardPlugInAvailable then begin
+    //===== プラグインによる表示
+    ////boardPlugIn		:= ThreadItem.BoardPlugIn;
+    //boardPlugIn := ThreadItem.ParentBoard.BoardPlugIn;
+    //THTMLCreate.DivideStrLine(boardPlugIn.GetDat(DWORD( threadItem ), AIDNum), @Res);
+    Exit;	// 取りあえず５ちゃんのみ
+  end;
+
+  THTMLCreate.DivideStrLine( ReadThreadFile(ThreadItem.GetThreadFileName, AIDNum), @Res);
+
+  // ワッチョイ切り出し
+  if (not ExtructWacchoi(Res.FName, @wch)) or (wch.FLow4 = '') then
+    Exit;	// ワッチョイなし
+
+  if ALow4 then   // 下4桁
+    Result := wch.FLow4
+  else if (wch.FNName <> '') and (wch.FHigh4 <> '') then begin  // 全体
+    Result := Format('%s %s-%s', [wch.FNName, wch.FHigh4, wch.FLow4]);
+  end;
+end;
+
+function TGikoSys.ExtructWacchoi(AName: String; PWch: PWchRec): Boolean;
+const
+  WC_S: String = '</b>(';
+  WC_E: String = ')<b>';
+var
+	ps, pe: PChar;
+	pmss, pmse: PChar;
+	pmes, pmee: PChar;
+  poss, pose: PChar;
+	len, lens: Integer;
+  idx: Integer;
+  wch: String;
+  spc: Integer;
+begin
+	Result := False;
+  // ワッチョイ目印
+  lens := Length(WC_S);
+  pmss := PChar(WC_S);
+  pmse := pmss + lens;
+  pmes := PChar(WC_E);
+  pmee := pmes + Length(WC_E);
+  // 名前
+  ps := PChar(AName);
+  pe := ps + Length(AName);
+  // 開始位置
+  poss := AnsiStrPosEx(ps, pe, pmss, pmse);
+  if poss = nil then
+    Exit;
+  poss := poss + lens;
+  // 終了位置
+  pose := AnsiStrPosEx(poss, pe, pmes, pmee);
+  if (pose = nil) or (poss = pose) then
+    Exit;
+
+  idx := poss - ps;
+  len := pose - poss;
+  if len < 12 then	// 最低12文字？
+    Exit;
+
+  // ワッチョイ切り出し
+  wch := Copy(AName, idx + 1, len);
+  spc := Pos(' ', wch);
+  if (spc < 2) or (spc + 9 > len) or (wch[spc + 5] <> '-') then
+  	Exit;
+	PWch.FNName := Copy(wch, 1, spc - 1);
+  PWch.FHigh4 := Copy(wch, spc + 1, 4);
+  PWch.FLow4  := Copy(wch, spc + 6, 4);
+	Result := True;
+end;
+
+function TGikoSys.ExtructWacchoi2(AName: String; PWch: PWchRec): Boolean;
+var
+  i, sIdx, eIdx: Integer;
+	len: Integer;
+  wch: String;
+  spc: Integer;
+begin
+	Result := False;
+  sIdx := 0;
+  eIdx := 0;
+  len := Length(AName);
+
+  for i := 1 to len do begin
+    case AName[i] of
+    '(': sIdx := i;
+    ')': eIdx := i;
+    end;
+  end;
+
+  if (sIdx < 3) or (eIdx < sIdx) then
+  	Exit;
+
+	len := eIdx - sIdx - 1;
+  if len < 12 then	// 最低12文字？
+  	Exit;
+
+  // ワッチョイ切り出し
+  wch := Copy(AName, sIdx + 1, len);
+  spc := Pos(' ', wch);
+  if (spc < 2) or (spc + 9 > len) or (wch[spc + 5] <> '-') then
+  	Exit;
+	PWch.FNName := Copy(wch, 1, spc - 1);
+  PWch.FHigh4 := Copy(wch, spc + 1, 4);
+  PWch.FLow4  := Copy(wch, spc + 6, 4);
+	Result := True;
+end;
+
+
+procedure TGikoSys.GetSameWacchoiRes(AResNo: Integer; ThreadItem: TThreadItem; ALow4: Boolean; var ANumbers: TStringList);
+var
+	Res: TResRec;
+	//boardPlugIn: TBoardPlugIn;
+  wch: TWchRec;
+  wchChk: TWchRec;
+  threads: TStringList;
+	i: Integer;
+begin
+	if (ThreadItem = nil) or
+  	 (not ThreadItem.IsLogFile) or
+     (AResNo < 1) or
+     (AResNo > ThreadItem.Count) then
+		Exit;
+
+  if ThreadItem.ParentBoard.IsBoardPlugInAvailable then begin
+    //===== プラグインによる表示
+    //boardPlugIn := ThreadItem.ParentBoard.BoardPlugIn;
+    //THTMLCreate.DivideStrLine(boardPlugIn.GetDat(DWORD( threadItem ), AResNo), @Res);
+    Exit;	// 取りあえず５ちゃんのみ
+  end;
+
+  threads := TStringList.Create;
+  try
+    ReadThreadFileAll(ThreadItem.GetThreadFileName, threads);
+    if threads.Count < AResNo then
+      Exit;	// 読み込んだレスがおかしい
+
+    // 指定のレス
+    THTMLCreate.DivideStrLine(threads.Strings[AResNo - 1], @Res);
+    // ワッチョイ切り出し
+    if not ExtructWacchoi(Res.FName, @wch) then
+      Exit;	// ワッチョイなし
+
+    // 他の全レスチェック
+    for i := 1 to threads.Count do begin
+      THTMLCreate.DivideStrLine(threads.Strings[i - 1], @Res);
+      if ExtructWacchoi(Res.FName, @wchChk) then begin
+        if ALow4 then begin
+          // 下4桁のみ一致
+          if wch.FLow4 = wchChk.FLow4 then
+            ANumbers.Add(IntToStr(i));
+        end else begin
+          // 全体一致
+          if (wch.FNName = wchChk.FNName) and
+             (wch.FHigh4 = wchChk.FHigh4) and
+             (wch.FLow4  = wchChk.FLow4) then
+            ANumbers.Add(IntToStr(i));
+        end;
+      end;
+    end;
+  finally
+    threads.Free;
+  end;
+end;
+
+procedure TGikoSys.GetSameWacchoiRes2(AInnerText: String; ThreadItem: TThreadItem; ALow4: Boolean; var ANumbers: TStringList);
+var
+	Res: TResRec;
+	//boardPlugIn: TBoardPlugIn;
+  wch: TWchRec;
+  wchChk: TWchRec;
+  threads: TStringList;
+	i: Integer;
+begin
+	if (ThreadItem = nil) or
+  	 (not ThreadItem.IsLogFile) or
+     (Length(AInnerText) < 14) then
+		Exit;
+
+  if ThreadItem.ParentBoard.IsBoardPlugInAvailable then begin
+    //===== プラグインによる表示
+    //boardPlugIn := ThreadItem.ParentBoard.BoardPlugIn;
+    //THTMLCreate.DivideStrLine(boardPlugIn.GetDat(DWORD( threadItem ), AResNo), @Res);
+    Exit;	// 取りあえず５ちゃんのみ
+  end;
+
+  // ワッチョイ切り出し
+  if not ExtructWacchoi2(AInnerText, @wch) then
+    Exit;	// ワッチョイなし
+
+  threads := TStringList.Create;
+  try
+    ReadThreadFileAll(ThreadItem.GetThreadFileName, threads);
+    if threads.Count < 1 then
+      Exit;
+
+    // 他の全レスチェック
+    for i := 1 to threads.Count do begin
+      THTMLCreate.DivideStrLine(threads.Strings[i - 1], @Res);
+      if ExtructWacchoi(Res.FName, @wchChk) then begin
+        if ALow4 then begin
+          // 下4桁のみ一致
+          if wch.FLow4 = wchChk.FLow4 then
+            ANumbers.Add(IntToStr(i));
+        end else begin
+          // 全体一致
+          if (wch.FNName = wchChk.FNName) and
+             (wch.FHigh4 = wchChk.FHigh4) and
+             (wch.FLow4  = wchChk.FLow4) then
+            ANumbers.Add(IntToStr(i));
+        end;
+      end;
+    end;
+  finally
+    threads.Free;
+  end;
+end;
+
+
+
 {!
 \brief スパム:語数をカウント
 \param text      元になる文章
@@ -3643,6 +3988,8 @@ const
   SP_PNKURL  = 'https://itest.bbspink.com/';
   DOMAIN_5CH = '5ch.net';
   DOMAIN_PNK = 'bbspink.com';
+  CLSSC_5CH  = '.5ch.net/test/read.cgi/c/';
+  CLSSC_PNK  = '.bbspink.com/test/read.cgi/c/';
 var
   idx1: Integer;
   idx2: Integer;
@@ -3679,8 +4026,24 @@ begin
   end else if Pos(SP_PNKURL, url) = 1 then begin
     start := Length(SP_PNKURL);
     domain := DOMAIN_PNK;
-  end else
-    Exit;   // スマホURLではない
+  end else begin
+		// スマホURLではない
+
+    // クラシック版の場合通常のPC版URLにする
+  	start := 0;
+    idx1 := Pos(CLSSC_5CH, url);
+    if idx1 > 1 then
+      start := idx1 + Length(CLSSC_5CH) - 2
+    else begin
+	    idx1 := Pos(CLSSC_PNK, url);
+      if idx1 > 1 then
+        start := idx1 + Length(CLSSC_PNK) - 2;
+  	end;
+    if start > 0 then
+    	Delete(url, start, 2);	// c/を削除
+
+    Exit;
+  end;
 
   // パス部のみ取り出し
   path := Copy(url, start, Length(url) - start + 1);
@@ -3803,10 +4166,108 @@ begin
             (AnsiPos('https://jbbs.shitaraba.net/', url) = 1);
 end;
 
+//! 実際に使うURL取得（IPv6/v4確認と変換）
+function TGikoSys.GetActualURL(url: String): String;
+var
+  idx: Integer;
+  lenDmn: Integer;
+  urlTmp: String;
+  protocol: String;
+  domain: String;
+  path: String;
+  modified: Boolean;
+begin
+  Result := url;
 
+  if not Setting.IPv6 then
+    Exit;
+
+  urlTmp := url;
+
+  idx := Pos('://', urlTmp);
+  if idx < 1 then
+    Exit;
+  protocol := Copy(urlTmp, 1, idx + 2);
+  Delete(urlTmp, 1, idx + 2);
+
+  idx := Pos('/', urlTmp);
+  if idx < 2 then
+    Exit;
+  lenDmn := idx - 1;
+  domain := Copy(urlTmp, 1, lenDmn);
+  path := Copy(urlTmp, idx, Length(urlTmp) - lenDmn);
+
+	domain := GetActualHost(domain, modified);
+  if modified = False then
+  	Exit;
+
+  Result := Format('%s%s%s', [protocol, domain, path]);
+end;
+
+//! 実際に使うホスト名取得（IPv6/v4確認と変換）
+function TGikoSys.GetActualHost(host: String; var modified: Boolean): String;
+var
+	i:Integer;
+  idx: Integer;
+  lenDmn: Integer;
+  lenV4: Integer;
+  v4Dmn: String;
+begin
+	modified := False;
+	Result := host;
+
+  if not Setting.IPv6 then
+    Exit;
+
+	lenDmn := Length(host);
+
+  for i := 0 to Setting.IPv4List.Count - 1 do begin
+    v4dmn := Setting.IPv4List[i];
+    lenV4 := Length(v4dmn);
+    if lenV4 > lenDmn then
+      Continue;
+    if (lenV4 = lenDmn) and (v4dmn = host) then
+      Exit;
+    idx := lenDmn - lenV4 + 1;
+    if (Copy(host, idx, lenV4) = v4dmn) and (host[idx - 1] = '.') then
+      Exit;
+  end;
+
+	modified := True;
+	Result := Format('[%s]', [host]);
+end;
+
+//! UTF-8文字列をShift-JIS文字列へ変換
+function TGikoSys.UTF8toSJIS(pUtf8: PChar): String;
+const
+  CP_UTF8 = 65001;
+  CP_SJIS = 932;
+var
+  lenU16: Integer;
+  utf16: WideString;
+  lenSjis: Integer;
+  sjis: AnsiString;
+begin
+  lenU16 := MultiByteToWideChar(CP_UTF8, 0, pUtf8, -1, nil, 0);
+  if lenU16 > 0 then begin
+    SetLength(utf16, lenU16);
+    MultiByteToWideChar(CP_UTF8, 0, pUtf8, -1, PWideChar(utf16), lenU16);
+
+    lenSjis := WideCharToMultiByte(CP_SJIS, 0, PWideChar(utf16), -1, nil, 0, nil, nil);
+    if lenSjis > 0 then begin
+      SetLength(sjis, lenSjis);
+      WideCharToMultiByte(CP_SJIS, 0, PWideChar(utf16), -1, PChar(sjis), lenSjis, nil, nil);
+    end;
+  end;
+  Result := sjis;
+end;
+
+
+///////////
 initialization
 	GikoSys := TGikoSys.Create;
 
+///////////
 finalization
 	if GikoSys <> nil then begin
 		FreeAndNil(GikoSys);

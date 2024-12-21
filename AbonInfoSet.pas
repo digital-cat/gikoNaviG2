@@ -92,6 +92,7 @@ begin
     case FInf.CompType of
         ctStandard: CompTypeRadio.ItemIndex := 0;
         ctRegexp:   CompTypeRadio.ItemIndex := 1;
+        ctRegexp2:  CompTypeRadio.ItemIndex := 2;
     end;
 
     case FInf.TargetType of
@@ -227,10 +228,11 @@ begin
     else
         FInf.AbonType := atStandard;
 
-    if (CompTypeRadio.ItemIndex = 1) then
-        FInf.CompType := ctRegexp
-    else
-        FInf.CompType := ctStandard;
+    case CompTypeRadio.ItemIndex of
+      1:   FInf.CompType := ctRegexp;
+      2:   FInf.CompType := ctRegexp2;
+      else FInf.CompType := ctStandard;
+    end;
 
     if (ThreadRadio.Checked = True) then
         FInf.TargetType := ttThread

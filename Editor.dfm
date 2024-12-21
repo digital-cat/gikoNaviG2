@@ -57,13 +57,17 @@ object EditorForm: TEditorForm
     Top = 30
     Width = 733
     Height = 341
-    ActivePage = EditorTab
+    ActivePage = PreviewTab
     Align = alClient
     MultiLine = True
     TabOrder = 0
     OnChange = EditorPageChange
     object EditorTab: TTabSheet
       Caption = #32232#38598
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object NameBasePanel: TPanel
         Left = 0
         Top = 29
@@ -94,8 +98,9 @@ object EditorForm: TEditorForm
           Width = 149
           Height = 20
           DropDownCount = 20
-          ItemHeight = 12
+          ItemHeight = 0
           TabOrder = 0
+          OnChange = NameComboBoxChange
         end
         object MailComboBox: TComboBox
           Left = 284
@@ -103,7 +108,7 @@ object EditorForm: TEditorForm
           Width = 149
           Height = 20
           DropDownCount = 20
-          ItemHeight = 12
+          ItemHeight = 0
           TabOrder = 1
           OnChange = MailComboBoxChange
         end
@@ -124,14 +129,14 @@ object EditorForm: TEditorForm
           Caption = #12495#12531#12489#12523#20445#23384'(&H)'
           TabOrder = 3
         end
-        object UCInfoPanel: TPanel
-          Left = 616
-          Top = 4
-          Width = 105
-          Height = 20
-          BevelOuter = bvLowered
+        object DonguriCheckBox: TCheckBox
+          Left = 615
+          Top = 6
+          Width = 70
+          Height = 17
+          Caption = '!donguri'
           TabOrder = 4
-          Visible = False
+          OnClick = DonguriCheckBoxClick
         end
       end
       object TitlePanel: TPanel
@@ -202,7 +207,6 @@ object EditorForm: TEditorForm
           Align = alRight
           BevelOuter = bvNone
           TabOrder = 1
-          ExplicitLeft = 360
           object OekakiButton: TButton
             Left = 2
             Top = 4
@@ -242,7 +246,7 @@ object EditorForm: TEditorForm
         ControlData = {
           4C000000EE4A0000592000000000000000000000000000000000000000000000
           000000004C000000000000000000000001000000E0D057007335CF11AE690800
-          2B2E126208000000000000004C0000000114020000000000C000000000000046
+          2B2E12620A000000000000004C0000000114020000000000C000000000000046
           8000000000000000000000000000000000000000000000000000000000000000
           00000000000000000100000000000000000000000000000000000000}
       end
@@ -250,6 +254,10 @@ object EditorForm: TEditorForm
     object BoardInformationTab: TTabSheet
       Caption = #26495#24773#22577
       ImageIndex = 2
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object BoardInformationMemo: TMemo
         Left = 0
         Top = 0
@@ -264,6 +272,10 @@ object EditorForm: TEditorForm
     object BoardtopTab: TTabSheet
       Caption = #26495#12488#12483#12503#30011#20687
       ImageIndex = 3
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object TitlePictureBrowser: TWebBrowser
         Left = 0
         Top = 0
@@ -284,6 +296,10 @@ object EditorForm: TEditorForm
     object RocalRuleTab: TTabSheet
       Caption = #12525#12540#12459#12523#12523#12540#12523
       ImageIndex = 4
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object WebBrowser1: TWebBrowser
         Left = 352
         Top = 208
@@ -580,7 +596,7 @@ object EditorForm: TEditorForm
     Left = 72
     Top = 124
     Bitmap = {
-      494C01010D000E009C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01010D000E00E80010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000004000000001002000000000000040
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -1119,7 +1135,7 @@ object EditorForm: TEditorForm
     Left = 104
     Top = 124
     Bitmap = {
-      494C01010D000E009C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01010D000E00E80010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000004000000001002000000000000040
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000

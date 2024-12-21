@@ -139,9 +139,8 @@ type
 		GroupBox15: TGroupBox;
 		ShowDialogForEndCheckBox: TCheckBox;
 		AllTabCloseCheckBox: TCheckBox;
-		SambaGroupBox: TGroupBox;
+    Other1GroupBox: TGroupBox;
 		UseSambaCheckBox: TCheckBox;
-		TabAutoSaveLoad: TGroupBox;
 		TabLoadSave: TCheckBox;
 		SoundSheet: TTabSheet;
 		SoundEventGroupBox: TGroupBox;
@@ -168,11 +167,9 @@ type
 		GroupBox3: TGroupBox;
 		Label9: TLabel;
 		Label10: TLabel;
-		ForcedLoginLabel: TLabel;
 		UserIDEdit: TEdit;
 		PasswordEdit: TEdit;
 		AutoLoginCheckBox: TCheckBox;
-		ForcedLoginCheckBox: TCheckBox;
 		GroupBox4: TGroupBox;
 		Label13: TLabel;
 		BoardURLComboBox: TComboBox;
@@ -192,10 +189,6 @@ type
 		Label8: TLabel;
 		BeCodeEdit: TEdit;
 		BeAutoLoginCheckBox: TCheckBox;
-		GroupBox19: TGroupBox;
-		Label17: TLabel;
-		MaxRecordCountEdit: TEdit;
-		Label18: TLabel;
 		UnFocusedBoldCheckBox: TCheckBox;
 		IgnoreKanaCheckBox: TCheckBox;
 		UseKatjuTypeSkinCheckBox: TCheckBox;
@@ -219,21 +212,30 @@ type
 		gppRighBottomRB: TRadioButton;
 		ResAnchorCheckBox: TCheckBox;
 		IgnoreLimitResCountCheckBox: TCheckBox;
-		GroupBox25: TGroupBox;
-		Label25: TLabel;
-		BoukenComboBox: TComboBox;
-		BoukenModButton: TButton;
-		BoukenDelButton: TButton;
-		BoukenEdit: TEdit;
 		GroupBox26: TGroupBox;
 		DispImageCheckBox: TCheckBox;
-		GroupBox27: TGroupBox;
 		ThreadTitleTrimCheckBox: TCheckBox;
 		GroupBox28: TGroupBox;
 		NGTextEditCheckBox: TCheckBox;
 		BoardInfCheckBox: TCheckBox;
 		PreviewStyleCheckBox: TCheckBox;
     OekakiCheckBox: TCheckBox;
+    KeepNgFileCheckBox: TCheckBox;
+    GroupBox29: TGroupBox;
+    UAVerComboBox: TComboBox;
+    Label27: TLabel;
+    Label28: TLabel;
+    DonMailEdit: TEdit;
+    Label29: TLabel;
+    DonPwdEdit: TEdit;
+    GroupBox25: TGroupBox;
+    Label25: TLabel;
+    DonAutoLgnComboBox: TComboBox;
+    Label30: TLabel;
+    ReplCharComboBox: TComboBox;
+    URLitestCheckBox: TCheckBox;
+    ReloadAfterWriteCheckBox: TCheckBox;
+    CapUserCheckBox: TCheckBox;
 		procedure FormCreate(Sender: TObject);
 		procedure FormDestroy(Sender: TObject);
 		procedure ApplyButtonClick(Sender: TObject);
@@ -282,10 +284,6 @@ type
 		procedure OddResNumCheckBoxClick(Sender: TObject);
 		procedure ResRangeHoldCheckBoxClick(Sender: TObject);
 		procedure CroutOptionClick(Sender: TObject);
-		procedure MaxRecordCountEditExit(Sender: TObject);
-		procedure BoukenDelButtonClick(Sender: TObject);
-		procedure BoukenComboBoxChange(Sender: TObject);
-		procedure BoukenModButtonClick(Sender: TObject);
 	private
 		{ Private 宣言 }
 		FClose: Boolean;
@@ -367,8 +365,8 @@ begin
 										+ 'スレッド表示エリアのフォント変更は、'#13#10
 										+ '「CSS とスキン」タブで設定出来ます';
 
-	ForcedLoginLabel.Caption := '- チェックを入れるのはセキュリティ上好ましくありません。' + #13#10
-										+ '　やむを得ない時だけにしてください。';
+//	ForcedLoginLabel.Caption := '- チェックを入れるのはセキュリティ上好ましくありません。' + #13#10
+//										+ '　やむを得ない時だけにしてください。';
 	CSSCheckBoxClick(Sender);
 	BrowserMaxLabel.Caption :=
 		'ブラウザが最小化されているときに以下の操作でブラウザを最大化します。'#13#10 +
@@ -398,7 +396,7 @@ begin
 	ReadPortEditExit(Sender);
 	WritePortEditExit(Sender);
 	AddressHistoryCountEditExit(Sender);
-	MaxRecordCountEditExit(Sender);
+	//MaxRecordCountEditExit(Sender);
 	PreviewWaitEditExit(Sender);
 
 	if not CheckFolder then begin
@@ -416,7 +414,7 @@ begin
 	ReadPortEditExit(Sender);
 	WritePortEditExit(Sender);
 	AddressHistoryCountEditExit(Sender);
-	MaxRecordCountEditExit(Sender);
+	//MaxRecordCountEditExit(Sender);
 	PreviewWaitEditExit(Sender);
 
 	if not CheckFolder then begin
@@ -603,7 +601,6 @@ var
 //	s: string;
 	idx: Integer;
 	FileList : TStringList;
-	DomainList : TStringList;
 begin
 
 	//読み込み用プロキシ
@@ -699,7 +696,7 @@ begin
 		i := (i shr 16) or (i and $ff00) or ((i and $ff) shl 16);
 		FCSSBackColor := i;
 	end;
-	//
+	///
 	//スタイルシートファイル名一覧
 	FileList := TStringList.Create;
 	try
@@ -748,8 +745,8 @@ begin
 
 	//Mail欄表示
 	ShowMailCheckBox.Checked := GikoSys.Setting.ShowMail;
-    //BE2.0アイコン・Emoticonsを画像表示する
-    DispImageCheckBox.Checked := GikoSys.Setting.IconImageDisplay;
+  //BE2.0アイコン・Emoticonsを画像表示する
+  DispImageCheckBox.Checked := GikoSys.Setting.IconImageDisplay;
 
 	// 起動時レス表示範囲の固定
 	ResRangeHoldCheckBox.Checked := GikoSys.Setting.ResRangeHold;
@@ -760,6 +757,11 @@ begin
 	10..65535:						ResRangeHoldComboBox.ItemIndex := 1;
 	end;
 	ResRangeHoldComboBox.Enabled := GikoSys.Setting.ResRangeHold;
+	// 文字&#78840;の扱い 0:何もしない 1:数値参照で表示 2:類似文字に置換
+  ReplCharComboBox.ItemIndex := GikoSys.Setting.ReplChar;
+  // CAP_USERの日時・ID欄を強調表示する
+  CapUserCheckBox.Checked := GikoSys.Setting.CapUser;
+
 	//タブ追加位置
 	TabAddRadioGroup.ItemIndex := Ord(GikoSys.Setting.BrowserTabAppend);
 	//板更新URL
@@ -776,6 +778,7 @@ begin
 	PasswordEdit.Text := GikoSys.Setting.Password;
 	AutoLoginCheckBox.Checked := GikoSys.Setting.AutoLogin;
 //	ForcedLoginCheckBox.Checked := GikoSys.Setting.ForcedLogin;
+
 	//ログフォルダ
 	if GikoSys.Setting.NewLogFolder = '' then
 		LogFolderEdit.Text := GikoSys.Setting.LogFolder
@@ -841,6 +844,10 @@ begin
 	PreviewWaitEdit.Text := IntToStr(GikoSys.Setting.PreviewWait);
 	PreviewSizeComboBox.ItemIndex := 2;
 	case GikoSys.Setting.PreviewSize of
+		gpsXLarge5: PreviewSizeComboBox.ItemIndex := 8;
+		gpsXLarge4: PreviewSizeComboBox.ItemIndex := 7;
+		gpsXLarge3: PreviewSizeComboBox.ItemIndex := 6;
+		gpsXLarge2: PreviewSizeComboBox.ItemIndex := 5;
 		gpsXLarge: PreviewSizeComboBox.ItemIndex := 4;
 		gpsLarge: PreviewSizeComboBox.ItemIndex := 3;
 		gpsMedium: PreviewSizeComboBox.ItemIndex := 2;
@@ -889,6 +896,7 @@ begin
 	AddResAnchorCheckBox.Checked := GikoSys.Setting.AddResAnchor;
 	DeleteSyriaCheckBox.Checked := GikoSys.Setting.DeleteSyria;
 	IgnoreKanaCheckBox.Checked := GikoSys.Setting.IgnoreKana;
+  KeepNgFileCheckBox.Checked := GikoSys.Setting.KeepNgFile;
     //NGワード編集
     NGTextEditCheckBox.Checked := GikoSys.Setting.NGTextEditor;
 {$IFDEF SPAM_FILTER_ENABLED}
@@ -916,33 +924,42 @@ begin
   PreviewStyleCheckBox.Checked := Gikosys.Setting.PreviewStyle;
   // お絵描き（画像添付）を有効にする
 	OekakiCheckBox.Checked := Gikosys.Setting.Oekaki;
+	// 書き込み成功時にスレッド一覧またはスレッドを再読み込みする
+  ReloadAfterWriteCheckBox.Checked := Gikosys.Setting.ReloadAfterWrite;
   // スレタイ特定文字列除去
   ThreadTitleTrimCheckBox.Checked := GikoSys.Setting.ThreadTitleTrim;
+  // 板／スレURLをコピーもしくはWEBブラウザで開く際にitest版URLを使用する
+  URLitestCheckBox.Checked := GikoSys.Setting.URLitest;
 
 	//Be2ch認証
 	BeUserIDEdit.Text := GikoSys.Setting.BeUserID;
 	BeCodeEdit.Text := GikoSys.Setting.BePassword;
 	BeAutoLoginCheckBox.Checked := GikoSys.Setting.BeAutoLogin;
 	//履歴の最大保存数
-	MaxRecordCountEdit.Text := IntToStr(GikoSys.Setting.MaxRecordCount);
-    // 最小化時にタスクトレイに格納するか
-    StoredTaskTrayCB.Checked := GikoSys.Setting.StoredTaskTray;
-    // ブラウザタブの移動でループを許可するか
-    LoopBrowserTabsCB.Checked := GikoSys.Setting.LoopBrowserTabs;
-    //
-    IgnoreContextCheckBox.Checked := GikoSys.Setting.GestureIgnoreContext;
+	//MaxRecordCountEdit.Text := IntToStr(GikoSys.Setting.MaxRecordCount);
+  // 最小化時にタスクトレイに格納するか
+  StoredTaskTrayCB.Checked := GikoSys.Setting.StoredTaskTray;
+  // ブラウザタブの移動でループを許可するか
+  LoopBrowserTabsCB.Checked := GikoSys.Setting.LoopBrowserTabs;
+  ///
+  IgnoreContextCheckBox.Checked := GikoSys.Setting.GestureIgnoreContext;
 
-    // 冒険の書ドメイン一覧取得
-    BoukenComboBox.Text := '';
-    BoukenComboBox.Items.Clear;
-    DomainList := TStringList.Create;
-    GikoSys.GetBoukenDomain(DomainList);
-    for i := 0 to DomainList.Count - 1 do begin
-        BoukenComboBox.Items.Add( DomainList[i] ) ;
-    end;
-    DomainList.Free;
-    BoukenComboBox.ItemIndex := 0;
-    BoukenComboBox.OnChange(nil);
+  // 警備員アカウント
+	DonMailEdit.Text := GikoSys.Setting.DonguriMail;
+  DonPwdEdit.Text  := GikoSys.Setting.DonguriPwd;
+	// どんぐり自動ログイン
+	idx := GikoSys.Setting.DonguriAutoLogin;
+	if (idx < 0) or (idx > 3) then
+  	idx := 0;
+	DonAutoLgnComboBox.ItemIndex := idx;
+  // User-Agentバージョン番号固定
+	GikoSys.GetUAVerList(UAVerComboBox.Items);
+  if (GikoSys.Setting.UAVersion >= 0) and
+  	 (GikoSys.Setting.UAVersion < UAVerComboBox.Items.Count) then
+  	UAVerComboBox.ItemIndex := GikoSys.Setting.UAVersion
+  else
+  	UAVerComboBox.ItemIndex := 0;
+
 end;
 
 procedure TOptionDialog.SaveSetting;
@@ -1077,6 +1094,14 @@ begin
 	        2: GikoSys.Setting.ResRange := Ord( grrKoko );
 	        3: GikoSys.Setting.ResRange := Ord( grrNew );
 	end;
+	// 文字&#78840;の扱い 0:何もしない 1:数値参照で表示 2:類似文字に置換
+  if GikoSys.Setting.ReplChar <> ReplCharComboBox.ItemIndex then FRepaintThread := true;
+  GikoSys.Setting.ReplChar := ReplCharComboBox.ItemIndex;
+  if (GikoSys.Setting.ReplChar < 0) or (GikoSys.Setting.ReplChar > 2) then
+  	GikoSys.Setting.ReplChar := 0;
+  // CAP_USERの日時・ID欄を強調表示する
+  if GikoSys.Setting.CapUser <> CapUserCheckBox.Checked then FRepaintThread := true;
+  GikoSys.Setting.CapUser := CapUserCheckBox.Checked;
 
 	GikoSys.Setting.BrowserTabAppend := TGikoTabAppend(TabAddRadioGroup.ItemIndex);
 
@@ -1088,6 +1113,16 @@ begin
 	GikoSys.Setting.Password := PasswordEdit.Text;
 	GikoSys.Setting.AutoLogin := AutoLoginCheckBox.Checked;
 //	GikoSys.Setting.ForcedLogin := ForcedLoginCheckBox.Checked;
+  // 警備員アカウント
+	GikoSys.Setting.DonguriMail := DonMailEdit.Text;
+  GikoSys.Setting.DonguriPwd  := DonPwdEdit.Text;
+  	// どんぐり自動ログイン
+	GikoSys.Setting.DonguriAutoLogin := DonAutoLgnComboBox.ItemIndex;
+  // User-Agentバージョン番号固定
+	GikoSys.Setting.UAVersion := UAVerComboBox.ItemIndex;
+  if GikoSys.Setting.UAVersion < 0 then
+  	GikoSys.Setting.UAVersion := 0;
+
 	GikoSys.Setting.URLApp := URLAppCheckBox.Checked;
 	GikoSys.Setting.URLAppFile := AppFolderEdit.Text;
 
@@ -1139,6 +1174,10 @@ begin
 		2: GikoSys.Setting.PreviewSize := gpsMedium;
 		3: GikoSys.Setting.PreviewSize := gpsLarge;
 		4: GikoSys.Setting.PreviewSize := gpsXLarge;
+		5: GikoSys.Setting.PreviewSize := gpsXLarge2;
+		6: GikoSys.Setting.PreviewSize := gpsXLarge3;
+		7: GikoSys.Setting.PreviewSize := gpsXLarge4;
+		8: GikoSys.Setting.PreviewSize := gpsXLarge5;
 	end;
 
 	//スレッド一覧更新アイコン
@@ -1213,6 +1252,7 @@ begin
 	GikoSys.Setting.AddResAnchor := AddResAnchorCheckBox.Checked;
 	GikoSys.Setting.DeleteSyria := DeleteSyriaCheckBox.Checked;
 	GikoSys.Setting.IgnoreKana := IgnoreKanaCheckBox.Checked;
+  GikoSys.Setting.KeepNgFile := KeepNgFileCheckBox.Checked;
 	GikoSys.FAbon.IgnoreKana := GikoSys.Setting.IgnoreKana;
   //NGワード編集
   GikoSys.Setting.NGTextEditor := NGTextEditCheckBox.Checked;
@@ -1232,7 +1272,7 @@ begin
 	GikoSys.Setting.BePassword := BeCodeEdit.Text;
 	GikoSys.Setting.BeAutoLogin := BeAutoLoginCheckBox.Checked;
 	//履歴の最大保存数
-	GikoSys.Setting.MaxRecordCount := Max(StrToInt64Def(MaxRecordCountEdit.Text,100),1);
+	//GikoSys.Setting.MaxRecordCount := Max(StrToInt64Def(MaxRecordCountEdit.Text,100),1);
 	GikoSys.Setting.StoredTaskTray := StoredTaskTrayCB.Checked;
 	GikoSys.Setting.LoopBrowserTabs := LoopBrowserTabsCB.Checked;
 
@@ -1244,8 +1284,12 @@ begin
 	Gikosys.Setting.PreviewStyle := PreviewStyleCheckBox.Checked;
   // お絵描き（画像添付）を有効にする
 	Gikosys.Setting.Oekaki := OekakiCheckBox.Checked;
+	// 書き込み成功時にスレッド一覧またはスレッドを再読み込みする
+  Gikosys.Setting.ReloadAfterWrite := ReloadAfterWriteCheckBox.Checked;
 	// スレタイ特定文字列除去
 	GikoSys.Setting.ThreadTitleTrim := ThreadTitleTrimCheckBox.Checked;
+  // 板／スレURLをコピーもしくはWEBブラウザで開く際にitest版URLを使用する
+  GikoSys.Setting.URLitest := URLitestCheckBox.Checked;
 
 end;
 
@@ -1723,67 +1767,6 @@ begin
 	finally
 		KuroutOption.Release;
 	end;
-end;
-
-procedure TOptionDialog.MaxRecordCountEditExit(Sender: TObject);
-begin
-	if not GikoSys.IsNumeric(MaxRecordCountEdit.Text) then
-		MaxRecordCountEdit.Text := '100'
-	else if StrToIntDef(MaxRecordCountEdit.Text, 100) <= 0 then
-        MaxRecordCountEdit.Text := '1';
-end;
-
-procedure TOptionDialog.BoukenDelButtonClick(Sender: TObject);
-begin
-    if ( BoukenComboBox.Items.IndexOf( BoukenComboBox.Text ) <> -1 ) then begin
-        if MsgBox(Self.Handle, BoukenComboBox.Text + ' を削除します。'#13#10 +
-            '削除すると復元できません。よろしいですか？', '忍法帖　ドメイン削除', MB_YESNO or MB_ICONQUESTION) = IDYES	then begin
-            GikoSys.DelBoukenCookie(BoukenComboBox.Text);
-            GikoSys.Setting.WriteBoukenSettingFile;
-            BoukenComboBox.Items.Delete(BoukenComboBox.ItemIndex);
-            if ( BoukenComboBox.Items.Count = 0 ) then begin
-                 BoukenComboBox.Text := '';
-            end;
-            BoukenComboBox.OnChange(nil);
-        end
-    end else begin
-        BoukenComboBox.Text := '';
-    end;
-end;
-
-procedure TOptionDialog.BoukenComboBoxChange(Sender: TObject);
-begin
-    BoukenEdit.Text := GikoSys.GetBoukenCookie('http://*' +BoukenComboBox.Text);
-end;
-
-procedure TOptionDialog.BoukenModButtonClick(Sender: TObject);
-var
-    DomainList : TStringList;
-    i : Integer;
-    s : String;
-begin
-    if ( Length(BoukenComboBox.Text) > 0 ) then begin
-        s := BoukenComboBox.Text;
-        GikoSys.SetBoukenCookie(BoukenEdit.Text, s);
-        GikoSys.Setting.WriteBoukenSettingFile;
-        // 冒険の書ドメイン一覧取得
-        BoukenComboBox.Text := '';
-        BoukenComboBox.Items.Clear;
-        DomainList := TStringList.Create;
-        GikoSys.GetBoukenDomain(DomainList);
-        for i := 0 to DomainList.Count - 1 do begin
-            BoukenComboBox.Items.Add( DomainList[i] ) ;
-        end;
-        DomainList.Free;
-        BoukenComboBox.ItemIndex := 0;
-        for i := 0 to BoukenComboBox.Items.Count - 1 do begin
-            if ( BoukenComboBox.Items[i] = s) then begin
-                BoukenComboBox.ItemIndex := i;
-                Break;
-            end;
-        end;
-        BoukenComboBox.OnChange(nil);
-    end;
 end;
 
 end.

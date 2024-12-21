@@ -97,6 +97,15 @@ type
     ResRangeLabeledEdit: TLabeledEdit;
     ResRangeCountUpDown: TUpDown;
     UseGobakuCheckBox: TCheckBox;
+    GroupBox5: TGroupBox;
+    IPv6CheckBox: TCheckBox;
+    IPv4Label: TLabel;
+    IPv4ListBox: TListBox;
+    IPv4AddButton: TButton;
+    IPv4EdtButton: TButton;
+    IPv4DelButton: TButton;
+    IPv6Label: TLabel;
+    IPv4ResetButton: TButton;
 	procedure OkBottonClick(Sender: TObject);
 	procedure FormCreate(Sender: TObject);
 	procedure CDeleteButtonClick(Sender: TObject);
@@ -114,6 +123,11 @@ type
     procedure DeltaYLabeledEditExit(Sender: TObject);
     procedure RespopupWaitLabeledEditExit(Sender: TObject);
     procedure ResRangeLabeledEditExit(Sender: TObject);
+    procedure IPv4AddButtonClick(Sender: TObject);
+    procedure IPv4EdtButtonClick(Sender: TObject);
+    procedure IPv4DelButtonClick(Sender: TObject);
+    procedure IPv6CheckBoxClick(Sender: TObject);
+    procedure IPv4ResetButtonClick(Sender: TObject);
   private
 	{ Private 宣言 }
 	procedure SetValue;
@@ -133,14 +147,16 @@ var
 implementation
 
 uses
-	Giko, Setting;
+	Giko, Setting, GikoInputBoxForm;
 
 {$R *.dfm}
 
 procedure TKuroutOption.SetValue;
+var
+	i: Integer;
 begin
 	//受信バッファサイズ
-	RecvBufferSize.Text := IntToStr(Gikosys.Setting.RecvBufferSize);
+	//RecvBufferSize.Text := IntToStr(Gikosys.Setting.RecvBufferSize);
 	//HTTP1.1使用
 	ProtocolCheckBox.Checked := GikoSys.Setting.Protocol;
 	//プロキシ接続HTTP1.1使用
@@ -165,33 +181,42 @@ begin
 	LocalTrapAtt.Checked := GikoSys.Setting.LocalTrapAtt;
 	RemoteTrapAtt.Checked := GikoSys.Setting.RemoteTrapAtt;
 	// Cookie
-    FixedCookieEdit.Text := GikoSys.Setting.FixedCookie;
-    // リンク移動履歴
-    MoveHistoryMaxEdit.Text := IntToStr( GikoSys.Setting.MoveHistorySize );
-    //　先頭表示レス数
-    AHandredUpDown.Position := GikoSys.Setting.HeadResCount;
-    // 表示レス数
-    ResRangeCountUpDown.Position := GikoSys.Setting.ResRangeExCount;
-    // 関連キーワード追加フラグ
-    AddKeywordCheckBox.Checked := GikoSys.Setting.AddKeywordLink;
-    // 誤反応対策
-    ReplaceDatCheckBox.Checked := GikoSys.Setting.ReplaceDat;
-    SentIniFileSizeUpDown.Position := GikoSys.Setting.SentIniFileSize;
-    ExtListLabeledEdit.Text := GikoSys.Setting.ExtList;
-    // Folder.idx読み込み時datチェック
-    CheckDatFileCheckBox.Checked := GikoSys.Setting.CheckDatFile;
-    DeltaXUpDown.Position := GikoSys.Setting.RespopupDeltaX;
-    DeltaYUpDown.Position := GikoSys.Setting.RespopupDeltaY;
-    RespopupWaitUpDown.Position := GikoSys.Setting.RespopupWait;
-    RespopupMailToCheckBox.Checked := GikoSys.Setting.RespopupMailTo;
-    // 誤爆チェック
-    UseGobakuCheckBox.Checked := GikoSys.Setting.UseGobakuCheck;
+  FixedCookieEdit.Text := GikoSys.Setting.FixedCookie;
+  // リンク移動履歴
+  MoveHistoryMaxEdit.Text := IntToStr( GikoSys.Setting.MoveHistorySize );
+  //　先頭表示レス数
+  AHandredUpDown.Position := GikoSys.Setting.HeadResCount;
+  // 表示レス数
+  ResRangeCountUpDown.Position := GikoSys.Setting.ResRangeExCount;
+  // 関連キーワード追加フラグ
+  AddKeywordCheckBox.Checked := GikoSys.Setting.AddKeywordLink;
+  // 誤反応対策
+  ReplaceDatCheckBox.Checked := GikoSys.Setting.ReplaceDat;
+  SentIniFileSizeUpDown.Position := GikoSys.Setting.SentIniFileSize;
+  ExtListLabeledEdit.Text := GikoSys.Setting.ExtList;
+  // Folder.idx読み込み時datチェック
+  CheckDatFileCheckBox.Checked := GikoSys.Setting.CheckDatFile;
+  DeltaXUpDown.Position := GikoSys.Setting.RespopupDeltaX;
+  DeltaYUpDown.Position := GikoSys.Setting.RespopupDeltaY;
+  RespopupWaitUpDown.Position := GikoSys.Setting.RespopupWait;
+  RespopupMailToCheckBox.Checked := GikoSys.Setting.RespopupMailTo;
+  // 誤爆チェック
+  UseGobakuCheckBox.Checked := GikoSys.Setting.UseGobakuCheck;
+	//IPv6使用
+  IPv6CheckBox.Checked := GikoSys.Setting.IPv6;
+  IPv4ListBox.Items.Clear;
+  for i := 0 to GikoSys.Setting.IPv4List.Count - 1 do
+  	IPv4ListBox.Items.Add(GikoSys.Setting.IPv4List[i]);
+  IPv6CheckBoxClick(IPv6CheckBox);
+
 end;
 
 procedure TKuroutOption.SaveSetting;
+var
+  i: Integer;
 begin
 	//受信バッファサイズ
-	Gikosys.Setting.RecvBufferSize := StrToIntDef(RecvBufferSize.Text, Gikosys.Setting.RecvBufferSize);
+	//Gikosys.Setting.RecvBufferSize := StrToIntDef(RecvBufferSize.Text, Gikosys.Setting.RecvBufferSize);
 	GikoSys.Setting.ReadTimeOut := StrToIntDef(ReadTimeOut.Text, GikoSys.Setting.ReadTimeOut);
 	//HTTP1.1使用
 	GikoSys.Setting.Protocol := ProtocolCheckBox.Checked;
@@ -213,41 +238,46 @@ begin
 	// Cookie
 	GikoSys.Setting.FixedCookie := FixedCookieEdit.Text;
 
-    // リンク移動履歴
-    GikoSys.Setting.MoveHistorySize :=
-        StrToIntDef( MoveHistoryMaxEdit.Text, 20 );
+  // リンク移動履歴
+  GikoSys.Setting.MoveHistorySize :=
+      StrToIntDef( MoveHistoryMaxEdit.Text, 20 );
 
-    //　先頭表示レス数
-    GikoSys.Setting.HeadResCount :=
-        StrToIntDef( AHandredLabeledEdit.Text , 1);
-    GikoSys.Setting.ResRangeExCount :=
-        StrToIntDef( ResRangeLabeledEdit.Text , 100 );
+  //　先頭表示レス数
+  GikoSys.Setting.HeadResCount :=
+      StrToIntDef( AHandredLabeledEdit.Text , 1);
+  GikoSys.Setting.ResRangeExCount :=
+      StrToIntDef( ResRangeLabeledEdit.Text , 100 );
 	GikoSys.Setting.KuroutSettingTabIndex := PageControl1.ActivePageIndex;
-    // 関連キーワード追加フラグ
-    GikoSys.Setting.AddKeywordLink := AddKeywordCheckBox.Checked;
-    // 誤反応対策
-    GikoSys.Setting.ReplaceDat := ReplaceDatCheckBox.Checked;
-    GikoSys.Setting.SentIniFileSize := SentIniFileSizeUpDown.Position;
-    GikoSys.Setting.ExtList := ExtListLabeledEdit.Text;
-    // Folder.idx読み込み時datチェック
-    GikoSys.Setting.CheckDatFile := CheckDatFileCheckBox.Checked;
+  // 関連キーワード追加フラグ
+  GikoSys.Setting.AddKeywordLink := AddKeywordCheckBox.Checked;
+  // 誤反応対策
+  GikoSys.Setting.ReplaceDat := ReplaceDatCheckBox.Checked;
+  GikoSys.Setting.SentIniFileSize := SentIniFileSizeUpDown.Position;
+  GikoSys.Setting.ExtList := ExtListLabeledEdit.Text;
+  // Folder.idx読み込み時datチェック
+  GikoSys.Setting.CheckDatFile := CheckDatFileCheckBox.Checked;
 
-    GikoSys.Setting.RespopupDeltaX := StrToInt(DeltaXLabeledEdit.Text);
-    GikoSys.Setting.RespopupDeltaY := StrToInt(DeltaYLabeledEdit.Text);
-    GikoSys.Setting.RespopupWait := StrToInt(RespopupWaitLabeledEdit.Text);
-    GikoForm.ResPopupClearTimer.Interval := GikoSys.Setting.RespopupWait;
-    GikoSys.Setting.RespopupMailTo := RespopupMailToCheckBox.Checked;
-    // 誤爆チェック
-    GikoSys.Setting.UseGobakuCheck := UseGobakuCheckBox.Checked;
+  GikoSys.Setting.RespopupDeltaX := StrToInt(DeltaXLabeledEdit.Text);
+  GikoSys.Setting.RespopupDeltaY := StrToInt(DeltaYLabeledEdit.Text);
+  GikoSys.Setting.RespopupWait := StrToInt(RespopupWaitLabeledEdit.Text);
+  GikoForm.ResPopupClearTimer.Interval := GikoSys.Setting.RespopupWait;
+  GikoSys.Setting.RespopupMailTo := RespopupMailToCheckBox.Checked;
+  // 誤爆チェック
+  GikoSys.Setting.UseGobakuCheck := UseGobakuCheckBox.Checked;
+	//IPv6使用
+  GikoSys.Setting.IPv6 := IPv6CheckBox.Checked;
+  GikoSys.Setting.IPv4List.Clear;
+  for i := 0 to IPv4ListBox.Items.Count - 1 do
+  	GikoSys.Setting.IPv4List.Add(IPv4ListBox.Items.Strings[i]);
 
 end;
 
 procedure TKuroutOption.RecvBufferSizeExit(Sender: TObject);
 begin
-	if not GikoSys.IsNumeric(RecvBufferSize.Text) then
-		RecvBufferSize.Text := '4096';
-	if StrToInt(RecvBufferSize.Text) < 256 then
-		RecvBufferSize.Text := '4096';
+//	if not GikoSys.IsNumeric(RecvBufferSize.Text) then
+//		RecvBufferSize.Text := '4096';
+//	if StrToInt(RecvBufferSize.Text) < 256 then
+//		RecvBufferSize.Text := '4096';
 end;
 
 procedure TKuroutOption.PostTimeEditExit(Sender: TObject);
@@ -266,7 +296,7 @@ end;
 
 procedure TKuroutOption.OkBottonClick(Sender: TObject);
 begin
-	RecvBufferSizeExit(Sender);
+	//RecvBufferSizeExit(Sender);
 	PostTimeEditExit(Sender);
     MoveHistoryMaxEditExit(Sender);
     AHandredLabeledEditExit(Sender);
@@ -295,6 +325,93 @@ begin
 	PostTimeCheckBoxClick(Sender);
 
 end;
+
+procedure TKuroutOption.IPv6CheckBoxClick(Sender: TObject);
+var
+  enb: Boolean;
+begin
+  enb := IPv6CheckBox.Checked;
+
+  IPv6Label.Enabled := enb;
+  IPv4Label.Enabled := enb;
+  IPv4AddButton.Enabled := enb;
+  IPv4EdtButton.Enabled := enb;
+  IPv4DelButton.Enabled := enb;
+  IPv4ListBox.Enabled := enb;
+  IPv4ResetButton.Enabled := enb;
+end;
+
+procedure TKuroutOption.IPv4AddButtonClick(Sender: TObject);
+var
+	inputBox: TGikoInputBox;
+begin
+	inputBox := TGikoInputBox.Create(Self);
+	try
+  	inputBox.DlgCaption := '除外ドメイン追加';
+  	inputBox.Prompt := 'IPv6接続しないドメイン名を入力してください';
+    inputBox.FormStyle := fsStayOnTop;	// 裏に回ってしまうので
+  	if inputBox.ShowModal = mrOk then begin
+    	if inputBox.Value <> '' then begin
+        if IPv4ListBox.Items.IndexOf(inputBox.Value) >= 0 then
+          MessageBox(Handle, 'このドメインは登録済みです。', '除外ドメイン追加', MB_OK)
+        else
+          IPv4ListBox.Items.Add(inputBox.Value);
+	    end;
+    end;
+  finally
+    inputBox.Free;
+  end;
+end;
+
+procedure TKuroutOption.IPv4EdtButtonClick(Sender: TObject);
+var
+	idx: Integer;
+  domain: String;
+	inputBox: TGikoInputBox;
+begin
+	idx := IPv4ListBox.ItemIndex;
+  if idx >= 0 then begin
+  	domain := IPv4ListBox.Items.Strings[idx];
+    inputBox := TGikoInputBox.Create(Self);
+    try
+      inputBox.DlgCaption := '除外ドメイン編集';
+      inputBox.Prompt := 'IPv6接続しないドメイン名を入力してください';
+      inputBox.Value := domain;
+	    inputBox.FormStyle := fsStayOnTop;	// 裏に回ってしまうので
+      if inputBox.ShowModal = mrOk then begin
+        if (inputBox.Value <> '') and (inputBox.Value <> domain) then begin
+          if IPv4ListBox.Items.IndexOf(inputBox.Value) >= 0 then
+            MessageBox(Handle, 'このドメインは登録済みです。', '除外ドメイン編集', MB_OK)
+          else
+            IPv4ListBox.Items.Strings[idx] := inputBox.Value;
+        end;
+			end;
+    finally
+	    inputBox.Free;
+    end;
+  end;
+end;
+
+procedure TKuroutOption.IPv4DelButtonClick(Sender: TObject);
+var
+	idx: Integer;
+  msg: String;
+begin
+	idx := IPv4ListBox.ItemIndex;
+  if idx >= 0 then begin
+  	msg := Format('除外ドメインから［%s］を削除します。よろしいですか？', [IPv4ListBox.Items.Strings[idx]]);
+  	if MessageBox(Handle, PChar(msg), '除外ドメイン', MB_YESNO) = IDYES then
+    	IPv4ListBox.Items.Delete(idx);
+  end;
+end;
+
+procedure TKuroutOption.IPv4ResetButtonClick(Sender: TObject);
+begin
+	if MessageBox(Handle, '除外ドメインのリストを初期設定に戻します。' + #10 +
+  											'よろしいですか？', '除外ドメイン', MB_YESNO or MB_ICONWARNING) = IDYES then
+    GikoSys.Setting.GetDefaultIPv4Domain(IPv4ListBox.Items);
+end;
+
 procedure TKuroutOption.SetColumnData();
 var
 	i, j : Integer;

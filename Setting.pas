@@ -5,7 +5,7 @@ interface
 
 uses
 	SysUtils, Classes, Graphics, Forms, {Math, IniFiles, UCryptAuto, UBase64,}
-	ComCtrls, GestureModel, IniFiles, SkinFiles;
+	ComCtrls, GestureModel, IniFiles, SkinFiles, Belib;
 
 const
 	MAIN_COOLBAND_COUNT = 4;		//メインCoolBandの数
@@ -24,7 +24,7 @@ type
 												gppLeft, gppCenter, gppRight,
 												gppLeftBottom, gppBottom, gppRightBottom);
 																												//プレビューサイズ
-	TGikoPreviewSize = (gpsXLarge, gpsLarge, gpsMedium, gpsSmall, gpsXSmall);
+	TGikoPreviewSize = (gpsXLarge, gpsLarge, gpsMedium, gpsSmall, gpsXSmall, gpsXLarge2, gpsXLarge3, gpsXLarge4, gpsXLarge5);
 	TGikoBrowserAutoMaximize	= (gbmNone, gbmClick, gbmDoubleClick);
 																												// ブラウザを自動的に最大化する条件
 	/// レス表示範囲。10 ～ 65535 は最新 n レス扱い。
@@ -105,11 +105,14 @@ type
 	TSetting = class(TObject)
 	private
 		//受信バッファサイズ
-		FRecvBufferSize: Integer;
+		//FRecvBufferSize: Integer;
 		//HTTP1.1使用
 		FProtocol: Boolean;
 		//プロキシ接続HTTP1.1使用
 		FProxyProtocol: Boolean;
+  	//IPv6使用
+    FIPv6: Boolean;
+    FIPv4List: TStringList;
 
 		//プロキシ（読込用）
 		FReadProxy: Boolean;
@@ -260,6 +263,12 @@ type
     FIconImageDisplay: Boolean;
     // スレタイ特定文字列除去
     FThreadTitleTrim: Boolean;
+    // URLコピー及びWEBブラウザ表示でitest版URLを使用する
+    FURLitest: Boolean;
+    // 文字&#78840;の扱い 0:何もしない 1:数値参照で表示 2:類似文字に置換
+    FReplChar: Integer;
+    // CAP_USERの日時・ID欄を強調表示する
+    FCapUser: Boolean;
 
 		//ログフォルダ
 		FLogFolder: string;
@@ -304,6 +313,9 @@ type
 		FAutoLogin: Boolean;
 		FForcedLogin: Boolean;
 //		FDolibURL: string;
+
+  	// User-Agentバージョン番号固定
+    FUAVersion: Integer;
 
 		//URLクリック時起動アプリ
 		FURLApp: Boolean;
@@ -362,6 +374,9 @@ type
 		FAddResAnchor : Boolean; //NGレスへのレスアンカーを追加する
 		FDeleteSyria : Boolean;	//シリア語ブラクラ対策
 		FIgnoreKana	: Boolean;	//全半角ひらカナの違いを無視するか
+    FKeepNgFile : Boolean;	//スレ全体再取得時に手動あぼ～ん情報をクリアしない
+    //! スレッドあぼーん
+    FNGThreadInvis: Boolean;	// 透明あぼーん
 
 		//NGワード編集
 		FNGTextEditor: Boolean; //編集にテキストエディタを使用するか
@@ -440,7 +455,7 @@ type
 		FBeAutoLogin: Boolean;
 		FBeLogin: Boolean;
 		//履歴の最大保存件数
-		FMaxRecordCount : Integer;
+		//FMaxRecordCount : Integer;
 
 		//スレッド一覧をダウンロード後にソートするか
 		FAutoSortThreadList : Boolean;
@@ -494,6 +509,8 @@ type
     FPreviewStyle: Boolean;
     //! お絵描き（画像添付）を有効にする
     FOekaki: Boolean;
+    //! 書き込み成功時にスレッド一覧またはスレッドを再読み込みする
+    FReloadAfterWrite: Boolean;
     //! 削除要請板を特別扱い
     FSakuBoard: Boolean;
 
@@ -512,6 +529,28 @@ type
 
     //! 冒険の書用Cookie
     FBoukenCookieList: TStringList;
+
+		//! どんぐりシステムウィンドウ
+		FDonguriTop: Integer;
+		FDonguriLeft: Integer;
+		FDonguriWidth: Integer;
+		FDonguriHeight: Integer;
+		FDonguriStay: Boolean;
+		FDonguriReload: Boolean;
+    FDonguriTheme: Integer;
+    FDonguriTaskBar: Boolean;
+    FDonguriImeDontCare: Boolean;
+		//! どんぐり関連
+    FDonguriMenuTop: Boolean;
+    FDonguriRPCost: Integer;
+    FDonguriKYCost: Integer;
+    FDonguriCBCost: Integer;
+    FDonguriRNCost: String;
+    FDonguriTRCost: String;
+    FDonguriMail: String;
+    FDonguriPwd: String;
+    FDonguriAutoLogin: Integer;
+    FDonguriReCreateIndy: Boolean;
 
 		function GetMainCoolSet(Index: Integer): TCoolSet;
 		function GetBoardCoolSet(Index: Integer): TCoolSet;
@@ -595,17 +634,21 @@ type
     function GetBoukenCookie(AHostName: String): String;
     procedure SetBoukenCookie(ACookieValue, AHostName: String);
     procedure GetBouken(AHostName: String; var Domain:String; var Cookie:String);
+    procedure GetDefaultIPv4Domain(dest: TStrings);
     {
     \brief  リンク履歴の保持サイズのsetter
     \param  AVal    設定するサイズ( >0)
     }
     procedure SetMoveHistorySize(AVal : Integer);
 		//受信バッファサイズ   ※Indy10で使わなくなった
-		property RecvBufferSize: Integer read FRecvBufferSize write FRecvBufferSize;
+		//property RecvBufferSize: Integer read FRecvBufferSize write FRecvBufferSize;
 		//HTTP1.1使用
 		property Protocol: Boolean read FProtocol write FProtocol;
 		//プロキシ接続HTTP1.1使用
 		property ProxyProtocol: Boolean read FProxyProtocol write FProxyProtocol;
+  	// IPv6使用
+  	property IPv6: Boolean read FIPv6 write FIPv6;
+    property IPv4List: TStringList read FIPv4List write FIPv4List;
 
 		property ReadProxy: Boolean read FReadProxy write FReadProxy;
 		property ReadProxyAddress: string read FReadProxyAddress write FReadProxyAddress;
@@ -728,6 +771,9 @@ type
 		property ResPopupHeaderBold: Boolean read FResPopupHeaderBold write FResPopupHeaderBold;
 		property IconImageDisplay: Boolean read FIconImageDisplay write FIconImageDisplay;
 		property ThreadTitleTrim: Boolean read FThreadTitleTrim write FThreadTitleTrim;
+    property URLitest: Boolean read FURLitest write FURLitest;
+    property ReplChar: Integer read FReplChar write FReplChar;
+    property CapUser: Boolean read FCapUser write FCapUser;
 
 		property LogFolder: string read FLogFolder write WriteLogFolder;
 		property LogFolderP: string read FLogFolderP;
@@ -763,6 +809,7 @@ type
 		property AutoLogin: Boolean read FAutoLogin write FAutoLogin;
 		property ForcedLogin: Boolean read FForcedLogin write FForcedLogin;
 //		property DolibURL: string read FDolibURL write FDolibURL;
+    property UAVersion: Integer read FUAVersion write FUAVersion;
 
 		property URLApp: Boolean read FURLApp write FURLApp;
 		property URLAppFile: string read FURLAppFile write FURLAppFile;
@@ -806,6 +853,9 @@ type
 		property AddResAnchor : Boolean read FAddResAnchor write FAddResAnchor;
 		property DeleteSyria : Boolean read FDeleteSyria write FDeleteSyria;
 		property IgnoreKana : Boolean read FIgnoreKana write FIgnoreKana;
+    property KeepNgFile : Boolean read FKeepNgFile write FKeepNgFile;
+    //! スレッドあぼーん
+    property NGThreadInvis: Boolean read FNGThreadInvis write FNGThreadInvis;	// 透明あぼーん
 
 		//NGワード編集
 		property NGTextEditor: Boolean read FNGTextEditor write FNGTextEditor;
@@ -867,7 +917,7 @@ type
 		property BePassword: string read FBePassword write FBePassword;
 		property BeAutoLogin: Boolean read FBeAutoLogin write FBeAutoLogin;
 		property BeLogin: Boolean read FBeLogin write FBeLogin;
-		property MaxRecordCount : Integer read FMaxRecordCount write FMaxRecordCount;
+		//property MaxRecordCount : Integer read FMaxRecordCount write FMaxRecordCount;
 		//! スレッド一覧ダウンロード後にスレッド名で昇順ソートするか
 		property AutoSortThreadList : Boolean read FAutoSortThreadList write FAutoSortThreadList;
 		//! InputAssistフォームの位置
@@ -916,6 +966,8 @@ type
     property PreviewStyle: Boolean read FPreviewStyle write FPreviewStyle;
     //! お絵描き（画像添付）を有効にする
     property Oekaki: Boolean read FOekaki write FOekaki;
+    //! 書き込み成功時にスレッド一覧またはスレッドを再読み込みする
+    property ReloadAfterWrite: Boolean read FReloadAfterWrite write FReloadAfterWrite;
     //! 削除要請板を特別扱い
     property SakuBoard: Boolean read FSakuBoard write FSakuBoard;
 		//! スレタイ検索ウィンドウ
@@ -933,6 +985,27 @@ type
     property ThrdSrchHistory: TStringList read FThrdSrchHistory write FThrdSrchHistory;
     //! 冒険の書
     property BoukenCookieList: TStringList read FBoukenCookieList write FBoukenCookieList;
+		//! どんぐりシステムウィンドウ
+		property DonguriTop: Integer read FDonguriTop write FDonguriTop;
+		property DonguriLeft: Integer read FDonguriLeft write FDonguriLeft;
+		property DonguriWidth: Integer read FDonguriWidth write FDonguriWidth;
+		property DonguriHeight: Integer read FDonguriHeight write FDonguriHeight;
+		property DonguriStay: Boolean read FDonguriStay write FDonguriStay;
+    property DonguriReload: Boolean read FDonguriReload write FDonguriReload;
+    property DonguriTheme: Integer read FDonguriTheme write FDonguriTheme;
+    property DonguriTaskBar: Boolean read FDonguriTaskBar write FDonguriTaskBar;
+    property DonguriImeDontCare: Boolean read FDonguriImeDontCare write FDonguriImeDontCare;
+		//! どんぐり関連
+    property DonguriMenuTop: Boolean read FDonguriMenuTop write FDonguriMenuTop;
+    property DonguriRPCost:  Integer read FDonguriRPCost  write FDonguriRPCost;
+    property DonguriKYCost:  Integer read FDonguriKYCost  write FDonguriKYCost;
+    property DonguriCBCost:  Integer read FDonguriCBCost  write FDonguriCBCost;
+    property DonguriRNCost:  String  read FDonguriRNCost  write FDonguriRNCost;
+    property DonguriTRCost:  String  read FDonguriTRCost  write FDonguriTRCost;
+    property DonguriMail:    String  read FDonguriMail    write FDonguriMail;
+    property DonguriPwd:     String  read FDonguriPwd     write FDonguriPwd;
+    property DonguriAutoLogin: Integer read FDonguriAutoLogin write FDonguriAutoLogin;
+    property DonguriReCreateIndy: Boolean read FDonguriReCreateIndy write FDonguriReCreateIndy;
 	end;
 
 
@@ -990,6 +1063,15 @@ const
 	DEFAULT_TAB_FONT_SIZE:  Integer = 9;
 	DEFAULT_2CH_BOARD_URL1:  string = 'https://menu.5ch.net/bbsmenu.html';
 	GIKO_ENCRYPT_TEXT:       string = 'gikoNaviEncryptText';
+
+  // IPv6で接続しないドメイン
+  DEFAULT_IPV4_DOMAIN: array [0..4] of string = (
+  	'flounder.s27.xrea.com',	// 非公式ギコナビ板
+    'be.5ch.net',							// beログインホスト
+    'shitaraba.com',					// したらばJBBS
+    'shitaraba.net',					// したらばJBBS
+    'machi.to'                // まちBBS
+  );
 
 var
 	SOUND_NAME: array[0..4] of TSoundName = (
@@ -1087,13 +1169,14 @@ begin
 	FCategoryColumnOrder := TGikoCategoryColumnList.Create;
 	FBoardColumnOrder := TGikoBoardColumnList.Create;
 	FGestures := TGestureModel.Create;
-    FSkinFiles := TSkinFiles.Create;
+	FSkinFiles := TSkinFiles.Create;
 	FNameList.Duplicates := dupIgnore;
 	FMailList.Duplicates := dupIgnore;
 	FBoardURLs.Duplicates := dupIgnore;
 	FSelectTextList.Duplicates := dupIgnore;
-    FThrdSrchHistory := TStringList.Create;
-    FBoukenCookieList := TStringList.Create;
+  FThrdSrchHistory := TStringList.Create;
+  FBoukenCookieList := TStringList.Create;
+	FIPv4List := TStringList.Create;
 	ReadSettingFile();
 	ReadBoardURLsFile();
 end;
@@ -1101,8 +1184,8 @@ end;
 //デストラクタ
 destructor TSetting.Destroy();
 begin
-    FThrdSrchHistory.Free;
-    FBoukenCookieList.Free;
+  FThrdSrchHistory.Free;
+  FBoukenCookieList.Free;
  	FBoardColumnOrder.Free;
  	FCategoryColumnOrder.Free;
  	FBBSColumnOrder.Free;
@@ -1111,7 +1194,8 @@ begin
  	FMailList.Free;
  	FNameList.Free;
  	FGestures.Free;
-    FSkinFiles.Free;
+	FSkinFiles.Free;
+	FIPv4List.Free;
 	inherited;
 end;
 
@@ -1135,25 +1219,41 @@ var
 	Exists: Boolean;
 	s: string;
 	CoolSet: TCoolSet;
-    msg: String;
-    hostList: TStringList;
-    Cnt: Integer;
+  msg: String;
+  hostList: TStringList;
+  Cnt: Integer;
+  key: String;
 begin
 	Exists := FileExists(GetFileName);
 	ini := TMemIniFile.Create(GetFileName);
 	try
 		//受信バッファサイズ
-		FRecvBufferSize := ini.ReadInteger('HTTP', 'RecvBufferSize', 4096);
+		//FRecvBufferSize := ini.ReadInteger('HTTP', 'RecvBufferSize', 4096);
 		//HTTP1.1使用
 		FProtocol := ini.ReadBool('HTTP', 'Protocol', True);
 		//プロキシ接続HTTP1.1使用
 		FProxyProtocol := ini.ReadBool('HTTP', 'ProxyProtocol', False);
+  	// IPv6
+    FIPv6 := ini.ReadBool('HTTP', 'IPv6', False);
+    Cnt := ini.ReadInteger('HTTP', 'IPv4DomainCount', -9999);
+    if Cnt = -9999 then begin
+    	for i := Low(DEFAULT_IPV4_DOMAIN) to High(DEFAULT_IPV4_DOMAIN) do
+	    	FIpv4List.Add(DEFAULT_IPV4_DOMAIN[i]);
+    end else begin
+      for i := 1 to Cnt do begin
+        key := Format('IPv4Domain%d', [i]);
+        s := Trim(ini.ReadString('HTTP', key, ''));
+        if s <> '' then
+          FIpv4List.Add(s);
+      end;
+    end;
 
-        // プロキシ設定読み込み
-        ReadProxySettings( ini );
 
-        // 各種ウィンドウの設定読み込み
-        ReadWindowSettings( ini );
+    // プロキシ設定読み込み
+    ReadProxySettings( ini );
+
+    // 各種ウィンドウの設定読み込み
+    ReadWindowSettings( ini );
 
 		FWindowTop := ini.ReadInteger('WindowSize', 'Top', -1);
 		FWindowLeft := ini.ReadInteger('WindowSize', 'Left', -1);
@@ -1244,10 +1344,19 @@ begin
 		FUnActivePopup := ini.ReadBool('Thread', 'UnActivePopup', False);
 		//レスポップアップヘッダーボールド
 		FResPopupHeaderBold := ini.ReadBool('Thread', 'ResPopupHeaderBold', True);
-        // BEアイコン・Emoticon画像表示
-        FIconImageDisplay := ini.ReadBool('Thread', 'IconImageDisplay', True);
-        // スレタイ特定文字列除去
-        FThreadTitleTrim := ini.ReadBool('Thread', 'ThreadTitleTrim', False);
+		// BEアイコン・Emoticon画像表示
+		FIconImageDisplay := ini.ReadBool('Thread', 'IconImageDisplay', True);
+		// スレタイ特定文字列除去
+		FThreadTitleTrim := ini.ReadBool('Thread', 'ThreadTitleTrim', False);
+    // URLコピー及びWEBブラウザ表示でitest版URLを使用する
+    FURLitest := ini.ReadBool('Thread', 'UseItestURL', False);
+    // 文字&#78840;の扱い 0:何もしない 1:数値参照で表示 2:類似文字に置換
+    FReplChar := ini.ReadInteger('Thread','ReplaceChar', 0);
+    if (FReplChar < 0) or (FReplChar > 2) then
+    	FReplChar := 0;
+    // CAP_USERの日時・ID欄を強調表示する
+    FCapUser := ini.ReadBool('Thread', 'CapUser', False);
+
 		//削除確認
 		FDeleteMsg := ini.ReadBool('Function', 'LogDeleteMessage', True);
 		//終了確認
@@ -1272,6 +1381,8 @@ begin
 		FAutoLogin := ini.ReadBool('Attestation', 'AutoLogin', False);
 		FForcedLogin := ini.ReadBool('Attestation', 'FForcedLogin', False);
 //		FDolibURL	:= ini.ReadString('Attestation', 'FDolibURL', DOLIB_LOGIN_URL);
+  	// User-Agentバージョン番号固定
+    FUAVersion := ini.ReadInteger('HTTP', 'UAVersion', 0);
 
 		//URLクリック時起動アプリ
 		FURLApp := ini.ReadBool('URLApp', 'Select', False);
@@ -1354,6 +1465,8 @@ begin
 			CoolSet.FCoolID := ini.ReadInteger('MainCoolBar', 'ID' + IntToStr(i), -1);
 			CoolSet.FCoolWidth := ini.ReadInteger('MainCoolBar', 'Width' + IntToStr(i), -1);
 			CoolSet.FCoolBreak := ini.ReadBool('MainCoolBar', 'Break' + IntToStr(i), False);
+    	if CoolSet.FCoolID = 3 then		// Shift-JI版お気に入りツールバー（リンクバー）
+      	CoolSet.FCoolID := 4;				// Unicode版に差し替え
 			MainCoolSet[i] := CoolSet;
 		end;
 		FSelectComboBoxWidth := ini.ReadInteger( 'ListCoolBar', 'SelectWidth', 127 );
@@ -1378,6 +1491,9 @@ begin
 		FAddResAnchor := ini.ReadBool('Abon','AddResAnchor',false);
 		FDeleteSyria :=  ini.ReadBool('Abon','DeleteSyria',false);
 		FIgnoreKana  :=  ini.ReadBool('Abon','IgnoreKana',false);
+    FKeepNgFile  :=  ini.ReadBool('Abon','KeepNgFile',false);
+    //! スレッドあぼーん
+    FNGThreadInvis := ini.ReadBool('Abon','ThreadInvisible', False);
 
         //NGワード編集
         FNGTextEditor   := ini.ReadBool('NGWordEditor', 'NGTextEditor', False);
@@ -1394,6 +1510,7 @@ begin
 		FUseUnicode     := True;//ini.ReadBool( 'Editor', 'UseUnicode', False );
     FPreviewStyle   := ini.ReadBool( 'Editor', 'PreviewStyle', False );
     FOekaki         := ini.ReadBool( 'Editor', 'Oekaki', True );
+    FReloadAfterWrite := ini.ReadBool( 'Editor', 'ReloadAfterWrite', False );
 
 		//Tab自動保存、読み込み
 		FTabAutoLoadSave    := ini.ReadBool('TabAuto', 'TabAutoLoadSave', False);
@@ -1423,7 +1540,7 @@ begin
 		FBePassword := Decrypt(ini.ReadString('Be', 'Password', ''));
 		FBeAutoLogin := ini.ReadBool('Be', 'AutoLogin', False);
 		//履歴の最大保存件数
-		FMaxRecordCount := Max(ini.ReadInteger('Recode', 'Max', 100), 1);
+		//FMaxRecordCount := Max(ini.ReadInteger('Recode', 'Max', 100), 1);
 
         //! 削除要請板を特別扱い
         FSakuBoard := ini.ReadBool('NewBoard', 'SakuSpecial', True);
@@ -1453,6 +1570,28 @@ begin
                     FThrdSrchHistory.Add(s);
             end;
         end;
+
+		//! どんぐりシステムウィンドウ
+		FDonguriTop    := ini.ReadInteger('DonguriSystem', 'Top',    0);
+		FDonguriLeft   := ini.ReadInteger('DonguriSystem', 'Left',   0);
+		FDonguriWidth  := ini.ReadInteger('DonguriSystem', 'Width',  296);
+		FDonguriHeight := ini.ReadInteger('DonguriSystem', 'Height', 566);
+		FDonguriStay   := ini.ReadBool(   'DonguriSystem', 'Stay',   False);
+    FDonguriReload := ini.ReadBool(   'DonguriSystem', 'AutoReload', False);
+    FDonguriTheme  := ini.ReadInteger('DonguriSystem', 'Theme',  0);
+    FDonguriTaskBar:= ini.ReadBool(   'DonguriSystem', 'TaskBar',False);
+    FDonguriImeDontCare:= ini.ReadBool('DonguriSystem', 'IMEDontCare', False);
+		//! どんぐり関連
+    FDonguriMenuTop:= ini.ReadBool(   'Donguri',      'MenuTop', False);
+    FDonguriRPCost := ini.ReadInteger('Donguri',      'RPCost',  1);
+    FDonguriKYCost := ini.ReadInteger('Donguri',      'KYCost',  15);
+    FDonguriCBCost := ini.ReadInteger('Donguri',      'CBCost',  24);
+    FDonguriRNCost := ini.ReadString( 'Donguri',      'RNCost',  '0.001');
+    FDonguriTRCost := ini.ReadString( 'Donguri',      'TRCost',  '0.001');
+    FDonguriMail   := ini.ReadString( 'Donguri',      'Mail',    '');
+    FDonguriPwd    := ini.ReadString( 'Donguri',      'Pwd',     '');
+		FDonguriAutoLogin := ini.ReadInteger('Donguri', 'AutoLogin', 0);
+    FDonguriReCreateIndy := ini.ReadBool('Donguri', 'ReCreateIndy', False);
 
 		// Cookieに付加する固定コード
 		FFixedCookie := ini.ReadString('Cookie', 'fixedString', FIXED_COOKIE);
@@ -1527,15 +1666,25 @@ end;
 procedure TSetting.WriteSystemSettingFile();
 var
 	ini: TMemIniFile;
+  i: Integer;
+  key: String;
 begin
 	ini := TMemIniFile.Create(GetFileName());
 	try
 		//受信バッファサイズ
-		ini.WriteInteger('HTTP', 'RecvBufferSize', FRecvBufferSize);
+		//ini.WriteInteger('HTTP', 'RecvBufferSize', FRecvBufferSize);
 		//HTTP1.1使用
 		ini.WriteBool('HTTP', 'Protocol', FProtocol);
 		//プロキシ接続HTTP1.1使用
 		ini.WriteBool('HTTP', 'ProxyProtocol', FProxyProtocol);
+  	// IPv
+    ini.WriteBool('HTTP', 'IPv6', IPv6);
+    ini.WriteInteger('HTTP', 'IPv4DomainCount', FIpv4List.Count);
+    for i := 1 to FIpv4List.Count do begin
+    	key := Format('IPv4Domain%d', [i]);
+    	if i <= FIpv4List.Count then
+      	ini.WriteString('HTTP', key, FIPv4List[i-1])
+    end;
 
 		ini.WriteBool('ReadProxy', 'Proxy', FReadProxy);
 		ini.WriteString('ReadProxy', 'Address', FReadProxyAddress);
@@ -1712,11 +1861,19 @@ begin
 		ini.WriteBool('Thread', 'UnActivePopup', FUnActivePopup);
 		//レスポップアップヘッダーボールド
 		ini.WriteBool('Thread', 'ResPopupHeaderBold', FResPopupHeaderBold);
-        // BEアイコン・Emoticon画像表示
-        ini.WriteBool('Thread', 'IconImageDisplay', FIconImageDisplay);
-        // スレタイ特定文字列除去
-        ini.WriteBool('Thread', 'ThreadTitleTrim', FThreadTitleTrim);
+    // BEアイコン・Emoticon画像表示
+    ini.WriteBool('Thread', 'IconImageDisplay', FIconImageDisplay);
+    // スレタイ特定文字列除去
+    ini.WriteBool('Thread', 'ThreadTitleTrim', FThreadTitleTrim);
+    // URLコピー及びWEBブラウザ表示でitest版URLを使用する
+    ini.WriteBool('Thread', 'UseItestURL', FURLitest);
 		//ini.WriteString('BoardURL', '2ch', FBoardURL2ch);
+    // 文字&#78840;の扱い 0:何もしない 1:数値参照で表示 2:類似文字に置換
+    if (FReplChar < 0) or (FReplChar > 2) then
+    	FReplChar := 0;
+    ini.WriteInteger('Thread','ReplaceChar', FReplChar);
+    // CAP_USERの日時・ID欄を強調表示する
+    ini.WriteBool('Thread', 'CapUser', FCapUser);
 
 		//認証用ユーザID・パスワード
 		ini.WriteString('Attestation', 'UserID', FUserID);
@@ -1724,6 +1881,8 @@ begin
 		ini.WriteBool('Attestation', 'AutoLogin', FAutoLogin);
 		ini.WriteBool('Attestation', 'FForcedLogin', FForcedLogin);
 //		ini.WriteString('Attestation', 'FDolibURL', FDolibURL);
+  	// User-Agentバージョン番号固定
+    ini.WriteInteger('HTTP', 'UAVersion', FUAVersion);
 
 		//URLクリック時起動アプリ
 		ini.WriteBool('URLApp', 'Select', FURLApp);
@@ -1850,6 +2009,9 @@ begin
 		ini.WriteBool('Abon','AddResAnchor',FAddResAnchor);
 		ini.WriteBool('Abon','DeleteSyria',FDeleteSyria);
 		ini.WriteBool('Abon','IgnoreKana', FIgnoreKana);
+    ini.WriteBool('Abon','KeepNgFile', FKeepNgFile);
+    //! スレッドあぼーん
+    ini.WriteBool('Abon','ThreadInvisible', FNGThreadInvis);
 
 		//NGワード編集
 		ini.WriteBool('NGWordEditor', 'NGTextEditor', FNGTextEditor);
@@ -1866,6 +2028,7 @@ begin
 		//ini.WriteBool( 'Editor', 'UseUnicode',     FUseUnicode );
     ini.WriteBool( 'Editor', 'PreviewStyle',   FPreviewStyle );
     ini.WriteBool( 'Editor', 'Oekaki',         FOekaki );
+    ini.WriteBool( 'Editor', 'ReloadAfterWrite', FReloadAfterWrite );
 
     //! 削除要請板を特別扱い
     ini.WriteBool('NewBoard', 'SakuSpecial', FSakuBoard);
@@ -1898,7 +2061,7 @@ begin
 		ini.WriteBool('Be', 'AutoLogin', FBeAutoLogin);
 
 		//履歴の最大保存件数
-		ini.WriteInteger('Recode', 'Max', FMaxRecordCount);
+		//ini.WriteInteger('Recode', 'Max', FMaxRecordCount);
 		// 固定のCookie文字列
     ini.WriteString('Cookie', 'fixedString', FFixedCookie);
 
@@ -1931,6 +2094,28 @@ begin
 				ini.WriteString('ThreadSearch', 'History' + IntToStr(i), FThrdSrchHistory.Strings[i-1]);
 			end;
     end;
+
+		//! どんぐりシステムウィンドウ
+		ini.WriteInteger('DonguriSystem', 'Top',    FDonguriTop);
+		ini.WriteInteger('DonguriSystem', 'Left',   FDonguriLeft);
+		ini.WriteInteger('DonguriSystem', 'Width',  FDonguriWidth);
+		ini.WriteInteger('DonguriSystem', 'Height', FDonguriHeight);
+		ini.WriteBool(   'DonguriSystem', 'Stay',   FDonguriStay);
+    ini.WriteBool(   'DonguriSystem', 'AutoReload', FDonguriReload);
+    ini.WriteInteger('DonguriSystem', 'Theme',  FDonguriTheme);
+    ini.WriteBool(   'DonguriSystem', 'TaskBar',FDonguriTaskBar);
+    ini.WriteBool(   'DonguriSystem', 'IMEDontCare', FDonguriImeDontCare);
+		//! どんぐり関連
+    ini.WriteBool(   'Donguri',      'MenuTop', FDonguriMenuTop);
+    ini.WriteInteger('Donguri',      'RPCost',  FDonguriRPCost);
+    ini.WriteInteger('Donguri',      'KYCost',  FDonguriKYCost);
+    ini.WriteInteger('Donguri',      'CBCost',  FDonguriCBCost);
+    ini.WriteString( 'Donguri',      'RNCost',  FDonguriRNCost);
+    ini.WriteString( 'Donguri',      'TRCost',  FDonguriTRCost);
+    ini.WriteString( 'Donguri',      'Mail',    FDonguriMail);
+    ini.WriteString( 'Donguri',      'Pwd',     FDonguriPwd);
+		ini.WriteInteger('Donguri',    'AutoLogin', FDonguriAutoLogin);
+    ini.WriteBool(   'Donguri', 'ReCreateIndy', FDonguriReCreateIndy);
 
 
 		ini.UpdateFile;
@@ -2703,6 +2888,15 @@ begin
             Break;
         end;
     end;
+end;
+
+procedure TSetting.GetDefaultIPv4Domain(dest: TStrings);
+var
+	i: Integer;
+begin
+  dest.Clear;
+	for i := Low(DEFAULT_IPV4_DOMAIN) to High(DEFAULT_IPV4_DOMAIN) do
+		dest.Add(DEFAULT_IPV4_DOMAIN[i]);
 end;
 
 end.

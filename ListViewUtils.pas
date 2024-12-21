@@ -394,7 +394,8 @@ begin
 		end;
 		}
 		case GikoForm.ViewType of
-			gvtAll: ListView.Items.Count := Board.Count;
+			//gvtAll: ListView.Items.Count := Board.Count;
+			gvtAll: ListView.Items.Count := Board.GetUserThreadCount;
 			gvtLog:
 			begin
 				Board.LogThreadCount := Board.GetLogThreadCount;
@@ -562,7 +563,8 @@ begin
 	else
 		ListView.StateImages := nil;
 
-
+  Item.StateIndex := -1;
+    
 	case GikoForm.ViewType of
 		gvtAll: BoardCnt := Board.Count;
 		gvtLog: BoardCnt := Board.LogThreadCount;
@@ -581,11 +583,12 @@ begin
 	ThreadItem := nil;
 	case GikoForm.ViewType of
 		gvtAll: if Item.Index >= Board.Count then Exit else
-							ThreadItem := TThreadItem(Board.Items[Item.Index]);
+							//ThreadItem := TThreadItem(Board.Items[Item.Index]);
+							ThreadItem := Board.GetUserThread(Item.Index);
 		gvtLog: 	ThreadItem := Board.GetLogThread(Item.Index);
 		gvtNew:		ThreadItem := Board.GetNewThread(Item.Index);
-		gvtArch:    ThreadItem := Board.GetArchiveThread(Item.Index);
-		gvtLive:    ThreadItem := Board.GetLiveThread(Item.Index);
+		gvtArch:  ThreadItem := Board.GetArchiveThread(Item.Index);
+		gvtLive:  ThreadItem := Board.GetLiveThread(Item.Index);
 		gvtUser:	ThreadItem := Board.GetUserThread(Item.Index);
 	end;
 	//////////////////////////////////////////////////////////////////////////
@@ -598,10 +601,10 @@ begin
 	RepStr := CustomStringReplace(RepStr, '&amp;', '&' );
 	//RepStr := StringReplace(RepStr, 'ÅóÅM', ',', [rfReplaceAll]);
 
-    if (ThreadNgList.IsNG(RepStr) = True) then
-        RepStr := 'ÅÉÇ†Ç⁄Å`ÇÒÅÑ'
-    else if (GikoSys.Setting.ThreadTitleTrim = True) then
-        RepStr := GikoSys.TrimThreadTitle(RepStr);
+  if ThreadNgList.IsNG(RepStr, False) then
+		RepStr := 'ÅÉÇ†Ç⁄Å`ÇÒÅÑ'
+  else if (GikoSys.Setting.ThreadTitleTrim = True) then
+		RepStr := GikoSys.TrimThreadTitle(RepStr);
 
 	if Item.SubItems.Count <> ListView.Columns.Count then begin
 		Item.SubItems.Clear;

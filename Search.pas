@@ -425,11 +425,17 @@ begin
 end;
 procedure TSearchDialog.BoardListViewDblClick(Sender: TObject);
 begin
-
-	If TObject( BoardListView.Selected.Data ) is TThreadItem Then
+try
+	If (BoardListView.Selected <> nil) and
+     (TObject( BoardListView.Selected.Data ) is TThreadItem) Then
 		GikoForm.InsertBrowserTab( TThreadItem(BoardListView.Selected.Data) );
 
 	BringToFront;
+except
+  on e: Exception do begin
+		ShowMessage(e.Message);
+  end;
+end;
 end;
 
 procedure TSearchDialog.CancelBottonClick(Sender: TObject);

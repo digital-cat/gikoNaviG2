@@ -36,10 +36,11 @@ object AbonInfoEdit: TAbonInfoEdit
     Width = 313
     Height = 49
     Caption = #27604#36611#31278#21029
-    Columns = 2
+    Columns = 3
     Items.Strings = (
       #36890#24120#27604#36611
-      #27491#35215#34920#29694)
+      #27491#35215#34920#29694
+      #27491#35215#34920#29694#65298)
     TabOrder = 1
   end
   object GroupBox1: TGroupBox

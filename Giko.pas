@@ -433,6 +433,36 @@ type
 		ThrNGEdit: TMenuItem;
 		RangeBon: TMenuItem;
 		N87: TMenuItem;
+    DongriMenu: TMenuItem;
+    N88: TMenuItem;
+    DonguriCannonMenu: TMenuItem;
+    CookieMngMenu: TMenuItem;
+    DonguriCannonTopMenu: TMenuItem;
+    DonguriSeparatorTopMenu: TMenuItem;
+    DonguriShowMenu: TMenuItem;
+    DonguriLoginMenu: TMenuItem;
+    DonguriHntLoginMenu: TMenuItem;
+    DonguriGrdLoginMenu: TMenuItem;
+    DonguriAuthMenu: TMenuItem;
+    DonguriLogoutMenu: TMenuItem;
+    PATHINFOitest1: TMenuItem;
+    dat5: TMenuItem;
+    N89: TMenuItem;
+    N90: TMenuItem;
+    N410: TMenuItem;
+    N91: TMenuItem;
+    N92: TMenuItem;
+    N411: TMenuItem;
+    N93: TMenuItem;
+    N94: TMenuItem;
+    N95: TMenuItem;
+    N96: TMenuItem;
+    N97: TMenuItem;
+    NG3: TMenuItem;
+    NG4: TMenuItem;
+    N98: TMenuItem;
+    N4NG1: TMenuItem;
+    N4NG2: TMenuItem;
 		procedure FormCreate(Sender: TObject);
 		procedure FormDestroy(Sender: TObject);
 		procedure SaveSettingAll();
@@ -713,13 +743,15 @@ type
 		//! ListViewのD&D受け取り
 		procedure AcceptDropFiles(var Msg: TMsg);
 		//! スレッド一覧更新処理
-		procedure UpdateListView();
+		//procedure UpdateListView();		publicへ
 		//! アイコン読み込み
 		procedure LoadIcon();
 		//! ポップアップメニュー読み込み
 //		procedure LoadPopupMenu();
 		procedure FavoriteTreeViewUCEdited(Sender: TObject; Node: TTntTreeNode;
 			var S: WideString);
+		//! ファイル拡張子抽出
+		function ExtractFileExt2(path: String): String;
 	protected
 		procedure CreateParams(var Params: TCreateParams); override;
 		procedure WndProc(var Message: TMessage); override;
@@ -799,10 +831,14 @@ type
 		procedure	CoolBarResized(Sender: TObject; CoolBar: TCoolBar);
 		//同一IDのあぼ～ん
 		procedure IndividualAbonID(Atype : Integer);
+		//同一ワッチョイのあぼ～ん
+		procedure IndividualAbonWacchoi(Atype : Integer; ALow4: Boolean);
 		//このレスあぼ～ん
 		procedure IndividualAbon(Atag, Atype : Integer);
 		//同一IDをNGワードに登録
 		procedure AddIDtoNGWord(invisible : boolean);
+		//同一ワッチョイをNGワードに登録
+		procedure AddWacchoitoNGWord(invisible : boolean; ALow4: Boolean);
 		//範囲あぼ～ん
 		procedure RangeAbon(Atag: Integer);
 		//ブラウザの再描画 true:全てのタブ false:アクティブなタブのみ
@@ -841,6 +877,8 @@ type
 		procedure SelectListItem(List: TList);
 		//指定したレスをコピーする
 		procedure KonoresCopy(Number: Integer; ReplaceTag : Boolean);
+		//指定したレスのdatをコピーする
+		procedure KonoDatCopy(Number: Integer; ReplaceTag : Boolean);
 		///
 		procedure ModifySelectList;
 		///
@@ -862,6 +900,10 @@ type
 		procedure StoredTaskTray;
 		//! 同IDレスアンカー表示
 		procedure ShowSameIDAncher(const AID: String);
+		//! 同ワッチョイレスアンカー表示
+		procedure ShowSameWacchoiAncher(AResNo: Integer; ALow4: Boolean);
+		//! 同ワッチョイレスアンカー表示
+		procedure ShowSameWacchoiAncher2(AInnerText: String; ALow4: Boolean);
 		//! スレタイ表示更新
 		procedure UpdateThreadTitle;
 		//! フォームキャプション設定
@@ -870,6 +912,10 @@ type
 		procedure SetFontAndColor(ACreate: Boolean);
 		//! アドレスコンボボックスリスト件数超過項目削除
 		procedure AddressItemsSetCount;
+    //! レス番号ポップアップメニュー先頭の「どんぐり大砲」表示切替
+    procedure ShowDonguriCannonTopMenu;
+		//! スレッド一覧更新処理
+		procedure UpdateListView();
 	published
 		property EnabledCloseButton: Boolean read FEnabledCloseButton write SetEnabledCloseButton;
 	end;
@@ -909,7 +955,8 @@ uses
 	About, Option, Round, Splash, Sort, ListSelect, Imm,
 	NewBoard, MojuUtils, Clipbrd, GikoBayesian,Y_TextConverter,
 	HTMLCreate, ListViewUtils, GikoDataModule, GikoMessage,
-	InputAssistDataModule, Types, ReplaceDataModule, PopupMenuUtil, RangeAbon;
+	InputAssistDataModule, Types, ReplaceDataModule, PopupMenuUtil, RangeAbon,
+  DonguriBase;
 
 const
 	BLANK_HTML: string = 'about:blank';
@@ -948,6 +995,7 @@ var
 	i: Integer;
 	wp: TWindowPlacement;
   msgCol: TTntListColumn;
+	CoolBand: TCoolBand;
 begin
 {$IFDEF DEBUG}
 	AllocConsole;
@@ -1031,6 +1079,20 @@ begin
 	LinkToolBarUC.OnDragOver   := LinkToolBar.OnDragOver;
 	LinkToolBarUC.OnResize     := LinkToolBar.OnResize;
 	LinkToolBar.Visible        := False;
+	// Shift-JIS版お気に入りツールバーをCoolBandごと削除
+  try
+    for i := 0 to MainCoolBar.Bands.Count - 1 do begin
+      if MainCoolBar.Bands[i].Control = LinkToolBar then begin
+        MainCoolBar.Bands.Delete(i);
+        Break;
+      end;
+    end;
+    // Unicode版お気に入りツールバーのバンドに名称表示
+		CoolBand := GetCoolBand(MainCoolBar, LinkToolBarUC);
+    if CoolBand <> nil then
+    	CoolBand.Text := 'リンク';
+  except
+  end;
 	// カテゴリツリービューをUnicode版に差し替え
 	TreeViewUC := TTntTreeView.Create(Self);
 	TreeViewUC.Parent           := TreeView.Parent;
@@ -1178,7 +1240,7 @@ begin
 	LoadIcon;
 
 	//アドレス履歴読み込み
-	AddressHistoryDM.ReadHistory(AddressComboBox.Items, GikoSys.Setting.MaxRecordCount);
+	AddressHistoryDM.ReadHistory(AddressComboBox.Items, GikoSys.Setting.AddressHistoryCount);
 
 	EnabledCloseButton := True;
 
@@ -1519,12 +1581,13 @@ begin
 	//2ch言語読み出し
 	GikoSys.SetGikoMessage;
 
-	//オートログイン
-	if GikoSys.Setting.AutoLogin then
-		GikoDM.LoginAction.Execute;
-
-	if GikoSys.Setting.BeAutoLogin then
-		GikoDM.BeLogInOutAction.Execute;
+	// FormShowへ移動
+	////オートログイン
+	//if GikoSys.Setting.AutoLogin then
+	//	GikoDM.LoginAction.Execute;
+  ///
+	//if GikoSys.Setting.BeAutoLogin then
+	//	GikoDM.BeLogInOutAction.Execute;
 
 	//キャプションが上書きされてしまうので、ここで再設定
 	FavoriteAddToolButton.Caption := '追加...';
@@ -1545,6 +1608,9 @@ begin
 	// ツールバーの初期化の影響？でコンボボックスが初期化される(？)ため上からここへ移動 for D2007
 	// 絞込検索履歴
 	SelectComboBoxUC.Items_Assign( GikoSys.Setting.SelectTextList );
+
+	//! レス番号ポップアップメニュー先頭の「どんぐり大砲」表示切替
+	ShowDonguriCannonTopMenu;
 
 	// 初期化に失敗したモジュールチェック
 	if (FavoriteDM.AbEnd) then begin
@@ -1794,6 +1860,61 @@ begin
 				//ShowWindow(Self.Handle, SW_SHOW);
 			end;
 		end;
+    //オートログイン
+    if GikoSys.Setting.AutoLogin then begin
+    	try
+      	GikoDM.LoginAction.Execute;
+      except
+		    on e: Exception do begin
+					MsgBox(Self.Handle, '自動ログインに失敗しました。' + #13#10 + e.Message,
+          				'ログイン', MB_OK or MB_ICONERROR);
+        end;
+      end;
+    end;
+
+    if GikoSys.Setting.BeAutoLogin then begin
+    	try
+	      GikoDM.BeLogInOutAction.Execute;
+      except
+		    on e: Exception do begin
+					MsgBox(Self.Handle, 'Beの自動ログインに失敗しました。' + #13#10 + e.Message,
+          				'ログイン', MB_OK or MB_ICONERROR);
+        end;
+      end;
+    end;
+
+    case GikoSys.Setting.DonguriAutoLogin of
+      1: begin
+        try
+          GikoDM.DonguriLoginAction.Execute;
+        except
+          on e: Exception do begin
+            MsgBox(Self.Handle, 'どんぐりシステムの自動ログインに失敗しました。' + #13#10 + e.Message,
+                    'ログイン', MB_OK or MB_ICONERROR);
+          end;
+        end;
+      end;
+      2: begin
+        try
+          GikoDM.DonguriHntLoginAction.Execute;
+        except
+          on e: Exception do begin
+            MsgBox(Self.Handle, 'どんぐりシステムのハンター自動ログインに失敗しました。' + #13#10 + e.Message,
+                    'ログイン', MB_OK or MB_ICONERROR);
+          end;
+        end;
+      end;
+      3: begin
+        try
+          GikoDM.DonguriGrdLoginAction.Execute;
+        except
+          on e: Exception do begin
+            MsgBox(Self.Handle, 'どんぐりシステムの警備員自動ログインに失敗しました。' + #13#10 + e.Message,
+                    'ログイン', MB_OK or MB_ICONERROR);
+          end;
+        end;
+      end;
+    end;
 
 //===== マルチモニタ環境でFormCreateではフォーム位置が正しく反映されない場合
 //===== があるためFormShow初回で座標設定を行う
@@ -1841,41 +1962,48 @@ begin
 	if ( GikoSys.Setting.ShowDialogForEnd ) and
 			(MessageDlg('ギコナビを終了してよろしいですか？', mtConfirmation,[mbOk, mbCancel], 0) = mrCancel ) then begin
 		CanClose := false;
-			Exit;
+		Exit;
 	end;
 
-    g_AppTerminated := True;
+	g_AppTerminated := True;
 
-    GikoSys.Setting.LastCloseTabURL := '';
+	GikoSys.Setting.LastCloseTabURL := '';
 	if GikoSys.Setting.TabAutoLoadSave then begin
 		GikoDM.TabsSaveAction.Execute;
-        if (GetActiveContent <> nil) and
-            (GetActiveContent.IsLogFile) then begin
-            GikoSys.Setting.LastCloseTabURL := GetActiveContent.URL;
-        end;
+		if (GetActiveContent <> nil) and
+				(GetActiveContent.IsLogFile) then begin
+			GikoSys.Setting.LastCloseTabURL := GetActiveContent.URL;
+		end;
 	end;
 
 	if (SearchDialog <> nil) then begin
 		if (SearchDialog.Visible) then begin
 			SearchDialog.Close;
 		end;
-        try
-            SearchDialog.Release;
-        except
-        end;
-        SearchDialog := nil;
+		try
+			SearchDialog.Release;
+		except
+		end;
+		SearchDialog := nil;
 	end;
 
-   	//スクリーン上の全てのフォームから、EditorFormを閉じる
-    GikoDM.CloseAllEditorAction.Execute;
+	// どんぐり
+	try
+  	if DonguriForm <> nil then
+    	DonguriForm.Close;	// 自力でFreeとnilセットする
+  except
+  end;
+
+	//スクリーン上の全てのフォームから、EditorFormを閉じる
+	GikoDM.CloseAllEditorAction.Execute;
 
 	Application.UnhookMainWindow(Hook);
-    //アプリケーション終了の前にダウンロードスレッドに正常終了を促す
-    FControlThread.DownloadAbort;
-    FControlThread.Terminate;
+  //アプリケーション終了の前にダウンロードスレッドに正常終了を促す
+  FControlThread.DownloadAbort;
+  FControlThread.Terminate;
 
-    //OnDestoryだと再起動をかけたときなどに保存されないのでOnCloseQueryで設定保存
-    SaveSettingAll();
+  //OnDestoryだと再起動をかけたときなどに保存されないのでOnCloseQueryで設定保存
+  SaveSettingAll();
 
 	Application.Terminate;
 end;
@@ -1896,8 +2024,8 @@ begin
 	end;
 
 	try
-        WindowPlacement.length := SizeOf(TWindowPlacement);
-        GetWindowPlacement(Self.Handle, @WindowPlacement);
+    WindowPlacement.length := SizeOf(TWindowPlacement);
+    GetWindowPlacement(Self.Handle, @WindowPlacement);
 
 		//最大化・ウィンドウ位置保存
 		wp.length := sizeof(wp);
@@ -1950,7 +2078,7 @@ begin
 	//アドレス履歴保存
 	try
 		//AddressHistoryDMは自動生成フォームなので、解放は自動的にされる。
-		AddressHistoryDM.WriteHistory(AddressComboBox.Items, GikoSys.Setting.MaxRecordCount);
+		AddressHistoryDM.WriteHistory(AddressComboBox.Items, GikoSys.Setting.AddressHistoryCount);
 	except
 	end;
 
@@ -2409,11 +2537,12 @@ begin
         Exit;
     end;
 	s := '';
-	Ext := AnsiLowerCase(ExtractFileExt(Text2));
+	Ext := AnsiLowerCase(ExtractFileExt2(Text2));
 //	if (Pos('http://', Text2) = 1) and (GikoSys.Setting.PreviewVisible) and
 	if ((Pos('http://', Text2) = 1) or (Pos('https://', Text2) = 1)) and (GikoSys.Setting.PreviewVisible) and
-			((Ext = '.jpg') or (Ext = '.jpeg') or (Ext = '.gif') or (Ext = '.png')) or
-        (Pos('http://www.nicovideo.jp/watch/', Text2) = 1)  then begin
+			((Ext = '.jpg') or (Ext = '.jpeg') or (Ext = '.gif') or (Ext = '.png') or (Ext = '.jpg:large') or (Ext = '.jpg:orig') or
+			 (Pos('?format=jpg', Text2) > 0) or (Pos('?format=png', Text2) > 0) or
+			 (Pos('http://www.nicovideo.jp/watch/', Text2) = 1)) then begin
 		if FPreviewBrowser = nil then begin
 			FPreviewBrowser := TPreviewBrowser.Create(Self);
 			ShowWindow(FPreviewBrowser.Handle, SW_HIDE);
@@ -2540,6 +2669,27 @@ begin
             end;
         end;
 	end;
+end;
+
+//! ファイル拡張子抽出
+function TGikoForm.ExtractFileExt2(path: String): String;
+var
+	i: Integer;
+	len: Integer;
+	ext: PChar;
+	ppath: PChar;
+begin
+	Result := '';
+	ppath := PChar(path);
+	ext := nil;
+	len := Length(path);
+	for i := 1 to len do begin
+		if ppath^ = '.' then
+			ext := ppath;
+		Inc(ppath, 1);
+	end;
+	if ext <> nil then
+		Result := ext;
 end;
 
 procedure TGikoForm.SetEnabledCloseButton(Enabled: Boolean);
@@ -3094,6 +3244,7 @@ var
 	newBrowser	: TBrowserRecord;
 	ins : Integer;
 	title: WideString;
+  url: String;
 begin
 
 	Result := nil;
@@ -3223,8 +3374,13 @@ begin
 		SetContent(BrowserNullTab);
 	end;
 
-	if GikoSys.Setting.URLDisplay then
-		AddressComboBox.Text := ThreadItem.URL;
+	if GikoSys.Setting.URLDisplay then begin
+  	if GikoSys.Setting.URLitest then
+    	url := ThreadItem.itestURL;
+    if url = '' then
+    	url := ThreadItem.URL;
+		AddressComboBox.Text := url;
+  end;
 
 end;
 
@@ -4453,6 +4609,7 @@ procedure TGikoForm.BrowserTabChange(Sender: TObject);
 var
 	j: Integer;
 	idx: Integer;
+  url: String;
 begin
 	BrowserTabUC.Tabs.BeginUpdate;
 	try
@@ -4485,8 +4642,13 @@ begin
 				TOleControl(TBrowserRecord(BrowserTabUC.Tabs.Objects[idx]).Browser).BringToFront;
 				SetContent(TBrowserRecord(BrowserTabUC.Tabs.Objects[idx]));
 
-				if (GikoSys.Setting.URLDisplay) and (GetActiveContent <> nil) then
-					AddressComboBox.Text := GetActiveContent.URL;
+				if (GikoSys.Setting.URLDisplay) and (GetActiveContent <> nil) then begin
+          if GikoSys.Setting.URLitest then
+            url := GetActiveContent.itestURL;
+          if url = '' then
+            url := GetActiveContent.URL;
+					AddressComboBox.Text := url;
+        end;
 
 				if ((TreeViewUC.Visible) and (TreeViewUC.Focused)) or ((FavoriteTreeViewUC.Visible) and (FavoriteTreeViewUC.Focused)) or
 					(ListViewUC.Focused) or (SelectComboBoxUC.Focused) or (AddressComboBox.Focused)
@@ -6876,6 +7038,37 @@ begin
 end;
 
 
+//指定したレスのdatをコピーする
+procedure TGikoForm.KonoDatCopy(Number: Integer; ReplaceTag : Boolean);
+var
+	ThreadItem: TThreadItem;
+	tmp: string;
+	FileName: string;
+	boardPlugIn : TBoardPlugIn;
+begin
+	if Number = 0 then Exit;
+	ThreadItem := GetActiveContent(True);
+
+	if ThreadItem <> nil then begin
+		if ThreadItem.ParentBoard.IsBoardPlugInAvailable then begin
+			//===== プラグインによる表示
+			boardPlugIn		:= ThreadItem.ParentBoard.BoardPlugIn;
+
+			// フォントやサイズの設定
+			// 文字コードはプラグインに任せる
+			//ここで２ちゃんねるのdatの形式で１行読み込めれば･･･。
+			tmp := boardPlugIn.GetDat( DWORD( threadItem ), Number );
+		end else begin
+      FileName := ThreadItem.FilePath;
+      tmp := GikoSys.ReadThreadFile(FileName, Number);
+		end;
+		if tmp <> '' then begin
+			Clipboard.SetTextBuf( PChar(tmp) );
+		end;
+	end;
+end;
+
+
 procedure TGikoForm.BrowserTabPopupMenuPopup(Sender: TObject);
 var
     i:Integer;
@@ -7272,9 +7465,12 @@ begin
 		if not Assigned(e) then
 			Exit;
 
-		if (e.className = 'date') or (e.id = 'date') then begin
+		if (e.className = 'date') or (e.className = 'date capuser') or (e.id = 'date') then begin
 			AID := GikoSys.ExtructResID(e.innerText);
             ShowSameIDAncher(AID);
+		end else if (e.className = 'name')      or (e.id = 'name') or
+     					  (e.className = 'name_mail') or (e.id = 'name_mail') then begin
+			ShowSameWacchoiAncher2(string(e.innerText), False);
 		end;
 	except
 	end;
@@ -7307,6 +7503,65 @@ begin
         numbers.Free;
     end;
 end;
+
+//! 同ワッチョイレスアンカー表示
+procedure TGikoForm.ShowSameWacchoiAncher(AResNo: Integer; ALow4: Boolean);
+const
+	LIMIT = 20;
+var
+	numbers : TStringList;
+	limited : Integer;
+begin
+  numbers := TStringList.Create;
+  try
+		GikoSys.GetSameWacchoiRes(AResNo, FActiveContent.Thread, ALow4, numbers);
+		limited := LIMIT;
+		if not (GikoSys.Setting.LimitResCountMessage) then begin
+			limited := -1;
+		end else if (numbers.Count > LIMIT) then begin
+			if (GikoUtil.MsgBox(Handle,
+                  IntToStr(LIMIT) + '個以上ありますが、すべて表示しますか？',
+                  'IDポップアップ警告',
+                  MB_YESNO or MB_ICONQUESTION) = ID_YES) then begin
+				limited := -1;
+			end
+		end;
+		FActiveContent.IDAnchorPopup(
+							GikoSys.CreateResAnchor(numbers, FActiveContent.Thread, limited));
+	finally
+		numbers.Free;
+	end;
+end;
+
+//! 同ワッチョイレスアンカー表示
+procedure TGikoForm.ShowSameWacchoiAncher2(AInnerText: String; ALow4: Boolean);
+const
+	LIMIT = 20;
+var
+	numbers : TStringList;
+	limited : Integer;
+begin
+  numbers := TStringList.Create;
+  try
+		GikoSys.GetSameWacchoiRes2(AInnerText, FActiveContent.Thread, ALow4, numbers);
+		limited := LIMIT;
+		if not (GikoSys.Setting.LimitResCountMessage) then begin
+			limited := -1;
+		end else if (numbers.Count > LIMIT) then begin
+			if (GikoUtil.MsgBox(Handle,
+                  IntToStr(LIMIT) + '個以上ありますが、すべて表示しますか？',
+                  'IDポップアップ警告',
+                  MB_YESNO or MB_ICONQUESTION) = ID_YES) then begin
+				limited := -1;
+			end
+		end;
+		FActiveContent.IDAnchorPopup(
+							GikoSys.CreateResAnchor(numbers, FActiveContent.Thread, limited));
+	finally
+		numbers.Free;
+	end;
+end;
+
 //スレッド一覧を最大化してフォーカスを当てる
 procedure TGikoForm.SelectTimerTimer(Sender: TObject);
 begin
@@ -7598,6 +7853,7 @@ var
 	band					: TCoolBand;
 	affectedBand	: TCoolBand;
 	i							: Integer;
+  count         : Integer;
 begin
 	if (FOldFormWidth = Width) and not IsIconic( Handle ) and (FIsIgnoreResize = rtNone) then begin
 		FIsIgnoreResize := rtResizing;
@@ -7605,7 +7861,11 @@ begin
 		band := nil;
 		// 変更されたクールバーの値を保存
 		if CoolBar = MainCoolBar then begin
-			for i := 0 to MAIN_COOLBAND_COUNT - 1 do begin
+    	count := CoolBar.Bands.Count;			// FormDestroyより後のタイミングで呼ばれるとUnicode版お気に入りツールバーのバンドは消去済み（INI保存済みなので影響なし）
+      if count > MAIN_COOLBAND_COUNT then
+      	count := MAIN_COOLBAND_COUNT;
+			//for i := 0 to MAIN_COOLBAND_COUNT - 1 do begin
+			for i := 0 to count - 1 do begin
 				CoolSet.FCoolID := CoolBar.Bands[i].ID;
 				CoolSet.FCoolWidth := CoolBar.Bands[i].Width;
 				CoolSet.FCoolBreak := CoolBar.Bands[i].Break;
@@ -7809,6 +8069,83 @@ begin
     end;
 end;
 
+//同一ワッチョイをNGワードに登録
+procedure TGikoForm.AddWacchoitoNGWord(invisible : boolean; ALow4: Boolean);
+var
+  doc : IHTMLDocument2;
+	ThreadItem : TThreadItem;
+	No : Integer;
+{$IFDEF SPAM_FILTER_ENABLED}
+	body : TStringList;
+	ReadList		: TStringList;
+	wordCount		: TWordCount;
+{$ENDIF}
+  wc, dateStr: String;
+  ThreadTitle: String;
+  Idx: Integer;
+begin
+	No := KokoPopupMenu.Tag;
+	if No = 0 then Exit;
+	ThreadItem := GikoForm.KokoPopupThreadItem;
+	if ThreadItem = nil then Exit;
+
+    wc := GikoSys.GetResWacchoi(No, ThreadItem, ALow4);
+    if wc <> '' then begin
+        if ALow4 then
+          wc := '-' + wc
+        else
+          wc := '(' + wc;
+
+        ThreadTitle := ThreadItem.Title;
+        while (True) do begin
+            Idx := Pos(#9, ThreadTitle);
+            if (Idx < 1) then
+                Break;
+            Delete(ThreadTitle, Idx, 1);
+        end;
+        // コメントとして、スレッド名と今日の日付を追加
+        DateTimeToString(dateStr, 'yyyymmdd', Now);
+        wc := wc + #9'>>add ' + dateStr + ',' + ThreadTitle;
+        if (GikoSys.FAbon.AddToken(wc, invisible)) then begin
+            GikoSys.FAbon.ReLoadFromNGwordFile;
+            FActiveContent.Repaint := True;
+        end;
+    end else begin
+      ShowMessage('ワッチョイを取得できませんでした。');
+    end;
+{$IFDEF SPAM_FILTER_ENABLED}
+    body := TStringList.Create;
+    try
+        GikoSys.GetSameWacchoiRes(No, ThreadItem, ALow4, body);
+        ReadList		:= TStringList.Create;
+        wordCount		:= TWordCount.Create;
+        try
+            // スパムに設定
+            ReadList.LoadFromFile( ThreadItem.GetThreadFileName );
+            for i := 0 to body.Count - 1 do begin
+                GikoSys.SpamCountWord( ReadList[ i ], wordCount );
+                GikoSys.SpamForget( wordCount, False );	// ハムを解除
+                GikoSys.SpamLearn( wordCount, True );		// スパムに設定
+            end;
+        finally
+            wordCount.Free;
+            ReadList.Free;
+        end;
+    finally
+        body.Free;
+    end;
+{$ENDIF}
+    if (FActiveContent.Repaint) then begin
+        doc := FActiveContent.Browser.ControlInterface.Document as IHTMLDocument2;
+
+        if not Assigned(doc) then
+            Exit;
+        ThreadItem.ScrollTop := (doc.body as IHTMLElement2).ScrollTop;
+        if ThreadItem <> nil then
+            InsertBrowserTab( ThreadItem, True );
+    end;
+end;
+
 //同一IDのあぼ～ん
 procedure TGikoForm.IndividualAbonID(Atype : Integer);
 var
@@ -7855,6 +8192,54 @@ begin
 	end;
 
 end;
+
+//同一ワッチョイのあぼ～ん
+procedure TGikoForm.IndividualAbonWacchoi(Atype : Integer; ALow4: Boolean);
+var
+	ThreadItem : TThreadItem;
+	i, No : Integer;
+	body : TStringList;
+	ReadList		: TStringList;
+	wordCount		: TWordCount;
+begin
+	No := KokoPopupMenu.Tag;
+	if No = 0 then Exit;
+	ThreadItem := GikoForm.KokoPopupThreadItem;
+	if ThreadItem = nil then Exit;
+	body := TStringList.Create;
+	try
+		//GikoSys.GetSameIDRes(No, ThreadItem, body);
+    GikoSys.GetSameWacchoiRes(No, ThreadItem, ALow4, body);
+
+		ReadList		:= TStringList.Create;
+		wordCount		:= TWordCount.Create;
+		try
+			ThreadItem.ScrollTop := FActiveContent.Browser.OleObject.Document.Body.ScrollTop;
+{$IFDEF SPAM_FILTER_ENABLED}
+			// スパムに設定
+			ReadList.LoadFromFile( ThreadItem.GetThreadFileName );
+{$ENDIF}
+			for i := 0 to body.Count - 1 do begin
+{$IFDEF SPAM_FILTER_ENABLED}
+				GikoSys.SpamCountWord( ReadList[ i ], wordCount );
+				GikoSys.SpamForget( wordCount, False );	// ハムを解除
+				GikoSys.SpamLearn( wordCount, True );		// スパムに設定
+{$ENDIF}
+				// あぼーんに設定
+				GikoSys.FAbon.AddIndividualAbon(StrToInt(body[i]), Atype, ChangeFileExt(ThreadItem.GetThreadFileName, '.NG'));
+			end;
+		finally
+			wordCount.Free;
+			ReadList.Free;
+		end;
+		FActiveContent.Repaint := true;
+		if ThreadItem <> nil then
+			InsertBrowserTab( ThreadItem, True );
+	finally
+		body.Free;
+	end;
+end;
+
 //範囲あぼ～ん
 procedure TGikoForm.RangeAbon(Atag: Integer);
 var
@@ -8449,7 +8834,8 @@ begin
         TBoard(ActiveList).UserThreadCount:= TBoard(ActiveList).GetUserThreadCount;
         //ListViewのアイテムの個数も更新
         case GikoForm.ViewType of
-            gvtAll: ListViewUC.Items.Count := TBoard(ActiveList).Count;
+            //gvtAll: ListViewUC.Items.Count := TBoard(ActiveList).Count;
+            gvtAll: ListViewUC.Items.Count := TBoard(ActiveList).UserThreadCount;
             gvtLog: ListViewUC.Items.Count := TBoard(ActiveList).LogThreadCount;
             gvtNew: ListViewUC.Items.Count := TBoard(ActiveList).NewThreadCount;
             gvtArch: ListViewUC.Items.Count := TBoard(ActiveList).ArchiveThreadCount;
@@ -8577,6 +8963,16 @@ begin
 		Caption := GikoDataModule.CAPTION_NAME
 	else
 		Caption := EncAnsiToWideString(GikoDataModule.CAPTION_NAME + ' - [' + AThreadTitle + ']');
+end;
+
+//! レス番号ポップアップメニュー先頭の「どんぐり大砲」表示切替
+procedure TGikoForm.ShowDonguriCannonTopMenu;
+begin
+	try
+    DonguriCannonTopMenu.Visible    := GikoSys.Setting.DonguriMenuTop;
+    DonguriSeparatorTopMenu.Visible := GikoSys.Setting.DonguriMenuTop;
+  except
+  end;
 end;
 
 

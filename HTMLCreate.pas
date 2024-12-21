@@ -50,8 +50,8 @@ type
 		pANCHORs, pANCHORe  : PChar;
 		pCTAGLs,  pCTAGLe   : PChar;
 		pCTAGUs,  pCTAGUe   : PChar;
-		pREF_MARKSs : array[0..11] of PChar;
-		pREF_MARKSe : array[0..11] of PChar;
+		pREF_MARKSs : array of PChar;
+		pREF_MARKSe : array of PChar;
 		constructor Create;
 
 		function AddBeProfileLink(AID : string; ANum: Integer):string ;
@@ -118,9 +118,81 @@ const
 	CLOSE_TAGAL = '</a>';
 	CLOSE_TAGAU = '</A>';
 	RES_REF			= '&gt;&gt;';
-	REF_MARK: array[0..12] of string = ('sssp://', 'http://', 'ttp://', 'tp://',
-									 'ms-help://','p://', 'https://', 'ttps://', 'tps://',        // for https
-									 'www.', 'ftp://','news://','rtsp://');
+  REF_MARK: array[0..22] of string = (
+    'sssp://',
+    'https://',
+    'ht&#116;&#112;s://',
+    'ttps://',
+    'http://',
+    'ttp://',
+    'ms-help://',
+    'ftp://',
+    'news://',
+    'rtsp://',
+    'tps://',
+    'ps://',
+    's://',
+    'tp://',
+    'p://',
+    '://',
+    'www.',
+    'i.imgur.com/',
+    'imgur.com/',
+    'x.com/',
+    'pbs.twimg.com/',
+    'video.twimg.com/',
+    'youtu.be/'
+    );
+  REF_MARK_HEAD: array[0..22] of String = (
+    '',					// sssp://
+    '',					// https://
+    '',					// ht&#116;&#112;s://
+    'h',				// ttps://
+    '',					// http://
+    'h',				// ttp://
+    '',					// ms-help://
+    '',					// ftp://
+    '',					// news://
+    '',					// rtsp://
+    'ht',				// tps://
+    'htt',			// ps://
+    'http',			// s://
+    'ht',				// tp://
+    'htt',			// p://
+    'https',		// ://
+    'https://',	// www.
+    'https://',	// i.imgur.com/
+    'https://i.',	// imgur.com/
+    'https://',	// x.com/
+    'https://',	// pbs.twimg.com/
+    'https://',	// video.twimg.com/
+    'https://'	// youtu.be/
+    );
+  REF_MARK_LEN: array[0..22] of Integer = (
+    7,			// sssp://
+    8,			// https://
+    18,			// ht&#116;&#112;s://
+    7,			// ttps://
+    7,			// http://
+    6,			// ttp://
+    10,			// ms-help://
+    6,			// ftp://
+    7,			// news://
+    7,			// rtsp://
+    6,			// tps://
+    5,			// ps://
+    4,			// s://
+    5,			// tp://
+    4,			// p://
+    3,			// ://
+    4,			// www.
+    0,			// i.imgur.com/
+    0,			// imgur.com/
+    0,			// x.com/
+    0,			// pbs.twimg.com/
+    0,			// video.twimg.com/
+    0				// youtu.be/
+    );
 
 constructor THTMLCreate.Create;
 var
@@ -138,7 +210,9 @@ begin
 	pCTAGLe   := pCTAGLs + 4;
 	pCTAGUs   := PChar(CLOSE_TAGAU);
 	pCTAGUe   := pCTAGUs + 4;
-	for j := 0 to 11 do begin
+	SetLength(pREF_MARKSs, Length(REF_MARK));
+	SetLength(pREF_MARKSe, Length(REF_MARK));
+	for j := Low(REF_MARK) to High(REF_MARK) do begin
 		pREF_MARKSs[j] := PChar(REF_MARK[j]);
 		pREF_MARKSe[j] := pREF_MARKSs[j] + Length(REF_MARK[j]);
 	end;
@@ -270,8 +344,6 @@ end;
  *************************************************************************)
 procedure THTMLCreate.AddAnchorTag(PRes: PResRec);
 const
-	_HEAD : array[0..12] of String =
-		('', '', 'h', 'ht', '', 'htt', '', 'h', 'ht', 'https://', '', '', '');  // for https
     EMOTICONS: String = 'sssp://img.2ch.net/';
     EMOTICONS5: String = 'sssp://img.5ch.net/';   // for 5ch
 var
@@ -286,6 +358,7 @@ var
 	len : Integer;
   urllen: Integer;
   url5ch, ok: Boolean;
+  chk: SmallInt;
 begin
 	s := PRes.FBody;
 	PRes.FBody := '';
@@ -297,8 +370,16 @@ begin
 		pp := PChar(s);
 		pe := pp + Length(s);
 
-		for j := 0 to 12 do begin
+		for j := Low(REF_MARK) to High(REF_MARK) do begin
 			pos := AnsiStrPosEx(pp, pe, pREF_MARKSs[j], pREF_MARKSe[j]);
+			if (pos <> nil) and (REF_MARK_LEN[j] > 0) then begin
+      	chk := Ord(pos[REF_MARK_LEN[j]]);
+				if (not ((chk >= $30) and (chk <= $39))) and
+					 (not ((chk >= $41) and (chk <= $5A))) and
+					 (not ((chk >= $61) and (chk <= $7A))) and
+           (chk <> $26) then		// 文字参照で規制を回避するパターンが多いから除外
+        	pos := nil;
+      end;
 			if pos <> nil then begin
 				tmp := pos - pp + 1;
 				idx := Min(tmp, idx);
@@ -352,7 +433,7 @@ begin
             if (AnsiPos(REF_MARK[0], url) = 1) then
                 href := 'https' + Copy(url, 5, urllen - 4)  // sssp:// -> https://
             else
-                href := Format('%s%s', [_HEAD[idx2], url]);
+                href := Format('%s%s', [REF_MARK_HEAD[idx2], url]);
             GikoSys.Regulate2chURL(href);      // for 5ch
 
             if (GikoSys.Setting.IconImageDisplay = True) and
@@ -860,17 +941,17 @@ procedure THTMLCreate.CreateUseCSSHTML(html:TBufferedWebBrowser; ThreadItem: TTh
 const
 	FORMAT_NOMAIL  = '<a name="%s"></a><div class="header"><span class="no"><a href="menu:%s">%s</a></span>'
 					+ '<span class="name_label"> 名前： </span> <span class="name"><b>%s</b></span>'
-					+ '<span class="date_label"> 投稿日：</span> <span class="date">%s</span></div>'
+					+ '<span class="date_label"> 投稿日：</span> <span class="date%s">%s</span></div>'
 					+ '<div class="mes">%s</div>';
 
 	FORMAT_SHOWMAIL = '<a name="%s"></a><div class="header"><span class="no"><a href="menu:%s">%s</a></span>'
 					+ '<span class="name_label"> 名前： </span><a class="name_mail" href="mailto:%s">'
 					+ '<b>%s</b></a><span class="mail"> [%s]</span><span class="date_label"> 投稿日：</span>'
-					+ '<span class="date"> %s</span></div><div class="mes">%s</div>';
+					+ '<span class="date%s"> %s</span></div><div class="mes">%s</div>';
 
 	FORMAT_NOSHOW = '<a name="%s"></a><div class="header"><span class="no"><a href="menu:%s">%s</a></span>'
 					+ '<span class="name_label"> 名前： </span><a class="name_mail" href="mailto:%s">'
-					+ '<b>%s</b></a><span class="date_label"> 投稿日：</span><span class="date"> %s</span></div>'
+					+ '<b>%s</b></a><span class="date_label"> 投稿日：</span><span class="date%s"> %s</span></div>'
 					+ '<div class="mes">%s</div>';
 var
 	i: integer;
@@ -881,6 +962,7 @@ var
 	UserOptionalStyle: string;
 	ThreadName :String;
 	ResLink :TResLinkRec;
+  CapUser: String;
 begin
 	NewReceiveNo := ThreadItem.NewReceive;
 	ThreadName := ChangeFileExt(ThreadItem.FileName, '');
@@ -917,16 +999,20 @@ begin
 			if (Trim(ReadList[i]) <> '') then begin
 				No := IntToStr(i + 1);
 				DivideStrLine(ReadList[i], @Res);
-                AddAnchorTag(@Res);
-                ConvRes(@Res, @ResLink);
-                Res.FDateTime := AddBeProfileLink(Res.FDateTime, i + 1);
-                if Res.FMailTo = '' then
-                    html.Add(Format(FORMAT_NOMAIL, [No, No, No, Res.FName, Res.FDateTime, Res.FBody]))
-                else if GikoSys.Setting.ShowMail then
-                    html.Add(Format(FORMAT_SHOWMAIL, [No, No, No, Res.FMailTo, Res.FName, Res.FMailTo, Res.FDateTime, Res.FBody]))
-                else
-                    html.Add(Format(FORMAT_NOSHOW, [No, No, No, Res.FMailTo, Res.FName, Res.FDateTime, Res.FBody]));
-            end;
+				AddAnchorTag(@Res);
+				ConvRes(@Res, @ResLink);
+				Res.FDateTime := AddBeProfileLink(Res.FDateTime, i + 1);
+				if GikoSys.Setting.CapUser and (Pos('ID:CAP_USER', Res.FDateTime) > 0) then
+          CapUser := ' capuser'
+        else
+          CapUser := '';
+				if Res.FMailTo = '' then
+				  html.Add(Format(FORMAT_NOMAIL, [No, No, No, Res.FName, CapUser, Res.FDateTime, Res.FBody]))
+				else if GikoSys.Setting.ShowMail then
+				  html.Add(Format(FORMAT_SHOWMAIL, [No, No, No, Res.FMailTo, Res.FName, Res.FMailTo, CapUser, Res.FDateTime, Res.FBody]))
+				else
+				  html.Add(Format(FORMAT_NOSHOW, [No, No, No, Res.FMailTo, Res.FName, CapUser, Res.FDateTime, Res.FBody]));
+      end;
 			if ThreadItem.Kokomade = (i + 1) then begin
 				html.Add('<a name="koko"></a><div class="koko">ココまで読んだ</div>');
 			end;
@@ -991,6 +1077,7 @@ function THTMLCreate.GetResString(index: Integer; const Line: String; PResLink :
 var
     No : String;
     Res: TResRec;
+  CapUser: String;
 begin
     No := IntToStr(index + 1);
     DivideStrLine(Line, @Res);
@@ -998,12 +1085,16 @@ begin
     AddAnchorTag(@Res);
     ConvRes(@Res, PResLink);
     Res.FDateTime := AddBeProfileLink(Res.FDateTime, index + 1);
-    if Res.FMailTo = '' then
-        Result := '<a name="' + No + '"></a><dt><a href="menu:' + No + '">' + No + '</a> 名前：<font color="forestgreen"><b> ' + Res.FName + ' </b></font> 投稿日： <span class="date">' + Res.FDateTime+ '</span><br><dd>' + Res.Fbody + ' <br><br><br>'#13#10
-    else if GikoSys.Setting.ShowMail then
-        Result := '<a name="' + No + '"></a><dt><a href="menu:' + No + '">' + No + '</a> 名前：<a href="mailto:' + Res.FMailTo + '"><b> ' + Res.FName + ' </B></a> [' + Res.FMailTo + '] 投稿日： <span class="date">' + Res.FDateTime+ '</span><br><dd>' + Res.Fbody + ' <br><br><br>'#13#10
+    if GikoSys.Setting.CapUser and (Pos('ID:CAP_USER', Res.FDateTime) > 0) then
+      CapUser := ' capuser'
     else
-        Result := '<a name="' + No + '"></a><dt><a href="menu:' + No + '">' + No + '</a> 名前：<a href="mailto:' + Res.FMailTo + '"><b> ' + Res.FName + ' </B></a> 投稿日： <span class="date">' + Res.FDateTime+ '</span><br><dd>' + Res.Fbody + ' <br><br><br>'#13#10;
+      CapUser := '';
+    if Res.FMailTo = '' then
+        Result := '<a name="' + No + '"></a><dt><a href="menu:' + No + '">' + No + '</a> 名前：<font color="forestgreen"><b> ' + Res.FName + ' </b></font> 投稿日： <span class="date' + CapUser + '">' + Res.FDateTime+ '</span><br><dd>' + Res.Fbody + ' <br><br><br>'#13#10
+    else if GikoSys.Setting.ShowMail then
+        Result := '<a name="' + No + '"></a><dt><a href="menu:' + No + '">' + No + '</a> 名前：<a href="mailto:' + Res.FMailTo + '"><b> ' + Res.FName + ' </B></a> [' + Res.FMailTo + '] 投稿日： <span class="date' + CapUser + '">' + Res.FDateTime+ '</span><br><dd>' + Res.Fbody + ' <br><br><br>'#13#10
+    else
+        Result := '<a name="' + No + '"></a><dt><a href="menu:' + No + '">' + No + '</a> 名前：<a href="mailto:' + Res.FMailTo + '"><b> ' + Res.FName + ' </B></a> 投稿日： <span class="date' + CapUser + '">' + Res.FDateTime+ '</span><br><dd>' + Res.Fbody + ' <br><br><br>'#13#10;
 end;
 procedure THTMLCreate.CreateHTML2(Browser: TWebBrowser; ThreadItem: TThreadItem; var sTitle: string);
 var
@@ -1101,6 +1192,7 @@ var
 	ThreadName: String;
 	ResLink : TResLinkRec;
     ThreadInfo: TAbonThread;
+  CapUser: String;
 
 	function LoadSkin( fileName: string ): string;
 	begin
@@ -1256,13 +1348,17 @@ begin
 								AddAnchorTag(@Res);
 								ConvRes(@Res, @ResLink, true);
 								ConvertResAnchor(@Res);
+								if GikoSys.Setting.CapUser and (Pos('ID:CAP_USER', Res.FDateTime) > 0) then
+								  CapUser := ' capuser'
+								else
+								  CapUser := '';
 								if Res.FMailTo = '' then
 									html.Append('<a name="' + No + '"></a>'
 													+ '<div class="header"><span class="no"><a href="menu:' + No + '">' + No + '</a></span> '
 													+ '<span class="name_label">名前：</span> '
 													+ '<span class="name"><b>' + Res.FName + '</b></span> '
 													+ '<span class="date_label">投稿日：</span> '
-													+ '<span class="date">' + Res.FDateTime+ '</span></div>'
+													+ '<span class="date' + CapUser + '">' + Res.FDateTime+ '</span></div>'
 																								+ '<div class="mes">' + Res.FBody + ' </div>')
 								else if GikoSys.Setting.ShowMail then
 									html.Append('<a name="' + No + '"></a>'
@@ -1271,7 +1367,7 @@ begin
 													+ '<a class="name_mail" href="mailto:' + Res.FMailTo + '">'
 													+ '<b>' + Res.FName + '</b></a><span class="mail"> [' + Res.FMailTo + ']</span>'
 													+ '<span class="date_label"> 投稿日：</span>'
-													+ '<span class="date"> ' + Res.FDateTime+ '</span></div>'
+													+ '<span class="date' + CapUser + '"> ' + Res.FDateTime+ '</span></div>'
 													+ '<div class="mes">' + Res.FBody + ' </div>')
 								else
 									html.Append('<a name="' + No + '"></a>'
@@ -1280,7 +1376,7 @@ begin
 													+ '<a class="name_mail" href="mailto:' + Res.FMailTo + '">'
 													+ '<b>' + Res.FName + '</b></a>'
 													+ '<span class="date_label"> 投稿日：</span>'
-													+ '<span class="date"> ' + Res.FDateTime+ '</span></div>'
+													+ '<span class="date' + CapUser + '"> ' + Res.FDateTime+ '</span></div>'
 																								+ '<div class="mes">' + Res.FBody + ' </div>');
 							end;
 						end;
@@ -1534,6 +1630,17 @@ begin
 		Line := CustomStringReplace(Line, ',', '<>');
 		Line := CustomStringReplace(Line, '＠｀', ',');
 	end;
+	// 文字&#78840;の扱い 0:何もしない 1:数値参照で表示 2:類似文字に置換
+  case GikoSys.Setting.ReplChar of
+    1: begin
+      Line := CustomStringReplace(Line, '&#78840;', '&amp;#78840;');
+      Line := CustomStringReplace(Line, '&#x133f8;', '&amp;#x133f8;', True);
+    end;
+    2: begin
+      Line := CustomStringReplace(Line, '&#78840;', '&#77954;');
+      Line := CustomStringReplace(Line, '&#x133f8;', '&#77954;', True);
+    end;
+  end;
 	//Trimしてはいけない気がする　byもじゅ
 	PRes.FName := MojuUtils.RemoveToken(Line, delimiter);
 	PRes.FMailTo := MojuUtils.RemoveToken(Line, delimiter);

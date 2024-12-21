@@ -11,7 +11,7 @@ uses
 	SHDocVw_TLB,
 	MSHTML_TLB,
 {$IFEND}
-  ComCtrls, BrowserRecord, Graphics, Messages, Setting, Dialogs,
+  ComCtrls, BrowserRecord, Graphics, Messages, Setting, Dialogs, StrUtils,
   ActiveX, GikoSystem, MoveHistoryItem, HistoryList, TntComCtrls, WideCtrls;
 
 const
@@ -45,6 +45,8 @@ const
 	URL_MONAZILLA: string = 'www.monazilla.org/';   // このサイトは消滅
 	//! 2ちゃんねるのURL
 	URL_2ch: string = 'www.5ch.net/';
+	//! itest形式5ちゃんねるのURL
+	URL_ITEST2CH: string = 'itest.5ch.net/';
 	//! ギコナビWikiのURL
 	//URL_Wiki: string = 'sourceforge.jp/projects/gikonavi/wiki/FAQ';
 	URL_Wiki: string = 'ja.osdn.net/projects/gikonavi/wiki/FAQ';
@@ -260,6 +262,26 @@ type
     ThreadNgEditAction: TAction;
     RangeAbonAction: TAction;
     ThreadRangeAbonAction: TAction;
+    DonguriAction: TAction;
+    DonguriCannonAction: TAction;
+    CookieMngAction: TAction;
+    DonguriLoginAction: TAction;
+    DonguriHntLoginAction: TAction;
+    DonguriGrdLoginAction: TAction;
+    DonguriLogoutAction: TAction;
+    DonguriAuthAction: TAction;
+    konoURLitestAction: TAction;
+    KoreDatCopy: TAction;
+    SameWcAllResAnchorAction: TAction;
+    SameWcLast4ResAnchorAction: TAction;
+    IndividualAbon1WcAllAction: TAction;
+    IndividualAbon0WcAllAction: TAction;
+    IndividualAbon1WcLs4Action: TAction;
+    IndividualAbon0WcLs4Action: TAction;
+    AddWcAlltoNGWord1Action: TAction;
+    AddWcAlltoNGWord0Action: TAction;
+    AddWcLs4toNGWord1Action: TAction;
+    AddWcLs4toNGWord0Action: TAction;
 	procedure EditNGActionExecute(Sender: TObject);
 	procedure ReloadActionExecute(Sender: TObject);
 	procedure GoFowardActionExecute(Sender: TObject);
@@ -482,6 +504,32 @@ type
     procedure ThreadNgEditActionExecute(Sender: TObject);
     procedure RangeAbonActionExecute(Sender: TObject);
     procedure ThreadRangeAbonActionExecute(Sender: TObject);
+    procedure DonguriActionExecute(Sender: TObject);
+    procedure DonguriActionUpdate(Sender: TObject);
+    procedure DonguriCannonActionExecute(Sender: TObject);
+    procedure DonguriCannonActionUpdate(Sender: TObject);
+    procedure CookieMngActionExecute(Sender: TObject);
+    procedure DonguriActionHint(var HintStr: string; var CanShow: Boolean);
+    procedure DonguriLoginActionExecute(Sender: TObject);
+    procedure DonguriHntLoginActionExecute(Sender: TObject);
+    procedure DonguriGrdLoginActionExecute(Sender: TObject);
+    procedure DonguriLogoutActionExecute(Sender: TObject);
+    procedure DonguriAuthActionExecute(Sender: TObject);
+    procedure DonguriHntLoginActionUpdate(Sender: TObject);
+    procedure DonguriGrdLoginActionUpdate(Sender: TObject);
+    procedure konoURLitestActionExecute(Sender: TObject);
+    procedure konoURLitestActionUpdate(Sender: TObject);
+    procedure KoreDatCopyExecute(Sender: TObject);
+    procedure SameWcAllResAnchorActionExecute(Sender: TObject);
+    procedure SameWcLast4ResAnchorActionExecute(Sender: TObject);
+    procedure IndividualAbon1WcLs4ActionExecute(Sender: TObject);
+    procedure IndividualAbon0WcLs4ActionExecute(Sender: TObject);
+    procedure IndividualAbon1WcAllActionExecute(Sender: TObject);
+    procedure IndividualAbon0WcAllActionExecute(Sender: TObject);
+    procedure AddWcAlltoNGWord1ActionExecute(Sender: TObject);
+    procedure AddWcAlltoNGWord0ActionExecute(Sender: TObject);
+    procedure AddWcLs4toNGWord1ActionExecute(Sender: TObject);
+    procedure AddWcLs4toNGWord0ActionExecute(Sender: TObject);
   private
 	{ Private 宣言 }
 	procedure ClearResFilter;
@@ -503,13 +551,14 @@ type
     procedure GetLinkURLs(links : IHTMLElementCollection;
         URLs : TStringList; const Start: Integer; Exts : TStringList);
   public
-	{ Public 宣言 }
-	procedure RepaintStatusBar;
+    { Public 宣言 }
+    procedure RepaintStatusBar;
     function EditorFormExists(): boolean;
     procedure GetTabURLs(AStringList: TStringList);
     procedure OpenURLs(AStringList: TStringList);
     procedure MoveURLWithHistory(URL : String; KeyMask: Boolean = False);
     procedure SaveThreadSearchSetting;
+    procedure DonguriHomeUpdate;
   published
 	{ Published 宣言 }
 	//! TActionでGetActiveContentがnil以外で有効になる
@@ -539,7 +588,8 @@ uses
 	RoundName, RoundData, Menus, ListViewUtils,
 	ThreadControl, GikoMessage, InputAssist,
   DefaultFileManager, Forms, NewBoardURL, UpdateCheck,
-  PopupMenuSetting, ThreadSearch, ThreadNGEdt, DmSession5ch;
+  PopupMenuSetting, ThreadSearch, ThreadNGEdt, DmSession5ch, DonguriBase,
+  CookieManager;
 
 const
 	MSG_ERROR : string = 'エラー';
@@ -1170,10 +1220,15 @@ end;
 procedure TGikoDM.ShowThreadActionExecute(Sender: TObject);
 var
 	ThreadItem: TThreadItem;
+  url: String;
 begin
 	ThreadItem := GikoForm.GetActiveContent;
 	if ThreadItem = nil then Exit;
-	GikoSys.OpenBrowser(ThreadItem.URL, gbtAuto);
+  if GikoSys.Setting.URLitest then
+  	url := ThreadItem.itestURL;
+  if url = '' then
+		url := ThreadItem.URL;
+	GikoSys.OpenBrowser(url, gbtAuto);
 end;
 // *************************************************************************
 //! 現在表示しているスレッドの板をブラウザで表示する
@@ -1181,10 +1236,15 @@ end;
 procedure TGikoDM.ShowBoardActionExecute(Sender: TObject);
 var
 	ThreadItem: TThreadItem;
+  url: String;
 begin
 	ThreadItem := GikoForm.GetActiveContent;
 	if ThreadItem = nil then Exit;
-	GikoSys.OpenBrowser(ThreadItem.ParentBoard.URL, gbtAuto);
+  if GikoSys.Setting.URLitest then
+		url := ThreadItem.ParentBoard.itestURL;
+  if url = '' then
+		url := ThreadItem.ParentBoard.URL;
+	GikoSys.OpenBrowser(url, gbtAuto);
 end;
 // *************************************************************************
 //! 現在表示しているスレッドのURLをコピーする
@@ -1194,10 +1254,19 @@ var
 	s: string;
 begin
 	s := '';
-	if TObject(GikoForm.GetActiveContent) is TBoard then
-		s := s + TBoard(GikoForm.GetActiveContent).URL + #13#10
-	else if TObject(GikoForm.GetActiveContent) is TThreadItem then
-		s := s + TThreadItem(GikoForm.GetActiveContent).URL + #13#10;
+	if TObject(GikoForm.GetActiveContent) is TBoard then begin
+  	if GikoSys.Setting.URLitest then
+			s := TBoard(GikoForm.GetActiveContent).itestURL;
+    if s = '' then
+			s := TBoard(GikoForm.GetActiveContent).URL;
+		s := s + #13#10;
+  end else if TObject(GikoForm.GetActiveContent) is TThreadItem then begin
+  	if GikoSys.Setting.URLitest then
+			s := TThreadItem(GikoForm.GetActiveContent).itestURL;
+    if s = '' then
+			s := TThreadItem(GikoForm.GetActiveContent).URL;
+		s := s + #13#10;
+  end;
 	if s <> '' then
 		Clipboard.AsText := s;
 end;
@@ -1224,10 +1293,19 @@ var
 	s: string;
 begin
 	s := '';
-	if TObject(GikoForm.GetActiveContent) is TBoard then
-		s := s + TBoard(GikoForm.GetActiveContent).Title + #13#10 + TBoard(GikoForm.GetActiveContent).URL + #13#10
-	else if TObject(GikoForm.GetActiveContent) is TThreadItem then
-		s := s + TThreadItem(GikoForm.GetActiveContent).Title + #13#10 + TThreadItem(GikoForm.GetActiveContent).URL + #13#10;
+	if TObject(GikoForm.GetActiveContent) is TBoard then begin
+  	if GikoSys.Setting.URLitest then
+			s := TBoard(GikoForm.GetActiveContent).itestURL;
+    if s = '' then
+			s := TBoard(GikoForm.GetActiveContent).URL;
+		s := TBoard(GikoForm.GetActiveContent).Title + #13#10 + s + #13#10;
+  end else if TObject(GikoForm.GetActiveContent) is TThreadItem then begin
+  	if GikoSys.Setting.URLitest then
+			s := TThreadItem(GikoForm.GetActiveContent).itestURL;
+    if s = '' then
+			s := TThreadItem(GikoForm.GetActiveContent).URL;
+		s := TThreadItem(GikoForm.GetActiveContent).Title + #13#10 + s + #13#10;
+  end;
 	if s <> '' then
 		SetClipboardFromEncAnsi(s);
 end;
@@ -1951,9 +2029,9 @@ var
 	TmpCursor: TCursor;
 //	msg : String;
 begin
-	if Session5ch.Connected then begin
+	if Session5ch_Connected then begin
 		//ログアウト
-		Session5ch.Disconnect;
+		Session5ch_Disconnect;
 		LoginAction.Checked := False;
 		GikoForm.AddMessageList(GikoSys.GetGikoMessage(gmLogout), nil, gmiOK);
 		LoginAction.Caption := 'ログイン(&L)';
@@ -1962,14 +2040,14 @@ begin
 		GikoForm.ScreenCursor := crHourGlass;
 		try
 			//通常ログイン
-      if Session5ch.Connect then begin
+      if Session5ch_Connect then begin
         LoginAction.Checked := True;
         GikoForm.AddMessageList(GikoSys.GetGikoMessage(gmLogin) + GikoSys.Setting.UserID, nil, gmiOK);
         LoginAction.Caption := 'ログアウト(&L)';
         //LoginToolButton.Style := tbsCheck;
       end else begin
 		//			MsgBox(Handle, 'ログイン出来ませんでした', 'エラー', MB_OK or MB_ICONSTOP);
-        GikoForm.AddMessageList(Session5ch.ErrorMsg, nil, gmiNG);
+        GikoForm.AddMessageList(Session5ch_ErrorMsg, nil, gmiNG);
         GikoForm.PlaySound('Error');
         LoginAction.Checked := False;
         //LoginToolButton.Down := False;
@@ -2248,32 +2326,38 @@ end;
 // *************************************************************************
 procedure TGikoDM.OpenURLs(AStringList: TStringList);
 var
-    GikoTab			: TGikoTabAppend;
-    i, bound : Integer;
-   	item        : TThreadItem;
+	GikoTab	: TGikoTabAppend;
+	i, bound: Integer;
+	item    : TThreadItem;
+  tabItem : TThreadItem;
+  url     : String;
 begin
-    if (AStringList <> nil) then begin
-        GikoTab := GikoSys.Setting.BrowserTabAppend;
-        try
-            bound    := AStringList.Count - 1;
-            if bound > -1 then begin
-                GikoSys.Setting.BrowserTabAppend := gtaLast;
-                for i := 0 to bound do begin
-                    item := BBSsFindThreadFromURL( AStringList[ i ] );
-                    if item <> nil then
-                        GikoForm.InsertBrowserTab( item, false );
-                end;
-                //最初の１枚に設定
-                if (GikoSys.Setting.URLDisplay) and
-                    (GikoForm.BrowserTabUC.Tabs.Count > 0) then begin
-					GikoForm.AddressComboBox.Text :=
-                        TBrowserRecord(GikoForm.BrowserTabUC.Tabs.Objects[0]).Thread.URL;
-                end;
-            end;
-        finally
-            GikoSys.Setting.BrowserTabAppend := GikoTab;
+  if (AStringList <> nil) then begin
+    GikoTab := GikoSys.Setting.BrowserTabAppend;
+    try
+      bound    := AStringList.Count - 1;
+      if bound > -1 then begin
+        GikoSys.Setting.BrowserTabAppend := gtaLast;
+        for i := 0 to bound do begin
+          item := BBSsFindThreadFromURL( AStringList[ i ] );
+          if item <> nil then
+            GikoForm.InsertBrowserTab( item, false );
         end;
+        //最初の１枚に設定
+        if (GikoSys.Setting.URLDisplay) and
+							(GikoForm.BrowserTabUC.Tabs.Count > 0) then begin
+        	tabItem := TBrowserRecord(GikoForm.BrowserTabUC.Tabs.Objects[0]).Thread;
+          if GikoSys.Setting.URLitest then
+            url := tabItem.itestURL;
+          if url = '' then
+            url := tabItem.URL;
+          GikoForm.AddressComboBox.Text := url;
+        end;
+      end;
+    finally
+      GikoSys.Setting.BrowserTabAppend := GikoTab;
     end;
+  end;
 end;
 // *************************************************************************
 //! タブの順番を復元
@@ -2415,8 +2499,17 @@ procedure TGikoDM.KoreCopyExecute(Sender: TObject);
 begin
 	GikoForm.KonoresCopy(GikoForm.KokoPopupMenu.Tag, true);
 end;
+
 // *************************************************************************
-//! 選択したレスをコピーする
+//! 選択したレスのdatをコピーする
+// *************************************************************************
+procedure TGikoDM.KoreDatCopyExecute(Sender: TObject);
+begin
+	GikoForm.KonoDatCopy(GikoForm.KokoPopupMenu.Tag, true);
+end;
+
+// *************************************************************************
+//! 同IDへのレスアンカー表示
 // *************************************************************************
 procedure TGikoDM.SameIDResAnchorActionExecute(Sender: TObject);
 const
@@ -2436,6 +2529,35 @@ begin
         GikoForm.ShowSameIDAncher(AID);
     end;
 end;
+
+// *************************************************************************
+//! ワッチョイ全体が同じレスのアンカー表示
+// *************************************************************************
+procedure TGikoDM.SameWcAllResAnchorActionExecute(Sender: TObject);
+var
+	No : Integer;
+begin
+	No := GikoForm.KokoPopupMenu.Tag;
+	if (No < 1) or
+		 (GikoForm.KokoPopupThreadItem = nil) then
+		Exit;
+	GikoForm.ShowSameWacchoiAncher(No, False);
+end;
+
+// *************************************************************************
+//! ワッチョイ下4桁が同じレスのアンカー表示
+// *************************************************************************
+procedure TGikoDM.SameWcLast4ResAnchorActionExecute(Sender: TObject);
+var
+	No : Integer;
+begin
+	No := GikoForm.KokoPopupMenu.Tag;
+	if (No < 1) or
+		 (GikoForm.KokoPopupThreadItem = nil) then
+		Exit;
+	GikoForm.ShowSameWacchoiAncher(No, True);
+end;
+
 // *************************************************************************
 //! このレスあぼ～ん　（通常）
 // *************************************************************************
@@ -2443,6 +2565,7 @@ procedure TGikoDM.IndividualAbon1ActionExecute(Sender: TObject);
 begin
 	GikoForm.IndividualAbon(GikoForm.KokoPopupMenu.Tag, 1);
 end;
+
 // *************************************************************************
 //! このレスあぼ～ん　（透明）
 // *************************************************************************
@@ -2450,6 +2573,7 @@ procedure TGikoDM.IndividualAbon0ActionExecute(Sender: TObject);
 begin
 	GikoForm.IndividualAbon(GikoForm.KokoPopupMenu.Tag, 0);
 end;
+
 // *************************************************************************
 //! このレスあぼ～ん解除
 // *************************************************************************
@@ -2573,6 +2697,41 @@ procedure TGikoDM.ThreadRangeAbonActionExecute(Sender: TObject);
 begin
   GikoForm.RangeAbon(0);
 end;
+
+
+// *************************************************************************
+//! ワッチョイ全体が同じレスをあぼ～ん
+// *************************************************************************
+procedure TGikoDM.IndividualAbon1WcAllActionExecute(Sender: TObject);
+begin
+  GikoForm.IndividualAbonWacchoi(1, False);
+end;
+
+// *************************************************************************
+//! ワッチョイ全体が同じレスを透明あぼ～ん
+// *************************************************************************
+procedure TGikoDM.IndividualAbon0WcAllActionExecute(Sender: TObject);
+begin
+  GikoForm.IndividualAbonWacchoi(0, False);
+end;
+
+// *************************************************************************
+//! ワッチョイ下4桁が同じレスをあぼ～ん
+// *************************************************************************
+procedure TGikoDM.IndividualAbon1WcLs4ActionExecute(Sender: TObject);
+begin
+  GikoForm.IndividualAbonWacchoi(1, True);
+end;
+
+// *************************************************************************
+//! ワッチョイ下4桁が同じレスを透明あぼ～ん
+// *************************************************************************
+procedure TGikoDM.IndividualAbon0WcLs4ActionExecute(Sender: TObject);
+begin
+  GikoForm.IndividualAbonWacchoi(0, True);
+end;
+
+
 ////////////////////////////////ブラウザポップアップまでおしまい/////////////////////
 // *************************************************************************
 //! ギコナビのウェブサイトを表示する
@@ -2600,7 +2759,10 @@ end;
 // *************************************************************************
 procedure TGikoDM.BBS2chWebPageActionExecute(Sender: TObject);
 begin
-	GikoSys.OpenBrowser(PROTOCOL_HTTP + URL_2ch, gbtAuto);
+	if GikoSys.Setting.URLitest then
+		GikoSys.OpenBrowser(PROTOCOL_HTTP + URL_ITEST2CH, gbtAuto)
+  else
+		GikoSys.OpenBrowser(PROTOCOL_HTTP + URL_2ch, gbtAuto);
 end;
 // *************************************************************************
 //! ギコナビのフォルダを開く
@@ -2903,7 +3065,10 @@ var
 	URL: string;
 begin
 	if GikoForm.GetActiveList is TBoard then begin
-		URL := TBoard(GikoForm.GetActiveList).URL;
+  	if GikoSys.Setting.URLitest then
+			URL := TBoard(GikoForm.GetActiveList).itestURL;
+  	if URL = '' then
+			URL := TBoard(GikoForm.GetActiveList).URL;
 		GikoSys.OpenBrowser(URL, gbtAuto);
 	end;
 end;
@@ -2915,16 +3080,27 @@ var
 	List: TList;
 	i: Integer;
 	s: string;
+  url: String;
 begin
 	s := '';
 	List := TList.Create;
 	try
 		GikoForm.SelectListItem(List);
 		for i := 0 to List.Count - 1 do begin
-			if TObject(List[i]) is TBoard then
-				s := s + TBoard(List[i]).URL + #13#10
-			else if TObject(List[i]) is TThreadItem then
-				s := s + TThreadItem(List[i]).URL + #13#10;
+    	url := '';
+			if TObject(List[i]) is TBoard then begin
+		  	if GikoSys.Setting.URLitest then
+					url := TBoard(List[i]).itestURL;
+        if url = '' then
+					url := TBoard(List[i]).URL;
+      end else if TObject(List[i]) is TThreadItem then begin
+		  	if GikoSys.Setting.URLitest then
+					url := TThreadItem(List[i]).itestURL;
+        if url = '' then
+					url := TThreadItem(List[i]).URL;
+      end;
+      if url <> '' then
+        s := s + url + #13#10;
 		end;
 		if s <> '' then
 			Clipboard.AsText := s;
@@ -2990,16 +3166,29 @@ var
 	List: TList;
 	i: Integer;
 	s: string;
+  url: String;
 begin
 	s := '';
 	List := TList.Create;
 	try
 		GikoForm.SelectListItem(List);
 		for i := 0 to List.Count - 1 do begin
-			if TObject(List[i]) is TBoard then
-				s := s + TBoard(List[i]).Title + #13#10 + TBoard(List[i]).URL + #13#10
-			else if TObject(List[i]) is TThreadItem then
-				s := s + TThreadItem(List[i]).Title + #13#10 + TThreadItem(List[i]).URL + #13#10;
+    	url := '';
+			if TObject(List[i]) is TBoard then begin
+		  	if GikoSys.Setting.URLitest then
+					url := TBoard(List[i]).itestURL;
+        if url = '' then
+					url := TBoard(List[i]).URL;
+				url := TBoard(List[i]).Title + #13#10 + url;
+      end else if TObject(List[i]) is TThreadItem then begin
+		  	if GikoSys.Setting.URLitest then
+					url := TThreadItem(List[i]).itestURL;
+        if url = '' then
+					url := TThreadItem(List[i]).URL;
+				url := TThreadItem(List[i]).Title + #13#10 + url;
+      end;
+      if url <> '' then
+        s := s + url + #13#10;
 		end;
 		if s <> '' then
 			SetClipboardFromEncAnsi(s);
@@ -3626,6 +3815,7 @@ begin
 	GikoForm.ListViewUC.ViewStyle := vsReport;
 	DetailIconAction.Checked := True;
 end;
+
 // *************************************************************************
 //! ダウンロードを中止する
 // *************************************************************************
@@ -4084,6 +4274,7 @@ begin
         TAction(Sender).Enabled := EditorFormExists;
     end;
 end;
+
 // *************************************************************************
 //! スクリーン上にEditorFormがいるか
 // *************************************************************************
@@ -4500,6 +4691,31 @@ procedure TGikoDM.AddIDtoNGWord1ActionExecute(Sender: TObject);
 begin
     GikoForm.AddIDtoNGWord(false);
 end;
+
+//! このレスのワッチョイ全体をNGワードに追加する
+procedure TGikoDM.AddWcAlltoNGWord1ActionExecute(Sender: TObject);
+begin
+  GikoForm.AddWacchoitoNGWord(False, False);
+end;
+
+//! このレスのワッチョイ全体をNGワードに追加する（透明)
+procedure TGikoDM.AddWcAlltoNGWord0ActionExecute(Sender: TObject);
+begin
+  GikoForm.AddWacchoitoNGWord(True, False);
+end;
+
+//! このレスのワッチョイ下4桁をNGワードに追加する
+procedure TGikoDM.AddWcLs4toNGWord1ActionExecute(Sender: TObject);
+begin
+  GikoForm.AddWacchoitoNGWord(False, True);
+end;
+
+//! このレスのワッチョイ下4桁をNGワードに追加する（透明)
+procedure TGikoDM.AddWcLs4toNGWord0ActionExecute(Sender: TObject);
+begin
+  GikoForm.AddWacchoitoNGWord(True, True);
+end;
+
 //! クリップボードの文字列をIDとして同一IDレスアンカー表示
 procedure TGikoDM.ExtractSameIDActionExecute(Sender: TObject);
 var
@@ -4648,6 +4864,35 @@ begin
     end;
     Clipboard.SetTextBuf( PChar(URL) );
 end;
+
+//! このレスのitest URLコピー（PATH_INFO)
+procedure TGikoDM.konoURLitestActionExecute(Sender: TObject);
+var
+  No : Integer;
+  ThreadItem : TThreadItem;
+  URL: String;
+begin
+	No := GikoForm.KokoPopupMenu.Tag;
+	if No = 0 then Exit;
+
+  ThreadItem := GikoForm.KokoPopupThreadItem;
+  URL := ThreadItem.itestURL;
+  if URL <> '' then begin
+    if URL[Length(URL)] <> '/' then
+    	URL := URL + '/';
+    URL := URL + IntToStr(No);
+  end;
+	Clipboard.SetTextBuf( PChar(URL) );
+end;
+
+procedure TGikoDM.konoURLitestActionUpdate(Sender: TObject);
+var
+  ThreadItem : TThreadItem;
+begin
+  ThreadItem := GikoForm.KokoPopupThreadItem;
+	konoURLitestAction.Enabled := ThreadItem.ParentBoard.Is2ch and (Pos('.bbspink.com', ThreadItem.URL) < 1);
+end;
+
 //! このレスのURLコピー（Query_STRING)
 procedure TGikoDM.konoURLQueryActionExecute(Sender: TObject);
 var
@@ -4730,10 +4975,301 @@ procedure TGikoDM.ThreadNgEditActionExecute(Sender: TObject);
 begin
     ThreadNGEdit := TThreadNGEdit.Create(GikoForm);
     if (ThreadNGEdit.ShowModal = mrOk) then begin
-        GikoForm.ListViewUC.Refresh;
+        if GikoForm.ListViewUC.Visible then
+        	GikoForm.UpdateListView();
     end;
     ThreadNGEdit.Free;
     ThreadNGEdit := nil;
+end;
+
+// ドングリシステム画面表示
+procedure TGikoDM.DonguriActionExecute(Sender: TObject);
+begin
+	try
+    if DonguriForm = nil then begin
+      DonguriForm := TDonguriForm.Create(GikoForm);
+    end;
+
+  	if DonguriForm.Visible = False then
+      DonguriForm.Show;
+
+  	if DonguriForm.WindowState = wsMinimized then
+      DonguriForm.WindowState := wsNormal;
+
+    if GikoSys.Setting.DonguriStay = False then begin
+	  	SetWindowPos(DonguriForm.Handle, HWND_TOPMOST,   0, 0, 0, 0, SWP_NOMOVE + SWP_NOSIZE);
+	  	SetWindowPos(DonguriForm.Handle, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE + SWP_NOSIZE);
+    end;
+	except
+  end;
+end;
+
+procedure TGikoDM.DonguriActionHint(var HintStr: string; var CanShow: Boolean);
+begin
+  if (GikoSys.DonguriSys.Home.UserMode <> '') or
+     (GikoSys.DonguriSys.Home.UserID   <> '') or
+     (GikoSys.DonguriSys.Home.Level    <> '') or
+     (GikoSys.DonguriSys.Home.UserName <> '') then
+	  HintStr := Format('どんぐりシステム%s%s [%s]%sLv.%s [%s]', [
+    			#10, GikoSys.DonguriSys.Home.UserMode,
+          		 GikoSys.DonguriSys.Home.UserID,
+          #10, GikoSys.DonguriSys.Home.Level,
+          		 GikoSys.DonguriSys.Home.UserName])
+  else
+		HintStr := 'どんぐりシステムを表示する';
+	CanShow := True;
+end;
+
+procedure TGikoDM.DonguriActionUpdate(Sender: TObject);
+begin
+//
+end;
+
+procedure TGikoDM.DonguriHomeUpdate;
+begin
+	try
+    if (DonguriForm <> nil) and (DonguriForm.Visible) then
+      DonguriForm.UpdateHomeInfo;
+  except
+  end;
+end;
+
+procedure TGikoDM.DonguriLoginActionExecute(Sender: TObject);
+var
+	res: String;
+  msg: String;
+begin
+	try
+    if GikoSys.DonguriSys.Processing then
+      Exit;
+
+    if GikoSys.DonguriSys.Login(res) then begin
+      GikoForm.AddMessageList(GikoSys.GetGikoMessage(gmDngLogin), nil, gmiOK);
+      DonguriHomeUpdate;
+    end else begin
+      msg := 'どんぐりシステムにログインできませんでした。';
+      if Pos('<html', res) < 1 then
+        msg := msg + res
+      else if GikoSys.DonguriSys.Home.Error <> '' then
+        msg := msg + GikoSys.DonguriSys.Home.Error;
+      GikoForm.AddMessageList(msg, nil, gmiNG);
+      GikoForm.PlaySound('Error');
+    end;
+  except
+    on e: Exception do begin
+      GikoForm.AddMessageList('どんぐりシステムにログインできませんでした。' + e.Message, nil, gmiNG);
+      GikoForm.PlaySound('Error');
+    end;
+  end;
+end;
+
+procedure TGikoDM.DonguriHntLoginActionUpdate(Sender: TObject);
+begin
+	DonguriHntLoginAction.Enabled := (GikoSys.Setting.UserID <> '') and (GikoSys.Setting.Password <> '');
+end;
+
+procedure TGikoDM.DonguriHntLoginActionExecute(Sender: TObject);
+var
+	res: String;
+  msg: String;
+begin
+	try
+  	if (GikoSys.Setting.UserID = '') or (GikoSys.Setting.Password = '') then begin
+      GikoForm.AddMessageList('どんぐりシステムログインエラー：UPLIFTの設定が正しくありません。', nil, gmiNG);
+      GikoForm.PlaySound('Error');
+      Exit;
+    end;
+
+    if GikoSys.DonguriSys.Processing then
+      Exit;
+
+    if GikoSys.DonguriSys.MailLogin(GikoSys.Setting.UserID, GikoSys.Setting.Password, res) then begin
+      GikoForm.AddMessageList(GikoSys.GetGikoMessage(gmDngMailLogin) + GikoSys.Setting.UserID, nil, gmiOK);
+      DonguriHomeUpdate;
+    end else begin
+      msg := 'どんぐりシステムにログインできませんでした。';
+      if Pos('<html', res) < 1 then
+        msg := msg + res
+      else if GikoSys.DonguriSys.Home.Error <> '' then
+        msg := msg + GikoSys.DonguriSys.Home.Error;
+      GikoForm.AddMessageList(msg, nil, gmiNG);
+      GikoForm.PlaySound('Error');
+    end;
+  except
+    on e: Exception do begin
+      GikoForm.AddMessageList('どんぐりシステムにログインできませんでした。' + e.Message, nil, gmiNG);
+      GikoForm.PlaySound('Error');
+    end;
+  end;
+end;
+
+procedure TGikoDM.DonguriGrdLoginActionUpdate(Sender: TObject);
+begin
+	DonguriGrdLoginAction.Enabled := (GikoSys.Setting.DonguriMail <> '') and (GikoSys.Setting.DonguriPwd <> '');
+end;
+
+procedure TGikoDM.DonguriGrdLoginActionExecute(Sender: TObject);
+var
+	res: String;
+  msg: String;
+begin
+	try
+  	if (GikoSys.Setting.DonguriMail = '') or (GikoSys.Setting.DonguriPwd = '') then begin
+      GikoForm.AddMessageList('どんぐりシステムログインエラー：警備員アカウントの設定が正しくありません。', nil, gmiNG);
+      GikoForm.PlaySound('Error');
+      Exit;
+    end;
+
+    if GikoSys.DonguriSys.Processing then
+      Exit;
+
+    if GikoSys.DonguriSys.MailLogin(GikoSys.Setting.DonguriMail, GikoSys.Setting.DonguriPwd, res) then begin
+      GikoForm.AddMessageList(GikoSys.GetGikoMessage(gmDngMailLogin) + GikoSys.Setting.DonguriMail, nil, gmiOK);
+      DonguriHomeUpdate;
+    end else begin
+      msg := 'どんぐりシステムにログインできませんでした。';
+      if Pos('<html', res) < 1 then
+        msg := msg + res
+      else if GikoSys.DonguriSys.Home.Error <> '' then
+        msg := msg + GikoSys.DonguriSys.Home.Error;
+      GikoForm.AddMessageList(msg, nil, gmiNG);
+      GikoForm.PlaySound('Error');
+    end;
+  except
+    on e: Exception do begin
+      GikoForm.AddMessageList('どんぐりシステムにログインできませんでした。' + e.Message, nil, gmiNG);
+      GikoForm.PlaySound('Error');
+    end;
+  end;
+end;
+
+procedure TGikoDM.DonguriLogoutActionExecute(Sender: TObject);
+var
+  res: String;
+  msg: String;
+begin
+	try
+    if GikoSys.DonguriSys.Processing then
+      Exit;
+
+    if GikoSys.DonguriSys.Logout(res) then begin
+      GikoForm.AddMessageList(GikoSys.GetGikoMessage(gmDngLogout), nil, gmiOK);
+      DonguriHomeUpdate;
+    end else begin
+      msg := 'どんぐりシステムからログアウトできませんでした。';
+      if Pos('<html', res) < 1 then
+        msg := msg + res
+      else if GikoSys.DonguriSys.Home.Error <> '' then
+        msg := msg + GikoSys.DonguriSys.Home.Error;
+      GikoForm.AddMessageList(msg, nil, gmiNG);
+      GikoForm.PlaySound('Error');
+    end;
+  except
+    on e: Exception do begin
+      GikoForm.AddMessageList('どんぐりシステムからログアウトできませんでした。' + e.Message, nil, gmiNG);
+      GikoForm.PlaySound('Error');
+    end;
+  end;
+end;
+
+procedure TGikoDM.DonguriAuthActionExecute(Sender: TObject);
+var
+  res: String;
+  msg: String;
+begin
+  try
+    if GikoSys.DonguriSys.Processing then
+      Exit;
+
+    if GikoSys.DonguriSys.Auth(res) then begin
+      GikoForm.AddMessageList(GikoSys.GetGikoMessage(gmDngAuth), nil, gmiOK);
+      DonguriHomeUpdate;
+    end else begin
+      msg := 'どんぐりシステムの再認証が失敗しました。';
+      if Pos('<html', res) < 1 then
+        msg := msg + res
+      else if GikoSys.DonguriSys.Home.Error <> '' then
+        msg := msg + GikoSys.DonguriSys.Home.Error;
+      GikoForm.AddMessageList(msg, nil, gmiNG);
+      GikoForm.PlaySound('Error');
+    end;
+  except
+    on e: Exception do begin
+      GikoForm.AddMessageList('どんぐりシステムの再認証が失敗しました。' + e.Message, nil, gmiNG);
+      GikoForm.PlaySound('Error');
+    end;
+  end;
+end;
+
+// どんぐり大砲有効無効更新
+procedure TGikoDM.DonguriCannonActionUpdate(Sender: TObject);
+var
+	ThreadItem : TThreadItem;
+begin
+	try
+		ThreadItem := GikoForm.GetActiveContent(True);
+		TAction(Sender).Enabled := (ThreadItem <> nil) and
+																ThreadItem.ParentBoard.Is2ch and		// ５ちゃんのみ
+                                (Pos('.bbspink.com/', ThreadItem.URL) < 1) and	// BBSPINKは現在非対応
+																(GikoSys.Setting.UserID <> '') and	// ハンターのみ
+																(GikoSys.Setting.Password <> '');		// （とりあえずUPLIFTのログイン設定がある場合のみ）
+  except
+  end;
+end;
+
+// どんぐり大砲
+procedure TGikoDM.DonguriCannonActionExecute(Sender: TObject);
+var
+	No : Integer;
+	ThreadItem : TThreadItem;
+	URL, Protocol, Host, Path, Document, Port, Bookmark : String;
+  tmp: String;
+  date: String;
+  idx1: Integer;
+  idx2: Integer;
+	Res: TResRec;
+begin
+	try
+    No := GikoForm.KokoPopupMenu.Tag;
+    if No = 0 then
+    	Exit;
+    ThreadItem := GikoForm.KokoPopupThreadItem;
+    if (not ThreadItem.ParentBoard.Is2ch) or (Pos('.bbspink.com/', ThreadItem.URL) > 0) then
+    	Exit;
+
+    GikoSys.ParseURI(ThreadItem.URL, Protocol, Host, Path, Document, Port, Bookmark);
+    URL := Protocol + '://' + Host + Path + IntToStr(No);
+
+		tmp := GikoSys.ReadThreadFile(ThreadItem.FilePath, No);
+		if tmp = '' then
+    	Exit;
+
+    THTMLCreate.DivideStrLine(tmp, @Res);
+    date := Res.FDateTime;
+    idx1 := Pos(' ', date);
+    if idx1 > 1 then begin
+      idx2 := PosEx(' ', date, idx1 + 1);
+      if idx2 > 0 then
+        SetLength(date, idx2 - 1);
+    end;
+
+    GikoSys.DonguriSys.Cannon(url, date, No);
+
+  except
+  end;
+end;
+
+// Cookie管理画面表示
+procedure TGikoDM.CookieMngActionExecute(Sender: TObject);
+var
+  dlg: TCookieForm;
+begin
+	dlg := TCookieForm.Create(GikoForm);
+	try
+		dlg.ShowModal;
+	finally
+		dlg.Release;
+	end;
 end;
 
 end.

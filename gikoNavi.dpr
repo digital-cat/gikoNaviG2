@@ -93,10 +93,20 @@ uses
   BbsThrSel in 'BbsThrSel.pas' {BbsThreadSel},
   IndyModule in 'IndyModule.pas' {IndyMdl: TDataModule},
   DmSession5ch in 'DmSession5ch.pas' {Session5ch: TDataModule},
-  RangeAbon in 'RangeAbon.pas' {RangeAbonForm};
+  RangeAbon in 'RangeAbon.pas' {RangeAbonForm},
+  GikoInputBoxForm in 'GikoInputBoxForm.pas' {GikoInputBox},
+  DonguriBase in 'DonguriBase.pas' {DonguriForm},
+  DonguriSystem in 'DonguriSystem.pas',
+  CookieManager in 'CookieManager.pas' {CookieForm},
+  DonguriRegister in 'DonguriRegister.pas' {DonguriRegForm},
+  SkRegExpConst in 'skregexp\SkRegExpConst.pas',
+  SkRegExpW in 'skregexp\SkRegExpW.pas',
+  UnicodeProp in 'skregexp\UnicodeProp.pas';
 
 {$R *.RES}
 {$R gikoResource.res}
+
+//{$DEFINE _DEBUG_MODE}
 
 var
 	hMutex: THandle;
@@ -104,7 +114,11 @@ var
 	i: Integer;
 	CDS: TCopyDataStruct;
 const
+{$IFDEF _DEBUG_MODE}
+	MutexString: string = 'gikoNaviInstanceDebug';
+{$ELSE}
 	MutexString: string = 'gikoNaviInstance';
+{$ENDIF}
 begin
 	hMutex := OpenMutex(MUTEX_ALL_ACCESS, False, PChar(MutexString));
 	if hMutex <> 0 then begin
@@ -138,25 +152,24 @@ begin
 		end;
 
 		CloseHandle(hMutex);
-	end else begin
-		//ミューテックスが存在しない場合はアプリケーション起動続行
-		hMutex := CreateMutex(nil, False, PChar(MutexString));
-		Application.Initialize;
-		Application.Title := 'ギコナビ';
-		Application.ShowMainForm := False;
-		Application.CreateForm(TMainWindow, MainWindow);
+    Exit;
+	end;
+  //ミューテックスが存在しない場合はアプリケーション起動続行
+  hMutex := CreateMutex(nil, False, PChar(MutexString));
+  Application.Initialize;
+  Application.Title := 'ギコナビ';
+  Application.ShowMainForm := False;
+  Application.CreateForm(TMainWindow, MainWindow);
   Application.CreateForm(TFavoriteDM, FavoriteDM);
   Application.CreateForm(TAddressHistoryDM, AddressHistoryDM);
+  Application.CreateForm(TIndyMdl, IndyMdl);
   Application.CreateForm(TGikoDM, GikoDM);
   Application.CreateForm(TInputAssistDM, InputAssistDM);
   Application.CreateForm(TReplaceDM, ReplaceDM);
   Application.CreateForm(TExtPreviewDM, ExtPreviewDM);
   Application.CreateForm(TGikoForm, GikoForm);
   Application.CreateForm(TUpdateCheckForm, UpdateCheckForm);
-  Application.CreateForm(TIndyMdl, IndyMdl);
-  Application.CreateForm(TSession5ch, Session5ch);
   Application.Run;
-		ReleaseMutex(hMutex);
-	end;
+	ReleaseMutex(hMutex);
 end.
 

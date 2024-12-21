@@ -4,8 +4,8 @@ object RangeAbonForm: TRangeAbonForm
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
   Caption = #31684#22258#12354#12412#12540#12435
-  ClientHeight = 154
-  ClientWidth = 294
+  ClientHeight = 100
+  ClientWidth = 298
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -51,36 +51,32 @@ object RangeAbonForm: TRangeAbonForm
     TabOrder = 1
     Text = '1000'
   end
-  object RadioGroupType: TRadioGroup
-    Left = 16
-    Top = 40
-    Width = 257
-    Height = 49
-    Caption = #31278#21029
-    Columns = 2
-    ItemIndex = 0
-    Items.Strings = (
-      #12354#12412#12540#12435
-      #36879#26126#12354#12412#12540#12435)
-    TabOrder = 2
-  end
-  object ButtonOk: TButton
-    Left = 40
-    Top = 112
-    Width = 100
+  object ButtonAbon: TButton
+    Left = 8
+    Top = 56
+    Width = 94
     Height = 25
-    Caption = 'OK'
-    TabOrder = 3
-    OnClick = ButtonOkClick
+    Caption = #12354#12412#12540#12435'(&A)'
+    TabOrder = 2
+    OnClick = ButtonAbonClick
   end
   object ButtonCancel: TButton
-    Left = 158
-    Top = 112
-    Width = 100
+    Left = 208
+    Top = 56
+    Width = 82
     Height = 25
     Cancel = True
     Caption = #12461#12515#12531#12475#12523
     ModalResult = 2
     TabOrder = 4
+  end
+  object ButtonInvis: TButton
+    Left = 108
+    Top = 56
+    Width = 94
+    Height = 25
+    Caption = #36879#26126#12354#12412#12540#12435'(&I)'
+    TabOrder = 3
+    OnClick = ButtonInvisClick
   end
 end

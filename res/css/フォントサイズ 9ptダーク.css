@@ -53,6 +53,12 @@
 .date {
 }
 
+/* ***** CAP_USER ***** */
+.capuser {
+  font-weight: bold;
+  color: #FF0000;
+}
+
 /* ***** –{•¶ ***** */
 .mes {
   margin-left : 40px;

@@ -46,11 +46,11 @@ object RegExpTest: TRegExpTest
     TabOrder = 1
   end
   object TestButton: TButton
-    Left = 288
+    Left = 200
     Top = 72
-    Width = 75
+    Width = 115
     Height = 25
-    Caption = #12486#12473#12488
+    Caption = #27491#35215#34920#29694#12486#12473#12488
     TabOrder = 2
     OnClick = TestButtonClick
   end
@@ -61,6 +61,15 @@ object RegExpTest: TRegExpTest
     Height = 25
     Caption = #38281#12376#12427
     ModalResult = 2
+    TabOrder = 4
+  end
+  object Test2Button: TButton
+    Left = 354
+    Top = 72
+    Width = 115
+    Height = 25
+    Caption = #27491#35215#34920#29694#65298#12486#12473#12488
     TabOrder = 3
+    OnClick = Test2ButtonClick
   end
 end

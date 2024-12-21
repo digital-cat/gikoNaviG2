@@ -17,6 +17,7 @@
     <DCC_DcuOutput>obj\Release</DCC_DcuOutput>
     <DCC_ObjOutput>obj\Release</DCC_ObjOutput>
     <DCC_HppOutput>obj\Release</DCC_HppOutput>
+    <DCC_Optimize>False</DCC_Optimize>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <Version>7.0</Version>
@@ -30,35 +31,7 @@
     <Borland.Personality>Delphi.Personality</Borland.Personality>
     <Borland.ProjectType>VCLApplication</Borland.ProjectType>
     <BorlandProject>
-<BorlandProject><Delphi.Personality><Parameters><Parameters Name="UseLauncher">False</Parameters><Parameters Name="LoadAllSymbols">True</Parameters><Parameters Name="LoadUnspecifiedSymbols">False</Parameters></Parameters><VersionInfo><VersionInfo Name="IncludeVerInfo">True</VersionInfo><VersionInfo Name="AutoIncBuild">False</VersionInfo><VersionInfo Name="MajorVer">1</VersionInfo><VersionInfo Name="MinorVer">74</VersionInfo><VersionInfo Name="Release">1</VersionInfo><VersionInfo Name="Build">878</VersionInfo><VersionInfo Name="Debug">False</VersionInfo><VersionInfo Name="PreRelease">True</VersionInfo><VersionInfo Name="Special">False</VersionInfo><VersionInfo Name="Private">False</VersionInfo><VersionInfo Name="DLL">False</VersionInfo><VersionInfo Name="Locale">1041</VersionInfo><VersionInfo Name="CodePage">932</VersionInfo></VersionInfo><VersionInfoKeys><VersionInfoKeys Name="CompanyName"></VersionInfoKeys><VersionInfoKeys Name="FileDescription">２ちゃんねる用ブラウザ　ギコナビ(避難所版II)</VersionInfoKeys><VersionInfoKeys Name="FileVersion">1.74.1.878</VersionInfoKeys><VersionInfoKeys Name="InternalName">gikoNavi</VersionInfoKeys><VersionInfoKeys Name="LegalCopyright">monazillaプロジェクト &amp; （ヒ）</VersionInfoKeys><VersionInfoKeys Name="LegalTrademarks"></VersionInfoKeys><VersionInfoKeys Name="OriginalFilename">gikoNavi</VersionInfoKeys><VersionInfoKeys Name="ProductName">ギコナビ</VersionInfoKeys><VersionInfoKeys Name="ProductVersion">1.0.0.0</VersionInfoKeys><VersionInfoKeys Name="Comments">２ちゃんねる用ブラウザ　ギコナビ(避難所版II)</VersionInfoKeys></VersionInfoKeys><Excluded_Packages>
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
+<BorlandProject><Delphi.Personality><Parameters><Parameters Name="UseLauncher">False</Parameters><Parameters Name="LoadAllSymbols">True</Parameters><Parameters Name="LoadUnspecifiedSymbols">False</Parameters></Parameters><VersionInfo><VersionInfo Name="IncludeVerInfo">True</VersionInfo><VersionInfo Name="AutoIncBuild">False</VersionInfo><VersionInfo Name="MajorVer">1</VersionInfo><VersionInfo Name="MinorVer">75</VersionInfo><VersionInfo Name="Release">1</VersionInfo><VersionInfo Name="Build">911</VersionInfo><VersionInfo Name="Debug">False</VersionInfo><VersionInfo Name="PreRelease">True</VersionInfo><VersionInfo Name="Special">False</VersionInfo><VersionInfo Name="Private">False</VersionInfo><VersionInfo Name="DLL">False</VersionInfo><VersionInfo Name="Locale">1041</VersionInfo><VersionInfo Name="CodePage">932</VersionInfo></VersionInfo><VersionInfoKeys><VersionInfoKeys Name="CompanyName"></VersionInfoKeys><VersionInfoKeys Name="FileDescription">２ちゃんねる用ブラウザ　ギコナビ(避難所版II)</VersionInfoKeys><VersionInfoKeys Name="FileVersion">1.75.1.911</VersionInfoKeys><VersionInfoKeys Name="InternalName">gikoNavi</VersionInfoKeys><VersionInfoKeys Name="LegalCopyright">monazillaプロジェクト &amp; （ヒ）</VersionInfoKeys><VersionInfoKeys Name="LegalTrademarks"></VersionInfoKeys><VersionInfoKeys Name="OriginalFilename">gikoNavi</VersionInfoKeys><VersionInfoKeys Name="ProductName">ギコナビ</VersionInfoKeys><VersionInfoKeys Name="ProductVersion">1.0.0.0</VersionInfoKeys><VersionInfoKeys Name="Comments">２ちゃんねる用ブラウザ　ギコナビ(避難所版II)</VersionInfoKeys></VersionInfoKeys><Excluded_Packages>
       
       
       
@@ -96,11 +69,21 @@
     <DCCReference Include="Component\GikoCoolBar.pas" />
     <DCCReference Include="Component\GikoListView.pas" />
     <DCCReference Include="Component\GikoPanel.pas" />
+    <DCCReference Include="CookieManager.pas">
+      <Form>CookieForm</Form>
+    </DCCReference>
     <DCCReference Include="DefaultFileManager.pas" />
     <DCCReference Include="DmSession5ch.pas">
       <Form>Session5ch</Form>
       <DesignClass>TDataModule</DesignClass>
     </DCCReference>
+    <DCCReference Include="DonguriBase.pas">
+      <Form>DonguriForm</Form>
+    </DCCReference>
+    <DCCReference Include="DonguriRegister.pas">
+      <Form>DonguriRegForm</Form>
+    </DCCReference>
+    <DCCReference Include="DonguriSystem.pas" />
     <DCCReference Include="Editor.pas">
       <Form>EditorForm</Form>
     </DCCReference>
@@ -134,6 +117,9 @@
     <DCCReference Include="GikoDataModule.pas">
       <Form>GikoDM</Form>
       <DesignClass>TDataModule</DesignClass>
+    </DCCReference>
+    <DCCReference Include="GikoInputBoxForm.pas">
+      <Form>GikoInputBox</Form>
     </DCCReference>
     <DCCReference Include="GikoMessage.pas" />
     <DCCReference Include="GikoSystem.pas" />
@@ -225,6 +211,9 @@
     <DCCReference Include="Setting.pas" />
     <DCCReference Include="SHA1Unit.pas" />
     <DCCReference Include="SkinFiles.pas" />
+    <DCCReference Include="skregexp\SkRegExpConst.pas" />
+    <DCCReference Include="skregexp\SkRegExpW.pas" />
+    <DCCReference Include="skregexp\UnicodeProp.pas" />
     <DCCReference Include="Sort.pas" />
     <DCCReference Include="Splash.pas">
       <Form>SplashWindow</Form>

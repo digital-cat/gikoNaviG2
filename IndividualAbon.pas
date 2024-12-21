@@ -4,21 +4,27 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, Buttons, ExtCtrls;
+  Dialogs, StdCtrls, Buttons, ExtCtrls, CheckLst;
 
 type
   TIndividualAbonForm = class(TForm)
-    Panel1: TPanel;
-    BitBtn1: TBitBtn;
-    BitBtn2: TBitBtn;
-    Button1: TButton;
-    Panel2: TPanel;
+    BitBtnCancel: TBitBtn;
+    BitBtnAll: TBitBtn;
+    ButtonReversal: TButton;
+    CheckListBoxNo: TCheckListBox;
+    PanelTop: TPanel;
     Label1: TLabel;
-    ComboBox1: TComboBox;
-    procedure Button1Click(Sender: TObject);
+    PanelRight: TPanel;
+    ButtonChkAll: TButton;
+    ButtonUnchkAll: TButton;
+    GroupBox1: TGroupBox;
+    procedure ButtonReversalClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
-    procedure BitBtn2Click(Sender: TObject);
+    procedure BitBtnAllClick(Sender: TObject);
+    procedure ButtonChkAllClick(Sender: TObject);
+    procedure ButtonUnchkAllClick(Sender: TObject);
+    procedure CheckListBoxNoClickCheck(Sender: TObject);
   private
 	{ Private 宣言 }
 	FThreadLogFileName: String;
@@ -40,44 +46,54 @@ implementation
 
 {$R *.dfm}
 
-procedure TIndividualAbonForm.Button1Click(Sender: TObject);
+{ 選択レス番号のあぼーん解除 }
+procedure TIndividualAbonForm.ButtonReversalClick(Sender: TObject);
 var
 	NGFile: TStringList;
 	i, j: Integer;
 
 	str: String;
+  No: String;
 begin
-	if (FileExists(FNGFileName)) and (ComboBox1.ItemIndex >= 0) then begin
-		NGFile := TStringList.Create;
-		try
-			try
-				NGFile.LoadFromFile(FNGFileName);
-				str := ComboBox1.Items[ComboBox1.ItemIndex] + '-';
-				i := -1;
-				for j := 0 to NGFile.Count - 1 do begin
-					if AnsiPos(str, NGFile[j]) = 1 then begin
-						i := j;
-						break;
-					end;
-				end;
+  FRepaint := False;
 
-				if i >= 0 then begin
-					FRepaint := true;
-					DeleteList.Add(Copy(str, 1, Length(str) - 1));
-					NGFile.Delete(i);
-					if NGFile.Count = 0 then
-						DeleteFile(FNGFileName)
-					else
-						NGFile.SaveToFile(FNGFileName);
-				end else
-					FRepaint := false;
-			except
-			end;
-		finally
-			NGFile.Free;
-		end;
-	end;
+  if not FileExists(FNGFileName) then
+    Exit;
+
+  NGFile := TStringList.Create;
+  try
+    try
+      NGFile.LoadFromFile(FNGFileName);
+
+      for i := 0 to CheckListBoxNo.Items.Count - 1 do begin
+        if CheckListBoxNo.Checked[i] then begin
+          No := Trim(CheckListBoxNo.Items[i]);
+          str := No + '-';
+          for j := 0 to NGFile.Count - 1 do begin
+            if AnsiPos(str, NGFile[j]) = 1 then begin
+              FRepaint := True;
+              DeleteList.Add(No);
+              NGFile.Delete(j);
+              Break;
+            end;
+          end;
+          if NGFile.Count < 1 then
+            Break;
+        end;
+      end;
+
+      if NGFile.Count > 0 then
+        NGFile.SaveToFile(FNGFileName)
+      else
+        DeleteFile(FNGFileName);
+    except
+    end;
+  finally
+    NGFile.Free;
+  end;
 end;
+
+{ あぼーんレス番号読み込み }
 function TIndividualAbonForm.SetThreadLogFileName(AFileName: String): boolean;
 var
 	NGFile: TStringList;
@@ -92,14 +108,14 @@ begin
 		try
 			try
 				NGFile.LoadFromFile(FNGFileName);
-				ComboBox1.Items.Clear;
-                ComboBox1.Sorted := true;
+        CheckListBoxNo.Items.Clear;
+        CheckListBoxNo.Sorted := true;
 				for i := 0 to NGFile.Count - 1do begin
 					str := Copy(NGFile.Strings[i], 1, AnsiPos('-', NGFile.Strings[i]) - 1);
 					if str <> '' then
-						ComboBox1.Items.Add(str);
+            CheckListBoxNo.Items.Add(Format('%4s', [str]));
 				end;
-				if ComboBox1.Items.Count > 0 then
+				if CheckListBoxNo.Items.Count > 0 then
 					Result := true;
 
 			except
@@ -110,6 +126,8 @@ begin
 		end;
 	end;
 end;
+
+{ 指定レス番号のあぼーん解除 }
 function TIndividualAbonForm.DeleteNG(AResNum: Integer): boolean;
 var
 	NGFile: TStringList;
@@ -147,17 +165,20 @@ begin
 	end;
 end;
 
+{ フォーム作成イベント }
 procedure TIndividualAbonForm.FormCreate(Sender: TObject);
 begin
 	FDeleteList := TStringList.Create;
 end;
 
+{ フォーム破棄イベント }
 procedure TIndividualAbonForm.FormDestroy(Sender: TObject);
 begin
 	FDeleteList.Free;
 end;
 
-procedure TIndividualAbonForm.BitBtn2Click(Sender: TObject);
+{ 全あぼーん解除 }
+procedure TIndividualAbonForm.BitBtnAllClick(Sender: TObject);
 var
 	NGFile: TStringList;
 	i{, j}: Integer;
@@ -168,23 +189,62 @@ begin
 		NGFile := TStringList.Create;
 		try
 			try
-				FRepaint := false;
+				FRepaint := False;
 				NGFile.LoadFromFile(FNGFileName);
-				for i := ComboBox1.Items.Count - 1 downto 0 do begin
-					str := ComboBox1.Items[i];
+				for i := 0 to CheckListBoxNo.Items.Count - 1 do begin
+					str := Trim(CheckListBoxNo.Items[i]);
 					if( Length(str) > 0 ) then begin
-						FRepaint := true;
+						FRepaint := True;
 						DeleteList.Add(str);
-						NGFile.Delete(i);
 					end;
 				end;
-                DeleteFile(FNGFileName);
+        DeleteFile(FNGFileName);
 			except
 			end;
 		finally
 			NGFile.Free;
 		end;
 	end;
+end;
+
+{ 全てチェック }
+procedure TIndividualAbonForm.ButtonChkAllClick(Sender: TObject);
+var
+  i: Integer;
+begin
+  for i := 0 to CheckListBoxNo.Items.Count - 1 do
+    CheckListBoxNo.Checked[i] := True;
+
+  ButtonReversal.Enabled := (CheckListBoxNo.Items.Count > 0);
+end;
+
+{ 全てチェック解除 }
+procedure TIndividualAbonForm.ButtonUnchkAllClick(Sender: TObject);
+var
+  i: Integer;
+begin
+  for i := 0 to CheckListBoxNo.Items.Count - 1 do
+    CheckListBoxNo.Checked[i] := False;
+
+  ButtonReversal.Enabled := False;
+end;
+
+{ チェック変更イベント }
+procedure TIndividualAbonForm.CheckListBoxNoClickCheck(Sender: TObject);
+var
+  i: Integer;
+  enb: Boolean;
+begin
+  enb := False;
+
+  for i := 0 to CheckListBoxNo.Items.Count - 1 do begin
+    if CheckListBoxNo.Checked[i] then begin
+      enb := True;
+      Break;
+    end;
+  end;
+
+  ButtonReversal.Enabled := enb;
 end;
 
 end.

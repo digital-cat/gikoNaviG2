@@ -24,7 +24,7 @@ uses
 type
 //	TSetLayeredWindowAttributes = function(wnd: HWND; crKey: DWORD; bAlpha: BYTE; dwFlag: DWORD): Boolean; stdcall;
 	//書き込み戻り値タイプ
-	TGikoResultType = (grtOK, grtCookie, grtCheck, grtError, grtNinpou, grtNinpouErr, grtSuiton);
+	TGikoResultType = (grtOK, grtCookie, grtCheck, grtError, grtNinpou, grtNinpouErr, grtSuiton, grtDonguri, grtDngBroken);
 
 	TEditorForm = class(TTntForm)
 		MainMenu: TMainMenu;
@@ -143,7 +143,6 @@ type
 		N8: TMenuItem;
 		N9: TMenuItem;
 		N10: TMenuItem;
-		UCInfoPanel: TPanel;
 		BodyEdit: TMemo;
 		IdSSLIOHandlerSocketOpenSSL: TIdSSLIOHandlerSocketOpenSSL;
     Label1: TLabel;
@@ -152,6 +151,7 @@ type
     OekakiOpenDialog: TOpenDialog;
     OekakiClearButton: TButton;
     OekakiRightPanel: TPanel;
+    DonguriCheckBox: TCheckBox;
 
 		procedure EditorPageChange(Sender: TObject);
 		procedure FormCreate(Sender: TObject);
@@ -219,6 +219,8 @@ type
     procedure OekakiButtonClick(Sender: TObject);
     procedure OekakiClearButtonClick(Sender: TObject);
     procedure OekakiPanelResize(Sender: TObject);
+    procedure DonguriCheckBoxClick(Sender: TObject);
+    procedure NameComboBoxChange(Sender: TObject);
 	private
 		FThreadItem: TThreadItem;
 		FBoard: TBoard;
@@ -241,6 +243,7 @@ type
 		MailComboBoxUC: TWideComboBox;
 		FURI: TIdURI;
     FOekaki: String;
+    FIsDonguri: Boolean;
 		procedure Preview;
 		procedure Preview2;
     procedure TrimLinkFromHtml(var html: String);
@@ -252,7 +255,7 @@ type
 		procedure GetSendData(Source: TStringStream; EncUTF8: Boolean; AddCRLF: Boolean);
 		procedure SaveSendFile;
 		procedure SetContent(Content: string; ABrowser: TWebBrowser);
-		function GetResultType(ResponseText: string): TGikoResultType;
+		function GetResultType(ResponseText: string; Is2ch: Boolean): TGikoResultType;
 		/// 本文の取得
 		function GetBody : string;
 		function GetBodyUTF8: UTF8String;
@@ -300,6 +303,8 @@ type
 		//! Header文字列取得
 		function getHeaderStr(const ACOOKIE: string; const SPID : string;
 			const PON : string; const HAP : string; Board : TBoard) : string;
+		function getHeaderStr2(const ACOOKIE: string; const SPID : string;
+			const PON : string; const HAP : string; Board : TBoard; URL: String) : string;
 		//! fusiana警告ダイアログ
 		function FusianaMsgBox: Integer;
 		//! sent.iniファイルの生成
@@ -327,6 +332,10 @@ type
 		function GetTitleUTF8: UTF8String;
     //! 添付画像チェック
 		function ChkPNG(var pngStream: TMemoryStream): Boolean;
+    //! どんぐりのCokkieが無効化されたかどうか
+    function IsBrokenAcorn(ResponseText: string): Boolean;
+    //! 無効化されたどんぐりCokkieクリア
+  	procedure ClearBrokenAcorn(ResponseText: string);
 	protected
 		procedure CreateParams(var Params: TCreateParams); override;
 	public
@@ -349,7 +358,7 @@ implementation
 uses
 	Giko, ItemDownload, MojuUtils, GikoMessage,  Imm,
 	InputAssistDataModule, InputAssist, HTMLCreate, IdCookie, GikoDataModule,
-	Belib, DmSession5ch, UBase64;
+	Belib, DmSession5ch, UBase64, DonguriSystem;
 const
 	CAPTION_NAME_NEW: string = 'ギコナビ スレ立てエディタ';
 	CAPTION_NAME_RES: string = 'ギコナビ レスエディタ';
@@ -374,6 +383,8 @@ const
 	RES2CH_ERROR			= '<!-- 2ch_X:error -->';
 	RES2CH_CHECK			= '<!-- 2ch_X:check -->';
 	RES2CH_COOKIE		 	= '<!-- 2ch_X:cookie -->';
+
+	NAME_DONGURI = '!donguri';
 
 type
 	TSelection = record
@@ -417,6 +428,7 @@ begin
 	InitWideEdit;
 	NameComboBoxUC := TWideComboBox.Create(Self);
 	InitWideComboBox(NameComboBoxUC, NameComboBox);
+  NameComboBoxUC.OnChange := NameComboBoxChange;
 	MailComboBoxUC := TWideComboBox.Create(Self);
 	InitWideComboBox(MailComboBoxUC, MailComboBox);
 	MailComboBoxUC.OnChange := MailComboBoxChange;
@@ -497,6 +509,8 @@ begin
 	// キー設定の読み込み
 	GikoSys.LoadKeySetting(ActionList, GikoSys.GetEditorKeyFileName);
 	SaveNameMailAction.Checked := True;
+
+  FIsDonguri := False;
 end;
 
 procedure TEditorForm.InitWideEdit;
@@ -528,6 +542,7 @@ begin
 	SetNameText(FBoard.KotehanName);
 	SetMailText(FBoard.KotehanMail);
 	SageCheckBox.Checked := AnsiPos('sage', GetMailText) <> 0;
+  DonguriCheckBox.Checked := Pos(NAME_DONGURI, GetNameText) > 0;
 	TitlePanel.Visible := True;
   OekakiPanel.Visible := False;
 
@@ -548,6 +563,7 @@ begin
 	SetNameText(FThreadItem.ParentBoard.KotehanName);
 	SetMailText(FThreadItem.ParentBoard.KotehanMail);
 	SageCheckBox.Checked := AnsiPos('sage', GetMailText) <> 0;
+  DonguriCheckBox.Checked := Pos(NAME_DONGURI, GetNameText) > 0;
 	TitlePanel.Visible := False;
   OekakiPanel.Visible := (Gikosys.Setting.Oekaki                // オプションでお絵描き有効
                       and GikoSys.Is2chURL(FThreadItem.URL));		// ５ちゃんのみお絵描き有効
@@ -1027,7 +1043,7 @@ begin
 		MsgBox(Handle, Msg, ERROR, MB_OK or MB_ICONSTOP);
 		Result := False;
 	end else begin
-		if (not Session5ch.Connected) and (AnsiPos('●', GetNameText) <> 0) then begin
+		if (not Session5ch_Connected) and (AnsiPos('●', GetNameText) <> 0) then begin
 			Msg := 'ログインしていないので●の機能は利用出来ません。'#13#10
 					 + 'このまま送信してもよろしいですか？';
 			rc := MsgBox(Handle, Msg, '確認', MB_YESNO or MB_ICONQUESTION);
@@ -1154,6 +1170,7 @@ var
 	is2ch: Boolean;   // for 5ch
 	referer: String;  // for 5ch
 	isUTF8: Boolean;
+	url2: string;
 //{$IFDEF DEBUG}
 //  debug: String;
 //{$ENDIF}
@@ -1179,6 +1196,7 @@ begin
 		referer := Indy.Request.Referer;
 		GikoSys.Regulate2chURL(referer);
 		Indy.Request.Referer := referer;
+		FIsDonguri := Pos(NAME_DONGURI, GetNameText) > 0;
 	end;
 	isUTF8 := is2ch and FUseUC;   // 5ch書き込みでUnicodeモードならUTF-8
 	// for 5ch
@@ -1197,7 +1215,7 @@ begin
 		Indy.Request.ContentType := 'application/x-www-form-urlencoded; charset=UTF-8'
 	else
 		Indy.Request.ContentType := 'application/x-www-form-urlencoded';
-	Indy.Request.CustomHeaders.Add(getHeaderStr(ACOOKIE, SPID, PON, GikoSys.GetBouken(URL, FCookieDomain), Board));
+	Indy.Request.CustomHeaders.Add(getHeaderStr2(ACOOKIE, SPID, PON, GikoSys.GetBouken(URL, FCookieDomain), Board, URL));
 
 	TextStream := TStringStream.Create('');
 	Source := TStringStream.Create('');
@@ -1224,7 +1242,9 @@ begin
 				end;
 			end;
 
-			GetSendData(Source, isUTF8, (is2ch = False));
+			GetSendData(Source, isUTF8, {(is2ch =} False{)});
+
+			url2 := GikoSys.GetActualURL(URL);
 
 //{$IFDEF DEBUG}
 //      debug := 'Send() FirstWriting:';
@@ -1237,20 +1257,22 @@ begin
 
 			IndyMdl.StartAntiFreeze(100);
 			try
-				Indy.Post(URL, Source, TextStream);
+				Indy.Post(url2, Source, TextStream);
 			finally
 				IndyMdl.EndAntiFreeze;
 			end;
-			ResponseText := TextStream.DataString;
 
-			ResultType := GetResultType(ResponseText);
+			IndyMdl.SaveCookies(Indy);
+
+			ResponseText := TextStream.DataString;
+			ResultType := GetResultType(ResponseText, is2ch);
 
 			if ResultType = grtOK then begin
 				if (GikoSys.Setting.UseSamba) and  (FSambaTimer.Enabled) then
 				begin
 					FSambaTimer.WriteSambaTime(Now());
 				end;
-				GetCookie(Indy.CookieManager, Board);
+// 20240421				GetCookie(Indy.CookieManager, Board);
 				State := gdsComplete;
 			end else if ResultType = grtCookie then begin
 				//ループ防止
@@ -1265,7 +1287,7 @@ begin
 								MB_YESNO or MB_ICONQUESTION);
 
 				if MsgResult = IDYES then begin
-					GetCookie(Indy.CookieManager, Board);
+// 20240421					GetCookie(Indy.CookieManager, Board);
 					if (Board.Is2ch) then begin
 						GetHiddenParameter(ResponseText, Board);
 					end;
@@ -1295,7 +1317,7 @@ begin
 						MB_YESNO or MB_ICONQUESTION);
 
 				if MsgResult = IDYES then begin
-					GetCookie(Indy.CookieManager, Board);
+// 20240421					GetCookie(Indy.CookieManager, Board);
 					if (Board.Is2ch) then begin
 						GetHiddenParameter(ResponseText, Board);
 					end;
@@ -1322,7 +1344,7 @@ begin
 				Board.PON  := '';
 				Board.SPID := '';
 				Board.Cookie := '';
-				GetCookie(Indy.CookieManager, Board);
+// 20240421				GetCookie(Indy.CookieManager, Board);
 				Exit;
 			end else if ResultType = grtSuiton then begin
 				MsgBox( Handle,
@@ -1337,6 +1359,28 @@ begin
 				Board.SPID := '';
 				Board.Cookie := '';
 				Exit;
+			end else if ResultType = grtDonguri then begin
+// 20240421      	try
+// 20240421					GetCookie(Indy.CookieManager, Board);
+// 20240421				except
+// 20240421        end;
+        if IndyMdl.GetDonguriCookieValue = '' then
+					MsgBox( Handle,
+              'どんぐりのCookieを取得できませんでした。',
+              'どんぐり',
+              MB_OK or MB_ICONERROR)
+        else
+					MsgBox( Handle,
+              'どんぐりを埋めました。芽が出るまで数分待ってから投稿してください。' + #13#10 +
+              '今回の投稿は書き込まれていません。',
+              'どんぐり',
+              MB_OK or MB_ICONINFORMATION);
+				CancelSend( Board, SysMenu );
+				Exit;
+			end else if ResultType = grtDngBroken then begin
+				CancelSend( Board, SysMenu );
+      	ClearBrokenAcorn(ResponseText);
+				Exit;
 			end else begin
 				if (GikoSys.Setting.UseSamba)  and  (FSambaTimer.Enabled) then
 				begin
@@ -1344,7 +1388,7 @@ begin
 				end;
 				// 忍法帖巻物エラーはCookieを更新する
 				if ResultType = grtNinpouErr then begin
-					GetCookie(Indy.CookieManager, Board);
+// 20240421					GetCookie(Indy.CookieManager, Board);
 				end;
 				State := gdsError;
 				raise Exception.Create('');
@@ -1411,6 +1455,10 @@ begin
 		GikoForm.PlaySound('ResEnd');
 		SaveSendFile;
 		AddFormMessageNew( gmiOK );
+		if Gikosys.Setting.ReloadAfterWrite then begin
+    	OpenSendTargetAction.Execute;	// 板／スレを表示
+      ReloadTargetAction.Execute;		// 板／スレを再読み込み
+    end;
 		if (not ContinueModeAction.Enabled) or (not ContinueModeAction.Checked) then begin
 			Close;
 			Exit;
@@ -1420,6 +1468,10 @@ begin
 		GikoForm.PlaySound('ResEnd');
 		SaveSendFile;
 		AddFormMessageNew( gmiOK );
+		if Gikosys.Setting.ReloadAfterWrite then begin
+    	OpenSendTargetAction.Execute;	// 板／スレを表示
+      ReloadTargetAction.Execute;		// 板／スレを再読み込み
+    end;
 		if (not ContinueModeAction.Enabled) or (not ContinueModeAction.Checked) then begin
 			Close;
 		end;
@@ -1432,10 +1484,15 @@ begin
 	end;
 end;
 
-function TEditorForm.GetResultType(ResponseText: string): TGikoResultType;
+function TEditorForm.GetResultType(ResponseText: string; Is2ch: Boolean): TGikoResultType;
 begin
 	if AnsiPos('書きこみが終わりました', ResponseText) <> 0 then
 		Result := grtOK
+	else if Is2ch and  //5ch
+					(AnsiPos('<b>ERROR: どんぐりを埋めました。芽が出るまで数分待ってから投稿してください。</b>', ResponseText) > 0) then
+		Result := grtDonguri
+	else if Is2ch and IsBrokenAcorn(ResponseText) then
+		Result := grtDngBroken
 	else if ( (AnsiPos('<b>ようこそ：貴方の忍法帖を作成します。２分後に再度書き込むか、お帰りください', ResponseText) > 0) or
 				(AnsiPos('ＥＲＲＯＲ：貴方の冒険の書を作成中です', ResponseText) > 0) )
 				and (AnsiPos(RES2CH_COOKIE, ResponseText) > 0) 	then
@@ -1444,7 +1501,7 @@ begin
 				(AnsiPos('ＥＲＲＯＲ：Lvが足りなくてスレッド立て', ResponseText) > 0) ) // エラー扱い
 				and (AnsiPos(RES2CH_COOKIE, ResponseText) > 0) 	then
 		Result := grtNinpouErr
-	else if( AnsiPos('<b>やられたでござる：Lv=0 <br>さて自力で復活できるかな?', ResponseText) > 0) 
+	else if( AnsiPos('<b>やられたでござる：Lv=0 <br>さて自力で復活できるかな?', ResponseText) > 0)
 				and (AnsiPos(RES2CH_COOKIE, ResponseText) > 0) 	then
 		Result := grtSuiton
 	else if ( AnsiPos('クッキーがないか期限切れです', ResponseText) > 0) or
@@ -1465,6 +1522,67 @@ begin
 		Result := grtCookie
 	else
 		Result := grtError;
+end;
+
+//! どんぐりのCokkieが無効化されたかどうか
+function TEditorForm.IsBrokenAcorn(ResponseText: string): Boolean;
+var
+  idx: Integer;
+begin
+  idx := Pos('<b>ERROR:', ResponseText);
+  if idx < 1 then
+		Result := False
+  else
+    Result := (PosEx('[broken_acorn]</b>',						 ResponseText, idx) > 0) or
+              (PosEx('[1044]</b>',										 ResponseText, idx) > 0) or
+              (PosEx('[1045]</b>',										 ResponseText, idx) > 0) or
+              (PosEx('[0088]</b>',										 ResponseText, idx) > 0) or
+              (PosEx('どんぐりが枯れてしまいました。', ResponseText, idx) > 0) or
+              (PosEx('どんぐりCookieが有効期限切れです。', ResponseText, idx) > 0);
+end;
+
+//! 無効化されたどんぐりCokkieクリア
+procedure TEditorForm.ClearBrokenAcorn(ResponseText: string);
+var
+  idx1: Integer;
+  idx2: Integer;
+  ret: Integer;
+  msg: String;
+  res: String;
+begin
+  idx1 := Pos('<b>ERROR:', ResponseText);
+  if idx1 > 0 then begin
+    idx1 := idx1 + 3;
+    idx2 := PosEx('</b>', ResponseText, idx1);
+	  if idx2 > 0 then
+      msg := Copy(ResponseText, idx1, idx2 - idx1);
+  end;
+	if msg = '' then
+  	msg := 'ERROR: どんぐりが枯れてしまいました。'
+  else
+    msg := DonguriSystem.TrimTag(msg);
+
+	msg := msg + #10 + '処理を選択してください。' + #10 +
+        ' → はい：ドングリシステムをログアウト' + #10 +
+        ' → いいえ：どんぐりCookieを削除' + #10 +
+        ' → キャンセル：何もしない';
+
+	ret := MsgBox(Handle, msg, 'どんぐり', MB_YESNOCANCEL or MB_ICONQUESTION);
+
+  case ret of
+    IDYES:
+      begin
+      	if GikoSys.DonguriSys.Logout(res) then
+					MsgBox(Handle, 'ドングリシステムをログアウトしました。', 'どんぐり', MB_OK or MB_ICONINFORMATION)
+        else
+					MsgBox(Handle, 'ログアウトに失敗しました。' + #10 + res, 'どんぐり', MB_OK or MB_ICONWARNING);
+      end;
+    IDNO:
+      begin
+        IndyMdl.DelDonguriCookie;
+				MsgBox(Handle, 'どんぐりのCookieを削除しました。', 'どんぐり', MB_OK or MB_ICONINFORMATION);
+      end;
+	end;
 end;
 
 
@@ -1517,7 +1635,8 @@ begin
 		submit := HttpEncode(submit);
 	end;
 
-	SessionID := Session5ch.SessionID;
+  if Board.Is2ch then
+		SessionID := Session5ch_SessionID;
 	if SessionID <> '' then
 		s := 'sid=' + HttpEncode(SessionID) + '&'
 	else
@@ -1660,6 +1779,10 @@ begin
 					SaveSendFile;
 					GikoForm.AddMessageList(FBoard.Title + ' ' + GikoSys.GetGikoMessage(gmNewSure), nil, gmiOK);
 					FWork := False;
+          if Gikosys.Setting.ReloadAfterWrite then begin
+            OpenSendTargetAction.Execute;	// 板／スレを表示
+            ReloadTargetAction.Execute;		// 板／スレを再読み込み
+          end;
 					if (not ContinueModeAction.Enabled) or (not ContinueModeAction.Checked) then
 						Close;
 				end else if State = gdsError then begin
@@ -1677,6 +1800,10 @@ begin
 					SaveSendFile;
 					GikoForm.AddMessageList(FThreadItem.Title + ' ' + GikoSys.GetGikoMessage(gmNewRes), nil, gmiOK);
 					FWork := False;
+          if Gikosys.Setting.ReloadAfterWrite then begin
+            OpenSendTargetAction.Execute;	// 板／スレを表示
+            ReloadTargetAction.Execute;		// 板／スレを再読み込み
+          end;
 					if (not ContinueModeAction.Enabled) or (not ContinueModeAction.Checked) then
 						Close;
 				end else if State = gdsError then begin
@@ -1863,12 +1990,27 @@ begin
 	end;
 end;
 
+//!donguriチェックボックスクリック
+procedure TEditorForm.DonguriCheckBoxClick(Sender: TObject);
+begin
+	if DonguriCheckBox.Checked then
+		SetNameText(NAME_DONGURI)
+	else
+		if Pos(NAME_DONGURI, GetNameText) > 0 then
+			SetNameText(StringReplace(GetNameText, NAME_DONGURI, '', [rfReplaceAll]));
+end;
+
 procedure TEditorForm.MailComboBoxChange(Sender: TObject);
 begin
 	if AnsiPos('sage', GetMailText) = 0 then
 		SageCheckBox.Checked := False
 	else
 		SageCheckBox.Checked := True;
+end;
+
+procedure TEditorForm.NameComboBoxChange(Sender: TObject);
+begin
+	DonguriCheckBox.Checked := Pos(NAME_DONGURI, GetNameText) > 0;
 end;
 
 procedure TEditorForm.IdLogDebugReceive(ASender: TIdConnectionIntercept;
@@ -2180,7 +2322,11 @@ end;
 }
 procedure TEditorForm.GetWebData(const URL: string; const RefURL: string;
 			Modified: TDateTime; stream: TStream);
+var
+	url2: String;
 begin
+	url2 := GikoSys.GetActualURL(URL);
+
 	TIndyMdl.InitHTTP(Indy);
 	Indy.Request.AcceptEncoding := '';
 	Indy.Request.Referer := RefURL;
@@ -2189,7 +2335,7 @@ begin
 	//IdAntiFreeze.Active := True;
 	IndyMdl.StartAntiFreeze(100); // for Indy10
 	try
-		Indy.Get(URL, stream);
+		Indy.Get(url2, stream);
 	finally
 		//IdAntiFreeze.Active := False;
 		IndyMdl.EndAntiFreeze;    // for Indy10
@@ -2524,7 +2670,7 @@ procedure TEditorForm.GetCookie(CookieMng: TIdCookieManager; ABoard: TBoard);
 const
 	VAL_SPID	= 'SPID';
 	VAL_PON		= 'PON';
-	VAL_HAP     = 'HAP';
+	VAL_HAP		= 'HAP';
 var
 	i : Integer;
 	//Cookie : TIdCookieRFC2109;
@@ -2920,6 +3066,9 @@ begin
 	Board.PON  := '';
 	// 0に巻き戻す
 	Board.Expires := 0;
+
+  MsgBox(Handle, 'メニュー「ツール」の「Cookie管理」を使用してください。',
+  								'ギコナビ', MB_OK or MB_ICONINFORMATION);
 end;
 //! 板情報取得Updateイベント
 procedure TEditorForm.GetSETTINGTXTActionUpdate(Sender: TObject);
@@ -3159,6 +3308,118 @@ begin
 	if HAP <> '' then
     	Result := Result + '; HAP=' + HAP + '; ';
 
+end;
+
+function TEditorForm.getHeaderStr2(const ACOOKIE: string; const SPID : string;
+				const PON : string; const HAP : string; Board : TBoard; URL: String) : string;
+
+  procedure SetCookieList(name, value: String; names, values: TStringList);
+  var
+  	idx: Integer;
+  begin
+  	idx := names.IndexOf(name);
+    if idx < 0 then begin
+    	names.Add(name);
+      values.Add(value);
+    end else
+    	values.Strings[idx] := value;
+  end;
+
+  // text : 'name=value; name=value; ...'
+  procedure SetCookiesList(text: String; names, values: TStringList);
+  var
+  	idx: Integer;
+    tmp: String;
+    item: String;
+  begin
+    tmp := Trim(text);
+    while tmp <> '' do begin
+    	idx := Pos(';', tmp);
+      if idx < 1 then begin
+        item := tmp;
+        tmp := '';
+      end else begin
+        item := Copy(tmp, 1, idx - 1);
+        Delete(tmp, 1, idx);
+        tmp := Trim(tmp);
+      end;
+
+      if item = '' then
+      	Continue;
+
+    	idx := Pos('=', item);
+    	if idx < 2 then
+      	Continue;
+
+			SetCookieList(Copy(item, 1, idx - 1), Copy(item, idx + 1, Length(item) - idx), names, values);
+    end;
+  end;
+
+var
+  tmp: String;
+  names, values: TStringList;
+  uri: TIdURI;
+  i: Integer;
+begin
+  names  := TStringList.Create;
+  values := TStringList.Create;
+  uri := TIdURI.Create(URL);
+
+	try
+    IndyMdl.GetCookieList(uri, names, values);
+
+// 20240421    if ACOOKIE <> '' then	// 板のCookie
+// 20240421	  	SetCookiesList(ACOOKIE, names, values);
+// 20240421    if SPID <> '' then
+// 20240421      SetCookieList('SPID', SPID, names, values);
+// 20240421    if PON <> '' then
+// 20240421      SetCookieList('PON', PON, names, values);
+
+    // ホストが2chの場合
+    if Board.Is2ch then begin
+      // どんぐり（板のCookieにゴミが残っていた場合に備えて上書きする）
+// 20240421      tmp := IndyMdl.GetDonguriCookieValue;
+// 20240421      if tmp <> '' then begin
+// 20240421        SetCookieList('acorn', tmp, names, values);
+// 20240421      end;
+      // 固定のクッキー
+      if Length(GikoSys.Setting.FixedCookie) > 0 then
+		  	SetCookiesList(GikoSys.Setting.FixedCookie, names, values);
+    	// UPLIFTログイン済み
+      if Session5ch_Connected then
+        SetCookieList('sid', Session5ch_SessionID, names, values);
+    	// Beログイン済み
+      if (GikoSys.Belib.Connected) then begin
+	      SetCookieList('MDMD', GikoSys.Belib.MDMD, names, values);
+	      SetCookieList('DMDM', GikoSys.Belib.DMDM, names, values);
+      end;
+    end else begin
+    	// ↓５ちゃんでは不要になったらしい
+      SetCookieList('NAME', GetNameText, names, values);
+      SetCookieList('MAIL', GetMailText, names, values);
+    end;
+
+// 20240421    if HAP <> '' then
+// 20240421      SetCookieList('HAP', HAP, names, values);
+
+  	if names.Count < 1 then
+    	Result := ''
+    else begin
+      Result := 'Cookie: ';
+      for i := 0 to names.Count - 1 do begin
+        if i < values.Count then
+          tmp := values.Strings[i]
+        else
+          tmp := '';
+        Result := Result + names.Strings[i] + '=' + tmp + '; '
+      end;
+    end;
+//MsgBox(Handle, Result, 'debug', MB_OK);
+  finally
+    names.Free;
+    values.Free;
+    uri.Free;
+  end;
 end;
 
 {

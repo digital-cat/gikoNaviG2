@@ -25,6 +25,10 @@ object KuroutOption: TKuroutOption
     TabOrder = 0
     object TabSheet1: TTabSheet
       Caption = #35443#32048#35373#23450#65297
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object GroupBox11: TGroupBox
         Left = 12
         Top = 8
@@ -38,6 +42,7 @@ object KuroutOption: TKuroutOption
           Width = 114
           Height = 12
           Caption = #21463#20449#12496#12483#12501#12449#12469#12452#12474'(&B)'
+          Enabled = False
           FocusControl = RecvBufferSize
         end
         object Label18: TLabel
@@ -46,6 +51,7 @@ object KuroutOption: TKuroutOption
           Width = 94
           Height = 12
           Caption = #65288#12487#12501#12457#12523#12488'=4096'#65289
+          Enabled = False
         end
         object Label6: TLabel
           Left = 16
@@ -67,6 +73,7 @@ object KuroutOption: TKuroutOption
           Top = 20
           Width = 41
           Height = 20
+          Enabled = False
           MaxLength = 5
           TabOrder = 0
         end
@@ -228,6 +235,10 @@ object KuroutOption: TKuroutOption
     object ColumnTabSheet: TTabSheet
       Caption = #35443#32048#35373#23450'2'
       ImageIndex = 1
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object CategoryColumnGroupBox: TGroupBox
         Left = 8
         Top = 16
@@ -380,6 +391,10 @@ object KuroutOption: TKuroutOption
     object KakikomiTabSheet: TTabSheet
       Caption = #35443#32048#35373#23450'3'
       ImageIndex = 2
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object CookieGroupBox: TGroupBox
         Left = 16
         Top = 16
@@ -539,7 +554,7 @@ object KuroutOption: TKuroutOption
         Left = 16
         Top = 16
         Width = 473
-        Height = 161
+        Height = 154
         Caption = #12475#12461#12517#12522#12486#12451
         TabOrder = 0
         object Label12: TLabel
@@ -592,9 +607,9 @@ object KuroutOption: TKuroutOption
       end
       object LogGroupBox: TGroupBox
         Left = 16
-        Top = 179
+        Top = 176
         Width = 473
-        Height = 49
+        Height = 46
         Caption = #12525#12464
         TabOrder = 1
         object CheckDatFileCheckBox: TCheckBox
@@ -606,10 +621,91 @@ object KuroutOption: TKuroutOption
           TabOrder = 0
         end
       end
+      object GroupBox5: TGroupBox
+        Left = 16
+        Top = 228
+        Width = 473
+        Height = 125
+        Caption = #25509#32154#35373#23450'2'
+        TabOrder = 2
+        object IPv4Label: TLabel
+          Left = 160
+          Top = 18
+          Width = 208
+          Height = 12
+          Caption = #38500#22806#12489#12513#12452#12531'(&E) '#65288'IPv4'#12391#25509#32154#12377#12427#12489#12513#12452#12531#65289
+          FocusControl = IPv4ListBox
+        end
+        object IPv6Label: TLabel
+          Left = 16
+          Top = 50
+          Width = 129
+          Height = 24
+          Caption = #65288'IPv6'#12434#20351#29992#12391#12365#12394#12356#22238#32218#12391#12399#12456#12521#12540#12395#12394#12426#12414#12377#65289
+          WordWrap = True
+        end
+        object IPv6CheckBox: TCheckBox
+          Left = 22
+          Top = 20
+          Width = 123
+          Height = 17
+          Caption = 'IPv6'#12434#20351#29992#12377#12427'(&I)'
+          TabOrder = 0
+          OnClick = IPv6CheckBoxClick
+        end
+        object IPv4ListBox: TListBox
+          Left = 160
+          Top = 32
+          Width = 214
+          Height = 84
+          ItemHeight = 12
+          TabOrder = 1
+        end
+        object IPv4AddButton: TButton
+          Left = 378
+          Top = 38
+          Width = 75
+          Height = 25
+          Caption = #36861#21152'(&A)'
+          TabOrder = 2
+          OnClick = IPv4AddButtonClick
+        end
+        object IPv4EdtButton: TButton
+          Left = 378
+          Top = 64
+          Width = 75
+          Height = 25
+          Caption = #32232#38598'(&E)'
+          TabOrder = 3
+          OnClick = IPv4EdtButtonClick
+        end
+        object IPv4DelButton: TButton
+          Left = 378
+          Top = 90
+          Width = 75
+          Height = 25
+          Caption = #21066#38500'(&D)'
+          TabOrder = 4
+          OnClick = IPv4DelButtonClick
+        end
+        object IPv4ResetButton: TButton
+          Left = 378
+          Top = 10
+          Width = 75
+          Height = 25
+          Caption = #12522#12475#12483#12488'(&R)'
+          TabOrder = 5
+          OnClick = IPv4ResetButtonClick
+        end
+      end
     end
     object RespopupTabSheet: TTabSheet
       Caption = #35443#32048#35373#23450'5'
       ImageIndex = 4
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object RespopuGroupBox: TGroupBox
         Left = 8
         Top = 16

@@ -48,6 +48,7 @@ type
     MnDelCol: TMenuItem;
     N5: TMenuItem;
     MnRegExpTest: TMenuItem;
+    MnRegexp2: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure NgWordGridMouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
@@ -69,6 +70,7 @@ type
     procedure MnAllThrClick(Sender: TObject);
     procedure MnSpcThrClick(Sender: TObject);
     procedure MnSpcBrdClick(Sender: TObject);
+    procedure MnRegexp2Click(Sender: TObject);
   private
     { Private éŒ¾ }
     FInfoList: TList;
@@ -92,7 +94,7 @@ var
 
 implementation
 
-uses RegExpTester, AbonInfoSet, GikoSystem, MojuUtils;
+uses RegExpTester, AbonInfoSet, GikoSystem, MojuUtils, SkRegExpW;
 
 {$R *.dfm}
 
@@ -264,8 +266,10 @@ begin
             if (FInfoList.Count >= Row) then begin
                 inf := TLineInfo(FInfoList.Items[Row - 1]);
 
-                if (inf.CompType = ctRegexp) then
-                    Line := DEF_REGEXP + #9 + Line;
+                case inf.CompType of
+                  ctRegexp:  Line := DEF_REGEXP + #9 + Line;
+                  ctRegexp2: Line := DEF_REGEX2 + #9 + Line;
+                end;
 
                 case inf.TargetType of
                     ttThread: Line := DEF_THREAD + inf.TargetThread + DEF_END + #9 + Line;
@@ -325,9 +329,11 @@ begin
             src := '';
         end;
 
-        if (NgWd = DEF_REGEXP) then begin
-            inf.CompType := ctRegexp;
-        end else if (Pos(DEF_THREAD, NgWd) = 1) then begin
+        if (NgWd = DEF_REGEXP) then
+            inf.CompType := ctRegexp
+        else if (NgWd = DEF_REGEX2) then
+            inf.CompType := ctRegexp2
+        else if (Pos(DEF_THREAD, NgWd) = 1) then begin
             idx := Pos(DEF_END, NgWd);
             if (idx > 1) then begin
                 len := idx - Length(DEF_THREAD) - 1;
@@ -550,7 +556,7 @@ begin
        (NgWordGrid.Col > 1) and (NgWordGrid.Col < NgWordGrid.ColCount) then begin
         if (NgWordGrid.Cells[NgWordGrid.Col, NgWordGrid.Row] <> '') then begin
             inf := TLineInfo(FInfoList.Items[NgWordGrid.Row - 1]);
-            if (inf.CompType = ctRegexp) then
+            if (inf.CompType = ctRegexp) or (inf.CompType = ctRegexp2) then
                 Dlg.SetRegExp(NgWordGrid.Cells[NgWordGrid.Col, NgWordGrid.Row]);
         end;
     end;
@@ -589,6 +595,7 @@ var
     MousePos: TPoint;
     MenuPos: TPoint;
     inf: TLineInfo;
+    regexp: Boolean;
 begin
     if (Button = mbRight) then begin
         NgWordGrid.MouseToCell(X, Y, Col, Row);
@@ -618,18 +625,29 @@ begin
                     MnSpcBrd.Checked := False;
                 end;
             end;
-            if (inf.CompType = ctRegexp) then begin
+            regexp := True;
+            case inf.CompType of
+              ctRegexp: begin
                 MnStdCmp.Checked := False;
                 MnRegexp.Checked := True;
-                if (Col > 1) then
-                    MnRegExpTest.Enabled := True
-                else
-                    MnRegExpTest.Enabled := False;
-            end else begin
+                MnRegexp2.Checked:= False;
+              end;
+              ctRegexp2: begin
+                MnStdCmp.Checked := False;
+                MnRegexp.Checked := False;
+                MnRegexp2.Checked:= True;
+              end;
+              else begin
                 MnStdCmp.Checked := True;
                 MnRegexp.Checked := False;
-                MnRegExpTest.Enabled := False;
+                MnRegexp2.Checked:= False;
+                regexp := False;
+              end;
             end;
+            if regexp and (Col > 1) then
+                MnRegExpTest.Enabled := True
+            else
+                MnRegExpTest.Enabled := False;
             if (Col > 1) then
                 MnDelCol.Enabled := True
             else
@@ -686,6 +704,17 @@ begin
     if (NgWordGrid.Row > 0) and (NgWordGrid.Row < NgWordGrid.RowCount) then begin
         inf := TLineInfo(FInfoList.Items[NgWordGrid.Row - 1]);
         inf.CompType := ctRegexp;
+        NgWordGrid.Cells[1, NgWordGrid.Row] := inf.ToString;
+    end;
+end;
+
+procedure TNgEdit.MnRegexp2Click(Sender: TObject);
+var
+    inf: TLineInfo;
+begin
+    if (NgWordGrid.Row > 0) and (NgWordGrid.Row < NgWordGrid.RowCount) then begin
+        inf := TLineInfo(FInfoList.Items[NgWordGrid.Row - 1]);
+        inf.CompType := ctRegexp2;
         NgWordGrid.Cells[1, NgWordGrid.Row] := inf.ToString;
     end;
 end;

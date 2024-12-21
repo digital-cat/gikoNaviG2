@@ -1,10 +1,10 @@
 object NgEdit: TNgEdit
   Left = 192
   Top = 133
-  Width = 845
-  Height = 478
   BorderIcons = [biSystemMenu, biMaximize]
   Caption = 'NG'#12527#12540#12489#32232#38598
+  ClientHeight = 439
+  ClientWidth = 829
   Color = clBtnFace
   Constraints.MinHeight = 300
   Constraints.MinWidth = 845
@@ -86,7 +86,7 @@ object NgEdit: TNgEdit
   end
   object PanelBottom: TPanel
     Left = 0
-    Top = 399
+    Top = 398
     Width = 829
     Height = 41
     Align = alBottom
@@ -124,7 +124,7 @@ object NgEdit: TNgEdit
     Left = 0
     Top = 41
     Width = 829
-    Height = 358
+    Height = 357
     Align = alClient
     ColCount = 4
     Ctl3D = True
@@ -158,6 +158,10 @@ object NgEdit: TNgEdit
     object MnRegexp: TMenuItem
       Caption = #27491#35215#34920#29694
       OnClick = MnRegexpClick
+    end
+    object MnRegexp2: TMenuItem
+      Caption = #27491#35215#34920#29694#65298
+      OnClick = MnRegexp2Click
     end
     object N2: TMenuItem
       Caption = '-'

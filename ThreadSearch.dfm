@@ -245,7 +245,7 @@ object ThreadSrch: TThreadSrch
         Top = 12
         Width = 329
         Height = 20
-        ItemHeight = 12
+        ItemHeight = 0
         TabOrder = 0
       end
       object ChkBbs: TCheckBox
