@@ -118,7 +118,7 @@ const
 	CLOSE_TAGAL = '</a>';
 	CLOSE_TAGAU = '</A>';
 	RES_REF			= '&gt;&gt;';
-  REF_MARK: array[0..21] of string = (
+  REF_MARK: array[0..22] of string = (
     'sssp://',
     'https://',
     'ht&#116;&#112;s://',
@@ -137,12 +137,13 @@ const
     '://',
     'www.',
     'i.imgur.com/',
+    'imgur.com/',
     'x.com/',
     'pbs.twimg.com/',
     'video.twimg.com/',
     'youtu.be/'
     );
-  REF_MARK_HEAD: array[0..21] of String = (
+  REF_MARK_HEAD: array[0..22] of String = (
     '',					// sssp://
     '',					// https://
     '',					// ht&#116;&#112;s://
@@ -161,12 +162,13 @@ const
     'https',		// ://
     'https://',	// www.
     'https://',	// i.imgur.com/
+    'https://i.',	// imgur.com/
     'https://',	// x.com/
     'https://',	// pbs.twimg.com/
     'https://',	// video.twimg.com/
     'https://'	// youtu.be/
     );
-  REF_MARK_LEN: array[0..21] of Integer = (
+  REF_MARK_LEN: array[0..22] of Integer = (
     7,			// sssp://
     8,			// https://
     18,			// ht&#116;&#112;s://
@@ -185,6 +187,7 @@ const
     3,			// ://
     4,			// www.
     0,			// i.imgur.com/
+    0,			// imgur.com/
     0,			// x.com/
     0,			// pbs.twimg.com/
     0,			// video.twimg.com/
