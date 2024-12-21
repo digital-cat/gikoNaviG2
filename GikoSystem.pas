@@ -321,7 +321,7 @@ const
 	ZERO_DATE: Integer	= 25569;
 	BETA_VERSION_NAME_E = 'beta';
 	BETA_VERSION_NAME_J = 'ﾊﾞﾀ';
-	BETA_VERSION				= 74;
+	BETA_VERSION				= 75;
 	BETA_VERSION_BUILD	= '';				//!< debug版など
 	APP_NAME						= 'gikoNavi';
 	BE_PHP_URL = 'https://be.5ch.net/test/p.php?i=';
@@ -359,7 +359,7 @@ const
 		  'ProductVersion',
 		  'SpecialBuild');
 
-	UAVers: array[0..28] of TUAVer = (
+	UAVers: array[0..29] of TUAVer = (
       (BetaVer:  0; FileVer: ''),
       (BetaVer: 74; FileVer: '1.75.0.881'),
       (BetaVer: 74; FileVer: '1.75.0.883'),
@@ -388,7 +388,8 @@ const
       (BetaVer: 74; FileVer: '1.75.0.906'),
       (BetaVer: 74; FileVer: '1.75.0.907'),
       (BetaVer: 74; FileVer: '1.75.0.908'),
-      (BetaVer: 74; FileVer: '1.75.0.910')
+      (BetaVer: 74; FileVer: '1.75.0.910'),
+      (BetaVer: 75; FileVer: '1.75.1.911')
 	);	// 当面リリースの度にバージョン情報を追加していく
 
 // *************************************************************************
@@ -3201,7 +3202,6 @@ end;
 function TGikoSys.GetResWacchoi(AIDNum: Integer; ThreadItem: TThreadItem; ALow4: Boolean): String;
 var
 	Res: TResRec;
-	boardPlugIn : TBoardPlugIn;
   wch: TWchRec;
 begin
   Result := '';
@@ -3284,7 +3284,7 @@ end;
 function TGikoSys.ExtructWacchoi2(AName: String; PWch: PWchRec): Boolean;
 var
   i, sIdx, eIdx: Integer;
-	len, lens: Integer;
+	len: Integer;
   wch: String;
   spc: Integer;
 begin
