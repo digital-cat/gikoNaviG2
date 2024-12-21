@@ -8083,7 +8083,6 @@ var
   wc, dateStr: String;
   ThreadTitle: String;
   Idx: Integer;
-  len: Integer;
 begin
 	No := KokoPopupMenu.Tag;
 	if No = 0 then Exit;
@@ -8092,6 +8091,11 @@ begin
 
     wc := GikoSys.GetResWacchoi(No, ThreadItem, ALow4);
     if wc <> '' then begin
+        if ALow4 then
+          wc := '-' + wc
+        else
+          wc := '(' + wc;
+
         ThreadTitle := ThreadItem.Title;
         while (True) do begin
             Idx := Pos(#9, ThreadTitle);
