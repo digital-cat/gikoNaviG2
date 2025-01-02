@@ -1061,7 +1061,8 @@ const
 	DEFAULT_WINDOW_COLOR:    string = 'clWindow';
 	DEFAULT_TAB_FONT_NAME:   string = 'ＭＳ Ｐゴシック';
 	DEFAULT_TAB_FONT_SIZE:  Integer = 9;
-	DEFAULT_2CH_BOARD_URL1:  string = 'https://menu.5ch.net/bbsmenu.html';
+	DEFAULT_2CH_BOARD_URL1:  string = 'https://menu.5ch.net/bbsmenu.json';
+	DEFAULT_2CH_BOARD_URL2:  string = 'https://menu.5ch.net/bbsmenu.html';
 	GIKO_ENCRYPT_TEXT:       string = 'gikoNaviEncryptText';
 
   // IPv6で接続しないドメイン
@@ -2406,12 +2407,12 @@ begin
 	ini := TMemIniFile.Create(GetBoardURLFileName());
 	try
 		//更新URLの数
-		ini.WriteInteger('URL','count',1);
+		ini.WriteInteger('URL','count',2);
 		//デフォルトで使用するＵＲＬのインデックス
 		ini.WriteInteger('URL','selected',1);
 		//以下必要な数だけ、更新ＵＲＬを追加
 		ini.WriteString('URL','1',DEFAULT_2CH_BOARD_URL1);
-		//ini.WriteString('URL','2',DEFAULT_2CH_BOARD_URL2);
+		ini.WriteString('URL','2',DEFAULT_2CH_BOARD_URL2);
 		ini.UpdateFile;
 	finally
 		ini.Free;

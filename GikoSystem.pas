@@ -214,6 +214,7 @@ type
 		function BoolToInt(b: Boolean): Integer;
 		function IntToBool(i: Integer): Boolean;
 		function GzipDecompress(ResStream: TStream; ContentEncoding: string): string;
+		function GzipDecompress2(ResStream: TStream; ContentEncoding: string): TMemoryStream;
 		procedure LoadKeySetting(ActionList: TActionList; FileName: String);
 		procedure SaveKeySetting(ActionList: TActionList; FileName: String);
 		procedure CreateProcess(const AppPath: string; const Param: string);
@@ -1774,6 +1775,56 @@ begin
 		Result := s;
 	finally
 		TextStream.Free;
+	end;
+end;
+
+{!
+\brief gzipで圧縮されたのを戻す
+\param ResStream       読み込むストリーム
+\param ContentEncoding エンコーディング
+\return                展開されたストリーム
+}
+function TGikoSys.GzipDecompress2(ResStream: TStream; ContentEncoding: string): TMemoryStream;
+const
+	BUF_SIZE = 4096;
+var
+	GZipStream: TGzipDecompressStream;
+	TextStream: TMemoryStream;
+	buf: array[0..BUF_SIZE - 1] of Byte;
+	cnt: Integer;
+begin
+	Result := nil;
+	TextStream := TMemoryStream.Create;
+	try
+//ノートンウンチウィルス2003対策(x-gzipとかになるみたい)
+//		if LowerCase(Trim(ContentEncoding)) = 'gzip' then begin
+		if AnsiPos('gzip', LowerCase(Trim(ContentEncoding))) > 0 then begin
+			ResStream.Position := 0;
+			GZipStream := TGzipDecompressStream.Create(TextStream);
+			try
+				repeat
+					FillChar(buf, BUF_SIZE, 0);
+					cnt := ResStream.Read(buf, BUF_SIZE);
+					if cnt > 0 then
+						GZipStream.Write(buf, BUF_SIZE);
+				until cnt <= 0;
+			finally
+				GZipStream.Free;
+			end;
+		end else begin
+			ResStream.Position := 0;
+			repeat
+				FillChar(buf, BUF_SIZE, 0);
+				cnt := ResStream.Read(buf, BUF_SIZE);
+				if cnt > 0 then
+					TextStream.Write(buf, BUF_SIZE);
+			until cnt <= 0;
+		end;
+
+		Result := TextStream;
+	finally
+    if Result = nil then
+  		TextStream.Free;
 	end;
 end;
 

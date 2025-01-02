@@ -8,12 +8,14 @@ uses
 	IdTCPConnection, IdTCPClient, IdHTTP, IDException, StdCtrls, IniFiles,
   IdExceptionCore, IndyModule,    // for Indy10
 	GikoSystem, BoardGroup, IdIOHandler, IdIOHandlerSocket, IdIOHandlerStack,
-  IdSSL, IdSSLOpenSSL;
+  IdSSL, IdSSLOpenSSL, StrUtils;
 
 type
 	TNewBoardItem = record
 		FResponseCode: Integer;
 		FContent: string;
+    FJson: Boolean;
+    FJsonStream: TMemoryStream;
 	end;
 
 	TNewBoardDialog = class(TForm)
@@ -40,9 +42,10 @@ type
 		IgnoreLists : TStringList;
 		IgnoreBoards : TStringList;
 		FAbort: Boolean;
-		function BoardDownload(const URL: String): TNewBoardItem;
+		function BoardDownload(const URL: String; json: Boolean): TNewBoardItem;
 		function BoardLoardFromFile(const FilePath: String): String;
 		function UpdateURL(s: string): boolean;
+		function UpdateURLFromJson(stream: TMemoryStream): Boolean;
 		procedure SetIgnoreCategory(b: boolean);
 		procedure EditIgnoreList(Sender: TObject);
 		procedure UpdateIgnoreList(Sender: TObject);
@@ -59,7 +62,7 @@ var
 
 implementation
 
-uses Giko, IdHeaderList, MojuUtils, GikoDataModule;
+uses Giko, IdHeaderList, MojuUtils, GikoDataModule, uLkJSON, YofUtils;
 
 {$R *.dfm}
 
@@ -68,7 +71,9 @@ var
 	Item: TNewBoardItem;
 	URL : String;
 	protocol, host, path, document, port, bookmark: String;
-    TabURLs: TStringList;
+  TabURLs: TStringList;
+  json: Boolean;
+  ok: Boolean;
 begin
 	try
 		MessageMemo.Clear;
@@ -81,28 +86,40 @@ begin
 		URL := BoardURLComboBox.Text;
     GikoSys.Regulate2chURL(URL);    // for 5ch
 		GikoSys.ParseURI(URL, protocol, host, path, document, port, bookmark);
+    json := EndsText('.json', document);
 		if (protocol = '') then begin
 			Item.FContent := BoardLoardFromFile(URL);
 		end else if (AnsiPos('http', protocol) > 0) then begin
-			Item := BoardDownload(URL);
+			Item := BoardDownload(URL, json);
 		end;
 		StopButton.Enabled := False;
 		if FAbort then
 			Exit;
-		if Item.FContent <> '' then begin
-            TabURLs := TStringList.Create;
-            try
-                GikoDM.GetTabURLs(TabURLs);
-	    		if (UpdateURL(Item.FContent)) then begin
-		    		GikoForm.ReloadBBS;
-			    end;
-                GikoDM.OpenURLs(TabURLs);
-            finally
-    			TabURLs.Free;
-            end;
-		end else
+    if json then
+      ok := item.FJson and (item.FJsonStream <> nil)
+    else
+      ok := (Item.FContent <> '');
+    if ok then begin
+      TabURLs := TStringList.Create;
+      try
+        GikoDM.GetTabURLs(TabURLs);
+        if json then begin
+          ok := UpdateURLFromJson(Item.FJsonStream);
+        end else
+          ok := UpdateURL(Item.FContent);
+        if ok then begin
+          GikoForm.ReloadBBS;
+        end;
+        GikoDM.OpenURLs(TabURLs);
+      finally
+        TabURLs.Free;
+      end;
+    end else
 			MessageMemo.Lines.Add('ダウンロードが失敗しました[' + IntToStr(Item.FResponseCode) + ']');
 	finally
+    if Item.FJsonStream <> nil then
+      Item.FJsonStream.Free;
+
 		UpdateButton.Enabled := True;
 		StopButton.Enabled := False;
 		CloseButton.Enabled := True;
@@ -121,12 +138,13 @@ begin
 	Close;
 end;
 
-function TNewBoardDialog.BoardDownload(const URL: String): TNewBoardItem;
+function TNewBoardDialog.BoardDownload(const URL: String; json: Boolean): TNewBoardItem;
 var
 	Stream: TMemoryStream;
 	s: string;
 	i: Integer;
   url2: String;
+  error: Boolean;
 begin
 	url2 := GikoSys.GetActualURL(URL);
 
@@ -156,8 +174,19 @@ begin
 			end;
 			MessageMemo.Lines.Add('ダウンロードが完了しました');
 			MessageMemo.Lines.Add('データを展開します：' + IntToStr(Stream.Size) + 'Byte／' + Indy.Response.ContentEncoding);
-			Result.FContent := GikoSys.GzipDecompress(Stream, Indy.Response.ContentEncoding);
-			MessageMemo.Lines.Add('データ展開が完了しました');
+      error := False;
+      if json then begin
+        Result.FJsonStream := GikoSys.GzipDecompress2(Stream, Indy.Response.ContentEncoding);
+        if Result.FJsonStream = nil then
+          error := True
+        else
+          Result.FJson := True;
+      end else
+  			Result.FContent := GikoSys.GzipDecompress(Stream, Indy.Response.ContentEncoding);
+      if error then
+  			MessageMemo.Lines.Add('データ展開に失敗しました')
+      else
+  			MessageMemo.Lines.Add('データ展開が完了しました');
 		except
 			on E: EIdConnectException do begin
 				MessageMemo.Lines.Add('');
@@ -379,6 +408,191 @@ begin
 	end;
 	Result := Change;
 end;
+
+function TNewBoardDialog.UpdateURLFromJson(stream: TMemoryStream): Boolean;
+var
+  jsonObj: TlkJsonObject;
+  list: TlkJSONbase;
+  ctg: TlkJSONbase;
+  ctgLst: TlkJSONbase;
+  brd: TlkJSONbase;
+  field: TlkJSONbase;
+	URL: string;
+	Title: string;
+	cate: string;
+	Board: TBoard;
+	Change: Boolean;
+	Ignore: Boolean;
+	ini: TMemIniFile;
+	oldURLs : TStringList;
+	newURLs : TStringList;
+  c, b, i: Integer;
+	SakuIdx: Integer;
+  ignBoards: TStringList;
+  ign: Boolean;
+	idx3: Integer;
+  ctgSort: TStringList;
+  brdSort: TStringList;
+  ctgNo: String;
+  brdOrd: Integer;
+begin
+	Change := False;
+	MessageMemo.Lines.Add('新板、板URL変更チェックを開始します');
+	MessageMemo.Lines.Add('');
+
+  ctgSort := TStringList.Create;
+  brdSort := TStringList.Create;
+	oldURLs := TStringList.Create;
+	newURLs := TStringList.Create;
+  GikoSys.ForceDirectoriesEx(GikoSys.GetConfigDir);
+
+  try
+    ctgSort.Sorted := True;
+    brdSort.Sorted := True;
+    ini := TMemIniFile.Create(GikoSys.GetBoardFileName);
+    stream.Position := 0;
+    jsonObj := TlkJSONstreamed.LoadFromStream(stream) as TlkJsonObject;
+    try
+      list := jsonObj.Field['menu_list'];
+      if list <> nil then begin
+        for c := 0 to list.Count - 1 do begin
+          ctg := list.Child[c];
+          field := ctg.Field['category_name'];
+          cate := HtmlDecode(String(field.Value));
+
+          // 除外カテゴリチェック
+					Ignore := False;
+					for i := 0 to IgnoreLists.Count - 1 do begin
+						if cate = IgnoreLists[i] then begin
+							cate := '';
+							Ignore := True;
+							break;
+						end;
+					end;
+					if Ignore then
+						Continue;
+
+          // カテゴリ番号でソート
+          field := ctg.Field['category_number'];
+          ctgNo := HtmlDecode(String(field.Value));
+          ctgSort.AddObject(Format('%10s', [ctgNo]), ctg);
+        end;
+
+        // ソート順にカテゴリを取り出す
+        for c := 0 to ctgSort.Count - 1 do begin
+          ctg := ctgSort.Objects[c] as TlkJSONbase;
+          field := ctg.Field['category_name'];
+          cate := HtmlDecode(String(field.Value));
+          
+          // カテゴリの板一覧
+          ctgLst := ctg.Field['category_content'];
+          if ctgLst <> nil then begin
+            brdSort.Clear;
+            for b := 0 to ctgLst.Count - 1 do begin
+              brd := ctgLst.Child[b];
+
+              // 板のソート順
+              field := brd.Field['category_order'];
+              brdOrd := Integer(field.Value);
+
+              brdSort.AddObject(Format('%06d', [brdOrd]), brd);
+            end;
+
+            // カテゴリ\板名での除外リスト
+            ignBoards := nil;
+            idx3 := IgnoreBoards.IndexOf(cate);
+            if (idx3 >= 0) and (IgnoreBoards.Objects[idx3] <> nil) then
+              ignBoards := TStringList(IgnoreBoards.Objects[idx3]);
+
+            // ソート順に板を取り出す
+            for b := 0 to ctgLst.Count - 1 do begin
+              brd := ctgLst.Child[b];
+
+              field := brd.Field['url'];
+              URL := HtmlDecode(String(field.Value));
+
+              field := brd.Field['board_name'];
+              Title := HtmlDecode(String(field.Value));
+
+              if SakuCheckBox.Checked and (Title = '削除要請') then begin
+                SakuIdx := Pos('.5ch.net/saku/', URL);
+                if (SakuIdx > 0) then
+                  URL := Copy(URL, 1, SakuIdx - 1) + '.5ch.net/saku2ch/';
+              end;
+
+              // カテゴリ\板名での除外リストチェック
+              ign := (ignBoards <> nil) and (ignBoards.IndexOf(Title) >= 0);
+
+              if ign = False then begin		// 除外じゃない
+                // BBSsが空対策
+                if Length(BBSs) = 0 then begin
+                  Board := nil;
+                end else begin
+                  Board := BBSs[ 0 ].FindBoardFromTitleAndCategory(cate, Title);
+                  if Board = nil then
+                    Board := BBSs[ 0 ].FindBoardFromURLAndCategory(cate, URL);
+                end;
+                if Board = nil then begin
+                  MessageMemo.Lines.Add('新板追加「' + Title + '(' + URL + ')」');
+                  ini.WriteString(cate, Title, URL);
+                  Change := True;
+                end else begin
+                  if Board.URL <> URL then begin
+                    MessageMemo.Lines.Add('URL変更「' + Board.Title + '(' + URL +')」');
+                    ini.WriteString(cate, Title, URL);
+                    oldURLs.Add(Board.URL);
+                    newURLs.Add(URL);
+                    Change := True;
+                  end else begin
+                    ini.WriteString(cate, Title, URL);
+                  end;
+                end;
+              end;
+
+            end;
+          end;
+
+        end;
+        // カテゴリ/板が減っただけだとChangeフラグがたたないときの対策
+        if not Change then begin
+          Change := CheckDeleteItem(ini);
+        end;
+
+        MessageMemo.Lines.Add('');
+        if Change then begin
+          ini.UpdateFile;
+          GikoForm.FavoritesURLReplace(oldURLs, newURLs);
+          GikoForm.RoundListURLReplace(oldURLs, newURLs);
+          GikoForm.TabFileURLReplace(oldURLs, newURLs);
+          MessageMemo.Lines.Add('新板、板URL変更チェックが完了しました');
+          MessageMemo.Lines.Add('「閉じる」ボタンを押してください');
+        end else
+          MessageMemo.Lines.Add('新板、板URL変更は ありませんでした');
+
+      end else
+        MessageMemo.Lines.Add('対応していないJSON形式です');
+
+    except
+      on E: Exception do begin
+        MessageMemo.Lines.Add('JSON解析エラー発生：' + E.Message);
+      end;
+    end;
+    jsonObj.Free;
+    ini.Free;
+  except
+    on E: Exception do begin
+			MessageMemo.Lines.Add('JSON読込エラー発生：' + E.Message);
+    end;
+  end;
+
+  brdSort.Free;
+  ctgSort.Free;
+  oldURLs.Free;
+  newURLs.Free;
+
+	Result := Change;
+end;
+
 //! 削除カテゴリ/板チェック
 function TNewBoardDialog.CheckDeleteItem(ini: TMemIniFile): Boolean;
 var
