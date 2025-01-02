@@ -314,6 +314,9 @@ type
     TimerReload: TTimer;
     ImeDontCareCheckBox: TCheckBox;
     Label73: TLabel;
+    Label75: TLabel;
+    LabelTeamLink: TLabel;
+    TabSheetNecklace: TTabSheet;
     procedure TimerInitTimer(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCreate(Sender: TObject);
@@ -575,6 +578,7 @@ const
   URL_SHOP  : String = 'https://donguri.5ch.net/keyshop';
   URL_UPLIFT: String = 'https://uplift.5ch.net/';
   URL_ARENA : String = 'https://donguri.5ch.net/arena';
+  URL_TEAM  : String = 'https://donguri.5ch.net/team';
   URL_ALOGS : String = 'https://donguri.5ch.net/arenalogs';
 
 //  CAP_USING_TOP: String = 'ﾛｯｸ／ﾚｱﾘﾃｨ';
@@ -721,6 +725,7 @@ begin
   LabelShopLink.Caption   := URL_SHOP;
   LabelUpliftLink.Caption := URL_UPLIFT;
   LabelArenaLink.Caption  := URL_ARENA;
+  LabelTeamLink.Caption   := URL_TEAM;
   LabelALogLink.Caption   := URL_ALOGS;
 
   KYCostLabel.Caption := IntToStr(GikoSys.Setting.DonguriKYCost);
@@ -1466,7 +1471,7 @@ end;
 // 呼び名変更
 procedure TDonguriForm.RenamePnlButtonClick(Sender: TObject);
 const
-  CAP_MSG: String = 'ハンターネーム変更';
+  CAP_MSG: String = 'どんぐりネーム変更';
   // リネームページから取得できなかった場合の警告メッセージ　https://donguri.5ch.net/rename から取得 2024/05/29
   WRN_MSG: String = '・特定の人種、国籍、宗教、性差別等に対する誹謗中傷的な名前' + #10 +
 										'・他人に対する脅迫、暴言、誹謗中傷と判断される名前' + #10 +
@@ -1484,7 +1489,7 @@ begin
   try
     newName := NewNameEdit.Text;
     if newName = '' then begin
-			MsgBox(Handle, '新しいハンターネームを指定してください。', CAP_MSG, MB_OK or MB_ICONERROR);
+			MsgBox(Handle, '新しいどんぐりネームを指定してください。', CAP_MSG, MB_OK or MB_ICONERROR);
       Exit;
     end;
 
@@ -1494,8 +1499,8 @@ begin
       Exit;
     end;
 
-    msg := 'ハンターネームを変更します。' + #10 +
-           '　新しいハンターネーム：' + newName + #10;
+    msg := 'どんぐりネームを変更します。' + #10 +
+           '　新しいどんぐりネーム：' + newName + #10;
   	idx := 0;
 
     if DonguriSystem.Extract('<form', '</form>', res, tmp) then begin
@@ -1734,6 +1739,7 @@ begin
         LabelShopLink.Font.Color   := COL_LGHT_LINK;
         LabelUpliftLink.Font.Color := COL_LGHT_LINK;
         LabelArenaLink.Font.Color  := COL_LGHT_LINK;
+        LabelTeamLink.Font.Color   := COL_LGHT_LINK;
         LabelALogLink.Font.Color   := COL_LGHT_LINK;
 
       end;
@@ -1846,6 +1852,7 @@ begin
         LabelShopLink.Font.Color   := COL_DARK_LINK;
         LabelUpliftLink.Font.Color := COL_DARK_LINK;
         LabelArenaLink.Font.Color  := COL_DARK_LINK;
+        LabelTeamLink.Font.Color   := COL_DARK_LINK;
         LabelALogLink.Font.Color   := COL_DARK_LINK;
       end;
     end;
@@ -2055,6 +2062,7 @@ begin
     0: cpt := TabSheetUsing.Caption;
     1: cpt := TabSheetWeapon.Caption;
     2: cpt := TabSheetArmor.Caption;
+    3: cpt := TabSheetNecklace.Caption;
   end;
   DrawTab(Control.Canvas, TabIndex, cpt, Rect, Active);
 end;
@@ -2235,7 +2243,7 @@ begin
 	tmp := '';
 	res := '';
   if GikoSys.DonguriSys.RenamePage(res) then begin
-		if DonguriSystem.Extract('お知らせ：ハンターネーム変更サービスの費用は', 'どんぐりポイントです。', res, tmp) then begin
+		if DonguriSystem.Extract('お知らせ：どんぐりネーム変更サービスの費用は', 'どんぐりポイントです。', res, tmp) then begin
     	if tmp <> '' then begin
 	    	rnc := tmp;
       	GikoSys.Setting.DonguriRNCost := rnc;
@@ -2275,7 +2283,7 @@ begin
   else
     tmp := tmp + '確認できませんでした。';
   tmp := tmp + #10 +
-         '　ハンターネーム変更：';
+         '　どんぐりネーム変更：';
   if rnc <> '' then
     tmp := tmp + rnc + 'どんぐり'
   else

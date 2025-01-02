@@ -1566,6 +1566,12 @@ const
   KW_USEA_S = '<h3>装備している防具: </h3>';
   KW_USEA_E = '</p>';
   KW_IBAG_S = '<h3>アイテムバッグ:</h3>';
+  KW_NCKL_S = '<table id="necklaceTable">';
+  KW_NCKL_E = '</table>';
+  KW_WPNT_S = '<table id="weaponTable">';
+  KW_WPNT_E = '</table>';
+  KW_ARMR_S = '<table id="armorTable">';
+  KW_ARMR_E = '</table>';
   KW_TBDY_S  = '<tbody>';
   KW_TBDY_E  = '</tbody>';
   KW_TROW_S = '<tr';
@@ -1573,6 +1579,7 @@ const
 
 var
 	tmp: String;
+	tmp1: String;
 	tmp2: String;
   idx: Integer;
   wp: TDonguriWeapon;
@@ -1607,8 +1614,19 @@ begin
     if idx > 0 then
     	Delete(html, 1, idx + Length(KW_IBAG_S) - 1);
 
+    // ネックレス
+//		if Extract2(KW_NCKL_S, KW_NCKL_E, html, tmp1) and
+//       Extract2(KW_TBDY_S, KW_TBDY_E, tmp1, tmp) then begin
+//    	while True do begin
+//				if Extract2(KW_TROW_S, KW_TROW_E, tmp, tmp2) = False then
+//        	Break;
+//
+//      end;
+//    end;
+
 		// 武器一覧
-		if Extract2(KW_TBDY_S, KW_TBDY_E, html, tmp) then begin
+		if Extract2(KW_WPNT_S, KW_WPNT_E, html, tmp1) and
+       Extract2(KW_TBDY_S, KW_TBDY_E, tmp1, tmp) then begin
     	while True do begin
 				if Extract2(KW_TROW_S, KW_TROW_E, tmp, tmp2) = False then
         	Break;
@@ -1619,7 +1637,8 @@ begin
   	end;
 
     // 防具一覧
-		if Extract2(KW_TBDY_S, KW_TBDY_E, html, tmp) then begin
+		if Extract2(KW_ARMR_S, KW_ARMR_E, html, tmp1) and
+       Extract2(KW_TBDY_S, KW_TBDY_E, tmp1, tmp) then begin
     	while True do begin
 				if Extract2(KW_TROW_S, KW_TROW_E, tmp, tmp2) = False then
         	Break;
