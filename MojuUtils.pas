@@ -31,6 +31,8 @@ uses
 	function IsNoValidID( inID :String): Boolean;
 	//<font>タグを全て削除する
 	function DeleteFontTag( inSource : string) : string;
+	//<span>タグを全て削除する
+	function DeleteSpanTag( inSource : string) : string;
 	function RemoveToken(var s: string;const delimiter: string): string;
 	// 無害化(& -> &amp; " -> &auot; に変換する)
 	function Sanitize(const s: String): String;
@@ -342,6 +344,36 @@ begin
 	Result := Result + inSource;
 
 
+end;
+// *************************************************************************
+
+// *************************************************************************
+// HTML中の<span>タグを削除する
+// *************************************************************************
+function	DeleteSpanTag(
+	 inSource : string    //タグを削除する文字列
+) : string;		//タグ削除語の文字列
+var
+	pos : Integer;
+begin
+	Result := '';
+
+	//</span>を削除
+	inSource := CustomStringReplace( inSource, '</span>', '', True);
+	//<span を全て小文字に変換する
+	inSource := CustomStringReplace( inSource, '<span', '<span', True);
+	//<span ～ を削除する
+	pos := AnsiPos('<span', inSource);
+	while (pos > 0) do begin
+		Result := Result + Copy(inSource, 1, pos - 1);
+		Delete(inSource, 1, pos);
+		//タグを閉じる'>'までを削除
+        pos := AnsiPos('>', inSource);
+		Delete(inSource, 1, pos);
+		pos := AnsiPos('<span', inSource);
+	end;
+
+	Result := Result + inSource;
 end;
 // *************************************************************************
 

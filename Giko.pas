@@ -7007,6 +7007,7 @@ begin
 				Header := CustomStringReplace(Header, '<b>', '',true);
 				Header := CustomStringReplace(Header, '<br>', '',true);
 				Header := DeleteFontTag(Header);
+				Header := DeleteSpanTag(Header);
 			end;
 			//if ThreadItem.IsBoardPlugInAvailable then begin
             if ThreadItem.ParentBoard.IsBoardPlugInAvailable then begin
