@@ -3,7 +3,7 @@ object DonguriForm: TDonguriForm
   Top = 0
   BorderIcons = [biSystemMenu, biMinimize]
   Caption = #12393#12435#12368#12426#12471#12473#12486#12512
-  ClientHeight = 538
+  ClientHeight = 624
   ClientWidth = 280
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -113,8 +113,8 @@ object DonguriForm: TDonguriForm
     Left = 0
     Top = 28
     Width = 280
-    Height = 510
-    ActivePage = TabSheetChest
+    Height = 596
+    ActivePage = TabSheetLink
     Align = alClient
     TabOrder = 0
     OnDrawTab = PageControlDrawTab
@@ -128,18 +128,9 @@ object DonguriForm: TDonguriForm
         Align = alTop
         BevelOuter = bvNone
         TabOrder = 0
-        object LabelID: TLabel
-          Left = 92
-          Top = 75
-          Width = 26
-          Height = 13
-          Alignment = taRightJustify
-          AutoSize = False
-          Caption = 'ID'#65306
-        end
         object Label3: TLabel
           Left = 72
-          Top = 94
+          Top = 75
           Width = 46
           Height = 13
           Alignment = taRightJustify
@@ -148,14 +139,14 @@ object DonguriForm: TDonguriForm
         end
         object LabelPeriod: TLabel
           Left = 12
-          Top = 136
+          Top = 114
           Width = 54
           Height = 13
           Caption = #31532' 1000 '#26399
         end
         object Label12: TLabel
           Left = 68
-          Top = 114
+          Top = 95
           Width = 50
           Height = 13
           Alignment = taRightJustify
@@ -164,7 +155,7 @@ object DonguriForm: TDonguriForm
         end
         object Label13: TLabel
           Left = 78
-          Top = 136
+          Top = 114
           Width = 40
           Height = 13
           Alignment = taRightJustify
@@ -173,7 +164,7 @@ object DonguriForm: TDonguriForm
         end
         object ExprValLabel: TLabel
           Left = 246
-          Top = 114
+          Top = 95
           Width = 20
           Height = 13
           Alignment = taRightJustify
@@ -182,7 +173,7 @@ object DonguriForm: TDonguriForm
         end
         object TimeValLabel: TLabel
           Left = 246
-          Top = 136
+          Top = 114
           Width = 20
           Height = 13
           Alignment = taRightJustify
@@ -191,7 +182,7 @@ object DonguriForm: TDonguriForm
         end
         object ExplorValLabel: TLabel
           Left = 246
-          Top = 158
+          Top = 136
           Width = 20
           Height = 13
           Alignment = taRightJustify
@@ -200,7 +191,7 @@ object DonguriForm: TDonguriForm
         end
         object MiningValLabel: TLabel
           Left = 246
-          Top = 180
+          Top = 158
           Width = 20
           Height = 13
           Alignment = taRightJustify
@@ -209,7 +200,7 @@ object DonguriForm: TDonguriForm
         end
         object WoodctValLabel: TLabel
           Left = 246
-          Top = 202
+          Top = 180
           Width = 20
           Height = 13
           Alignment = taRightJustify
@@ -218,7 +209,7 @@ object DonguriForm: TDonguriForm
         end
         object WeaponValLabel: TLabel
           Left = 246
-          Top = 224
+          Top = 202
           Width = 20
           Height = 13
           Alignment = taRightJustify
@@ -227,7 +218,7 @@ object DonguriForm: TDonguriForm
         end
         object ArmorcValLabel: TLabel
           Left = 246
-          Top = 246
+          Top = 224
           Width = 20
           Height = 13
           Alignment = taRightJustify
@@ -236,24 +227,17 @@ object DonguriForm: TDonguriForm
         end
         object Label24: TLabel
           Left = 12
-          Top = 318
+          Top = 296
           Width = 36
           Height = 13
           Caption = #20445#31649#24235
         end
         object Label1: TLabel
           Left = 12
-          Top = 268
+          Top = 246
           Width = 24
           Height = 13
           Caption = #32113#35336
-        end
-        object Label30: TLabel
-          Left = 12
-          Top = 58
-          Width = 34
-          Height = 13
-          Caption = #12514#12540#12489#65306
         end
         object Label34: TLabel
           Left = 78
@@ -275,18 +259,21 @@ object DonguriForm: TDonguriForm
           TabOrder = 0
         end
         object EditID: TEdit
-          Left = 122
-          Top = 74
-          Width = 142
+          Left = 12
+          Top = 55
+          Width = 60
           Height = 17
+          Hint = 'ID'
           TabStop = False
           BorderStyle = bsNone
+          ParentShowHint = False
           ReadOnly = True
+          ShowHint = True
           TabOrder = 1
         end
         object EditLevel: TEdit
           Left = 122
-          Top = 93
+          Top = 74
           Width = 142
           Height = 17
           TabStop = False
@@ -308,9 +295,9 @@ object DonguriForm: TDonguriForm
         end
         object InfoGrid: TStringGrid
           Left = 12
-          Top = 332
+          Top = 310
           Width = 253
-          Height = 135
+          Height = 152
           BevelEdges = []
           BevelInner = bvNone
           BevelOuter = bvNone
@@ -321,7 +308,7 @@ object DonguriForm: TDonguriForm
           DefaultRowHeight = 16
           Enabled = False
           FixedCols = 0
-          RowCount = 8
+          RowCount = 9
           FixedRows = 0
           Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goRowSelect]
           ParentCtl3D = False
@@ -330,7 +317,7 @@ object DonguriForm: TDonguriForm
         end
         object ExplorPnlButton: TPanel
           Left = 12
-          Top = 156
+          Top = 134
           Width = 70
           Height = 20
           Hint = #8217#25506#26908#8217#12434#20462#34892#12377#12427
@@ -345,7 +332,7 @@ object DonguriForm: TDonguriForm
         end
         object MiningPnlButton: TPanel
           Left = 12
-          Top = 178
+          Top = 156
           Width = 70
           Height = 20
           Hint = #8217#25505#25496#8217#12434#20462#34892#12377#12427
@@ -360,7 +347,7 @@ object DonguriForm: TDonguriForm
         end
         object WoodctPnlButton: TPanel
           Left = 12
-          Top = 200
+          Top = 178
           Width = 70
           Height = 20
           Hint = #8217#26408#12371#12426#8217#12434#20462#34892#12377#12427
@@ -375,7 +362,7 @@ object DonguriForm: TDonguriForm
         end
         object WeaponPnlButton: TPanel
           Left = 12
-          Top = 222
+          Top = 200
           Width = 70
           Height = 20
           Hint = #8217#27494#22120#35069#20316#8217#12434#20462#34892#12377#12427
@@ -390,7 +377,7 @@ object DonguriForm: TDonguriForm
         end
         object ArmorcPnlButton: TPanel
           Left = 12
-          Top = 244
+          Top = 222
           Width = 70
           Height = 20
           Hint = #8217#38450#20855#35069#20316#8217#12434#20462#34892#12377#12427
@@ -405,7 +392,7 @@ object DonguriForm: TDonguriForm
         end
         object ExprProgressBar: TProgressBar
           Left = 122
-          Top = 116
+          Top = 97
           Width = 126
           Height = 10
           Smooth = True
@@ -414,7 +401,7 @@ object DonguriForm: TDonguriForm
         end
         object TimeProgressBar: TProgressBar
           Left = 122
-          Top = 138
+          Top = 116
           Width = 126
           Height = 10
           Smooth = True
@@ -423,7 +410,7 @@ object DonguriForm: TDonguriForm
         end
         object ExplorProgressBar: TProgressBar
           Left = 122
-          Top = 160
+          Top = 138
           Width = 126
           Height = 10
           Smooth = True
@@ -432,7 +419,7 @@ object DonguriForm: TDonguriForm
         end
         object MiningProgressBar: TProgressBar
           Left = 122
-          Top = 182
+          Top = 160
           Width = 126
           Height = 10
           Smooth = True
@@ -441,7 +428,7 @@ object DonguriForm: TDonguriForm
         end
         object WoodctProgressBar: TProgressBar
           Left = 122
-          Top = 204
+          Top = 182
           Width = 126
           Height = 10
           Smooth = True
@@ -449,7 +436,7 @@ object DonguriForm: TDonguriForm
         end
         object WeaponProgressBar: TProgressBar
           Left = 122
-          Top = 226
+          Top = 204
           Width = 126
           Height = 10
           Smooth = True
@@ -458,7 +445,7 @@ object DonguriForm: TDonguriForm
         end
         object ArmorcProgressBar: TProgressBar
           Left = 122
-          Top = 248
+          Top = 226
           Width = 126
           Height = 10
           Smooth = True
@@ -467,7 +454,7 @@ object DonguriForm: TDonguriForm
         end
         object ExplorPanel: TPanel
           Left = 82
-          Top = 156
+          Top = 134
           Width = 36
           Height = 20
           Hint = #20462#34892#20013
@@ -477,7 +464,7 @@ object DonguriForm: TDonguriForm
         end
         object MiningPanel: TPanel
           Left = 82
-          Top = 178
+          Top = 156
           Width = 36
           Height = 20
           Hint = #20462#34892#20013
@@ -487,7 +474,7 @@ object DonguriForm: TDonguriForm
         end
         object WoodctPanel: TPanel
           Left = 82
-          Top = 200
+          Top = 178
           Width = 36
           Height = 20
           Hint = #20462#34892#20013
@@ -497,7 +484,7 @@ object DonguriForm: TDonguriForm
         end
         object WeaponPanel: TPanel
           Left = 82
-          Top = 222
+          Top = 200
           Width = 36
           Height = 20
           Hint = #20462#34892#20013
@@ -507,7 +494,7 @@ object DonguriForm: TDonguriForm
         end
         object ArmorcPanel: TPanel
           Left = 82
-          Top = 244
+          Top = 222
           Width = 36
           Height = 20
           Hint = #20462#34892#20013
@@ -517,7 +504,7 @@ object DonguriForm: TDonguriForm
         end
         object StatisticsGrid: TStringGrid
           Left = 12
-          Top = 282
+          Top = 260
           Width = 253
           Height = 33
           BevelEdges = []
@@ -604,7 +591,7 @@ object DonguriForm: TDonguriForm
         Left = 0
         Top = 472
         Width = 272
-        Height = 10
+        Height = 96
         Align = alClient
         BevelOuter = bvLowered
         ParentColor = True
@@ -1007,7 +994,7 @@ object DonguriForm: TDonguriForm
         Left = 0
         Top = 472
         Width = 272
-        Height = 10
+        Height = 96
         Align = alClient
         BevelOuter = bvLowered
         ParentColor = True
@@ -1054,11 +1041,11 @@ object DonguriForm: TDonguriForm
         object ChestPnlButton: TPanel
           Left = 12
           Top = 36
-          Width = 102
+          Width = 50
           Height = 25
           Hint = #37444#12398#12461#12540'10'#12391#27494#22120'2'#12539#38450#20855'2'#12434#21462#24471
           BevelInner = bvRaised
-          Caption = #23453#31665#12434#38283#12369#12427
+          Caption = #23453#31665
           ParentShowHint = False
           ShowHint = True
           TabOrder = 1
@@ -1094,17 +1081,32 @@ object DonguriForm: TDonguriForm
           OnMouseUp = PanelButtonMouseUp
         end
         object ChestB70PnlButton: TPanel
-          Left = 120
+          Left = 68
           Top = 36
-          Width = 132
+          Width = 88
           Height = 25
           Hint = #37444#12398#12461#12540'100'#12391#27494#22120'20'#12539#38450#20855'20'#12434#21462#24471
           BevelInner = bvRaised
-          Caption = #22823#22411#12398#23453#31665#12434#38283#12369#12427
+          Caption = #22823#22411#12398#23453#31665
           ParentShowHint = False
           ShowHint = True
           TabOrder = 4
           OnClick = ChestB70PnlButtonClick
+          OnMouseDown = PanelButtonMouseDown
+          OnMouseUp = PanelButtonMouseUp
+        end
+        object BtlChestPnlButton: TPanel
+          Left = 162
+          Top = 36
+          Width = 90
+          Height = 25
+          Hint = #12496#12488#12523#12488#12540#12463#12531'1'#20491#12391#12493#12483#12463#12524#12473'1'#20491#21462#24471
+          BevelInner = bvRaised
+          Caption = #12496#12488#12523#23453#31665
+          ParentShowHint = False
+          ShowHint = True
+          TabOrder = 5
+          OnClick = BtlChestPnlButtonClick
           OnMouseDown = PanelButtonMouseDown
           OnMouseUp = PanelButtonMouseUp
         end
@@ -1113,34 +1115,46 @@ object DonguriForm: TDonguriForm
         Left = 0
         Top = 126
         Width = 272
-        Height = 356
+        Height = 442
         ActivePage = TabSheetNecklace
         Align = alClient
         TabOrder = 1
         OnDrawTab = PageControlItemBagDrawTab
         object TabSheetUsing: TTabSheet
           Caption = #35013#20633#20013
-          object UsingPanel: TPanel
+          object UsingScrollBox: TScrollBox
             Left = 0
             Top = 0
             Width = 264
-            Height = 322
-            Align = alTop
+            Height = 414
+            HorzScrollBar.Tracking = True
+            HorzScrollBar.Visible = False
+            VertScrollBar.Tracking = True
+            Align = alClient
+            BevelInner = bvNone
             BevelOuter = bvNone
+            BorderStyle = bsNone
             TabOrder = 0
             object UsingWeaponLabel: TLabel
-              Left = 8
+              Left = 4
               Top = 7
               Width = 24
               Height = 13
               Caption = #27494#22120
             end
             object UsingArmorLabel: TLabel
-              Left = 8
-              Top = 145
+              Left = 4
+              Top = 141
               Width = 24
               Height = 13
               Caption = #38450#20855
+            end
+            object UsingNcklcLabel: TLabel
+              Left = 4
+              Top = 275
+              Width = 43
+              Height = 13
+              Caption = #12493#12483#12463#12524#12473
             end
             object RemWeaponPnlButton: TPanel
               Left = 48
@@ -1160,7 +1174,7 @@ object DonguriForm: TDonguriForm
             end
             object RemArmorPnlButton: TPanel
               Left = 48
-              Top = 140
+              Top = 136
               Width = 60
               Height = 22
               Hint = #38450#20855#12398#35013#20633#12434#12420#12417#12427
@@ -1175,7 +1189,7 @@ object DonguriForm: TDonguriForm
               OnMouseUp = PanelButtonMouseUp
             end
             object GridWeaponUsing1: TStringGrid
-              Left = 8
+              Left = 4
               Top = 26
               Width = 250
               Height = 35
@@ -1196,7 +1210,7 @@ object DonguriForm: TDonguriForm
               OnDrawCell = DrawGridCell
             end
             object GridWeaponUsing2: TStringGrid
-              Left = 8
+              Left = 4
               Top = 60
               Width = 250
               Height = 35
@@ -1217,7 +1231,7 @@ object DonguriForm: TDonguriForm
               OnDrawCell = DrawGridCell
             end
             object GridWeaponUsing3: TStringGrid
-              Left = 8
+              Left = 4
               Top = 94
               Width = 250
               Height = 35
@@ -1238,8 +1252,8 @@ object DonguriForm: TDonguriForm
               OnDrawCell = DrawGridCell
             end
             object GridArmorUsing3: TStringGrid
-              Left = 8
-              Top = 232
+              Left = 4
+              Top = 228
               Width = 250
               Height = 35
               BevelInner = bvNone
@@ -1259,8 +1273,8 @@ object DonguriForm: TDonguriForm
               OnDrawCell = DrawGridCell
             end
             object GridArmorUsing2: TStringGrid
-              Left = 8
-              Top = 198
+              Left = 4
+              Top = 194
               Width = 250
               Height = 35
               BevelInner = bvNone
@@ -1280,8 +1294,8 @@ object DonguriForm: TDonguriForm
               OnDrawCell = DrawGridCell
             end
             object GridArmorUsing1: TStringGrid
-              Left = 8
-              Top = 164
+              Left = 4
+              Top = 160
               Width = 250
               Height = 35
               BevelInner = bvNone
@@ -1318,7 +1332,7 @@ object DonguriForm: TDonguriForm
             end
             object ModUseAPnlButton: TPanel
               Left = 114
-              Top = 140
+              Top = 136
               Width = 60
               Height = 22
               Hint = #35013#20633#20013#12398#38450#20855#12434#24375#21270#12377#12427
@@ -1332,16 +1346,66 @@ object DonguriForm: TDonguriForm
               OnMouseDown = PanelButtonMouseDown
               OnMouseUp = PanelButtonMouseUp
             end
-          end
-          object Panel5: TPanel
-            Left = 0
-            Top = 322
-            Width = 264
-            Height = 6
-            Align = alClient
-            BevelOuter = bvLowered
-            ParentColor = True
-            TabOrder = 1
+            object RemNcklcPnlButton: TPanel
+              Left = 60
+              Top = 270
+              Width = 60
+              Height = 22
+              Hint = #12493#12483#12463#12524#12473#12398#35013#20633#12434#12420#12417#12427
+              BevelInner = bvRaised
+              Caption = #22806#12377
+              Enabled = False
+              ParentShowHint = False
+              ShowHint = True
+              TabOrder = 10
+              OnClick = RemNcklcPnlButtonClick
+              OnMouseDown = PanelButtonMouseDown
+              OnMouseUp = PanelButtonMouseUp
+            end
+            object GridNcklcUsing1: TStringGrid
+              Tag = 11
+              Left = 4
+              Top = 294
+              Width = 250
+              Height = 35
+              BevelInner = bvNone
+              BevelOuter = bvNone
+              ColCount = 4
+              Ctl3D = False
+              DefaultColWidth = 90
+              DefaultRowHeight = 16
+              DefaultDrawing = False
+              Enabled = False
+              FixedCols = 0
+              RowCount = 2
+              FixedRows = 0
+              ParentCtl3D = False
+              ScrollBars = ssNone
+              TabOrder = 11
+              OnDrawCell = DrawGridCell
+            end
+            object GridNcklcUsing2: TStringGrid
+              Tag = 12
+              Left = 4
+              Top = 328
+              Width = 250
+              Height = 35
+              BevelInner = bvNone
+              BevelOuter = bvNone
+              ColCount = 3
+              Ctl3D = False
+              DefaultColWidth = 90
+              DefaultRowHeight = 16
+              DefaultDrawing = False
+              Enabled = False
+              FixedCols = 0
+              RowCount = 2
+              FixedRows = 0
+              ParentCtl3D = False
+              ScrollBars = ssNone
+              TabOrder = 12
+              OnDrawCell = DrawGridCell
+            end
           end
         end
         object TabSheetWeapon: TTabSheet
@@ -1450,7 +1514,7 @@ object DonguriForm: TDonguriForm
             Left = 0
             Top = 30
             Width = 264
-            Height = 298
+            Height = 384
             Align = alClient
             BevelInner = bvNone
             BevelOuter = bvNone
@@ -1500,6 +1564,8 @@ object DonguriForm: TDonguriForm
             MultiSelect = True
             ReadOnly = True
             RowSelect = True
+            ParentShowHint = False
+            ShowHint = True
             SmallImages = BagImageList
             SortType = stData
             TabOrder = 1
@@ -1507,15 +1573,12 @@ object DonguriForm: TDonguriForm
             OnChange = ListViewWeaponChange
             OnColumnClick = ListViewWeaponColumnClick
             OnCompare = ListViewWeaponCompare
+            OnInfoTip = ListViewInfoTip
           end
         end
         object TabSheetArmor: TTabSheet
           Caption = #38450#20855
           ImageIndex = 2
-          ExplicitLeft = 0
-          ExplicitTop = 0
-          ExplicitWidth = 0
-          ExplicitHeight = 0
           object ArmorTopPanel: TPanel
             Left = 0
             Top = 0
@@ -1619,7 +1682,7 @@ object DonguriForm: TDonguriForm
             Left = 0
             Top = 30
             Width = 264
-            Height = 298
+            Height = 384
             Align = alClient
             BevelInner = bvNone
             BevelOuter = bvNone
@@ -1669,6 +1732,8 @@ object DonguriForm: TDonguriForm
             MultiSelect = True
             ReadOnly = True
             RowSelect = True
+            ParentShowHint = False
+            ShowHint = True
             SmallImages = BagImageList
             SortType = stData
             TabOrder = 1
@@ -1676,11 +1741,144 @@ object DonguriForm: TDonguriForm
             OnChange = ListViewArmorChange
             OnColumnClick = ListViewArmorColumnClick
             OnCompare = ListViewArmorCompare
+            OnInfoTip = ListViewInfoTip
           end
         end
         object TabSheetNecklace: TTabSheet
           Caption = #12493#12483#12463#12524#12473
           ImageIndex = 3
+          object NcklcTopPanel: TPanel
+            Left = 0
+            Top = 0
+            Width = 264
+            Height = 30
+            Align = alTop
+            BevelOuter = bvNone
+            TabOrder = 0
+            object NcklcAllCheckBox: TCheckBox
+              Left = 4
+              Top = 12
+              Width = 18
+              Height = 17
+              Hint = #20840#34892#12398#12481#12455#12483#12463'ON'#65295'OFF'
+              Caption = #12288
+              ParentShowHint = False
+              ShowHint = True
+              TabOrder = 0
+              OnClick = NcklcAllCheckBoxClick
+            end
+            object LockNPnlButton: TPanel
+              Left = 24
+              Top = 4
+              Width = 44
+              Height = 22
+              Hint = #12481#12455#12483#12463#12375#12383#12493#12483#12463#12524#12473#12434#12525#12483#12463#12377#12427
+              BevelInner = bvRaised
+              Caption = #12525#12483#12463
+              Enabled = False
+              ParentShowHint = False
+              ShowHint = True
+              TabOrder = 1
+              OnClick = LockNPnlButtonClick
+              OnMouseDown = PanelButtonMouseDown
+              OnMouseUp = PanelButtonMouseUp
+            end
+            object UnlockNPnlButton: TPanel
+              Left = 70
+              Top = 4
+              Width = 60
+              Height = 22
+              Hint = #12481#12455#12483#12463#12375#12383#12493#12483#12463#12524#12473#12398#12525#12483#12463#12434#35299#38500#12377#12427
+              BevelInner = bvRaised
+              Caption = #12450#12531#12525#12483#12463
+              Enabled = False
+              ParentShowHint = False
+              ShowHint = True
+              TabOrder = 2
+              OnClick = UnlockNPnlButtonClick
+              OnMouseDown = PanelButtonMouseDown
+              OnMouseUp = PanelButtonMouseUp
+            end
+            object RecycleNPnlButton: TPanel
+              Left = 132
+              Top = 4
+              Width = 44
+              Height = 22
+              Hint = #12481#12455#12483#12463#12375#12383#12493#12483#12463#12524#12473#12434#20998#35299#12377#12427
+              BevelInner = bvRaised
+              Caption = #20998#35299
+              Enabled = False
+              ParentShowHint = False
+              ShowHint = True
+              TabOrder = 3
+              OnClick = RecycleNPnlButtonClick
+              OnMouseDown = PanelButtonMouseDown
+              OnMouseUp = PanelButtonMouseUp
+            end
+            object UseNPnlButton: TPanel
+              Left = 178
+              Top = 4
+              Width = 44
+              Height = 22
+              Hint = #12481#12455#12483#12463#12375#12383#12493#12483#12463#12524#12473#12434#35013#20633#12377#12427
+              BevelInner = bvRaised
+              Caption = #35013#20633
+              Enabled = False
+              ParentShowHint = False
+              ShowHint = True
+              TabOrder = 4
+              OnClick = UseNPnlButtonClick
+              OnMouseDown = PanelButtonMouseDown
+              OnMouseUp = PanelButtonMouseUp
+            end
+          end
+          object ListViewNcklc: TListView
+            Left = 0
+            Top = 30
+            Width = 264
+            Height = 384
+            Align = alClient
+            BevelInner = bvNone
+            BevelOuter = bvNone
+            Checkboxes = True
+            Columns = <
+              item
+                Caption = #65435#65391#65400#29366#24907
+                Width = 60
+              end
+              item
+                Alignment = taCenter
+                Caption = #65434#65393#65432#65411#65384
+                Width = 45
+              end
+              item
+                Caption = #21517#31216
+                Width = 100
+              end
+              item
+                Caption = #23646#24615
+                Width = 400
+              end
+              item
+                Alignment = taRightJustify
+                Caption = #12510#12522#12514
+              end>
+            Ctl3D = False
+            FlatScrollBars = True
+            MultiSelect = True
+            ReadOnly = True
+            RowSelect = True
+            ParentShowHint = False
+            ShowHint = True
+            SmallImages = BagImageList
+            SortType = stData
+            TabOrder = 1
+            ViewStyle = vsReport
+            OnChange = ListViewNcklcChange
+            OnColumnClick = ListViewNcklcColumnClick
+            OnCompare = ListViewNcklcCompare
+            OnInfoTip = ListViewNcklcInfoTip
+          end
         end
       end
     end
@@ -1691,7 +1889,7 @@ object DonguriForm: TDonguriForm
         Left = 0
         Top = 0
         Width = 272
-        Height = 482
+        Height = 568
         Align = alClient
         BevelOuter = bvNone
         TabOrder = 0
@@ -2236,7 +2434,7 @@ object DonguriForm: TDonguriForm
           Left = 0
           Top = 472
           Width = 272
-          Height = 10
+          Height = 96
           Align = alClient
           BevelOuter = bvLowered
           ParentColor = True
@@ -2251,7 +2449,7 @@ object DonguriForm: TDonguriForm
         Left = 0
         Top = 0
         Width = 272
-        Height = 482
+        Height = 568
         Align = alClient
         BevelOuter = bvNone
         TabOrder = 0
@@ -2796,7 +2994,7 @@ object DonguriForm: TDonguriForm
           Left = 0
           Top = 472
           Width = 272
-          Height = 10
+          Height = 96
           Align = alClient
           BevelOuter = bvLowered
           ParentColor = True
@@ -2811,7 +3009,7 @@ object DonguriForm: TDonguriForm
         Left = 0
         Top = 0
         Width = 272
-        Height = 482
+        Height = 568
         VertScrollBar.ParentColor = False
         VertScrollBar.Tracking = True
         Align = alClient
@@ -2819,61 +3017,6 @@ object DonguriForm: TDonguriForm
         BevelOuter = bvNone
         BorderStyle = bsNone
         TabOrder = 0
-        object Label18: TLabel
-          Left = 12
-          Top = 26
-          Width = 122
-          Height = 13
-          Caption = #12393#12435#12368#12426#12471#12473#12486#12512'WEB'#12469#12452#12488
-        end
-        object LabelHomeLink: TLabel
-          Left = 22
-          Top = 42
-          Width = 70
-          Height = 13
-          Cursor = crHandPoint
-          Caption = 'LabelHomeLink'
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clBlue
-          Font.Height = -11
-          Font.Name = 'Tahoma'
-          Font.Style = [fsUnderline]
-          ParentFont = False
-          PopupMenu = PopupMenuLink
-          OnClick = LabelLinkClick
-          OnContextPopup = LabelLinkContextPopup
-        end
-        object Label20: TLabel
-          Left = 22
-          Top = 58
-          Width = 195
-          Height = 13
-          Caption = #8251#26410#30331#37682#35686#20633#21729#12391#12399#12525#12464#12452#12531#12391#12365#12414#12379#12435#12290
-        end
-        object Label21: TLabel
-          Left = 12
-          Top = 156
-          Width = 94
-          Height = 13
-          Caption = #12393#12435#12368#12426#12471#12473#12486#12512'FAQ'
-        end
-        object LabelFaqLink: TLabel
-          Left = 22
-          Top = 172
-          Width = 61
-          Height = 13
-          Cursor = crHandPoint
-          Caption = 'LabelFaqLink'
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clBlue
-          Font.Height = -11
-          Font.Name = 'Tahoma'
-          Font.Style = [fsUnderline]
-          ParentFont = False
-          PopupMenu = PopupMenuLink
-          OnClick = LabelLinkClick
-          OnContextPopup = LabelLinkContextPopup
-        end
         object Label19: TLabel
           Left = 12
           Top = 4
@@ -2881,283 +3024,12 @@ object DonguriForm: TDonguriForm
           Height = 13
           Caption = 'WEB'#12502#12521#12454#12470#12391#12522#12531#12463#12434#34920#31034#12375#12414#12377#12290
         end
-        object Label22: TLabel
-          Left = 12
-          Top = 194
-          Width = 76
-          Height = 13
-          Caption = #12393#12435#12368#12426#22823#30770'API'
-        end
-        object LabelApiLink: TLabel
-          Left = 22
-          Top = 210
-          Width = 58
-          Height = 13
-          Cursor = crHandPoint
-          Caption = 'LabelApiLink'
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clBlue
-          Font.Height = -11
-          Font.Name = 'Tahoma'
-          Font.Style = [fsUnderline]
-          ParentFont = False
-          PopupMenu = PopupMenuLink
-          OnClick = LabelLinkClick
-          OnContextPopup = LabelLinkContextPopup
-        end
-        object Label23: TLabel
-          Left = 12
-          Top = 232
-          Width = 80
-          Height = 13
-          Caption = #12393#12435#12368#12426#12521#12531#12461#12531#12464
-        end
-        object LabelRankLink: TLabel
-          Left = 22
-          Top = 248
-          Width = 67
-          Height = 13
-          Cursor = crHandPoint
-          Caption = 'LabelRankLink'
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clBlue
-          Font.Height = -11
-          Font.Name = 'Tahoma'
-          Font.Style = [fsUnderline]
-          ParentFont = False
-          PopupMenu = PopupMenuLink
-          OnClick = LabelLinkClick
-          OnContextPopup = LabelLinkContextPopup
-        end
-        object Label25: TLabel
-          Left = 12
-          Top = 270
-          Width = 77
-          Height = 13
-          Caption = #12393#12435#12368#12426#22823#30770#12525#12464
-        end
-        object LabelCLogLink: TLabel
-          Left = 22
-          Top = 286
-          Width = 67
-          Height = 13
-          Cursor = crHandPoint
-          Caption = 'LabelCLogLink'
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clBlue
-          Font.Height = -11
-          Font.Name = 'Tahoma'
-          Font.Style = [fsUnderline]
-          ParentFont = False
-          PopupMenu = PopupMenuLink
-          OnClick = LabelLinkClick
-          OnContextPopup = LabelLinkContextPopup
-        end
-        object Label27: TLabel
-          Left = 12
-          Top = 308
-          Width = 89
-          Height = 13
-          Caption = #12393#12435#12368#12426#22823#20081#38360#12525#12464
-        end
-        object LabelFLogLink: TLabel
-          Left = 22
-          Top = 324
-          Width = 66
-          Height = 13
-          Cursor = crHandPoint
-          Caption = 'LabelFLogLink'
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clBlue
-          Font.Height = -11
-          Font.Name = 'Tahoma'
-          Font.Style = [fsUnderline]
-          ParentFont = False
-          PopupMenu = PopupMenuLink
-          OnClick = LabelLinkClick
-          OnContextPopup = LabelLinkContextPopup
-        end
-        object Label29: TLabel
-          Left = 12
-          Top = 384
-          Width = 70
-          Height = 13
-          Caption = #12450#12452#12486#12512#12454#12457#12483#12481
-        end
-        object LabelItemWLink: TLabel
-          Left = 22
-          Top = 397
-          Width = 75
-          Height = 13
-          Cursor = crHandPoint
-          Caption = 'LabelItemWLink'
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clBlue
-          Font.Height = -11
-          Font.Name = 'Tahoma'
-          Font.Style = [fsUnderline]
-          ParentFont = False
-          PopupMenu = PopupMenuLink
-          OnClick = LabelLinkClick
-          OnContextPopup = LabelLinkContextPopup
-        end
-        object Label31: TLabel
-          Left = 12
-          Top = 422
-          Width = 64
-          Height = 13
-          Caption = #33618#12425#12375#12450#12521#12540#12488
-        end
-        object LabelAlertLink: TLabel
-          Left = 22
-          Top = 438
-          Width = 66
-          Height = 13
-          Cursor = crHandPoint
-          Caption = 'LabelAlertLink'
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clBlue
-          Font.Height = -11
-          Font.Name = 'Tahoma'
-          Font.Style = [fsUnderline]
-          ParentFont = False
-          PopupMenu = PopupMenuLink
-          OnClick = LabelLinkClick
-          OnContextPopup = LabelLinkContextPopup
-        end
-        object Label33: TLabel
-          Left = 12
-          Top = 511
-          Width = 34
-          Height = 13
-          Caption = 'UPLIFT'
-        end
-        object LabelUpliftLink: TLabel
-          Left = 22
-          Top = 530
-          Width = 68
-          Height = 13
-          Cursor = crHandPoint
-          Caption = 'LabelUpliftLink'
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clBlue
-          Font.Height = -11
-          Font.Name = 'Tahoma'
-          Font.Style = [fsUnderline]
-          ParentFont = False
-          PopupMenu = PopupMenuLink
-          OnClick = LabelLinkClick
-          OnContextPopup = LabelLinkContextPopup
-        end
-        object Label28: TLabel
-          Left = 12
-          Top = 457
-          Width = 145
-          Height = 13
-          Caption = #12393#12435#12368#12426#12471#12519#12483#12503#65288#37444#12398#12461#12540#36092#20837#65289
-        end
-        object LabelShopLink: TLabel
-          Left = 22
-          Top = 473
-          Width = 67
-          Height = 13
-          Cursor = crHandPoint
-          Caption = 'LabelShopLink'
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clBlue
-          Font.Height = -11
-          Font.Name = 'Tahoma'
-          Font.Style = [fsUnderline]
-          ParentFont = False
-          PopupMenu = PopupMenuLink
-          OnClick = LabelLinkClick
-          OnContextPopup = LabelLinkContextPopup
-        end
-        object Label32: TLabel
-          Left = 22
-          Top = 489
-          Width = 183
-          Height = 13
-          Caption = #8251#26410#30331#37682#35686#20633#21729#12391#12399#21033#29992#12391#12365#12414#12379#12435#12290
-        end
-        object Label69: TLabel
-          Left = 12
-          Top = 80
-          Width = 71
-          Height = 13
-          Caption = #12393#12435#12368#12426#12450#12522#12540#12490
-        end
-        object LabelArenaLink: TLabel
-          Left = 22
-          Top = 96
-          Width = 72
-          Height = 13
-          Cursor = crHandPoint
-          Caption = 'LabelArenaLink'
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clBlue
-          Font.Height = -11
-          Font.Name = 'Tahoma'
-          Font.Style = [fsUnderline]
-          ParentFont = False
-          PopupMenu = PopupMenuLink
-          OnClick = LabelLinkClick
-          OnContextPopup = LabelLinkContextPopup
-        end
-        object Label70: TLabel
-          Left = 12
-          Top = 346
-          Width = 89
-          Height = 13
-          Caption = #12393#12435#12368#12426#12450#12522#12540#12490#12525#12464
-        end
-        object LabelALogLink: TLabel
-          Left = 22
-          Top = 362
-          Width = 67
-          Height = 13
-          Cursor = crHandPoint
-          Caption = 'LabelALogLink'
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clBlue
-          Font.Height = -11
-          Font.Name = 'Tahoma'
-          Font.Style = [fsUnderline]
-          ParentFont = False
-          PopupMenu = PopupMenuLink
-          OnClick = LabelLinkClick
-          OnContextPopup = LabelLinkContextPopup
-        end
         object LabelDummy: TLabel
           Left = 184
           Top = 514
           Width = 8
           Height = 13
           Caption = #12288
-        end
-        object Label75: TLabel
-          Left = 12
-          Top = 118
-          Width = 64
-          Height = 13
-          Caption = #12393#12435#12368#12426#12481#12540#12512
-        end
-        object LabelTeamLink: TLabel
-          Left = 22
-          Top = 134
-          Width = 69
-          Height = 13
-          Cursor = crHandPoint
-          Caption = 'LabelTeamLink'
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clBlue
-          Font.Height = -11
-          Font.Name = 'Tahoma'
-          Font.Style = [fsUnderline]
-          ParentFont = False
-          PopupMenu = PopupMenuLink
-          OnClick = LabelLinkClick
-          OnContextPopup = LabelLinkContextPopup
         end
       end
     end
@@ -3304,7 +3176,7 @@ object DonguriForm: TDonguriForm
         Left = 0
         Top = 472
         Width = 272
-        Height = 10
+        Height = 96
         Align = alClient
         BevelOuter = bvLowered
         ParentColor = True
@@ -3322,7 +3194,7 @@ object DonguriForm: TDonguriForm
   object BagImageList: TImageList
     Left = 16
     Bitmap = {
-      494C01010A001400700110001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01010A001400800110001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000003000000001002000000000000030
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000

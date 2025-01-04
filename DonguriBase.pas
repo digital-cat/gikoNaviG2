@@ -22,7 +22,6 @@ type
     TabSheetSetting: TTabSheet;
     PanelHome: TPanel;
     EditName: TEdit;
-    LabelID: TLabel;
     EditID: TEdit;
     Label3: TLabel;
     LabelPeriod: TLabel;
@@ -109,7 +108,6 @@ type
     KYIronLabel: TLabel;
     CraftKYPnlButton: TPanel;
     TabSheetChest: TTabSheet;
-    UsingPanel: TPanel;
     RenameGroupBox: TGroupBox;
     TransferGroupBox: TGroupBox;
     Label2: TLabel;
@@ -121,26 +119,7 @@ type
     NewNameEdit: TEdit;
     Label17: TLabel;
     TabSheetLink: TTabSheet;
-    Label18: TLabel;
-    LabelHomeLink: TLabel;
-    Label20: TLabel;
-    Label21: TLabel;
-    LabelFaqLink: TLabel;
     Label19: TLabel;
-    Label22: TLabel;
-    LabelApiLink: TLabel;
-    Label23: TLabel;
-    LabelRankLink: TLabel;
-    Label25: TLabel;
-    LabelCLogLink: TLabel;
-    Label27: TLabel;
-    LabelFLogLink: TLabel;
-    Label29: TLabel;
-    LabelItemWLink: TLabel;
-    Label31: TLabel;
-    LabelAlertLink: TLabel;
-    Label33: TLabel;
-    LabelUpliftLink: TLabel;
     PopupMenuLink: TPopupMenu;
     ManuItemCopy: TMenuItem;
     ManuItemOpen: TMenuItem;
@@ -148,11 +127,7 @@ type
     Panel2: TPanel;
     PanelSetting: TPanel;
     Panel4: TPanel;
-    Panel5: TPanel;
     ChestB70PnlButton: TPanel;
-    Label28: TLabel;
-    LabelShopLink: TLabel;
-    Label32: TLabel;
     Label4: TLabel;
     KYCostLabel: TLabel;
     Label5: TLabel;
@@ -171,7 +146,6 @@ type
     AutoLoginCheckBox: TCheckBox;
     AutoLoginLabel: TLabel;
     ModePanel: TPanel;
-    Label30: TLabel;
     Label34: TLabel;
     ModWPnlButton: TPanel;
     ModAPnlButton: TPanel;
@@ -295,11 +269,7 @@ type
     ModUseAPnlButton: TPanel;
     ReCreateIndyCheckBox: TCheckBox;
     Label68: TLabel;
-    Label69: TLabel;
-    LabelArenaLink: TLabel;
     LinkScrollBox: TScrollBox;
-    Label70: TLabel;
-    LabelALogLink: TLabel;
     LabelDummy: TLabel;
     CraftRPGroupBox: TGroupBox;
     Label71: TLabel;
@@ -314,9 +284,20 @@ type
     TimerReload: TTimer;
     ImeDontCareCheckBox: TCheckBox;
     Label73: TLabel;
-    Label75: TLabel;
-    LabelTeamLink: TLabel;
     TabSheetNecklace: TTabSheet;
+    BtlChestPnlButton: TPanel;
+    NcklcTopPanel: TPanel;
+    NcklcAllCheckBox: TCheckBox;
+    LockNPnlButton: TPanel;
+    UnlockNPnlButton: TPanel;
+    RecycleNPnlButton: TPanel;
+    UseNPnlButton: TPanel;
+    ListViewNcklc: TListView;
+    UsingNcklcLabel: TLabel;
+    RemNcklcPnlButton: TPanel;
+    GridNcklcUsing1: TStringGrid;
+    GridNcklcUsing2: TStringGrid;
+    UsingScrollBox: TScrollBox;
     procedure TimerInitTimer(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCreate(Sender: TObject);
@@ -421,6 +402,22 @@ type
     procedure TimerReloadTimer(Sender: TObject);
     procedure SpeedButtonReloadClick(Sender: TObject);
     procedure ImeDontCareCheckBoxClick(Sender: TObject);
+    procedure BtlChestPnlButtonClick(Sender: TObject);
+    procedure ListViewNcklcChange(Sender: TObject; Item: TListItem;
+      Change: TItemChange);
+    procedure ListViewNcklcColumnClick(Sender: TObject; Column: TListColumn);
+    procedure ListViewNcklcCompare(Sender: TObject; Item1, Item2: TListItem;
+      Data: Integer; var Compare: Integer);
+    procedure NcklcAllCheckBoxClick(Sender: TObject);
+    procedure LockNPnlButtonClick(Sender: TObject);
+    procedure UnlockNPnlButtonClick(Sender: TObject);
+    procedure RecycleNPnlButtonClick(Sender: TObject);
+    procedure UseNPnlButtonClick(Sender: TObject);
+    procedure RemNcklcPnlButtonClick(Sender: TObject);
+    procedure ListViewNcklcInfoTip(Sender: TObject; Item: TListItem;
+      var InfoTip: string);
+    procedure ListViewInfoTip(Sender: TObject; Item: TListItem;
+      var InfoTip: string);
   private
     { Private declarations }
     FHunter: Boolean;
@@ -428,8 +425,12 @@ type
     FLink: String;
     FWpnSortIdx: Integer;
     FArmSortIdx: Integer;
+    FNclSortIdx: Integer;
     FWpnSortAsc: Boolean;
     FArmSortAsc: Boolean;
+    FNclSortAsc: Boolean;
+    FLinkLabelList: TList;
+    FLinkTitleLabelList: TList;
 
     procedure SetColor;
     procedure SetButtonColor;
@@ -453,6 +454,7 @@ type
     procedure UseItem(list: TListView);
 		procedure SetSkillInfo(val: Integer; rate: Integer; sel: Boolean; panel: TPanel; prgbar: TProgressBar; prglbl: TLabel);
     procedure OpenChest(amount: Integer; chestName: String);
+    procedure OpenBattleChest;
     function NumComp(text1, text2: String): Integer;
     function atoi(str: String; var numLen: Integer): Integer;
     function NumStrComp(text1, text2: String): Integer;
@@ -482,6 +484,12 @@ uses
   DonguriRegister;
 
 type
+  TLinkInfo = record
+    Title: String;
+    URL:   String;
+    Note:  String;
+  end;
+
 	StcIndex = (
   	idxCannon    = 0,
     idxFight     = 1,
@@ -492,22 +500,24 @@ type
     idxNumIron   = 2,
     idxIronKey   = 3,
     idxMarimo    = 4,
-    idxWdCnBall  = 5,
-    idxIrCnBall  = 6,
-    idxHP        = 7,
-    idxRowCount  = 8);
+    idxBtlToken  = 5,
+    idxWdCnBall  = 6,
+    idxIrCnBall  = 7,
+    idxHP        = 8,
+    idxRowCount  = 9);
 
 const
 	COL_STSC: array [0..1] of string = (
     '　どんぐり大砲',
     '　大乱闘'
   );
-  COL_NAME: array [0..7] of string  = (
+  COL_NAME: array [0..8] of string  = (
     '　どんぐり残高',
   	'　木材',
     '　鉄',
     '　鉄のキー',
     '　マリモ',
+    '　バトルトークン',
     '　木製の大砲の玉',
     '　鉄の大砲の玉',
     '　HP'
@@ -566,23 +576,33 @@ const
     ctInteger,
     ctInteger
   );
-
-  URL_ROOT  : String = 'https://donguri.5ch.net/';
-  URL_FAQ   : String = 'https://donguri.5ch.net/faq';
-  URL_API   : String = 'https://donguri.5ch.net/api';
-  URL_RANK  : String = 'https://donguri.5ch.net/rank';
-  URL_CLOGS : String = 'https://donguri.5ch.net/cannonlogs';
-  URL_FLOGS : String = 'https://donguri.5ch.net/fightlogs';
-  URL_ITEMW : String = 'https://donguri.5ch.net/itemwatch';
-  URL_ALERT : String = 'https://donguri.5ch.net/alert';
-  URL_SHOP  : String = 'https://donguri.5ch.net/keyshop';
-  URL_UPLIFT: String = 'https://uplift.5ch.net/';
-  URL_ARENA : String = 'https://donguri.5ch.net/arena';
-  URL_TEAM  : String = 'https://donguri.5ch.net/team';
-  URL_ALOGS : String = 'https://donguri.5ch.net/arenalogs';
+  COL_TYPE_NCL: array [0..4] of TColumnType = (
+  	ctString,
+  	ctString,
+  	ctString,
+  	ctString,
+    ctInteger
+  );
 
 //  CAP_USING_TOP: String = 'ﾛｯｸ／ﾚｱﾘﾃｨ';
   CAP_USING_TOP: String = 'レアリティ';
+
+  LINK_INFO: array[0..13] of TLinkInfo = (
+    (Title: 'どんぐりシステムWEBサイト'; URL: 'https://donguri.5ch.net/';               Note: '※未登録警備員ではログインできません。'),
+    (Title: 'どんぐりアリーナ';          URL: 'https://donguri.5ch.net/arena';          Note: ''),
+    (Title: 'どんぐりチーム';            URL: 'https://donguri.5ch.net/team';           Note: ''),
+    (Title: 'どんぐりチームバトル';      URL: 'https://donguri.5ch.net/teambattle';     Note: ''),
+    (Title: 'どんぐりシステムFAQ';       URL: 'https://donguri.5ch.net/faq';            Note: ''),
+    (Title: 'どんぐり大砲API';           URL: 'https://donguri.5ch.net/api';            Note: ''),
+    (Title: 'どんぐりランキング';        URL: 'https://donguri.5ch.net/rank';           Note: ''),
+    (Title: 'どんぐり大砲ログ';          URL: 'https://donguri.5ch.net/cannonlogs';     Note: ''),
+    (Title: 'どんぐり大乱闘ログ';        URL: 'https://donguri.5ch.net/fightlogs';      Note: ''),
+    (Title: 'どんぐりアリーナログ';      URL: 'https://donguri.5ch.net/arenalogs';      Note: ''),
+    (Title: 'アイテムウォッチ';          URL: 'https://donguri.5ch.net/itemwatch';      Note: ''),
+    (Title: '荒らしアラート';            URL: 'https://donguri.5ch.net/alert';          Note: ''),
+    (Title: 'どんぐりショップ（鉄のキー購入）'; URL: 'https://donguri.5ch.net/keyshop'; Note: '※未登録警備員では利用できません。'),
+    (Title: 'UPLIFT';                    URL: 'https://uplift.5ch.net/';                Note: '')
+  );
 
 {$R *.dfm}
 
@@ -601,17 +621,23 @@ procedure TDonguriForm.FormCreate(Sender: TObject);
 var
 	i: Integer;
 	wp: TWindowPlacement;
-  hintText: String;
+//  hintText: String;
   mode: String;
 	sel: TGridRect;
   colw: Integer;
+  linkLabel: TLabel;
+  labelTop: Integer;
 begin
+  FLinkLabelList      := TList.Create;
+  FLinkTitleLabelList := TList.Create;
 	FHunter := False;
 	FBag := TDonguriBag.Create;
   FWpnSortIdx := 0;
   FArmSortIdx := 0;
+  FNclSortIdx := 0;
   FWpnSortAsc := True;
   FArmSortAsc := True;
+  FNclSortAsc := True;
 
 	PageControl.ActivePageIndex := 0;
   PageControlItemBag.ActivePageIndex := 0;
@@ -645,19 +671,19 @@ begin
 	ColorRadioGroup.ItemIndex := GikoSys.Setting.DonguriTheme;
   ImeDontCareCheckBox.Checked := GikoSys.Setting.DonguriImeDontCare;
   SetImeMode;
-	SetColor;
+	//SetColor;
   CannonMenuCheckBox.Checked := GikoSys.Setting.DonguriMenuTop;
   ReCreateIndyCheckBox.Checked := GikoSys.Setting.DonguriReCreateIndy;
 
   ClearInfoValue;
 
-  hintText := 'レアリティ出現率';
-  for i := Low(RARITY_TABLE) to High(RARITY_TABLE) do
-    hintText := hintText + #10 + Format(' %s : %s', [RARITY_TABLE[i, 0], RARITY_TABLE[i, 1]]);
-  ListViewWeapon.Hint := hintText;
-  ListViewWeapon.ShowHint := True;
-  ListViewArmor.Hint := hintText;
-  ListViewArmor.ShowHint := True;
+//  hintText := 'レアリティ出現率';
+//  for i := Low(RARITY_TABLE) to High(RARITY_TABLE) do
+//    hintText := hintText + #10 + Format(' %s : %s', [RARITY_TABLE[i, 0], RARITY_TABLE[i, 1]]);
+//  ListViewWeapon.Hint := hintText;
+//  ListViewWeapon.ShowHint := True;
+//  ListViewArmor.Hint := hintText;
+//  ListViewArmor.ShowHint := True;
 
   GridWeaponUsing1.ColWidths[1] := GridWeaponUsing1.Width - GridWeaponUsing1.DefaultColWidth;
 	colw := (GridWeaponUsing2.Width - GridWeaponUsing2.DefaultColWidth) div 2;
@@ -697,6 +723,18 @@ begin
   GridArmorUsing3.Cells[1, 0] := 'MOD';
   GridArmorUsing3.Cells[2, 0] := 'マリモ';
 
+	colw := Integer(GridNcklcUsing1.Width - GridNcklcUsing1.DefaultColWidth) div 2;
+  GridNcklcUsing1.ColWidths[1] := colw;
+  GridNcklcUsing1.ColWidths[2] := colw;
+  GridNcklcUsing2.ColWidths[0] := GridNcklcUsing2.Width;
+  GridNcklcUsing1.Selection := sel;
+  GridNcklcUsing2.Selection := sel;
+  GridNcklcUsing1.Cells[0, 0] := CAP_USING_TOP;
+  GridNcklcUsing1.Cells[1, 0] := '名称';
+  GridNcklcUsing1.Cells[2, 0] := 'マリモ';
+  GridNcklcUsing1.Cells[3, 0] := 'ロック状態';	// 非表示セル
+  GridNcklcUsing2.Cells[0, 0] := '属性';
+
   ModWGrid1.ColWidths[1] := 130;
   ModWGrid1.Selection := sel;
   ModWGrid2.ColWidths[1] := 60;
@@ -713,20 +751,46 @@ begin
   TabSheetModW.TabVisible := False;
   TabSheetModA.TabVisible := False;
 
-  LabelHomeLink.Caption   := URL_ROOT;
-  LabelFaqLink.Caption    := URL_FAQ;
-  LabelApiLink.Caption    := URL_API;
-  LabelApiLink.Caption    := URL_API;
-  LabelRankLink.Caption   := URL_RANK;
-  LabelCLogLink.Caption   := URL_CLOGS;
-  LabelFLogLink.Caption   := URL_FLOGS;
-  LabelItemWLink.Caption  := URL_ITEMW;
-  LabelAlertLink.Caption  := URL_ALERT;
-  LabelShopLink.Caption   := URL_SHOP;
-  LabelUpliftLink.Caption := URL_UPLIFT;
-  LabelArenaLink.Caption  := URL_ARENA;
-  LabelTeamLink.Caption   := URL_TEAM;
-  LabelALogLink.Caption   := URL_ALOGS;
+  // リンクページのラベル
+  labelTop := 26;
+  for i := Low(LINK_INFO) to High(LINK_INFO) do begin
+    linkLabel := TLabel.Create(Self);
+    linkLabel.Parent  := LinkScrollBox;
+    linkLabel.Left    := 12;
+    linkLabel.Top     := labelTop;
+    linkLabel.Caption := LINK_INFO[i].Title;
+    FLinkTitleLabelList.Add(linkLabel);
+
+    linkLabel := TLabel.Create(Self);
+    linkLabel.Parent  := LinkScrollBox;
+    linkLabel.Left    := 22;
+    linkLabel.Top     := labelTop + 16;
+    linkLabel.Caption := LINK_INFO[i].URL;
+    linkLabel.Cursor  := crHandPoint;
+    linkLabel.Font.Style     := [fsUnderline];
+    linkLabel.PopupMenu      := PopupMenuLink;
+    linkLabel.OnClick        := LabelLinkClick;
+    linkLabel.OnContextPopup := LabelLinkContextPopup;
+    FLinkLabelList.Add(linkLabel);
+
+    if LINK_INFO[i].Note <> '' then begin
+      linkLabel := TLabel.Create(Self);
+      linkLabel.Parent  := LinkScrollBox;
+      linkLabel.Left    := 22;
+      linkLabel.Top     := labelTop + 32;
+      linkLabel.Caption := LINK_INFO[i].Note;
+      FLinkTitleLabelList.Add(linkLabel);
+      labelTop := labelTop + 54;
+    end else
+      labelTop := labelTop + 38;
+  end;
+  // ダミーラベル
+  linkLabel := TLabel.Create(Self);
+  linkLabel.Parent  := LinkScrollBox;
+  linkLabel.Left    := 12;
+  linkLabel.Top     := labelTop;
+  linkLabel.Caption := '　';
+  FLinkTitleLabelList.Add(linkLabel);
 
   KYCostLabel.Caption := IntToStr(GikoSys.Setting.DonguriKYCost);
   CBCostLabel.Caption := IntToStr(GikoSys.Setting.DonguriCBCost);
@@ -736,6 +800,8 @@ begin
 	mode := GikoSys.DonguriSys.BuildMode;
   if mode <> '' then
   	PanelTop.Caption := mode;
+
+	SetColor;
 
 	TimerInit.Enabled := True;
 end;
@@ -791,6 +857,8 @@ begin
 end;
 
 procedure TDonguriForm.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+var
+  i: Integer;
 begin
 	try
   	if WindowState = wsMinimized then
@@ -802,7 +870,25 @@ begin
     GikoSys.Setting.DonguriHeight := Height;
 
     FreeAndNil(FBag);
-  Except
+  except
+  end;
+
+  try
+    for i := 0 to FLinkLabelList.Count - 1 do
+      if FLinkLabelList.Items[i] <> nil then
+        TLabel(FLinkLabelList.Items[i]).Free;
+  except
+  end;
+  try
+    for i := 0 to FLinkTitleLabelList.Count - 1 do
+      if FLinkTitleLabelList.Items[i] <> nil then
+        TLabel(FLinkTitleLabelList.Items[i]).Free;
+  except
+  end;
+  try
+    FreeAndNil(FLinkLabelList);
+    FreeAndNil(FLinkTitleLabelList);
+  except
   end;
 end;
 
@@ -963,6 +1049,7 @@ begin
     InfoGrid.Cells[1, Integer(idxNumIron)]  := IntToStr(home.Iron);
     InfoGrid.Cells[1, Integer(idxIronKey)]  := IntToStr(home.IronKey);
     InfoGrid.Cells[1, Integer(idxMarimo)]   := IntToStr(home.Marimo);
+    InfoGrid.Cells[1, Integer(idxBtlToken)] := IntToStr(home.BtlToken);
     InfoGrid.Cells[1, Integer(idxWdCnBall)] := IntToStr(home.WoodCB);
     InfoGrid.Cells[1, Integer(idxIrCnBall)] := IntToStr(home.IronCB);
     InfoGrid.Cells[1, Integer(idxHP)]       := IntToStr(home.HP);
@@ -1194,6 +1281,26 @@ begin
   	Compare := Compare * -1;
 end;
 
+procedure TDonguriForm.ListViewInfoTip(Sender: TObject; Item: TListItem;
+  var InfoTip: string);
+var
+  lv: TListView;
+  i: Integer;
+begin
+  if (Sender = nil) or (Item = nil) then
+    Exit;
+  try
+    lv := TListView(Sender);
+    InfoTip := Format('[%s] %s %s', [Trim(Item.Caption), Item.SubItems[0], Item.SubItems[1]]);
+    for i := 3 to lv.Columns.Count - 1 do begin
+      InfoTip := InfoTip + Format('%s%s：', [#13#10, lv.Column[i].Caption]);
+      if (i - 1) < Item.SubItems.Count then
+        InfoTip := InfoTip + Item.SubItems[i - 1];
+    end;
+  except
+  end;
+end;
+
 procedure TDonguriForm.ListViewArmorColumnClick(Sender: TObject;
   Column: TListColumn);
 begin
@@ -1235,6 +1342,88 @@ begin
 
   if not FArmSortAsc then
   	Compare := Compare * -1;
+end;
+
+procedure TDonguriForm.ListViewNcklcChange(Sender: TObject; Item: TListItem;
+  Change: TItemChange);
+var
+  lock, unlock: Integer;
+begin
+	CheckCount(ListViewNcklc, lock, unlock);
+	LockNPnlButton.Enabled := (unlock > 0);
+  UnlockNPnlButton.Enabled := (lock > 0);
+  RecycleNPnlButton.Enabled := (unlock > 0);
+  UseNPnlButton.Enabled := ((lock + unlock) = 1);
+  SetButtonColor;
+end;
+
+procedure TDonguriForm.ListViewNcklcColumnClick(Sender: TObject;
+  Column: TListColumn);
+begin
+	if FNclSortIdx = Column.Index then
+  	FNclSortAsc := not FNclSortAsc
+  else begin
+		FNclSortIdx := Column.Index;
+  	FNclSortAsc := True;
+  end;
+	ListViewNcklc.SortType := stNone;
+	ListViewNcklc.SortType := stData;
+end;
+
+procedure TDonguriForm.ListViewNcklcCompare(Sender: TObject; Item1,
+  Item2: TListItem; Data: Integer; var Compare: Integer);
+var
+  text1, text2: String;
+  typ: TColumnType;
+begin
+	if (FNclSortIdx > 0) and (FNclSortIdx <= Item1.SubItems.Count) then begin
+  	text1 := Item1.SubItems.Strings[FNclSortIdx - 1];
+  	text2 := Item2.SubItems.Strings[FNclSortIdx - 1];
+  end else begin
+    text1 := Item1.Caption;
+    text2 := Item2.Caption;
+  end;
+
+	if (FNclSortIdx >= Low(COL_TYPE_NCL)) and (FNclSortIdx <= High(COL_TYPE_NCL)) then
+    typ := COL_TYPE_NCL[FNclSortIdx]
+  else
+  	typ := ctString;
+
+	case typ of
+  ctInteger: Compare := NumComp(text1, text2);
+	ctIntStr:  Compare := NumStrComp(text1, text2);
+  //ctString:
+  else       Compare := AnsiCompareStr(text1, text2);
+  end;
+
+  if not FNclSortAsc then
+  	Compare := Compare * -1;
+end;
+
+procedure TDonguriForm.ListViewNcklcInfoTip(Sender: TObject; Item: TListItem;
+  var InfoTip: string);
+var
+  lv: TListView;
+  n: TDonguriNcklc;
+  i: Integer;
+begin
+  if (Sender = nil) or (Item = nil) then
+    Exit;
+  try
+    InfoTip := Format('[%s] %s %s', [Trim(Item.Caption), Item.SubItems[0], Item.SubItems[1]]);
+    if Item.Data <> nil then begin
+      n := TDonguriNcklc(Item.Data);
+      for i := 0 to n.Attribute.Count - 1 do
+        InfoTip := InfoTip + #13#10 + n.Attribute.Strings[i];
+    end;
+    lv := TListView(Sender);
+    for i := 4 to lv.Columns.Count - 1 do begin
+      InfoTip := InfoTip + Format('%s%s：', [#13#10, lv.Column[i].Caption]);
+      if (i - 1) < Item.SubItems.Count then
+        InfoTip := InfoTip + Item.SubItems[i - 1];
+    end;
+  except
+  end;
 end;
 
 procedure TDonguriForm.ListViewWeaponChange(Sender: TObject; Item: TListItem;
@@ -1627,6 +1816,8 @@ end;
 
 
 procedure TDonguriForm.SetColor;
+var
+  i: Integer;
 begin
 	try
     case ColorRadioGroup.ItemIndex of
@@ -1663,15 +1854,18 @@ begin
         SetColors(BagTopPanel,         clBtnFace, clWindowText);
         SetColors(WeaponTopPanel,      clBtnFace, clWindowText);
         SetColors(ArmorTopPanel,       clBtnFace, clWindowText);
+        SetColors(NcklcTopPanel,       clBtnFace, clWindowText);
         SetColors(GridWeaponUsing1,    clWindow,  clWindowText); GridWeaponUsing1.FixedColor := clBtnFace;
         SetColors(GridWeaponUsing2,    clWindow,  clWindowText); GridWeaponUsing2.FixedColor := clBtnFace;
         SetColors(GridWeaponUsing3,    clWindow,  clWindowText); GridWeaponUsing3.FixedColor := clBtnFace;
         SetColors(GridArmorUsing1,     clWindow,  clWindowText); GridArmorUsing1.FixedColor := clBtnFace;
         SetColors(GridArmorUsing2,     clWindow,  clWindowText); GridArmorUsing2.FixedColor := clBtnFace;
         SetColors(GridArmorUsing3,     clWindow,  clWindowText); GridArmorUsing3.FixedColor := clBtnFace;
+        SetColors(GridNcklcUsing1,     clWindow,  clWindowText); GridNcklcUsing1.FixedColor := clBtnFace;
+        SetColors(GridNcklcUsing2,     clWindow,  clWindowText); GridNcklcUsing2.FixedColor := clBtnFace;
         SetColors(ListViewWeapon,      clWindow,  clWindowText);
         SetColors(ListViewArmor,       clWindow,  clWindowText);
-      	SetColors(UsingPanel,          clBtnFace, clWindowText);
+        SetColors(ListViewNcklc,       clWindow,  clWindowText);
         SetColors(ModWPanel,           clBtnFace, clWindowText);
         SetColors(ModWGrid1,           clWindow,  clWindowText); ModWGrid1.FixedColor := clBtnFace;
         SetColors(ModWGrid2,           clWindow,  clWindowText); ModWGrid2.FixedColor := clBtnFace;
@@ -1727,21 +1921,8 @@ begin
 
         TabSheetLink.Font.Color := clWindowText;
       	SetColors(LinkScrollBox, clBtnFace, clWindowText);
-        LabelHomeLink.Font.Color   := COL_LGHT_LINK;
-        LabelFaqLink.Font.Color    := COL_LGHT_LINK;
-        LabelApiLink.Font.Color    := COL_LGHT_LINK;
-        LabelApiLink.Font.Color    := COL_LGHT_LINK;
-        LabelRankLink.Font.Color   := COL_LGHT_LINK;
-        LabelCLogLink.Font.Color   := COL_LGHT_LINK;
-        LabelFLogLink.Font.Color   := COL_LGHT_LINK;
-        LabelItemWLink.Font.Color  := COL_LGHT_LINK;
-        LabelAlertLink.Font.Color  := COL_LGHT_LINK;
-        LabelShopLink.Font.Color   := COL_LGHT_LINK;
-        LabelUpliftLink.Font.Color := COL_LGHT_LINK;
-        LabelArenaLink.Font.Color  := COL_LGHT_LINK;
-        LabelTeamLink.Font.Color   := COL_LGHT_LINK;
-        LabelALogLink.Font.Color   := COL_LGHT_LINK;
-
+        for i := 0 to FLinkLabelList.Count - 1 do
+          TLabel(FLinkLabelList.Items[i]).Font.Color := COL_LGHT_LINK;
       end;
       1: begin
         PageControl.OwnerDraw := True;
@@ -1776,15 +1957,18 @@ begin
         SetColors(BagTopPanel,         COL_DARK_BKG1, COL_DARK_TEXT);
         SetColors(WeaponTopPanel,      COL_DARK_BKG1, COL_DARK_TEXT);
         SetColors(ArmorTopPanel,       COL_DARK_BKG1, COL_DARK_TEXT);
+        SetColors(NcklcTopPanel,       COL_DARK_BKG1, COL_DARK_TEXT);
         SetColors(GridWeaponUsing1,    COL_DARK_BKG2, COL_DARK_TEXT); GridWeaponUsing1.FixedColor := COL_DARK_BKG1;
         SetColors(GridWeaponUsing2,    COL_DARK_BKG2, COL_DARK_TEXT); GridWeaponUsing2.FixedColor := COL_DARK_BKG1;
         SetColors(GridWeaponUsing3,    COL_DARK_BKG2, COL_DARK_TEXT); GridWeaponUsing3.FixedColor := COL_DARK_BKG1;
         SetColors(GridArmorUsing1,     COL_DARK_BKG2, COL_DARK_TEXT); GridArmorUsing1.FixedColor := COL_DARK_BKG1;
         SetColors(GridArmorUsing2,     COL_DARK_BKG2, COL_DARK_TEXT); GridArmorUsing2.FixedColor := COL_DARK_BKG1;
         SetColors(GridArmorUsing3,     COL_DARK_BKG2, COL_DARK_TEXT); GridArmorUsing3.FixedColor := COL_DARK_BKG1;
+        SetColors(GridNcklcUsing1,     COL_DARK_BKG2, COL_DARK_TEXT); GridNcklcUsing1.FixedColor := COL_DARK_BKG1;
+        SetColors(GridNcklcUsing2,     COL_DARK_BKG2, COL_DARK_TEXT); GridNcklcUsing2.FixedColor := COL_DARK_BKG1;
         SetColors(ListViewWeapon,      COL_DARK_BKG2, COL_DARK_TEXT);
         SetColors(ListViewArmor,       COL_DARK_BKG2, COL_DARK_TEXT);
-      	SetColors(UsingPanel,          COL_DARK_BKG1, COL_DARK_TEXT);
+        SetColors(ListViewNcklc,       COL_DARK_BKG2, COL_DARK_TEXT);
       	SetColors(ModWPanel,           COL_DARK_BKG1, COL_DARK_TEXT);
         SetColors(ModWGrid1,           COL_DARK_BKG2, COL_DARK_TEXT); ModWGrid1.FixedColor := COL_DARK_BKG1;
         SetColors(ModWGrid2,           COL_DARK_BKG2, COL_DARK_TEXT); ModWGrid2.FixedColor := COL_DARK_BKG1;
@@ -1840,20 +2024,8 @@ begin
 
         TabSheetLink.Font.Color := COL_DARK_TEXT;
       	SetColors(LinkScrollBox, COL_DARK_BKG1, COL_DARK_TEXT);
-        LabelHomeLink.Font.Color   := COL_DARK_LINK;
-        LabelFaqLink.Font.Color    := COL_DARK_LINK;
-        LabelApiLink.Font.Color    := COL_DARK_LINK;
-        LabelApiLink.Font.Color    := COL_DARK_LINK;
-        LabelRankLink.Font.Color   := COL_DARK_LINK;
-        LabelCLogLink.Font.Color   := COL_DARK_LINK;
-        LabelFLogLink.Font.Color   := COL_DARK_LINK;
-        LabelItemWLink.Font.Color  := COL_DARK_LINK;
-        LabelAlertLink.Font.Color  := COL_DARK_LINK;
-        LabelShopLink.Font.Color   := COL_DARK_LINK;
-        LabelUpliftLink.Font.Color := COL_DARK_LINK;
-        LabelArenaLink.Font.Color  := COL_DARK_LINK;
-        LabelTeamLink.Font.Color   := COL_DARK_LINK;
-        LabelALogLink.Font.Color   := COL_DARK_LINK;
+        for i := 0 to FLinkLabelList.Count - 1 do
+          TLabel(FLinkLabelList.Items[i]).Font.Color := COL_DARK_LINK;
       end;
     end;
 
@@ -1933,6 +2105,7 @@ begin
   SetButtonColors(SlotPnlButton,   bkg, txt, dtx);
   SetButtonColors(RemWeaponPnlButton, bkg, txt, dtx);
   SetButtonColors(RemArmorPnlButton,  bkg, txt, dtx);
+  SetButtonColors(RemNcklcPnlButton,  bkg, txt, dtx);
   SetButtonColors(ModUseWPnlButton,   bkg, txt, dtx);
   SetButtonColors(ModUseAPnlButton,   bkg, txt, dtx);
   SetButtonColors(LockWPnlButton,     bkg, txt, dtx);
@@ -1964,6 +2137,10 @@ begin
   SetButtonColors(DwnWeightPnlButton, bkg, txt, dtx);
   SetButtonColors(ModCritAPnlButton,  bkg, txt, dtx);
   SetButtonColors(DwnCritAPnlButton,  bkg, txt, dtx);
+  SetButtonColors(LockNPnlButton,     bkg, txt, dtx);
+  SetButtonColors(UnlockNPnlButton,   bkg, txt, dtx);
+  SetButtonColors(RecycleNPnlButton,  bkg, txt, dtx);
+  SetButtonColors(UseNPnlButton,      bkg, txt, dtx);
   SetButtonColors(ResurrectPnlButton, bkg, txt, dtx);
   SetButtonColors(RenamePnlButton,    bkg, txt, dtx);
 	SetButtonColors(TransferPnlButton,  bkg, txt, dtx);
@@ -1974,6 +2151,7 @@ begin
   SetButtonColors(BagPnlButton,       bkg, txt, dtx);
   SetButtonColors(ChestPnlButton,     bkg, txt, dtx);
   SetButtonColors(ChestB70PnlButton,  bkg, txt, dtx);
+  SetButtonColors(BtlChestPnlButton,  bkg, txt, dtx);
 end;
 
 procedure TDonguriForm.SetBtnCol(button: TPanel);
@@ -2106,10 +2284,15 @@ begin
 
 	text := grid.Cells[ACol, ARow];
 
-  if (ARow and 1) = 0 then
-		grid.Canvas.Brush.Color := grid.FixedColor
+  if grid.Tag = 12 then // 使用中ネックレスの属性
+    if ARow = 0 then // タイトルは1行目のみ
+      grid.Canvas.Brush.Color := grid.FixedColor
+    else
+      grid.Canvas.Brush.Color := grid.Color
+  else if (ARow and 1) = 0 then
+    grid.Canvas.Brush.Color := grid.FixedColor
   else
-		grid.Canvas.Brush.Color := grid.Color;
+    grid.Canvas.Brush.Color := grid.Color;
 	grid.Canvas.FillRect(Rect);
 
 	drwRct := Rect;
@@ -2118,11 +2301,14 @@ begin
 		drwRct.Right := Rect.Right - 4;
 
 	if (ACol = 0) and (ARow = 1) and (grid.Cells[0, 0] = CAP_USING_TOP) then begin
-  	imgIdx := IndexText(text, RARITY);
+    if grid.Tag = 11 then // 使用中ネックレス
+    	imgIdx := GetImageIndexNcklce(text, (grid.ColCount >= 4) and (grid.Cells[3, 1] = '1'))
+    else
+    	imgIdx := IndexText(text, RARITY);
     if (imgIdx < 0) and (Pos(UR_SN, text) = 1) then		// S/N付きUR
 			imgIdx := UR_IDX;
     if imgIdx >= 0 then begin
-    	if (grid.ColCount >= 3) and (grid.Cells[2, 1] = '1') then
+    	if (grid.Tag <> 11) and (grid.ColCount >= 3) and (grid.Cells[2, 1] = '1') then
       	imgIdx := imgIdx + Length(RARITY);
     	BagImageList.Draw(grid.Canvas, drwRct.Left, drwRct.Top, imgIdx);
     end;
@@ -2461,12 +2647,17 @@ var
   aItmNo: String;
   w: TDonguriWeapon;
   a: TDonguriArmor;
+  n: TDonguriNcklc;
+  eql: Integer;
+  lck: Integer;
 begin
 	try
   	ListViewWeapon.Items.BeginUpdate();
     ListViewArmor.Items.BeginUpdate();
+    ListViewNcklc.Items.BeginUpdate();
     ListViewWeapon.Items.Clear;
     ListViewArmor.Items.Clear;
+    ListViewNcklc.Items.Clear;
 
   	usedSlot := FBag.WeaponList.Count + FBag.ArmorList.Count;
   	SlotLabel.Caption := Format('%d / %d', [usedSlot, FBag.Slot]);
@@ -2491,6 +2682,21 @@ begin
     GridArmorUsing3.Cells[1, 1] := FBag.UseArmor.Modify;
     GridArmorUsing3.Cells[2, 1] := FBag.UseArmor.Marimo;
 
+    GridNcklcUsing1.Cells[0, 1] := FBag.UseNcklc.Rarity;
+    GridNcklcUsing1.Cells[1, 1] := FBag.UseNcklc.Name;
+    GridNcklcUsing1.Cells[2, 1] := FBag.UseNcklc.Marimo;
+		GridNcklcUsing1.Cells[3, 1] := '';
+    if FBag.UseNcklc.Attribute.Count > 0 then begin
+      GridNcklcUsing2.RowCount := FBag.UseNcklc.Attribute.Count + 1;
+      for i := 0 to FBag.UseNcklc.Attribute.Count - 1 do begin
+        GridNcklcUsing2.Cells[0, i+1] := FBag.UseNcklc.Attribute.Strings[i];
+      end;
+    end else begin
+      GridNcklcUsing2.RowCount := 2;
+      GridNcklcUsing2.Cells[0, 1] := '';
+    end;
+    GridNcklcUsing2.Height := (GridNcklcUsing2.DefaultRowHeight + 1) * GridNcklcUsing2.RowCount + 1;
+
   	wItmNo := FBag.UseWeapon.ItemNo;
     for i := 0 to FBag.WeaponList.Count - 1 do begin
       item := ListViewWeapon.Items.Add;
@@ -2509,10 +2715,27 @@ begin
 		    GridArmorUsing1.Cells[2, 1] := '1';
     end;
 
+    // 使用中のネックレスはアイテム番号を取得できない
+    eql := 0; // 使用中と同じ内容のネックレスの数
+    lck := 0; // その中でロック中の数
+    for i := 0 to FBag.NcklcList.Count - 1 do begin
+      item := ListViewNcklc.Items.Add;
+      n := TDonguriNcklc(FBag.NcklcList.Items[i]);
+      n.SetListItem(i + 1, item);
+      if n.ChkEqual(FBag.UseNcklc) then begin
+        Inc(eql);
+        if n.Lock then
+          Inc(lck);
+      end;
+    end;
+    if (eql > 0) and (eql = lck) then// 同じ内容のネックレスが全部ロックされている場合
+      GridNcklcUsing1.Cells[3, 1] := '1';  // 使用中ネックレスはロックされている
+
     RemWeaponPnlButton.Enabled := (FBag.UseWeapon.IsEmpty = False);
 		ModUseWPnlButton.Enabled   := (FBag.UseWeapon.IsEmpty = False);
     RemArmorPnlButton.Enabled := (FBag.UseArmor.IsEmpty = False);
 		ModUseAPnlButton.Enabled  := (FBag.UseArmor.IsEmpty = False);
+    RemNcklcPnlButton.Enabled := (FBag.UseNcklc.IsEmpty = False);
     LockWPnlButton.Enabled    := False;
     UnlockWPnlButton.Enabled  := False;
     RecycleWPnlButton.Enabled := False;
@@ -2523,6 +2746,10 @@ begin
     RecycleAPnlButton.Enabled := False;
     UseAPnlButton.Enabled     := False;
     ModAPnlButton.Enabled     := False;
+    LockNPnlButton.Enabled    := False;
+    UnlockNPnlButton.Enabled  := False;
+    RecycleNPnlButton.Enabled := False;
+    UseNPnlButton.Enabled     := False;
     SetButtonColor;
 
   except
@@ -2532,6 +2759,7 @@ begin
   end;
   ListViewWeapon.Items.EndUpdate();
   ListViewArmor.Items.EndUpdate();
+  ListViewNcklc.Items.EndUpdate();
 end;
 
 procedure TDonguriForm.SlotPnlButtonClick(Sender: TObject);
@@ -2579,7 +2807,7 @@ begin
 	if FBag.UseWeapon.IsEmpty then
   	Exit;
 
-  if GikoSys.DonguriSys.Unequip(FBag, True) then
+  if GikoSys.DonguriSys.Unequip(FBag, ittWeapon) then
 		ShowBag
   else
   	ShowHttpError;
@@ -2593,7 +2821,21 @@ begin
 	if FBag.UseArmor.IsEmpty then
   	Exit;
 
-  if GikoSys.DonguriSys.Unequip(FBag, False) then
+  if GikoSys.DonguriSys.Unequip(FBag, ittArmor) then
+		ShowBag
+  else
+  	ShowHttpError;
+end;
+
+procedure TDonguriForm.RemNcklcPnlButtonClick(Sender: TObject);
+begin
+	if GikoSys.DonguriSys.Processing then
+  	Exit;
+
+	if FBag.UseNcklc.IsEmpty then
+  	Exit;
+
+  if GikoSys.DonguriSys.Unequip(FBag, ittNcklc) then
 		ShowBag
   else
   	ShowHttpError;
@@ -2624,6 +2866,52 @@ begin
   except
   end;
 end;
+
+procedure TDonguriForm.NcklcAllCheckBoxClick(Sender: TObject);
+var
+	check: Boolean;
+  i: Integer;
+begin
+	try
+    check := NcklcAllCheckBox.Checked;
+    for i := 0 to ListViewNcklc.Items.Count - 1 do
+      ListViewNcklc.Items.Item[i].Checked := check;
+  except
+  end;
+end;
+
+procedure TDonguriForm.BtlChestPnlButtonClick(Sender: TObject);
+begin
+	if GikoSys.DonguriSys.Processing then
+  	Exit;
+	OpenBattleChest;
+end;
+
+{ バトル宝箱を開く }
+procedure TDonguriForm.OpenBattleChest;
+const
+  CAP_MSG: String = 'アイテムバッグ';
+var
+  res: String;
+begin
+	if GikoSys.DonguriSys.Processing then
+  	Exit;
+
+	if MsgBox(Handle, 'バトルトークンを1個消費します。' + #10 + 'バトル宝箱を開けますか？',
+  					CAP_MSG, MB_YESNO or MB_ICONQUESTION) <> IDYES then
+    Exit;
+
+  if GikoSys.DonguriSys.BattleChestOpen(FBag, res) then
+		ShowBag
+  else if res <> ''then begin
+  	if Pos('<html', res) < 1 then
+			MsgBox(Handle, res, CAP_MSG, MB_OK or MB_ICONWARNING)
+    else
+		  MsgBox(Handle, 'バトル宝箱を開くことができませんでした。', CAP_MSG, MB_OK or MB_ICONWARNING);
+  end else
+  	ShowHttpError;
+end;
+
 
 procedure TDonguriForm.ChestB70PnlButtonClick(Sender: TObject);
 begin
@@ -2727,6 +3015,11 @@ begin
 	LockItem(ListViewWeapon);
 end;
 
+procedure TDonguriForm.LockNPnlButtonClick(Sender: TObject);
+begin
+	LockItem(ListViewNcklc);
+end;
+
 procedure TDonguriForm.LockItem(list: TListView);
 const
   CAP_MSG: String = 'アイテムバッグ';
@@ -2773,6 +3066,11 @@ end;
 procedure TDonguriForm.UnlockWPnlButtonClick(Sender: TObject);
 begin
 	UnlockItem(ListViewWeapon);
+end;
+
+procedure TDonguriForm.UnlockNPnlButtonClick(Sender: TObject);
+begin
+	UnlockItem(ListViewNcklc);
 end;
 
 procedure TDonguriForm.UnlockItem(list: TListView);
@@ -2823,6 +3121,11 @@ begin
 	RecycleItem(ListViewWeapon);
 end;
 
+procedure TDonguriForm.RecycleNPnlButtonClick(Sender: TObject);
+begin
+	RecycleItem(ListViewNcklc);
+end;
+
 procedure TDonguriForm.RecycleItem(list: TListView);
 const
   CAP_MSG: String = 'アイテムバッグ';
@@ -2870,6 +3173,12 @@ end;
 procedure TDonguriForm.UseWPnlButtonClick(Sender: TObject);
 begin
 	UseItem(ListViewWeapon);
+  SetBtnCol(TPanel(Sender));
+end;
+
+procedure TDonguriForm.UseNPnlButtonClick(Sender: TObject);
+begin
+	UseItem(ListViewNcklc);
   SetBtnCol(TPanel(Sender));
 end;
 

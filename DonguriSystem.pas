@@ -14,6 +14,7 @@ uses
 type
   TDonguriAutoLogin = (atlOn, atlOff, atlUnknown);
   TDonguriDsplayType = (dstOn, dstOff, dstUnknown);
+  TDonguriItemType = (ittWeapon, ittArmor, ittNcklc);
   TModifyWeapon = (mdwDmgMin, mdwDmgMax, mdwSpeed,  mdwCrit, mdwDmgMinDwn, mdwDmgMaxDwn, mdwSpeedDwn,  mdwCritDwn);
   TModifyArmor  = (mdaDefMin, mdaDefMax, mdaWeight, mdaCrit, mdaDefMinDwn, mdaDefMaxDwn, mdaWeightDwn, mdaCritDwn);
   TLoginMode = (
@@ -72,6 +73,7 @@ type
     Iron:       Integer;
     IronKey:    Integer;
     Marimo:     Integer;
+    BtlToken:   Integer;
     WoodCB:     Integer;
     IronCB:     Integer;
     HP:         Integer;
@@ -145,13 +147,27 @@ type
     procedure SetItems(html: String);
   end;
 
+  TDonguriNcklc = class(TDonguriItem)
+  public
+    Attribute:  TStringList;  // 属性
+
+		constructor Create;
+		destructor Destroy; override;
+    procedure Clear; override;
+    procedure SetListItem(no: Integer; var item: TListItem); override;
+    procedure SetItems(html: String);
+    function ChkEqual(chk: TDonguriNcklc): Boolean;
+  end;
+
   TDonguriBag = class(TObject)
   public
     Slot:       Integer;
     UseWeapon:  TDonguriWeapon;
     UseArmor:   TDonguriArmor;
+    UseNcklc:   TDonguriNcklc;
     WeaponList: TList;
     ArmorList:  TList;
+    NcklcList: TList;
 
 		constructor Create;
 		destructor Destroy; override;
@@ -223,8 +239,9 @@ type
     function CraftRP(amount: Integer; var response: String): Boolean;
     function Bag(var itemBag: TDonguriBag; var response: String; var denied: Boolean): Boolean;
     function AddSlots(var response: String): Boolean;
-    function Unequip(var itemBag: TDonguriBag; weapon: Boolean): Boolean;
+    function Unequip(var itemBag: TDonguriBag; itmType: TDonguriItemType): Boolean;
     function ChestOpen(amount: Integer; var itemBag: TDonguriBag; var response: String): Boolean;
+    function BattleChestOpen(var itemBag: TDonguriBag; var response: String): Boolean;
     function RecycleAll(var itemBag: TDonguriBag): Boolean;
     function Lock(itemNoList: TStringList; var itemBag: TDonguriBag): Boolean;
     function Unlock(itemNoList: TStringList; var itemBag: TDonguriBag): Boolean;
@@ -258,6 +275,7 @@ type
   end;
 
 
+function GetImageIndexNcklce(rarity: String; lock: Boolean): Integer;
 function IsRootPage(html: String): Boolean;
 function Extract(kw1, kw2, text: String; var val: String): Boolean;
 function Extract2(kw1, kw2: String; var text: String; var val: String): Boolean;
@@ -292,6 +310,7 @@ const
   URL_DNG_ADDSLOT = 'https://donguri.5ch.net/addslots';							// スロット追加
   URL_DNG_UNEQW   = 'https://donguri.5ch.net/unequip/weapon';				// 装備中の武器を外す
   URL_DNG_UNEQA   = 'https://donguri.5ch.net/unequip/armor';				// 装備中の防具を外す
+  URL_DNG_UNEQN   = 'https://donguri.5ch.net/unequip/necklace';     // 装備中のネックレスを外す
   URL_DNG_CHEST   = 'https://donguri.5ch.net/chest';								// 宝箱
   URL_DNG_CHESTOP = 'https://donguri.5ch.net/open';									// 宝箱を開ける
   URL_DNG_RECYALL = 'https://donguri.5ch.net/recycleunlocked';			// ロックされていない武器防具を全て分解する
@@ -319,6 +338,9 @@ const
   URL_DNG_DWNA_DH = 'https://donguri.5ch.net/modify/armor/defhighdown/';	// 防具改造 防御最大値   低下
   URL_DNG_DWNA_WT = 'https://donguri.5ch.net/modify/armor/weightdown/';		// 防具改造 重量         低下
   URL_DNG_DWNA_CR = 'https://donguri.5ch.net/modify/armor/criticaldown/';	// 防具改造 クリティカル 低下
+
+  URL_DNG_BCHEST  = 'https://donguri.5ch.net/battlechest';          // バトル宝箱
+  URL_DNG_BCHESTO = 'https://donguri.5ch.net/openbattlechest';      // バトル宝箱を開ける
 
   URL_DNG_CANNON  = 'https://donguri.5ch.net/cannon';								// どんぐり大砲
   URL_DNG_CANNON2 = 'https://donguri.5ch.net/confirm';							// どんぐり大砲確認
@@ -1565,6 +1587,8 @@ const
   KW_USEW_E = '</p>';
   KW_USEA_S = '<h3>装備している防具: </h3>';
   KW_USEA_E = '</p>';
+  KW_USEN_S = '<h3>装備しているネックレス: </h3>';
+  KW_USEN_E = '</p>';
   KW_IBAG_S = '<h3>アイテムバッグ:</h3>';
   KW_NCKL_S = '<table id="necklaceTable">';
   KW_NCKL_E = '</table>';
@@ -1584,6 +1608,7 @@ var
   idx: Integer;
   wp: TDonguriWeapon;
   am: TDonguriArmor;
+  nc: TDonguriNcklc;
 begin
 	Result := False;
 
@@ -1610,19 +1635,29 @@ begin
       itemBag.UseArmor.SetItems(tmp);
     end;
 
+    // 使用中のネックレス
+		if Extract2(KW_USEN_S, KW_USEN_E, html, tmp) then begin
+    	idx := Pos(KW_TBDY_S, tmp);
+      if idx > 0 then
+      	Delete(tmp, 1, idx + 6);
+      itemBag.UseNcklc.SetItems(tmp);
+    end;
+
     idx := Pos(KW_IBAG_S, html);
     if idx > 0 then
     	Delete(html, 1, idx + Length(KW_IBAG_S) - 1);
 
     // ネックレス
-//		if Extract2(KW_NCKL_S, KW_NCKL_E, html, tmp1) and
-//       Extract2(KW_TBDY_S, KW_TBDY_E, tmp1, tmp) then begin
-//    	while True do begin
-//				if Extract2(KW_TROW_S, KW_TROW_E, tmp, tmp2) = False then
-//        	Break;
-//
-//      end;
-//    end;
+		if Extract2(KW_NCKL_S, KW_NCKL_E, html, tmp1) and
+       Extract2(KW_TBDY_S, KW_TBDY_E, tmp1, tmp) then begin
+    	while True do begin
+				if Extract2(KW_TROW_S, KW_TROW_E, tmp, tmp2) = False then
+        	Break;
+        nc := TDonguriNcklc.Create;
+        nc.SetItems(tmp2);
+        itemBag.NcklcList.Add(nc);
+      end;
+    end;
 
 		// 武器一覧
 		if Extract2(KW_WPNT_S, KW_WPNT_E, html, tmp1) and
@@ -1675,7 +1710,7 @@ begin
 end;
 
 // 装備を外す
-function TDonguriSys.Unequip(var itemBag: TDonguriBag; weapon: Boolean): Boolean;
+function TDonguriSys.Unequip(var itemBag: TDonguriBag; itmType: TDonguriItemType): Boolean;
 var
 	res: String;
   ret: Boolean;
@@ -1685,10 +1720,12 @@ begin
 	try
 	  ClearResponse;
 
-    if weapon then
-			ret := HttpGetCall(URL_DNG_UNEQW, res)		// 武器
-    else
-			ret := HttpGetCall(URL_DNG_UNEQA, res);		// 防具
+    case itmType of
+    ittWeapon: ret := HttpGetCall(URL_DNG_UNEQW, res);  // 武器
+    ittArmor : ret := HttpGetCall(URL_DNG_UNEQA, res);  // 防具
+    ittNcklc : ret := HttpGetCall(URL_DNG_UNEQN, res);  // ネックレス
+    else ret := False;
+    end;
 
     if ret and (Pos('<h1>アイテムバッグ</h1>', res) > 0) then
 			Result := ParceBag(res, itemBag);
@@ -1731,6 +1768,31 @@ begin
 	param.Free;
 
 end;
+
+// バトル宝箱を開ける
+function TDonguriSys.BattleChestOpen(var itemBag: TDonguriBag; var response: String): Boolean;
+var
+  ret: Boolean;
+  param: TStringList;
+begin
+	Result := False;
+	param := TStringList.Create;
+
+  try
+	  ClearResponse;
+
+    ret := HttpPostCall(URL_DNG_BCHESTO, URL_DNG_BCHEST, param, response);
+
+    if ret and (Pos('<h1>アイテムバッグ</h1>', response) > 0) then
+      Result := ParceBag(response, itemBag);
+  except
+    on e: Exception do begin
+      FErroeMessage := e.Message;
+    end;
+  end;
+	param.Free;
+end;
+
 
 // ロックされていない武器防具を全て分解する
 function TDonguriSys.RecycleAll(var itemBag: TDonguriBag): Boolean;
@@ -2235,6 +2297,7 @@ begin
   Iron       := 0;
   IronKey    := 0;
   Marimo     := 0;
+  BtlToken   := 0;
   WoodCB     := 0;
   IronCB     := 0;
   HP         := 0;
@@ -2267,6 +2330,8 @@ const
   TAG_IRK_E = '</div>';
   TAG_MRM_S = '<div>マリモ:';
   TAG_MRM_E = '</div>';
+  TAG_BTK_S = '<div>バトルトークン:';
+  TAG_BTK_E = '</div>';
   TAG_WCB_S = '<div>木製の大砲の玉:';
   TAG_WCB_E = '</div>';
   TAG_ICB_S = '<div>鉄の大砲の玉:';
@@ -2363,6 +2428,9 @@ begin
 
     if Extract(TAG_MRM_S, TAG_MRM_E, html, tmp) then
       Marimo := StrToIntDef(Trim(tmp), 0);
+
+    if Extract(TAG_BTK_S, TAG_BTK_E, html, tmp) then
+      BtlToken := StrToIntDef(Trim(tmp), 0);
 
     if Extract(TAG_WCB_S, TAG_WCB_E, html, tmp) then
       WoodCB := StrToIntDef(Trim(tmp), 0);
@@ -2771,7 +2839,208 @@ begin
   end;
 end;
 
+// ネックレス
+// コンストラクタ
+constructor TDonguriNcklc.Create;
+begin
+	Inherited;
 
+  try
+    Attribute :=  TStringList.Create;
+  except
+  end;
+end;
+
+// デストラクタ
+destructor TDonguriNcklc.Destroy;
+begin
+  try
+    FreeAndNil(Attribute);
+  except
+  end;
+
+	Inherited;
+end;
+
+procedure TDonguriNcklc.Clear;
+begin
+	Inherited;
+
+  try
+    Attribute.Clear;
+  except
+  end;
+end;
+
+procedure TDonguriNcklc.SetListItem(no: Integer; var item: TListItem);
+var
+  attr: String;
+  i: Integer;
+begin
+  // 親は呼ばず独自実装
+  for i := 0 to Attribute.Count - 1 do
+    attr := attr + Attribute.Strings[i] + ' ';
+
+	if no > 0 then
+	  item.Caption := Format('%3d', [no])
+  else
+	  item.Caption := ' ';
+  item.SubItems.Add(Rarity);
+  item.SubItems.Add(Name);
+  item.SubItems.Add(attr);
+  item.SubItems.Add(Marimo);
+  item.Data := Self;
+	item.ImageIndex := GetImageIndexNcklce(Rarity, Lock);
+end;
+
+// ネックレスのアイコン画像インデックス
+function GetImageIndexNcklce(rarity: String; lock: Boolean): Integer;
+var
+  rarityHdr: String;
+begin
+  if Pos('CuSn', rarity) = 1 then
+    rarityHdr := Copy(rarity, 1, 4)
+  else if Length(rarity) >= 2 then
+    rarityHdr := Copy(rarity, 1, 2);
+
+  if rarityHdr = 'Cu' then
+		if lock then Result := Ord(IDX_IMG_N_LOCK)
+    else         Result := Ord(IDX_IMG_N_UNLOCK)
+  else if rarityHdr = 'CuSn' then
+		if lock then Result := Ord(IDX_IMG_R_LOCK)
+    else         Result := Ord(IDX_IMG_R_UNLOCK)
+  else if rarityHdr = 'Ag' then
+		if lock then Result := Ord(IDX_IMG_SR_LOCK)
+    else         Result := Ord(IDX_IMG_SR_UNLOCK)
+  else if rarityHdr = 'Au' then
+		if lock then Result := Ord(IDX_IMG_SSR_LOCK)
+    else         Result := Ord(IDX_IMG_SSR_UNLOCK)
+  else if rarityHdr = 'Pt' then
+		if lock then Result := Ord(IDX_IMG_UR_LOCK)
+    else         Result := Ord(IDX_IMG_UR_UNLOCK)
+  else           Result := -1;
+end;
+
+procedure TDonguriNcklc.SetItems(html: String);
+const
+  URL_EQUIP = 'https://donguri.5ch.net/equip/';
+  URL_LOCK  = 'https://donguri.5ch.net/lock/';
+  URL_UNLCK = 'https://donguri.5ch.net/unlock/';
+  URL_RCYCL = 'https://donguri.5ch.net/recycle/';
+  UNT_MARIMO = ' マ'; // マリモ単位
+  UNT_MARIMO_LEN = 3; // マリモ単位の文字列長
+var
+  idx: Integer;
+  tmp1: String;
+  tmp2: String;
+begin
+  Lock := False;
+  Attribute.Clear;
+
+  while Extract2('<td ', '</td>', html, tmp1) do begin
+    idx := Pos('>', tmp1);
+    if idx > 0 then
+      Delete(tmp1, 1, idx);
+
+    // 名称／レアリティ
+    if (Pos('【ネックレス】', tmp1) > 0) then begin
+      if Extract2('<span', '</span>', tmp1, tmp2) then begin
+        idx := Pos('>', tmp2);
+        if idx > 0 then
+          Delete(tmp2, 1, idx);
+        Name := Trim(TrimTag(tmp2));
+
+        if Extract2('<span', '</span>', tmp1, tmp2) then begin
+          idx := Pos('>', tmp2);
+          if idx > 0 then
+            Delete(tmp2, 1, idx);
+          Extract2('[', ']', tmp2, Rarity);
+        end;
+      end;
+      Continue;
+    end;
+
+    // 属性
+    if Pos('<ul ', tmp1) > 0 then begin
+      while Extract2('<li>', '</li>', tmp1, tmp2) do
+        Attribute.Add(tmp2);
+      Continue;
+    end;
+
+    // 外すリンク（これがあるのは使用中欄）
+    if Pos('<a href="https://donguri.5ch.net/unequip/necklace">', tmp1) > 0 then begin
+      Used := True;
+      Continue;
+    end;
+
+    // 装備リンク（これがあるのはアイテム一覧）
+    idx := Pos(URL_EQUIP, tmp1);
+    if idx > 0 then begin
+      Extract2(URL_EQUIP, '"', tmp1, ItemNo);
+      Continue;
+    end;
+
+    // 錠リンク（これがあるのはアイテム一覧）
+    idx := Pos(URL_LOCK, tmp1);
+    if idx > 0 then begin
+      Lock := False;  // ロック中じゃない
+      Extract2(URL_LOCK, '"', tmp1, ItemNo);
+      Continue;
+    end;
+
+    // 解錠リンク（これがあるのはアイテム一覧）
+    idx := Pos(URL_UNLCK, tmp1);
+    if idx > 0 then begin
+      Lock := True;  // ロック中
+      Extract2(URL_UNLCK, '"', tmp1, ItemNo);
+      Continue;
+    end;
+
+    // マリモ
+    idx := Pos(UNT_MARIMO, tmp1);
+    if (idx > 1) and (Length(tmp1) = (idx + UNT_MARIMO_LEN - 1)) then begin
+      Marimo := Copy(tmp1, 1, idx - 1);
+      Continue;
+    end;
+
+    // 分解（これがあるのはアイテム一覧）
+    idx := Pos(URL_RCYCL, tmp1);
+    if idx > 0 then begin
+      Lock := False;  // ロック中じゃない
+      Extract2(URL_RCYCL, '"', tmp1, ItemNo);
+      Continue;
+    end;
+
+    // 分解不可マーク（これがあるのはアイテム一覧）
+    if tmp1 = '[X]' then begin
+      Lock := True;  // ロック中
+      Continue;
+    end;
+  end;
+end;
+
+function TDonguriNcklc.ChkEqual(chk: TDonguriNcklc): Boolean;
+var
+  i: Integer;
+  ok: Boolean;
+begin
+  Result := False;
+  if (Rarity = chk.Rarity) and
+     (Name   = chk.Name)   and
+     (Marimo = chk.Marimo) and
+     (Attribute.Count = chk.Attribute.Count) then begin
+    ok := True;
+    for i := 0 to Attribute.Count - 1 do begin
+      if Attribute.Strings[i] <> chk.Attribute.Strings[i] then begin
+        ok := False;
+        Break;
+      end;
+    end;
+    Result := ok;
+  end;
+end;
+
+////
 // コンストラクタ
 constructor TDonguriBag.Create;
 begin
@@ -2780,8 +3049,10 @@ begin
   try
     UseWeapon  := TDonguriWeapon.Create;
     UseArmor   := TDonguriArmor.Create;
+    UseNcklc   := TDonguriNcklc.Create;
     WeaponList := TList.Create;
     ArmorList  := TList.Create;
+    NcklcList  := TList.Create;
     Clear;
   except
   end;
@@ -2794,8 +3065,10 @@ begin
     Clear;
     FreeAndNil(UseWeapon);
     FreeAndNil(UseArmor);
+    FreeAndNil(UseNcklc);
     FreeAndNil(WeaponList);
     FreeAndNil(ArmorList);
+    FreeAndNil(NcklcList);
   except
   end;
 
@@ -2810,6 +3083,7 @@ begin
     Slot := 0;
     UseWeapon.Clear;
     UseArmor.Clear;
+    UseNcklc.Clear;
 
     for i := 0 to WeaponList.Count - 1 do begin
       try
@@ -2828,6 +3102,16 @@ begin
       end;
     end;
     ArmorList.Clear;
+
+    for i := 0 to NcklcList.Count - 1 do begin
+      try
+      	if NcklcList.Items[i] <> nil then
+	        TDonguriNcklc(NcklcList.Items[i]).Free;
+      except
+      end;
+    end;
+    NcklcList
+    .Clear;
   except
   end;
 end;
