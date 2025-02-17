@@ -3,7 +3,7 @@ unit Preview;
 interface
 uses
 	Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-	ActiveX, OleCtrls, HTMLDocumentEvent,
+	ActiveX, OleCtrls, HTMLDocumentEvent, StrUtils, WinInet,
 {$IF Defined(DELPRO) }
 	SHDocVw,
 	MSHTML
@@ -15,18 +15,20 @@ uses
 type
 	TPreviewBrowser = class(TWebBrowser)
 	private
-        FEvent: THTMLDocumentEventSink;//ブラウザドキュメントイベント
-        function makeHTML(const URL, Host, Document : String): String;
-        procedure BrowserDocumentComplete(Sender: TObject;
-	            const pDisp: IDispatch; var URL: OleVariant);
-        function PreviewDbClick(Sender: TObject): WordBool;
+    FEvent: THTMLDocumentEventSink;//ブラウザドキュメントイベント
+    function makeHTML(const URL, Host, Document : String): String;
+    procedure BrowserDocumentComplete(Sender: TObject;
+          const pDisp: IDispatch; var URL: OleVariant);
+    function PreviewDbClick(Sender: TObject): WordBool;
+    function GetPreviewFilePath: String;
 	protected
 		procedure CreateParams(var Params: TCreateParams); override;
 	public
 		constructor Create(AOwner: TComponent); override;
 		destructor Destroy; override;
-        procedure PreviewImage(URL : String);
-        function GetWindowRect(Point: TPoint) : TRect;
+    procedure PreviewImage(URL : String);
+    function GetWindowRect(Point: TPoint) : TRect;
+    procedure ClearCache(imgUrl: String);
 	end;
 
 implementation
@@ -84,7 +86,7 @@ begin
     TargetFrameName := '';
     PostData := '';
 
-    HtmlFileName := GikoSys.GetAppDir + HTML_FILE_NAME;
+  HtmlFileName := GetPreviewFilePath;
 	sl := TStringList.Create;
 	try
 		try
@@ -100,6 +102,50 @@ begin
 	Navigate(HtmlFileName,Flags, TargetFrameName, PostData, Headers);
 
 end;
+
+function TPreviewBrowser.GetPreviewFilePath: String;
+begin
+  Result := GikoSys.GetAppDir + HTML_FILE_NAME;
+end;
+
+procedure TPreviewBrowser.ClearCache(imgUrl: String);
+var
+  htmlPath: String;
+  //errCode: Integer;
+begin
+  htmlPath := GetPreviewFilePath;
+
+  try
+    if FileExists(htmlPath) then
+      DeleteFile(htmlPath);
+  except
+  end;
+
+  try
+    htmlPath := 'file://' + AnsiReplaceStr(AnsiReplaceStr(htmlPath, '\', '/'), ' ', '%20');
+    if not DeleteUrlCacheEntry(PChar(htmlPath)) then begin
+//      errCode := GetLastError;
+//      if errCode <> 2 then
+//        MessageBox(Handle, Format('DeleteUrlCacheEntryエラー[%d][%X]', [errCode, errCode]), 'HTMLキャッシュ削除', MB_OK);
+    end;
+  except
+//    on ex: Exception do
+//      MessageBox(Handle, ex.Message, 'HTMLキャッシュ削除例外', MB_OK);
+  end;
+
+  try
+    if not DeleteUrlCacheEntry(PChar(imgUrl)) then begin
+//      errCode := GetLastError;
+//      if errCode <> 2 then
+//        MessageBox(Handle, Format('DeleteUrlCacheEntryエラー[%d][%X]', [errCode, errCode]), '画像キャッシュ削除', MB_OK);
+    end;
+  except
+//    on ex: Exception do
+//      MessageBox(Handle, ex.Message, '画像キャッシュ削除例外', MB_OK);
+  end;
+
+end;
+
 {
 \breif 表示するウィンドウサイズを取得する
 \param Point マウスカーソルの座標

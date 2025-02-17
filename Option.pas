@@ -236,6 +236,7 @@ type
     URLitestCheckBox: TCheckBox;
     ReloadAfterWriteCheckBox: TCheckBox;
     CapUserCheckBox: TCheckBox;
+    PreviewClearCheckBox: TCheckBox;
 		procedure FormCreate(Sender: TObject);
 		procedure FormDestroy(Sender: TObject);
 		procedure ApplyButtonClick(Sender: TObject);
@@ -842,7 +843,6 @@ begin
 	//HTMLプレビュー
 	PreviewVisibleCheckBox.Checked := GikoSys.Setting.PreviewVisible;
 	PreviewWaitEdit.Text := IntToStr(GikoSys.Setting.PreviewWait);
-	PreviewSizeComboBox.ItemIndex := 2;
 	case GikoSys.Setting.PreviewSize of
 		gpsXLarge5: PreviewSizeComboBox.ItemIndex := 8;
 		gpsXLarge4: PreviewSizeComboBox.ItemIndex := 7;
@@ -853,7 +853,9 @@ begin
 		gpsMedium: PreviewSizeComboBox.ItemIndex := 2;
 		gpsSmall: PreviewSizeComboBox.ItemIndex := 1;
 		gpsXSmall: PreviewSizeComboBox.ItemIndex := 0;
+    else PreviewSizeComboBox.ItemIndex := 2;
 	end;
+  PreviewClearCheckBox.Checked := GikoSys.Setting.PreviewClear;
 
 	//スレッド一覧更新アイコン
 	ThreadListIconCheckBox.Checked := GikoSys.Setting.ListIconVisible;
@@ -1179,6 +1181,7 @@ begin
 		7: GikoSys.Setting.PreviewSize := gpsXLarge4;
 		8: GikoSys.Setting.PreviewSize := gpsXLarge5;
 	end;
+  GikoSys.Setting.PreviewClear := PreviewClearCheckBox.Checked;
 
 	//スレッド一覧更新アイコン
 	GikoSys.Setting.ListIconVisible := ThreadListIconCheckBox.Checked;

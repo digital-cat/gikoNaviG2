@@ -60,7 +60,7 @@ object OptionDialog: TOptionDialog
     Top = 4
     Width = 509
     Height = 389
-    ActivePage = ThreadSheet
+    ActivePage = TabSheet1
     MultiLine = True
     TabOrder = 3
     OnChange = OptionTabChange
@@ -1013,14 +1013,14 @@ object OptionDialog: TOptionDialog
       end
       object GroupBox8: TGroupBox
         Left = 12
-        Top = 176
+        Top = 168
         Width = 477
-        Height = 105
+        Height = 114
         Caption = #30011#20687#12503#12524#12499#12517#12540#12509#12483#12503#12450#12483#12503
         TabOrder = 1
         object Label14: TLabel
           Left = 12
-          Top = 48
+          Top = 42
           Width = 49
           Height = 12
           Caption = #12469#12452#12474'(&S)'
@@ -1028,7 +1028,7 @@ object OptionDialog: TOptionDialog
         end
         object Label15: TLabel
           Left = 12
-          Top = 76
+          Top = 68
           Width = 111
           Height = 12
           Caption = #34920#31034#12414#12391#12398#12454#12455#12452#12488'(&T)'
@@ -1036,7 +1036,7 @@ object OptionDialog: TOptionDialog
         end
         object Label16: TLabel
           Left = 176
-          Top = 76
+          Top = 68
           Width = 158
           Height = 12
           Caption = 'ms'#12288'(500'#65374'9999) 1000ms'#65309'1'#31186
@@ -1051,7 +1051,7 @@ object OptionDialog: TOptionDialog
         end
         object PreviewSizeComboBox: TComboBox
           Left = 72
-          Top = 44
+          Top = 38
           Width = 145
           Height = 20
           Style = csDropDownList
@@ -1070,24 +1070,32 @@ object OptionDialog: TOptionDialog
         end
         object PreviewWaitEdit: TEdit
           Left = 132
-          Top = 72
+          Top = 64
           Width = 37
           Height = 20
           MaxLength = 4
           TabOrder = 2
           OnExit = PreviewWaitEditExit
         end
+        object PreviewClearCheckBox: TCheckBox
+          Left = 12
+          Top = 90
+          Width = 222
+          Height = 17
+          Caption = #12461#12515#12483#12471#12517#12434#12463#12522#12450#12377#12427'(&C)'
+          TabOrder = 3
+        end
       end
       object GroupBox10: TGroupBox
         Left = 12
-        Top = 100
+        Top = 98
         Width = 477
-        Height = 69
+        Height = 62
         Caption = #12524#12473#12509#12483#12503#12450#12483#12503#34920#31034#35373#23450
         TabOrder = 0
         object UnActivePopupCheckBox: TCheckBox
           Left = 12
-          Top = 20
+          Top = 16
           Width = 357
           Height = 17
           Caption = #12462#12467#12490#12499#12364#38750#12450#12463#12486#12451#12502#12391#12418#12509#12483#12503#12450#12483#12503#12434#34920#31034#12377#12427'(&U)'
@@ -1095,7 +1103,7 @@ object OptionDialog: TOptionDialog
         end
         object ResPopupBoldCheckBox: TCheckBox
           Left = 12
-          Top = 44
+          Top = 38
           Width = 225
           Height = 17
           Caption = #12504#12483#12480#12540#12434#22826#23383#12391#34920#31034#12377#12427'(&B)'
