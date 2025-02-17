@@ -2438,10 +2438,11 @@ var
 	e: IHTMLElement;
 	Ext: string;
 	PathRec: TPathRec;
-    Text2: string;
-    cResPopup: TResPopupBrowser;
-    senderBrowser :TWebBrowser;
-    doc: IHTMLDocument2;
+  Text2: string;
+  cResPopup: TResPopupBrowser;
+  senderBrowser :TWebBrowser;
+  doc: IHTMLDocument2;
+  isHttp: Boolean;
 begin
     // ギコナビはレスアンカーが about:blank.. で始まることを期待しているが
     // IE 7 では about:blank.. ではなく about:.. になるので、置換する(投げやり)
@@ -2522,13 +2523,11 @@ begin
         end;
     end;
     cResPopup := nil;
-    
+
     if not(Sender is TResPopupBrowser) then
     	if not GikoSys.Setting.UnActivePopup then
 	    	if not GikoForm.Active then
 		    	Exit;
-
-
 
 //file:///C:/Borland/Projects/gikoNavi/test/read.cgi/qa/990576336/10
 //file:///C:/Borland/Projects/gikoNavi/test/read.cgi/qa/990576336/10-15
@@ -2536,23 +2535,36 @@ begin
     if (ExtPreviewDM.PreviewURL(Text2)) then begin
         Exit;
     end;
+
+  // https://imgur.com/abcd -> https://i.imgur.com/abcd.jpeg
+  if (Pos('https://imgur.com/', Text2) = 1) and (PosEx('/', Text2, 19) < 1) and (PosEx('.', Text2, 19) < 1) then begin
+    Insert('i.', Text2, 9);
+    Text2 := Text2 + '.jpeg';
+  end;
+
 	s := '';
 	Ext := AnsiLowerCase(ExtractFileExt2(Text2));
-//	if (Pos('http://', Text2) = 1) and (GikoSys.Setting.PreviewVisible) and
-	if ((Pos('http://', Text2) = 1) or (Pos('https://', Text2) = 1)) and (GikoSys.Setting.PreviewVisible) and
+  isHttp := (Pos('https://', Text2) = 1) or (Pos('http://', Text2) = 1);
+
+	if GikoSys.Setting.PreviewVisible and isHttp and
 			((Ext = '.jpg') or (Ext = '.jpeg') or (Ext = '.gif') or (Ext = '.png') or (Ext = '.jpg:large') or (Ext = '.jpg:orig') or
-			 (Pos('?format=jpg', Text2) > 0) or (Pos('?format=png', Text2) > 0) or
-			 (Pos('http://www.nicovideo.jp/watch/', Text2) = 1)) then begin
+			 (Pos('?format=jpg', Text2) > 0) or (Pos('?format=png', Text2) > 0) {or
+			 (Pos('http://www.nicovideo.jp/watch/', Text2) = 1)}) then begin
 		if FPreviewBrowser = nil then begin
 			FPreviewBrowser := TPreviewBrowser.Create(Self);
 			ShowWindow(FPreviewBrowser.Handle, SW_HIDE);
 			TOleControl(FPreviewBrowser).Parent := nil;
 		end;
 		FPreviewBrowser.Navigate(BLANK_HTML);//前回のプレビュー画像消去用
+
+    // キャッシュクリア
+    if GikoSys.Setting.PreviewClear then
+      FPreviewBrowser.ClearCache(Text2);
+
 		FPreviewURL := Text2;
 		PreviewTimer.Interval := GikoSys.Setting.PreviewWait;
 		PreviewTimer.Enabled := True;
-	end else if (Pos('about:blank', Text2) = 1) or (Pos('http://', Text2) = 1) or (Pos('https://', Text2) = 1) or (Pos('mailto:', Text2) = 1) then begin
+	end else if isHttp or (Pos('about:blank', Text2) = 1) or (Pos('mailto:', Text2) = 1) then begin
 		if (Pos('mailto:', Text2) = 1) and (GikoSys.Setting.RespopupMailTo) then begin
 			s := StringReplace(Text2, 'mailto:', '', [rfIgnoreCase]);
 			//ギコナビスレ パート3の466氏に感謝

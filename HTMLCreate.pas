@@ -109,16 +109,16 @@ const
 	URL_CHAR: string = '0123456789'
 									 + 'abcdefghijklmnopqrstuvwxyz'
 									 + 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-									 + '#$%&()*+,-./:;=?@[]^_`{|}~!''\';
+									 + '#$%&()*+,-./:;=?@[]_`~!''';
 	URL_CHAR_5CH: string = '0123456789'
 									 + 'abcdefghijklmnopqrstuvwxyz'
 									 + 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-									 + '#$%&*+,-./:;=?@^_';
+									 + '#$%&*+,-./:;=?@_';
 	ANCHOR_REF	= 'href=';
 	CLOSE_TAGAL = '</a>';
 	CLOSE_TAGAU = '</A>';
 	RES_REF			= '&gt;&gt;';
-  REF_MARK: array[0..22] of string = (
+  REF_MARK: array[0..23] of string = (
     'sssp://',
     'https://',
     'ht&#116;&#112;s://',
@@ -135,6 +135,7 @@ const
     'tp://',
     'p://',
     '://',
+    '//',
     'www.',
     'i.imgur.com/',
     'imgur.com/',
@@ -143,7 +144,7 @@ const
     'video.twimg.com/',
     'youtu.be/'
     );
-  REF_MARK_HEAD: array[0..22] of String = (
+  REF_MARK_HEAD: array[0..23] of String = (
     '',					// sssp://
     '',					// https://
     '',					// ht&#116;&#112;s://
@@ -160,15 +161,16 @@ const
     'ht',				// tp://
     'htt',			// p://
     'https',		// ://
+    'https:',		// //
     'https://',	// www.
     'https://',	// i.imgur.com/
-    'https://i.',	// imgur.com/
+    'https://',	// imgur.com/
     'https://',	// x.com/
     'https://',	// pbs.twimg.com/
     'https://',	// video.twimg.com/
     'https://'	// youtu.be/
     );
-  REF_MARK_LEN: array[0..22] of Integer = (
+  REF_MARK_LEN: array[0..23] of Integer = (
     7,			// sssp://
     8,			// https://
     18,			// ht&#116;&#112;s://
@@ -185,6 +187,7 @@ const
     5,			// tp://
     4,			// p://
     3,			// ://
+    2,			// //
     4,			// www.
     0,			// i.imgur.com/
     0,			// imgur.com/
