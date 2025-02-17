@@ -5,11 +5,13 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, ComCtrls, ExtCtrls, StdCtrls, IdBaseComponent, IdComponent,
-  IdTCPConnection, IdTCPClient, IdHTTP, Menus, Clipbrd, IniFiles, uLkJSON,
+  IdTCPConnection, IdTCPClient, IdHTTP, Menus, Clipbrd, IniFiles,
   OleCtrls, SHDocVw, IdIOHandler, IdIOHandlerSocket, IdIOHandlerStack, IdSSL,
-  IdSSLOpenSSL;
+  IdSSLOpenSSL, StrUtils, TntComCtrls, TntStdCtrls;
 
 type
+  TColumnType = (ctString, ctInteger, ctDecimal);
+
   TThreadSrch = class(TForm)
     Indy: TIdHTTP;
     PopupMenu: TPopupMenu;
@@ -18,34 +20,20 @@ type
     MenuCopyURL: TMenuItem;
     MenuCopyThread: TMenuItem;
     MenuCopyThrURL: TMenuItem;
-    PopMenuBbs: TPopupMenu;
     Panel1: TPanel;
-    Splitter1: TSplitter;
-    Panel3: TPanel;
+    PanelHead: TPanel;
     Label1: TLabel;
-    Label2: TLabel;
-    Label3: TLabel;
-    Label4: TLabel;
-    Label5: TLabel;
-    LblSite: TLabel;
     BtnSearch: TButton;
-    CmbType: TComboBox;
-    CmbMax: TComboBox;
-    CmbLim: TComboBox;
-    CmbSort: TComboBox;
-    CmbBoard: TComboBox;
-    Cmb924: TComboBox;
     ChkTop: TCheckBox;
-    CmbKW: TComboBox;
-    ChkBbs: TCheckBox;
-    PnlBbsName: TPanel;
-    PnlBbsId: TPanel;
-    BtnBbs: TButton;
-    ResultList: TListView;
-    Splitter2: TSplitter;
-    MessageList: TListBox;
-    CmBrowser: TWebBrowser;
     ChkNG: TCheckBox;
+    IdSSLIOHandlerSocketOpenSSL: TIdSSLIOHandlerSocketOpenSSL;
+    RadioGroupDomain: TRadioGroup;
+    MemoHelp: TMemo;
+    ButtonHelp: TButton;
+    ResultList: TTntListView;
+    CmbKW: TTntComboBox;
+    MessageList: TTntListBox;
+    Splitter1: TSplitter;
     procedure FormCreate(Sender: TObject);
     procedure BtnSearchClick(Sender: TObject);
     procedure ResultListDblClick(Sender: TObject);
@@ -56,189 +44,148 @@ type
     procedure MenuCopyThreadClick(Sender: TObject);
     procedure MenuCopyThrURLClick(Sender: TObject);
     procedure PopupMenuPopup(Sender: TObject);
-    procedure ChkBbsClick(Sender: TObject);
-    procedure BtnBbsClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
-    procedure FormDestroy(Sender: TObject);
-    procedure LblSiteClick(Sender: TObject);
+    procedure FormResize(Sender: TObject);
+    procedure ButtonHelpClick(Sender: TObject);
+    procedure ResultListColumnClick(Sender: TObject; Column: TListColumn);
+    procedure ResultListCompare(Sender: TObject; Item1, Item2: TListItem;
+      Data: Integer; var Compare: Integer);
   private
     { Private 宣言 }
-    BbsNmList: TStringList;
-    BbsIdList: TStringList;
-    CmPath: String;
-    CmUrl: String;
+    FSortIdx: Integer;
+    FSortAsc: Boolean;
 
     procedure AddHistory;
-    function KWEncode(const KWSrc: String): String;
-    function ParsJson(JsonStream: TMemoryStream): Boolean;
-    procedure SetCm(Content: string);
-    function HTMLEncode(const HTML: string): String;
-    procedure MenuBbsClick(Sender: TObject);
+    function ParsHtml(HtmlStream: TMemoryStream): Boolean;
+    function ExtractKW(src: String; kws: String; kwe: String; var dst: String): Boolean;
+    function NumComp(text1, text2: String): Integer;
+    function DecComp(text1, text2: String): Integer;
+    function atoi(str: String; var numLen: Integer): Integer;
+    function atof(str: String): Double;
   public
     { Public 宣言 }
     procedure SaveSetting;
   end;
 
-function ConvertINetString(lpdwMode: LPDWORD;
-                            dwSrcEncoding: DWORD;
-                            dwDstEncoding: DWORD;
-                            lpSrcStr: PChar;
-                            lpnSrcSize: pointer;
-                            lpDstStr: PChar;
-                            lpnDstSize: pointer): HRESULT;
-                                                stdcall; external 'mlang.dll';
-
 var
   ThreadSrch: TThreadSrch = nil;
 const
-    HTML_HD: String = '<html><head><meta http-equiv="Content-Type" content="text/html; charset=Shift_JIS"><title></title></head><body>';
-    HTML_FT: String = '</body></html>';
-    ENC_SJIS: DWORD = 932;
-    ENC_UTF8: DWORD = 65001;
+  ENC_SJIS: DWORD = 932;
+  ENC_UTF8: DWORD = 65001;
+  IDX_TTL: Integer = 0;
+  IDX_URL: Integer = 4;
+  H_PNLHD_HIDE: Integer = 113;
+  H_PNLHD_SHOW: Integer = 250;
+  HELP_FILE_NAME: String = 'ThreadSearch.txt';
+
+  COL_TYPE: array [0..5] of TColumnType = (
+  	ctString,
+  	ctString,
+    ctInteger,
+  	ctString,
+  	ctDecimal,
+  	ctString
+  );
 
 implementation
 
-uses GikoSystem, GikoDataModule, MojuUtils, BoardGroup, IndyModule;
+uses GikoSystem, GikoDataModule, MojuUtils, BoardGroup, IndyModule, YofUtils, WideCtrls;
 
 {$R *.dfm}
 
 procedure TThreadSrch.FormCreate(Sender: TObject);
 var
-    PathLen: Integer;
-    Sep: Integer;
+  i: Integer;
 begin
-    BbsNmList := TStringList.Create;
-    BbsIdList := TStringList.Create;
-
-    Top    := GikoSys.Setting.ThrdSrchTop;
-    Left   := GikoSys.Setting.ThrdSrchLeft;
-    Width  := GikoSys.Setting.ThrdSrchWidth;
-    Height := GikoSys.Setting.ThrdSrchHeight;
-    if (GikoSys.Setting.ThrdSrchMax = True) then
-        WindowState := wsMaximized;
-    if (GikoSys.Setting.ThrdSrchStay = True) then begin
-        ChkTop.Checked := True;
-        FormStyle := fsStayOnTop;
-    end;
-    ResultList.Column[0].Width := GikoSys.Setting.ThrdSrchCol1W;
-    ResultList.Column[1].Width := GikoSys.Setting.ThrdSrchCol2W;
-    ResultList.Column[2].Width := GikoSys.Setting.ThrdSrchCol3W;
-    ResultList.Column[3].Width := GikoSys.Setting.ThrdSrchCol4W;
-    CmbKW.Items.AddStrings(GikoSys.Setting.ThrdSrchHistory);
-
-    SetLength(CmPath, 1024);
-    PathLen := GetTempPath(1024, PAnsiChar(CmPath));
-    if (PathLen > 0) then begin
-        SetLength(CmPath, PathLen);
-        if (CmPath[PathLen] <> '\') then
-            CmPath := CmPath + '\';
-        CmPath := CmPath + 'gikonavi';
-        ForceDirectories(CmPath);
-        CmPath := CmPath + '\cm.html';
-        CmUrl := CmPath;
-        while (True) do begin
-            Sep := Pos('\', CmUrl);
-            if (Sep < 1) then
-                Break;
-            CmUrl[Sep] := '/';
-        end;
-        while (True) do begin
-            Sep := Pos(' ', CmUrl);
-            if (Sep < 1) then
-                Break;
-            Delete(CmUrl, Sep, 1);
-            Insert('%20', CmUrl, Sep);
-        end;
-        CmUrl := 'file://' + CmUrl;
-    end else begin
-        CmPath := '';
-    end;
+  Top    := GikoSys.Setting.ThrdSrchTop;
+  Left   := GikoSys.Setting.ThrdSrchLeft;
+  Width  := GikoSys.Setting.ThrdSrchWidth;
+  Height := GikoSys.Setting.ThrdSrchHeight;
+  if (GikoSys.Setting.ThrdSrchMax = True) then
+      WindowState := wsMaximized;
+  if (GikoSys.Setting.ThrdSrchStay = True) then begin
+      ChkTop.Checked := True;
+      FormStyle := fsStayOnTop;
+  end;
+  ResultList.Column[0].Width := GikoSys.Setting.ThrdSrchCol1W;
+  ResultList.Column[1].Width := GikoSys.Setting.ThrdSrchCol2W;
+  ResultList.Column[2].Width := GikoSys.Setting.ThrdSrchCol3W;
+  ResultList.Column[3].Width := GikoSys.Setting.ThrdSrchCol4W;
+  ResultList.Column[4].Width := GikoSys.Setting.ThrdSrchCol5W;
+  ResultList.Column[5].Width := GikoSys.Setting.ThrdSrchCol6W;
+  for i := 0 to GikoSys.Setting.ThrdSrchHistory.Count - 1 do
+    CmbKW.Items.Add(EncAnsiToWideString(GikoSys.Setting.ThrdSrchHistory.Strings[i]));
+  FSortIdx := 0;
+  FSortAsc := True;
 end;
 
 procedure TThreadSrch.BtnSearchClick(Sender: TObject);
-const
-    BBS_VALUE: array[0..19] of string = (
-                                            'all',				// 全ての板
-                                            'newsplus',			// 速＋
-                                            'mnewsplus',		// 芸＋
-                                            'U_plus',			// ＋全部
-                                            'U_live',			// 実況全部
-                                            'G_game',			// ゲームG
-                                            'G_entame',			// 芸能・テレビG
-                                            'G_subcal',			// サブカルG
-                                            'G_base',			// 野球G
-                                            'G_soccer',			// サッカーG
-                                            'G_pc',				// PC関係G
-                                            'G_academy',		// 学問・文化G
-                                            'G_female',			// 女性向けG
-                                            'G_world',			// 国際G
-                                            'G_eastasia',		// 国際・東亜G
-                                            'G_fareast',		// 極東G
-                                            'G_operate',		// 運営G
-                                            'S_bbspink',		// bbspink鯖
-                                            'morningcoffee',	// 狼。
-                                            'poverty'			// 嫌儲
-                                        );
 var
-    URL: String;
-    RspStream: TMemoryStream;
-    Ok: Boolean;
-    Board: String;
+  URL: String;
+  RspStream: TMemoryStream;
+  Ok: Boolean;
+  url2: String;
 begin
+  if CmbKW.Text = '' then begin
+    MessageBox(Handle, '検索キーワードを指定してください。', PChar(Text), MB_OK or MB_ICONERROR);
+    Exit;
+  end;
+
+  Screen.Cursor := crHourGlass;
+
+  try
+
     ResultList.Clear;
-//    CmBrowser.Navigate('about:blank');
-
-    Screen.Cursor := crHourGlass;
-
     AddHistory;
 
-    if (ChkBbs.Checked = True) then
-        Board := PnlBbsId.Caption
-    else
-        Board := BBS_VALUE[CmbBoard.ItemIndex];
-
-    URL := 'http://dig.2ch.net/?keywords=' + KWEncode(CmbKW.Text)
-            + '&AndOr='      + IntToStr(CmbType.ItemIndex)
-            + '&maxResult='  + CmbMax.Text
-            + '&atLeast='    + CmbLim.Text
-            + '&Sort='       + IntToStr(CmbSort.ItemIndex)
-            + '&Link=1&Bbs=' + Board
-            + '&924='        + IntToStr(Cmb924.ItemIndex)
-            + '&json=1';
-//    Application.MessageBox(PChar(URL), 'debug', MB_OK);
+    URL := 'https://find.5ch.net/search?q=' + HttpEncode(UTF8Encode(CmbKW.Text));
+    if RadioGroupDomain.ItemIndex = 1 then
+      URL := URL + '&domain=bbspink.com';
 
     RspStream := TMemoryStream.Create;
 
-    Ok := False;
-    TIndyMdl.InitHTTP(Indy);
     try
-        Indy.Get(URL, RspStream);
+      Ok := False;
+      TIndyMdl.InitHTTP(Indy);
+      url2 := GikoSys.GetActualURL(url);
+
+      IndyMdl.StartAntiFreeze(100);
+      try
+        Indy.Get(url2, RspStream);
         Ok := True;
-    except
+      except
         on E: Exception do begin
-            MessageList.Items.Add('エラー発生：' + E.Message);
+          MessageList.Items.Add('エラー発生：' + E.Message);
         end;
+      end;
+      IndyMdl.EndAntiFreeze;
+
+      if Ok then begin
+        if (RspStream.Size > 0) then begin
+          RspStream.Position := 0;
+          //RspStream.SaveToFile('d:\Log\search.html');
+          Ok := ParsHtml(RspStream);
+        end;
+        if Ok then
+          MessageList.Items.Add(WideFormat('【%s】検索結果：%d件', [CmbKW.Text, ResultList.Items.Count]));
+      end;
+
+      MessageList.TopIndex := MessageList.Count - 1;
+
+    finally
+      RspStream.Free;
     end;
 
-    if (Ok = True) then begin
-        if (RspStream.Size > 0) then
-            Ok := ParsJson(RspStream);
-        if (Ok = True) then
-            MessageList.Items.Add(Format('【%s】検索結果：%d件', [CmbKW.Text, ResultList.Items.Count]));
-    end;
-
-    MessageList.TopIndex := MessageList.Count - 1;
-
-    RspStream.Free;
-
+  finally
     Screen.Cursor := crDefault;
+  end;
 end;
 
 procedure TThreadSrch.AddHistory;
 const
     HISTORY_MAX: Integer = 20;
 var
-    KW: String;
+    KW: WideString;
     Idx: Integer;
 begin
     if (CmbKW.Text = '') then
@@ -256,197 +203,194 @@ begin
     end;
 end;
 
-function TThreadSrch.KWEncode(const KWSrc: String): String;
+
+function TThreadSrch.ExtractKW(src: String; kws: String; kwe: String; var dst: String): Boolean;
+var
+  idx1: Integer;
+  idx2: Integer;
+begin
+  Result := False;
+  idx1 := Pos(kws, src);
+  if idx1 > 0 then begin
+    idx1 := idx1 + Length(kws);
+    idx2 := PosEx(kwe, src, idx1);
+    if idx2 > 0 then begin
+      dst := Copy(src, idx1, idx2 - idx1);
+      Result := True;
+    end;
+  end;
+end;
+
+function TThreadSrch.ParsHtml(HtmlStream: TMemoryStream): Boolean;
 const
-    BufSize: Integer = 1024;
+  KW_LINE_S: String = '<div class="list_line">';
+  KW_URL_S:  String = '<a class="list_line_link" href="';
+  KW_URL_E:  String = '"';
+  KW_TTL_S:  String = '<div class="list_line_link_title">';
+  KW_TTL_E:  String = '</div>';
+  KW_BRD_S:  String = '<div class="list_line_info_container list_line_info_container-board">';
+  KW_BRD_E:  String = '</a></div>';
+  KW_PDT_S:  String = '<div class="list_line_info_container">';
+  KW_PDT_E:  String = '</div>';
+  KW_PPD_S:  String = '<div class="list_line_info_container list_line_info_container-danger">';
+  KW_PPD_E:  String = '</div>';
 var
-    KWEnc: String;
-    CnvSjis: String;
-    Utf8: array [0..1023] of Byte;
-    Cnt: Integer;
-    Cnt2: Integer;
-    Len: Integer;
-    SrcSize: Integer;
-    DstSize: Integer;
-    Stat: HRESULT;
-    Max: Integer;
+  Item: TTntListItem;
+  html: String;
+  line: String;
+  url: String;
+  title: String;
+  titlew: WideString;
+  board: String;
+  pstdt: String;
+  ppday: String;
+  rescnt: String;
+  idx: Integer;
+  idxNxt: Integer;
+  len: Integer;
+  cnt: Integer;
+  eof: Boolean;
 begin
-    Len := Length(KWSrc);
-    if (Len < 1) then begin
-        Result := '';
-        Exit;
-    end;
+  Result := False;
+  try
+    HtmlStream.Position := 0;
+    html := GikoSys.UTF8toSJIS(PChar(HtmlStream.Memory));
 
-    Cnt := 1;
-    while (Cnt <= Len) do begin
-        case ByteType(KWSrc, Cnt) of
-            mbSingleByte: begin
-                if (KWSrc[Cnt] >= #$80) then begin
-                    CnvSjis := CnvSjis + Copy(KWSrc, Cnt, 1);
-                end else begin
-                    SrcSize := Length(CnvSjis);
-                    if (SrcSize > 0) then begin
-                        ZeroMemory(@Utf8, BufSize);
-                        DstSize := BufSize;
-                        Stat := ConvertINetString(nil, ENC_SJIS, ENC_UTF8,
-                                    PChar(CnvSjis), @SrcSize, PChar(@Utf8), @DstSize);
-                        if (Stat = S_OK) and (DstSize > 0) then begin
-                            Max := DstSize - 1;
-                            for Cnt2 := 0 to Max do begin
-                                KWEnc := KWEnc + '%' + Format('%02X', [Utf8[Cnt2], 0]);
-                            end;
-                        end;
-                        CnvSjis := '';
-                    end;
-
-                    if (((KWSrc[Cnt] >= '0') and (KWSrc[Cnt] <= '9')) or
-                             ((KWSrc[Cnt] >= 'A') and (KWSrc[Cnt] <= 'Z')) or
-                             ((KWSrc[Cnt] >= 'a') and (KWSrc[Cnt] <= 'z')) or
-                             (KWSrc[Cnt] = '-') or (KWSrc[Cnt] = '.') or
-                             (KWSrc[Cnt] = '_') or (KWSrc[Cnt] = '~')) then begin
-                        KWEnc := KWEnc + Copy(KWSrc, Cnt, 1);
-                    end else if (KWSrc[Cnt] = ' ') then begin
-                        KWEnc := KWEnc + '+';
-                    end else begin
-                        KWEnc := KWEnc + '%' + Format('%02X', [Ord(KWSrc[Cnt])]);
-                    end;
-                end;
-            end;
-            mbLeadByte: begin
-                CnvSjis := CnvSjis + Copy(KWSrc, Cnt, 2);
-                Cnt := Cnt + 1;
-            end;
-            mbTrailByte: begin
-            end;
-        end;
-        Cnt := Cnt + 1;
-    end;
-
-    SrcSize := Length(CnvSjis);
-    if (SrcSize > 0) then begin
-        ZeroMemory(@Utf8, BufSize);
-        DstSize := BufSize;
-        Stat := ConvertINetString(nil, ENC_SJIS, ENC_UTF8,
-                                    PChar(CnvSjis), @SrcSize, PChar(@Utf8), @DstSize);
-        if (Stat = S_OK) and (DstSize > 0) then begin
-            Max := DstSize - 1;
-            for Cnt2 := 0 to Max do begin
-                KWEnc := KWEnc + '%' + Format('%02X', [Utf8[Cnt2]]);
-            end;
-        end;
-    end;
-
-    Result := KWEnc;
-end;
-
-function TThreadSrch.ParsJson(JsonStream: TMemoryStream): Boolean;
-var
-    vJsonObj: TlkJsonObject;
-    vCm: TlkJSONbase;
-    vRoot: TlkJSONbase;
-    vRec: TlkJSONbase;
-    vField: TlkJSONbase;
-    RecMax: Integer;
-    Cnt: Integer;
-    CmHtml: String;
-    Title: String;
-    Item: TListItem;
-begin
-    Result := False;
     try
-        JsonStream.Position := 0;
-        vJsonObj := TlkJSONstreamed.LoadFromStream(JsonStream) as TlkJsonObject;
 
-        try
-            for Cnt := 0 to 2 do begin;
-                vCm := vJsonObj.Field['cm' + IntToStr(Cnt)];
-                if (vCm <> nil) then begin
-                    CmHtml := CmHtml + String(vCm.Value);
-                end;
-            end;
-            if (CmHtml <> '') then
-                SetCm(HTML_HD + CmHtml + HTML_FT);
+      eof := False;
+      idx := Pos(KW_LINE_S, html);
 
-            vRoot := vJsonObj.Field['result'];
-            if (vRoot <> nil) then begin
-                RecMax := vRoot.Count - 1;
-                for Cnt := 0 to RecMax do begin;
-                    vRec := vRoot.Child[Cnt];
-
-                    vField := vRec.Field['subject'];
-                    Title := HTMLEncode(String(vField.Value));
-                    if (ChkNG.Checked = True) and (ThreadNgList.IsNG(Title, GikoSys.Setting.NGThreadInvis) = True) then
-                        Continue;
-
-                    vField := vRec.Field['ita'];
-                    Item := ResultList.Items.Add;
-                    Item.Caption := String(vField.Value);
-
-                    Item.SubItems.Add(Title);
-
-                    vField := vRec.Field['resno'];
-                    Item.SubItems.Add(String(vField.Value));
-
-                    vField := vRec.Field['url'];
-                    Item.SubItems.Add(String(vField.Value));
-                end;
-            end;
-            Result := True;
-        except
-            on E: Exception do begin
-                MessageList.Items.Add('JSON解析エラー発生：' + E.Message);
-            end;
+      while (not eof) and (idx > 0) do begin
+        idx := idx + Length(KW_LINE_S);
+        idxNxt := PosEx(KW_LINE_S, html, idx);
+        if idxNxt > 0 then
+          line := Copy(html, idx, idxNxt - idx)
+        else begin
+          line := Copy(html, idx, Length(html) - idx);
+          eof := True;
         end;
-        vJsonObj.Free;
+
+        url  := '';
+        title := '';
+
+        if ExtractKW(line, KW_URL_S, KW_URL_E, url) and
+           ExtractKW(line, KW_TTL_S, KW_TTL_E, title) and
+           ExtractKW(line, KW_BRD_S, KW_BRD_E, board) and
+           ExtractKW(line, KW_PDT_S, KW_PDT_E, pstdt) and
+           ExtractKW(line, KW_PPD_S, KW_PPD_E, ppday) then begin
+
+          cnt := Pos('>', board);
+          if cnt > 0 then
+            Delete(board, 1, cnt);
+
+          len := Length(title);
+          if (len > 3) and (title[len] = ')') then begin
+            cnt := len - 1;
+            while cnt > 0 do begin
+              if title[cnt] = '(' then begin
+                rescnt := Copy(title, cnt + 1, len - 1 - cnt);
+                SetLength(title, cnt - 1);
+                Break;
+              end;
+              Dec(cnt);
+            end;
+          end;
+
+          titlew := EncAnsiToWideString(HtmlDecode(title));
+
+          if (not ChkNG.Checked) or
+             (not ThreadNgList.IsNG(title, GikoSys.Setting.NGThreadInvis)) then begin
+            Item := ResultList.Items.Add;
+            Item.Caption := board;
+            Item.SubItems.Add(titlew);
+            Item.SubItems.Add(rescnt);
+            Item.SubItems.Add(pstdt);
+            Item.SubItems.Add(ppday);
+            Item.SubItems.Add(url);
+          end;
+        end;
+
+        idx := idxNxt;
+      end;
+      Result := True;
     except
-        on E: Exception do begin
-            MessageList.Items.Add('JSON読込エラー発生：' + E.Message);
-        end;
+      on E: Exception do begin
+        MessageList.Items.Add('検索結果解析エラー発生：' + E.Message);
+      end;
     end;
+
+  except
+    on E: Exception do begin
+      MessageList.Items.Add('検索結果変換エラー発生：' + E.Message);
+    end;
+  end;
 end;
 
-procedure TThreadSrch.SetCm(Content: string);
+function TThreadSrch.atoi(str: String; var numLen: Integer): Integer;
 var
-//	doc: OleVariant;
-    Html: TStringList;
+  num, code, i: Integer;
 begin
-(*
-	if Assigned(CmBrowser.ControlInterface.Document) then begin
-		doc := OleVariant(CmBrowser.Document);
-		doc.Clear;
-		doc.open;
-		doc.charset := 'Shift_JIS';
-		doc.Write(Content);
-		doc.Close;
-    end else begin
-        MessageList.Items.Add('CM表示エラー発生');
-	end;
-*)
-    if (CmPath = '') then begin
-        MessageList.Items.Add('CM表示エラー発生：一時パス取得失敗');
-    end else begin
-        Html := TStringList.Create;
-        try
-            Html.Text := Content;
-            Html.SaveToFile(CmPath);
-            CmBrowser.Navigate(CmUrl);
-        except
-            on E: Exception do begin
-                MessageList.Items.Add('CM表示エラー発生：' + E.Message);
-            end;
-        end;
-        Html.Free;
-	end;
+	numLen := 0;
+	num := 0;
+	for i := 1 to Length(str) do begin
+  	code := Ord(str[i]);
+    if (code and $F0) <> $30 then
+    	Break;
+    num := (num * 10) + (code and $0F);
+    Int(numLen);
+  end;
+	Result := num;
 end;
 
-function TThreadSrch.HTMLEncode(const HTML: string): String;
+function TThreadSrch.atof(str: String): Double;
 var
-    DstStr: String;
+  code, i, len: Integer;
 begin
-	DstStr := CustomStringReplace(HTML,   '&lt;',   '<');
-	DstStr := CustomStringReplace(DstStr, '&gt;',   '>');
-	DstStr := CustomStringReplace(DstStr, '&quot;', '"');
-	Result := CustomStringReplace(DstStr, '&amp;',  '&');
+	len := 0;
+	for i := 1 to Length(str) do begin
+  	code := Ord(str[i]);
+    if ((code and $F0) <> $30) and (str[i] <> '.') then
+    	Break;
+    Inc(len);
+  end;
+	Result := StrToFloatDef(Copy(str, 1, len), 0);
+end;
+
+function TThreadSrch.NumComp(text1, text2: String): Integer;
+var
+	tmp: Integer;
+begin
+	Result := atoi(text1, tmp) - atoi(text2, tmp);
+end;
+
+function TThreadSrch.DecComp(text1, text2: String): Integer;
+var
+  dec1, dec2: Double;
+begin
+  dec1 := atof(text1);
+  dec2 := atof(text2);
+
+  if dec1 < dec2 then
+    Result := -1
+  else if dec1 = dec2 then
+    Result := 0
+  else
+    Result := 1;
+  //MessageList.Items.Add(Format('DecComp(%s, %s) [%f][%f] : [%d]', [text1, text2, dec1, dec2, Result]));
+end;
+
+procedure TThreadSrch.ResultListColumnClick(Sender: TObject;
+  Column: TListColumn);
+begin
+  if FSortIdx = Column.Index then
+    FSortAsc := not FSortAsc
+  else begin
+    FSortIdx := Column.Index;
+    FSortAsc := True;
+  end;
+  ResultList.SortType := stNone;
+  ResultList.SortType := stData;
 end;
 
 procedure TThreadSrch.ResultListDblClick(Sender: TObject);
@@ -463,6 +407,8 @@ begin
 end;
 
 procedure TThreadSrch.SaveSetting;
+var
+  i: Integer;
 begin
     GikoSys.Setting.ThrdSrchTop := Top;
     GikoSys.Setting.ThrdSrchLeft := Left;
@@ -480,8 +426,11 @@ begin
     GikoSys.Setting.ThrdSrchCol2W := ResultList.Column[1].Width;
     GikoSys.Setting.ThrdSrchCol3W := ResultList.Column[2].Width;
     GikoSys.Setting.ThrdSrchCol4W := ResultList.Column[3].Width;
+    GikoSys.Setting.ThrdSrchCol5W := ResultList.Column[4].Width;
+    GikoSys.Setting.ThrdSrchCol6W := ResultList.Column[5].Width;
     GikoSys.Setting.ThrdSrchHistory.Clear;
-    GikoSys.Setting.ThrdSrchHistory.AddStrings(CmbKW.Items);
+    for i := 0 to CmbKW.Items.Count - 1 do
+      GikoSys.Setting.ThrdSrchHistory.Add(WideToEncAnsiString(CmbKW.Items.Strings[i]));
 end;
 
 procedure TThreadSrch.FormClose(Sender: TObject; var Action: TCloseAction);
@@ -492,26 +441,26 @@ end;
 procedure TThreadSrch.MenuShowThreadClick(Sender: TObject);
 begin
     if (ResultList.Selected <> nil) then
-        GikoDM.MoveURLWithHistory(ResultList.Selected.SubItems[2]);
+        GikoDM.MoveURLWithHistory(ResultList.Selected.SubItems[IDX_URL]);
 end;
 
 procedure TThreadSrch.MenuCopyURLClick(Sender: TObject);
 begin
     if (ResultList.Selected <> nil) then
-        Clipboard.AsText := ResultList.Selected.SubItems[2];
+        Clipboard.AsText := ResultList.Selected.SubItems[IDX_URL];
 end;
 
 procedure TThreadSrch.MenuCopyThreadClick(Sender: TObject);
 begin
     if (ResultList.Selected <> nil) then
-        Clipboard.AsText := ResultList.Selected.SubItems[0];
+        Clipboard.AsText := ResultList.Selected.SubItems[IDX_TTL];
 end;
 
 procedure TThreadSrch.MenuCopyThrURLClick(Sender: TObject);
 begin
     if (ResultList.Selected <> nil) then
-        Clipboard.AsText := ResultList.Selected.SubItems[0] + #13#10
-                          + ResultList.Selected.SubItems[2];
+        Clipboard.AsText := ResultList.Selected.SubItems[IDX_TTL] + #13#10
+                          + ResultList.Selected.SubItems[IDX_URL];
 end;
 
 procedure TThreadSrch.PopupMenuPopup(Sender: TObject);
@@ -528,145 +477,73 @@ begin
     MenuCopyThrURL.Enabled := Enb;
 end;
 
-procedure TThreadSrch.ChkBbsClick(Sender: TObject);
-begin
-    if (ChkBbs.Checked = True) then begin
-        CmbBoard.Enabled := False;
-        PnlBbsName.Font.Color := clWindowText;
-        PnlBbsId.Font.Color := clWindowText;
-        BtnBbs.Enabled := True;
-    end else begin
-        CmbBoard.Enabled := True;
-        PnlBbsName.Font.Color := clGrayText;
-        PnlBbsId.Font.Color := clGrayText;
-        BtnBbs.Enabled := False;
-    end;
-end;
-
-procedure TThreadSrch.BtnBbsClick(Sender: TObject);
+procedure TThreadSrch.ResultListCompare(Sender: TObject; Item1,
+  Item2: TListItem; Data: Integer; var Compare: Integer);
 var
-    CliPos: TPoint;
-    ScrPos: TPoint;
+  text1, text2: String;
+  typ: TColumnType;
 begin
-    CliPos.X := PnlBbsName.Left;
-    CliPos.Y := 0;
-    ScrPos := ClientToScreen(CliPos);
+  if (FSortIdx > 0) and (FSortIdx <= Item1.SubItems.Count) then begin
+    text1 := Item1.SubItems.Strings[FSortIdx - 1];
+    text2 := Item2.SubItems.Strings[FSortIdx - 1];
+  end else begin
+    text1 := Item1.Caption;
+    text2 := Item2.Caption;
+  end;
 
-    PopMenuBbs.Popup(ScrPos.X, ScrPos.Y);
+  if (FSortIdx >= Low(COL_TYPE)) and (FSortIdx <= High(COL_TYPE)) then
+    typ := COL_TYPE[FSortIdx]
+  else
+    typ := ctString;
+
+  case typ of
+  ctInteger: Compare := NumComp(text1, text2);
+  ctDecimal: Compare := DecComp(text1, text2);
+  //ctString:
+  else       Compare := AnsiCompareStr(text1, text2);
+  end;
+
+  if not FSortAsc then
+    Compare := Compare * -1;
 end;
 
 procedure TThreadSrch.FormShow(Sender: TObject);
-const
-    HTML_INF = '<font size="-1">検索すると、ここに http://dig.2ch.net/ からの広告が表示されます。<br>広告の内容、収益などについてギコナビ開発者は一切関知しておりません。</font>';
 var
-    Ini: TIniFile;
-    Sec: TStringList;
-    Itm: TStringList;
-    IdxSec: Integer;
-    IdxItm: Integer;
-    MaxSec: Integer;
-    MaxItm: Integer;
-    SecItem: TMenuItem;
-    BbsItem: TMenuItem;
-    SecName: String;
-    BbsName: String;
-    BbsId: String;
-    SepPos: Integer;
+  path: String;
 begin
-    ResultList.Clear;
-    MessageList.Clear;
-    CmbKW.Text := '';
-    CmbType.ItemIndex := 0;
-    CmbMax.ItemIndex := 3;
-    CmbLim.ItemIndex := 0;
-    CmbSort.ItemIndex := 5;
-    CmbBoard.ItemIndex := 0;
-    Cmb924.ItemIndex := 1;
-    ChkBbs.Checked := False;
-    ChkBbsClick(ChkBbs);
-    PnlBbsName.Caption := '';
-    PnlBbsId.Caption := '';
-//    CmBrowser.Navigate('about:blank');
-    SetCm(HTML_HD + HTML_INF + HTML_FT);
+  MemoHelp.Visible := False;
+  PanelHead.Height := H_PNLHD_HIDE;
+  ResultList.Clear;
+  MessageList.Clear;
+  CmbKW.Text := '';
 
-    PopMenuBbs.Items.Clear;
-    BbsNmList.Clear;
-    BbsIdList.Clear;
-
-    Sec := TStringList.Create;
-    Itm := TStringList.Create;
-    Ini := TIniFile.Create(GikoSys.GetBoardFileName);
-
-    Ini.ReadSections(Sec);
-
-    MaxSec := Sec.Count - 1;
-    if (MaxSec > 0) then begin
-        for IdxSec := 0 to MaxSec do begin
-            SecName := Sec.Strings[IdxSec];
-            SecItem := TMenuItem.Create(PopMenuBbs);
-            PopMenuBbs.Items.Add(SecItem);
-            SecItem.Caption := SecName;
-
-            Ini.ReadSection(SecName, Itm);
-            MaxItm := Itm.Count - 1;
-            if (MaxItm > 0) then begin
-                for IdxItm := 0 to MaxItm do begin
-                    BbsName := Itm.Strings[IdxItm];
-                    BbsId   := Ini.ReadString(SecName, BbsName, '');
-                    SepPos := Pos('.2ch.net/', BbsId);
-                    if (SepPos > 0) then
-                        Delete(BbsId, 1, SepPos + Length('.2ch.net/') - 1);
-                    SepPos := Pos('.bbspink.com/', BbsId);
-                    if (SepPos > 0) then
-                        Delete(BbsId, 1, SepPos + Length('.bbspink.com/') - 1);
-                    SepPos := Pos('/', BbsId);
-                    if (SepPos > 0) then
-                        SetLength(BbsId, SepPos - 1);
-
-                    BbsItem := TMenuItem.Create(PopMenuBbs);
-                    SecItem.Add(BbsItem);
-                    BbsItem.Caption := BbsName;
-                    BbsNmList.Add('【' + SecName + '】【' + BbsName + '】');
-                    BbsIdList.Add(BbsId);
-                    BbsItem.Tag := BbsIdList.Count - 1;
-                    BbsItem.OnClick := MenuBbsClick;
-                end;
-            end;
-        end;
+  try
+    path := GikoSys.GetConfigDir + HELP_FILE_NAME;
+    if FileExists(path) then
+      MemoHelp.Lines.LoadFromFile(path);
+  except
+    on E: Exception do begin
+      MessageList.Items.Add('ヘルプファイル読み込みエラー発生：' + E.Message);
     end;
-
-    Ini.Free;
-    Itm.Free;
-    Sec.Free;
-
+  end;
 end;
 
-procedure TThreadSrch.MenuBbsClick(Sender: TObject);
-var
-    SelItem: TMenuItem;
-    BbsName: String;
-    BbsId: String;
+procedure TThreadSrch.ButtonHelpClick(Sender: TObject);
 begin
-    if (Sender <> nil) then begin
-        SelItem := TMenuItem(Sender);
-        if (SelItem.Tag >= 0) and (SelItem.Tag < BbsNmList.Count) then begin
-            BbsName := BbsNmList.Strings[SelItem.Tag];
-            BbsId   := BbsIdList.Strings[SelItem.Tag];
-        end;
-    end;
-    PnlBbsName.Caption := BbsName;
-    PnlBbsId.Caption   := BbsId;
+  if MemoHelp.Visible then begin
+    MemoHelp.Visible := False;
+    PanelHead.Height := H_PNLHD_HIDE;
+  end else begin
+    MemoHelp.Visible := True;
+    PanelHead.Height := H_PNLHD_SHOW;
+  end;
 end;
 
-procedure TThreadSrch.FormDestroy(Sender: TObject);
+procedure TThreadSrch.FormResize(Sender: TObject);
 begin
-    BbsNmList.Free;
-    BbsIdList.Free;
-end;
-
-procedure TThreadSrch.LblSiteClick(Sender: TObject);
-begin
-	GikoSys.OpenBrowser(PChar(LblSite.Caption), gbtAuto);
+  BtnSearch.Left := PanelHead.Width - 6 - BtnSearch.Width;
+  CmbKW.Width    := BtnSearch.Left  - 6 - CmbKW.Left;
+  MemoHelp.Width := PanelHead.Width - 6 - MemoHelp.Left;
 end;
 
 end.
