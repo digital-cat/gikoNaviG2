@@ -2659,7 +2659,7 @@ begin
     ListViewArmor.Items.Clear;
     ListViewNcklc.Items.Clear;
 
-  	usedSlot := FBag.WeaponList.Count + FBag.ArmorList.Count;
+  	usedSlot := FBag.WeaponList.Count + FBag.ArmorList.Count + FBag.NcklcList.Count;
   	SlotLabel.Caption := Format('%d / %d', [usedSlot, FBag.Slot]);
 
     GridWeaponUsing1.Cells[0, 1] := FBag.UseWeapon.Rarity;

@@ -114,7 +114,7 @@ object DonguriForm: TDonguriForm
     Top = 28
     Width = 280
     Height = 596
-    ActivePage = TabSheetLink
+    ActivePage = TabSheetChest
     Align = alClient
     TabOrder = 0
     OnDrawTab = PageControlDrawTab
@@ -1116,7 +1116,7 @@ object DonguriForm: TDonguriForm
         Top = 126
         Width = 272
         Height = 442
-        ActivePage = TabSheetNecklace
+        ActivePage = TabSheetWeapon
         Align = alClient
         TabOrder = 1
         OnDrawTab = PageControlItemBagDrawTab
@@ -1137,27 +1137,27 @@ object DonguriForm: TDonguriForm
             TabOrder = 0
             object UsingWeaponLabel: TLabel
               Left = 4
-              Top = 7
+              Top = 10
               Width = 24
               Height = 13
               Caption = #27494#22120
             end
             object UsingArmorLabel: TLabel
               Left = 4
-              Top = 141
+              Top = 144
               Width = 24
               Height = 13
               Caption = #38450#20855
             end
             object UsingNcklcLabel: TLabel
               Left = 4
-              Top = 275
+              Top = 278
               Width = 43
               Height = 13
               Caption = #12493#12483#12463#12524#12473
             end
             object RemWeaponPnlButton: TPanel
-              Left = 48
+              Left = 54
               Top = 2
               Width = 60
               Height = 22
@@ -1173,7 +1173,7 @@ object DonguriForm: TDonguriForm
               OnMouseUp = PanelButtonMouseUp
             end
             object RemArmorPnlButton: TPanel
-              Left = 48
+              Left = 54
               Top = 136
               Width = 60
               Height = 22
@@ -1189,7 +1189,7 @@ object DonguriForm: TDonguriForm
               OnMouseUp = PanelButtonMouseUp
             end
             object GridWeaponUsing1: TStringGrid
-              Left = 4
+              Left = 2
               Top = 26
               Width = 250
               Height = 35
@@ -1210,7 +1210,7 @@ object DonguriForm: TDonguriForm
               OnDrawCell = DrawGridCell
             end
             object GridWeaponUsing2: TStringGrid
-              Left = 4
+              Left = 2
               Top = 60
               Width = 250
               Height = 35
@@ -1231,7 +1231,7 @@ object DonguriForm: TDonguriForm
               OnDrawCell = DrawGridCell
             end
             object GridWeaponUsing3: TStringGrid
-              Left = 4
+              Left = 2
               Top = 94
               Width = 250
               Height = 35
@@ -1252,7 +1252,7 @@ object DonguriForm: TDonguriForm
               OnDrawCell = DrawGridCell
             end
             object GridArmorUsing3: TStringGrid
-              Left = 4
+              Left = 2
               Top = 228
               Width = 250
               Height = 35
@@ -1273,7 +1273,7 @@ object DonguriForm: TDonguriForm
               OnDrawCell = DrawGridCell
             end
             object GridArmorUsing2: TStringGrid
-              Left = 4
+              Left = 2
               Top = 194
               Width = 250
               Height = 35
@@ -1294,7 +1294,7 @@ object DonguriForm: TDonguriForm
               OnDrawCell = DrawGridCell
             end
             object GridArmorUsing1: TStringGrid
-              Left = 4
+              Left = 2
               Top = 160
               Width = 250
               Height = 35
@@ -1315,7 +1315,7 @@ object DonguriForm: TDonguriForm
               OnDrawCell = DrawGridCell
             end
             object ModUseWPnlButton: TPanel
-              Left = 114
+              Left = 120
               Top = 2
               Width = 60
               Height = 22
@@ -1331,7 +1331,7 @@ object DonguriForm: TDonguriForm
               OnMouseUp = PanelButtonMouseUp
             end
             object ModUseAPnlButton: TPanel
-              Left = 114
+              Left = 120
               Top = 136
               Width = 60
               Height = 22
@@ -1347,7 +1347,7 @@ object DonguriForm: TDonguriForm
               OnMouseUp = PanelButtonMouseUp
             end
             object RemNcklcPnlButton: TPanel
-              Left = 60
+              Left = 54
               Top = 270
               Width = 60
               Height = 22
@@ -1364,7 +1364,7 @@ object DonguriForm: TDonguriForm
             end
             object GridNcklcUsing1: TStringGrid
               Tag = 11
-              Left = 4
+              Left = 2
               Top = 294
               Width = 250
               Height = 35
@@ -1386,7 +1386,7 @@ object DonguriForm: TDonguriForm
             end
             object GridNcklcUsing2: TStringGrid
               Tag = 12
-              Left = 4
+              Left = 2
               Top = 328
               Width = 250
               Height = 35
@@ -1579,6 +1579,10 @@ object DonguriForm: TDonguriForm
         object TabSheetArmor: TTabSheet
           Caption = #38450#20855
           ImageIndex = 2
+          ExplicitLeft = 0
+          ExplicitTop = 0
+          ExplicitWidth = 0
+          ExplicitHeight = 0
           object ArmorTopPanel: TPanel
             Left = 0
             Top = 0
@@ -1747,6 +1751,10 @@ object DonguriForm: TDonguriForm
         object TabSheetNecklace: TTabSheet
           Caption = #12493#12483#12463#12524#12473
           ImageIndex = 3
+          ExplicitLeft = 0
+          ExplicitTop = 0
+          ExplicitWidth = 0
+          ExplicitHeight = 0
           object NcklcTopPanel: TPanel
             Left = 0
             Top = 0
@@ -3194,7 +3202,7 @@ object DonguriForm: TDonguriForm
   object BagImageList: TImageList
     Left = 16
     Bitmap = {
-      494C01010A001400800110001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01010A0014008C0110001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000003000000001002000000000000030
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
