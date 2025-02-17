@@ -349,6 +349,7 @@ type
 		FPreviewVisible: Boolean;
 		FPreviewSize: TGikoPreviewSize;
 		FPreviewWait: Integer;
+		FPreviewClear: Boolean;
 
 		// ブラウザ
 		FBrowserAutoMaximize: TGikoBrowserAutoMaximize;
@@ -525,6 +526,8 @@ type
     FThrdSrchCol2W: Integer;
     FThrdSrchCol3W: Integer;
     FThrdSrchCol4W: Integer;
+    FThrdSrchCol5W: Integer;
+    FThrdSrchCol6W: Integer;
     FThrdSrchHistory: TStringList;
 
     //! 冒険の書用Cookie
@@ -835,6 +838,7 @@ type
 		property PreviewVisible: Boolean read FPreviewVisible write FPreviewVisible;
 		property PreviewSize: TGikoPreviewSize read FPreviewSize write FPreviewSize;
 		property PreviewWait: Integer read FPreviewWait write FPreviewWait;
+		property PreviewClear: Boolean read FPreviewClear write FPreviewClear;
 		property BrowserAutoMaximize: TGikoBrowserAutoMaximize read FBrowserAutoMaximize write FBrowserAutoMaximize;
 
 		property ListIconVisible: Boolean read FListIconVisible write FListIconVisible;
@@ -982,6 +986,8 @@ type
     property ThrdSrchCol2W: Integer read FThrdSrchCol2W write FThrdSrchCol2W;
     property ThrdSrchCol3W: Integer read FThrdSrchCol3W write FThrdSrchCol3W;
     property ThrdSrchCol4W: Integer read FThrdSrchCol4W write FThrdSrchCol4W;
+    property ThrdSrchCol5W: Integer read FThrdSrchCol5W write FThrdSrchCol5W;
+    property ThrdSrchCol6W: Integer read FThrdSrchCol6W write FThrdSrchCol6W;
     property ThrdSrchHistory: TStringList read FThrdSrchHistory write FThrdSrchHistory;
     //! 冒険の書
     property BoukenCookieList: TStringList read FBoukenCookieList write FBoukenCookieList;
@@ -1413,6 +1419,7 @@ begin
 		FPreviewVisible := ini.ReadBool('Browser', 'PreviewVisible', True);
 		FPreviewSize := TGikoPreviewSize(ini.ReadInteger('Browser', 'PreviewSize', Ord(gpsMedium)));
 		FPreviewWait := ini.ReadInteger('Browser', 'PreviewWait', 500);
+    FPreviewClear := ini.ReadBool('Browser', 'PreviewClear', False);
 
 		// ブラウザ
 		FBrowserAutoMaximize := TGikoBrowserAutoMaximize(
@@ -1558,19 +1565,21 @@ begin
 		FThrdSrchWidth  := ini.ReadInteger('ThreadSearch', 'Width',  526);
 		FThrdSrchHeight := ini.ReadInteger('ThreadSearch', 'Height', 550);
 		FThrdSrchMax    := ini.ReadBool(   'ThreadSearch', 'Max',    False);
-        FThrdSrchStay   := ini.ReadBool(   'ThreadSearch', 'Stay',   False);
-        FThrdSrchCol1W  := ini.ReadInteger('ThreadSearch', 'Col1W',  80);
-        FThrdSrchCol2W  := ini.ReadInteger('ThreadSearch', 'Col2W',  350);
-        FThrdSrchCol3W  := ini.ReadInteger('ThreadSearch', 'Col3W',  40);
-        FThrdSrchCol4W  := ini.ReadInteger('ThreadSearch', 'Col4W',  500);
-        Cnt := ini.ReadInteger('ThreadSearch', 'HistoryCount',  0);
-        if (Cnt > 0) then begin
-            for i := 1 to Cnt do begin
-                s := ini.ReadString('ThreadSearch', 'History' + IntToStr(i), '');
-                if (s <> '') then
-                    FThrdSrchHistory.Add(s);
-            end;
+    FThrdSrchStay   := ini.ReadBool(   'ThreadSearch', 'Stay',   False);
+    FThrdSrchCol1W  := ini.ReadInteger('ThreadSearch', 'Col1W',  100);
+    FThrdSrchCol2W  := ini.ReadInteger('ThreadSearch', 'Col2W',  350);
+    FThrdSrchCol3W  := ini.ReadInteger('ThreadSearch', 'Col3W',  40);
+    FThrdSrchCol4W  := ini.ReadInteger('ThreadSearch', 'Col4W',  150);
+    FThrdSrchCol5W  := ini.ReadInteger('ThreadSearch', 'Col5W',  60);
+    FThrdSrchCol6W  := ini.ReadInteger('ThreadSearch', 'Col6W',  350);
+    Cnt := ini.ReadInteger('ThreadSearch', 'HistoryCount',  0);
+    if (Cnt > 0) then begin
+        for i := 1 to Cnt do begin
+            s := ini.ReadString('ThreadSearch', 'History' + IntToStr(i), '');
+            if (s <> '') then
+                FThrdSrchHistory.Add(s);
         end;
+    end;
 
 		//! どんぐりシステムウィンドウ
 		FDonguriTop    := ini.ReadInteger('DonguriSystem', 'Top',    0);
@@ -1909,6 +1918,7 @@ begin
 		ini.WriteBool('Browser', 'PreviewVisible', FPreviewVisible);
 		ini.WriteInteger('Browser', 'PreviewSize', Ord(FPreviewSize));
 		ini.WriteInteger('Browser', 'PreviewWait', FPreviewWait);
+    ini.WriteBool('Browser',   'PreviewClear', FPreviewClear);
 
 		ini.WriteInteger('Window', 'BrowserAutoMaximize', Ord( BrowserAutoMaximize ) );
 
@@ -2089,6 +2099,8 @@ begin
     ini.WriteInteger('ThreadSearch', 'Col2W',  FThrdSrchCol2W);
     ini.WriteInteger('ThreadSearch', 'Col3W',  FThrdSrchCol3W);
     ini.WriteInteger('ThreadSearch', 'Col4W',  FThrdSrchCol4W);
+    ini.WriteInteger('ThreadSearch', 'Col5W',  FThrdSrchCol5W);
+    ini.WriteInteger('ThreadSearch', 'Col6W',  FThrdSrchCol6W);
     ini.WriteInteger('ThreadSearch', 'HistoryCount', FThrdSrchHistory.Count);
     if (FThrdSrchHistory.Count > 0) then begin
 			for i := 1 to FThrdSrchHistory.Count do begin
