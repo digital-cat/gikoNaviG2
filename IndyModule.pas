@@ -49,6 +49,7 @@ type
     procedure DelDonguriCookie;
     procedure DelUpliftCookie;
     procedure DelBeCookie;
+    procedure DelMonaTicketCookie;
 
     property CookieCount: Integer read GetCookieCount;
 
@@ -72,6 +73,7 @@ const
 	COOKIE_BE1     = 'DMDM';
 	COOKIE_BE2     = 'MDMD';
 	COOKIE_TAKO    = 'TAKO';
+  COOKIE_MTICKET = 'MonaTicket';
 
 {$R *.dfm}
 
@@ -505,6 +507,12 @@ procedure TIndyMdl.DelBeCookie;
 begin
 	DelCookie(COOKIE_BE1, URL_5CH_ROOT);
 	DelCookie(COOKIE_BE2, URL_5CH_ROOT);
+end;
+
+{ MonaTicket CookieçÌèú }
+procedure TIndyMdl.DelMonaTicketCookie;
+begin
+	DelCookie(COOKIE_MTICKET, URL_5CH_ROOT);
 end;
 
 
