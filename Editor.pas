@@ -1626,14 +1626,12 @@ end;
 //! Cookie‚Ì“à—e‚ª‰ó‚ê‚Ä‚¢‚é‚©
 function TEditorForm.IsBrokenCookie(ResponseText: string): Boolean;
 const
-  ERR_MSG1: String = 'ERROR:';
-  ERR_MSG2: String = '[Delete Cookie, "MonaTicket"]';
+  ERROR_MSG: String = '[Delete Cookie, "MonaTicket"]';
 begin
   Result := False;
 
-  if (AnsiPos(RES2CH_ERROR, ResponseText) > 0) or
-     ((AnsiPos(ERR_MSG1, ResponseText) > 0) and
-      (AnsiPos(ERR_MSG2, ResponseText) > 0)) then begin
+  if (AnsiPos(RES2CH_ERROR, ResponseText) > 0) and
+     (AnsiPos(ERROR_MSG,    ResponseText) > 0) then begin
     Result := True;
   end;
 end;
