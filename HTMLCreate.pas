@@ -382,6 +382,12 @@ begin
 					 (not ((chk >= $61) and (chk <= $7A))) and
            (chk <> $26) then		// 文字参照で規制を回避するパターンが多いから除外
         	pos := nil;
+      end else if (pos <> nil) and (REF_MARK_LEN[j] = 0) then begin
+      	chk := Ord(pos[-1]);
+				if (((chk >= $30) and (chk <= $39)) or
+					  ((chk >= $41) and (chk <= $5A)) or
+					  ((chk >= $61) and (chk <= $7A))) then
+        	pos := nil;   // たぶん別のドメイン
       end;
 			if pos <> nil then begin
 				tmp := pos - pp + 1;

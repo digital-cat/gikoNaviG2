@@ -4044,6 +4044,10 @@ const
   DOMAIN_PNK = 'bbspink.com';
   CLSSC_5CH  = '.5ch.net/test/read.cgi/c/';
   CLSSC_PNK  = '.bbspink.com/test/read.cgi/c/';
+  EXCL_URL: array[0..1] of String  = (
+      'https://itest.5ch.net/setting',
+      'https://itest.5ch.net/setting/'
+    );
 var
   idx1: Integer;
   idx2: Integer;
@@ -4057,6 +4061,7 @@ var
   termSlash: Boolean;
   board: TBoard;
   server: String;
+  i: Integer;
 begin
   if not Is2chURL(url) then
     Exit;
@@ -4067,6 +4072,11 @@ begin
   idx1 := Pos('.2ch.net/', url);
   if idx1 > 0 then
     url[idx1 + 1] := '5'; // 2ch.net -> 5ch.net
+
+  for i := Low(EXCL_URL) to High(EXCL_URL) do begin
+    if url = EXCL_URL[i] then
+      Exit;   // ‚±‚êˆÈã‚Ì‰ÁH‚Í‚µ‚È‚¢
+  end;
 
   { ƒXƒ}ƒzURL -> PC-URL
   https://itest.5ch.net/egg/test/read.cgi/software/1689155355
