@@ -360,7 +360,7 @@ const
 		  'ProductVersion',
 		  'SpecialBuild');
 
-	UAVers: array[0..32] of TUAVer = (
+	UAVers: array[0..33] of TUAVer = (
       (BetaVer:  0; FileVer: ''),
       (BetaVer: 74; FileVer: '1.75.0.881'),
       (BetaVer: 74; FileVer: '1.75.0.883'),
@@ -393,7 +393,8 @@ const
       (BetaVer: 75; FileVer: '1.75.1.911'),
       (BetaVer: 75; FileVer: '1.76.0.912'),
       (BetaVer: 75; FileVer: '1.76.0.913'),
-      (BetaVer: 75; FileVer: '1.76.0.914')
+      (BetaVer: 75; FileVer: '1.76.0.914'),
+      (BetaVer: 75; FileVer: '1.76.0.915')
 	);	// 当面リリースの度にバージョン情報を追加していく
 
 // *************************************************************************
