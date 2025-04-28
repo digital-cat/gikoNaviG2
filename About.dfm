@@ -158,7 +158,6 @@ object AboutDialog: TAboutDialog
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 1
-    ExplicitTop = 203
     object ButtonPanel: TPanel
       Left = 129
       Top = 0
@@ -199,7 +198,6 @@ object AboutDialog: TAboutDialog
     Align = alClient
     Caption = 'VersionPanel'
     TabOrder = 2
-    ExplicitHeight = 162
     object VersionMemo: TMemo
       Left = 1
       Top = 1
@@ -209,7 +207,6 @@ object AboutDialog: TAboutDialog
       ReadOnly = True
       ScrollBars = ssBoth
       TabOrder = 0
-      ExplicitHeight = 160
     end
   end
 end

@@ -15,7 +15,7 @@ uses
   ActiveX, GikoSystem, MoveHistoryItem, HistoryList, TntComCtrls, WideCtrls;
 
 const
-	CAPTION_NAME: string = 'ギコナビ';
+	CAPTION_NAME: string = 'ギコナビ検証版#01';
 	USER_SETLINKBAR					= WM_USER + 2003;
 
 	ITEM_ICON_SORT1					= 12;		//!< ソートアイコン

@@ -4,8 +4,9 @@ interface
 
 uses
   SysUtils, Classes, Windows, Forms, StrUtils, IdBaseComponent, IdAntiFreezeBase,
-  IdAntiFreeze, IdHTTP, IdGlobal, IdCookie, IdURI;
-
+  IdAntiFreeze, IdHTTP, IdGlobal, IdCookie, IdURI, IdIOHandler, IdIOHandlerSocket,
+  IdIOHandlerStack, IdSSL, IdSSLOpenSSL;
+  
 type
   TIndyMdl = class(TDataModule)
     { TIdAntiFreezeはプロセス内にインスタンス1つのみ }
@@ -181,7 +182,7 @@ end;
 { OpenSSLバージョン取得 }
 function TIndyMdl.GetOpenSSLVersion: String;
 begin
-  Result := GetFileVersion('ssleay32.dll');
+  Result := GetFileVersion('libssl-3.dll');
 end;
 
 { TIdHTTPコンポーネントクリア }
@@ -199,6 +200,8 @@ end;
 
 { TIdHTTPコンポーネント初期化 }
 class procedure TIndyMdl.InitHTTP(IdHTTP: TIdHTTP; WriteMethod: Boolean = False);
+var
+  ssl: TIdSSLIOHandlerSocketOpenSSL;
 begin
   IdHTTP.Disconnect;
   ClearHTTP(IdHTTP);
@@ -253,6 +256,12 @@ begin
 		{$IFDEF DEBUG}
 		Writeln('プロキシ設定なし');
 		{$ENDIF}
+  end;
+
+  if IdHTTP.IOHandler <> nil then begin
+    ssl := TIdSSLIOHandlerSocketOpenSSL(IdHTTP.IOHandler);
+    ssl.SSLOptions.SSLVersions := [sslvTLSv1_3];
+    ssl.SSLOptions.Method := sslvTLSv1_3;
   end;
 end;
 

@@ -84,7 +84,7 @@ begin
 									+ FloatToStr(BETA_VERSION)
 									+ '('
 									+ GikoSys.Version
-									+ ')');
+									+ ') åüèÿî≈#01');
     VersionMemo.Lines.Add('');
 	VersionMemo.Lines.Add('<Plugins>');
 	VersionMemo.Lines.Add(Trim(GikoSys.GetPluginsInfo));
