@@ -24,7 +24,7 @@ uses
 type
 //	TSetLayeredWindowAttributes = function(wnd: HWND; crKey: DWORD; bAlpha: BYTE; dwFlag: DWORD): Boolean; stdcall;
 	//書き込み戻り値タイプ
-	TGikoResultType = (grtOK, grtCookie, grtCookieBroken, grtError, grtDonguri, grtDngBroken);
+	TGikoResultType = (grtOK, grtCookie, grtCookieBroken, grtError, grtDonguri, grtDngBroken, grtInvTime);
 
 	TEditorForm = class(TTntForm)
 		MainMenu: TMainMenu;
@@ -343,6 +343,8 @@ type
     function IsCookieRes(ResponseText: string): Boolean;
     //! Cookieの内容が壊れているか
     function IsBrokenCookie(ResponseText: string): Boolean;
+    //! 投稿時刻がおかしいか
+    function IsInvalidTime(ResponseText: string): Boolean;
 	protected
 		procedure CreateParams(var Params: TCreateParams); override;
 	public
@@ -1179,6 +1181,8 @@ var
 	url2: string;
   hdnVal: TStringList;
   sbmVal: String;
+  msg: String;
+  i, j: Integer;
 //  dbg: Integer;
 //{$IFDEF DEBUG}
 //  debug: String;
@@ -1351,6 +1355,50 @@ begin
 				CancelSend( Board, SysMenu );
       	ClearBrokenAcorn(ResponseText);
 				Exit;
+
+			end else if ResultType = grtInvTime then begin
+//DebugLog('ResultType = grtInvTime');
+
+        if GikoSys.Setting.UseMachineTime then begin
+          msg := '<b>ERROR: 投稿時刻がおかしいです。時計が狂っていませんか？(Diff:';
+          i := Pos(msg, ResponseText);
+          if i > 0 then begin
+            i := i + Length(msg);
+            j := PosEx(')</b>', ResponseText, i);
+            if j > i then
+              msg := #10#13#10#13 + '時間のずれ：' + Copy(ResponseText, i, j - i) + '秒'
+            else msg := '';
+          end else msg := '';
+
+          msg := '投稿時刻のエラーが発生しました。' + #10#13 +
+                  'ギコナビのオプションで、書き込みにマシン時刻を使用するよう設定されています。' + #10#13 +
+                  'オプションの変更、または、Windowsの時刻調整によりエラーが解消するかもしれません。' +
+                  msg;
+
+          MsgBox(Handle, msg, '投稿時刻エラー', MB_OK or MB_ICONERROR);
+
+        end else begin
+          if FThreadItem = nil then
+            msg := '板のスレッド一覧'
+          else
+            msg := 'スレッド';
+          msg := '投稿時刻のエラーが発生しました。' + #10#13 +
+                 '最後に板／スレの情報を取得してから時間が経ち過ぎている可能性があります。' + #10#13 +
+                 msg + 'をリロードするとエラーが解消するかもしれません。' + #10#13 +
+                 'リロードしますか？';
+
+          MsgResult := MsgBox(Handle, msg, '投稿時刻エラー', MB_YESNO or MB_ICONQUESTION);
+
+          if MsgResult <> IDYES then
+            CancelSend( Board, SysMenu )
+          else begin
+            OpenSendTargetAction.Execute;	// 板／スレを表示
+            ReloadTargetAction.Execute;		// 板／スレを再読み込み
+          end;
+        end;
+
+        Exit;
+
 			end else begin
 //DebugLog('ResultType = else');
 
@@ -1465,6 +1513,8 @@ begin
       Result := grtCookie
     else if IsBrokenCookie(ResponseText) then
       Result := grtCookieBroken
+    else if IsInvalidTime(ResponseText) then
+      Result := grtInvTime
     else
       Result := grtError;
   end else
@@ -1627,6 +1677,19 @@ end;
 function TEditorForm.IsBrokenCookie(ResponseText: string): Boolean;
 const
   ERROR_MSG: String = '[Delete Cookie, "MonaTicket"]';
+begin
+  Result := False;
+
+  if (AnsiPos(RES2CH_ERROR, ResponseText) > 0) and
+     (AnsiPos(ERROR_MSG,    ResponseText) > 0) then begin
+    Result := True;
+  end;
+end;
+
+//! 投稿時刻がおかしいか
+function TEditorForm.IsInvalidTime(ResponseText: string): Boolean;
+const
+  ERROR_MSG: String = '投稿時刻がおかしいです。時計が狂っていませんか？';
 begin
   Result := False;
 
