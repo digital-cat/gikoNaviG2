@@ -6,13 +6,19 @@ library MachiBBSPlugIn;
 }
 
 uses
-	Windows, SysUtils, Classes, Math, DateUtils,
-	IdURI,
-	PlugInMain in 'PlugInMain.pas',
-	ThreadItem in 'ThreadItem.pas',
-	BoardItem in 'BoardItem.pas',
-	FilePath in 'FilePath.pas',
-    MojuUtils in '..\..\MojuUtils.pas';
+  Windows,
+  SysUtils,
+  Classes,
+  Math,
+  DateUtils,
+  Dialogs,
+  IdURI,
+  PlugInMain in 'PlugInMain.pas',
+  ThreadItem in 'ThreadItem.pas',
+  BoardItem in 'BoardItem.pas',
+  FilePath in 'FilePath.pas',
+  MojuUtils in '..\..\MojuUtils.pas',
+  MachiBBSAcquireBoard in 'MachiBBSAcquireBoard.pas' {MachiBBSAcquireBoardForm};
 
 {$R *.res}
 
@@ -86,10 +92,14 @@ const
 	MAJOR_VERSION			= 1;
 	MINOR_VERSION			= 1;
 	RELEASE_VERSION		= 'beta';
-	REVISION_VERSION	= 27;
+	REVISION_VERSION	= 28;
+
+	SYNCRONIZE_MENU_CAPTION	= 'まちBBS板更新';
 
 var
 	GBoardList : TStringList;		// 板リスト
+  GPathBBSList: String;       // 板リストファイルパス
+	SyncronizeMenu : HMENU;
 
 
 // =========================================================================
@@ -234,6 +244,19 @@ end;
 // =========================================================================
 // PlugIn
 // =========================================================================
+
+// *************************************************************************
+// プラグインが(正しく)ロードされた
+// *************************************************************************
+procedure OnLoad(
+	inInstance : DWORD				// プラグインのインスタンス
+); stdcall;
+begin
+
+	// プラグインメニューに追加
+	SyncronizeMenu := AddPlugInMenu( inInstance, SYNCRONIZE_MENU_CAPTION );
+
+end;
 
 // *************************************************************************
 // プラグインのバージョンを要求された
@@ -418,6 +441,33 @@ begin
 	end else begin
     	outURL := CreateResultString(URL);
 	end;
+
+end;
+
+// *************************************************************************
+// まちBBS板更新
+// *************************************************************************
+procedure OnBoardSyncronizeMenu(
+	inHandle	: HMENU					// メニューハンドル
+); stdcall;
+var
+	dialog: TMachiBBSAcquireBoardForm;
+begin
+
+	dialog := TMachiBBSAcquireBoardForm.Create( nil );
+  dialog.PathBBSList := GPathBBSList;
+	dialog.ShowModal;
+
+end;
+
+// メニューハンドラ
+procedure OnPlugInMenu(
+	inHandle : HMENU					// メニューハンドル
+); stdcall;
+begin
+
+	if inHandle = SyncronizeMenu then
+		OnBoardSyncronizeMenu( inHandle );
 
 end;
 
@@ -1076,7 +1126,7 @@ begin
 		try
 			ExtractHttpFields( ['&'], [], Copy( URL, foundPos + 1, MaxInt ), uriList );
 			Result :=
-				uri.Protocol + '://' + uri.Host + '/bbs/read.pl?' +
+				uri.Protocol + '://' + uri.Host + '/bbs/read.cgi?' +
 				'BBS=' + uriList.Values[ 'BBS' ] + '&KEY=' + uriList.Values[ 'KEY' ];
 		finally
 			uri.Free;
@@ -1093,7 +1143,7 @@ begin
                 uriList.DelimitedText  := uri.Path;
                 if (uriList.Count >= 5) then begin
     			    Result :=
-	    			    uri.Protocol + '://' + uri.Host + '/bbs/read.pl?' +
+	    			    uri.Protocol + '://' + uri.Host + '/bbs/read.cgi?' +
 		    		    'BBS=' + uriList[3] + '&KEY=' + uriList[4];
                 end;
             finally
@@ -1360,7 +1410,7 @@ begin
 			// http://hokkaido.machi.to/hokkaidou/
 			// http://hokkaido.machi.to/bbs/read.pl?BBS=hokkaidou&KEY=1061764446&LAST=50
 			ExtractHttpFields( ['/', '?'], [], uri.Path, uriList );
-			threadURL	:= uri.Protocol + '://' + uri.Host + '/bbs/read.pl?' +
+			threadURL	:= uri.Protocol + '://' + uri.Host + '/bbs/read.cgi?' +
 				'BBS=' + uriList[ 1 ] + '&KEY=' + inFileName + '&LAST=50';
 			Result		:= threadURL;
 		finally
@@ -1495,7 +1545,6 @@ procedure DLLEntry(
 );
 var
 	module : HMODULE;
-  path : String;
 begin
 
 	case ul_reason_for_call of
@@ -1518,11 +1567,11 @@ begin
 			BoardItemOnDispose	:= BoardItemOnDisposeOfTMachiBBSBoardItem;
 
     	// 板リスト読み込み
-      path := PreferencesFolder + '\Board\まちBBS.txt';
-      if FileExists(path) then begin
+      GPathBBSList := PreferencesFolder + '\Board\まちBBS.txt';
+      if FileExists(GPathBBSList) then begin
 				GBoardList := TStringList.Create;
         try
-          GBoardList.LoadFromFile(path);
+          GBoardList.LoadFromFile(GPathBBSList);
         except
         end;
       end;
@@ -1530,6 +1579,7 @@ begin
 		end;
 		DLL_PROCESS_DETACH:
     begin
+			RemovePlugInMenu( SyncronizeMenu );
     	if GBoardList <> nil then
       	FreeAndNil(GBoardList);
     end;
@@ -1542,9 +1592,11 @@ begin
 end;
 
 exports
+	OnLoad,
 	OnVersionInfo,
 	OnAcceptURL,
-    OnExtractBoardURL;
+	OnPlugInMenu,
+  OnExtractBoardURL;
 begin
 
 	try
