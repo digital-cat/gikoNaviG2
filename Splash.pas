@@ -65,7 +65,8 @@ begin
 end;
 
 initialization
-	SplashWindow := TSplashWindow.Create(nil);
+	//SplashWindow := TSplashWindow.Create(nil);
+	SplashWindow := TSplashWindow.Create(Application.MainForm);
 	SplashWindow.Show;
 	SplashWindow.Update;
 end.

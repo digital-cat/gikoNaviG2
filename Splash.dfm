@@ -58,8 +58,6 @@ object SplashWindow: TSplashWindow
       Width = 275
       Height = 16
       Anchors = [akLeft, akTop, akRight]
-      Min = 0
-      Max = 100
       Smooth = True
       Step = 1
       TabOrder = 0
