@@ -15,7 +15,7 @@ uses
   ActiveX, GikoSystem, MoveHistoryItem, HistoryList, TntComCtrls, WideCtrls;
 
 const
-	CAPTION_NAME: string = 'ギコナビ検証版#01';
+	CAPTION_NAME: string = 'ギコナビ検証版#02';
 	USER_SETLINKBAR					= WM_USER + 2003;
 
 	ITEM_ICON_SORT1					= 12;		//!< ソートアイコン
@@ -1202,6 +1202,10 @@ var
 begin
 	Item := GikoForm.GetActiveContent;
 	if Item = nil then Exit;
+  if Item.AgeSage = gasArch then begin
+    MsgBox(GikoForm.Handle, '現役のスレではありません。', 'レス書き込み', MB_OK or MB_ICONINFORMATION);
+    Exit;
+  end;
 	Editor := TEditorForm.Create(GikoForm.GetMainForm);
 	Editor.SetThreadItem(Item);
 	Editor.Show;
@@ -2485,6 +2489,10 @@ begin
 	if Number = 0 then Exit;
 	Item := GikoForm.KokoPopupThreadItem;
 	if Item = nil then Exit;
+  if Item.AgeSage = gasArch then begin
+    MsgBox(GikoForm.Handle, '現役のスレではありません。', 'ココにレス', MB_OK or MB_ICONINFORMATION);
+    Exit;
+  end;
 
 	Editor := TEditorForm.Create(GikoForm);
 	Editor.SetThreadItem(Item);

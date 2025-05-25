@@ -1389,7 +1389,6 @@ object GikoDM: TGikoDM
     object UpdateGikonaviAction: TAction
       Category = #12501#12449#12452#12523
       Caption = #12462#12467#12490#12499#26356#26032
-      Enabled = False
       Hint = #12462#12467#12490#12499#12398#26356#26032
       OnExecute = UpdateGikonaviActionExecute
     end
