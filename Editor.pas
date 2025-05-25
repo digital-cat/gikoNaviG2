@@ -345,6 +345,8 @@ type
     function IsBrokenCookie(ResponseText: string): Boolean;
     //! 投稿時刻がおかしいか
     function IsInvalidTime(ResponseText: string): Boolean;
+    //! 対象スレ／スレ一覧のリロード
+    procedure ReloadTarget(wait: Cardinal);
 	protected
 		procedure CreateParams(var Params: TCreateParams); override;
 	public
@@ -1391,10 +1393,8 @@ begin
 
           if MsgResult <> IDYES then
             CancelSend( Board, SysMenu )
-          else begin
-            OpenSendTargetAction.Execute;	// 板／スレを表示
-            ReloadTargetAction.Execute;		// 板／スレを再読み込み
-          end;
+          else
+            ReloadTarget(0);  // 板／スレをリロード
         end;
 
         Exit;
@@ -1471,10 +1471,8 @@ begin
 		GikoForm.PlaySound('ResEnd');
 		SaveSendFile;
 		AddFormMessageNew( gmiOK );
-		if Gikosys.Setting.ReloadAfterWrite then begin
-    	OpenSendTargetAction.Execute;	// 板／スレを表示
-      ReloadTargetAction.Execute;		// 板／スレを再読み込み
-    end;
+    if Gikosys.Setting.ReloadAfterWrite then
+      ReloadTarget(600);  // 板／スレリロード
 		if (not ContinueModeAction.Enabled) or (not ContinueModeAction.Checked) then begin
 			Close;
 			Exit;
@@ -1484,10 +1482,8 @@ begin
 		GikoForm.PlaySound('ResEnd');
 		SaveSendFile;
 		AddFormMessageNew( gmiOK );
-		if Gikosys.Setting.ReloadAfterWrite then begin
-    	OpenSendTargetAction.Execute;	// 板／スレを表示
-      ReloadTargetAction.Execute;		// 板／スレを再読み込み
-    end;
+    if Gikosys.Setting.ReloadAfterWrite then
+      ReloadTarget(600);  // 板／スレリロード
 		if (not ContinueModeAction.Enabled) or (not ContinueModeAction.Checked) then begin
 			Close;
 		end;
@@ -1498,6 +1494,28 @@ begin
 	end else if State = gdsAbort then begin
 		GikoForm.AddMessageList(FThreadItem.Title + ' ' + GikoSys.GetGikoMessage(gmAbort), nil, gmiSAD);
 	end;
+end;
+
+//! 対象スレ／スレ一覧のリロード
+procedure TEditorForm.ReloadTarget(wait: Cardinal);
+const
+  CYCLE_MS: Cardinal = 300;
+var
+  tmp: Cardinal;
+begin
+  while wait > 0 do begin
+    if wait > CYCLE_MS then begin
+      tmp := CYCLE_MS;
+      wait := wait - CYCLE_MS;
+    end else begin
+      tmp := wait;
+      wait := 0;
+    end;
+    Sleep(tmp);
+    Application.ProcessMessages;
+  end;
+  OpenSendTargetAction.Execute;   // 板／スレを表示
+  ReloadTargetAction.Execute;     // 板／スレを再読み込み
 end;
 
 function TEditorForm.GetResultType(ResponseText: string; Is2ch: Boolean): TGikoResultType;
@@ -1914,10 +1932,8 @@ begin
 					SaveSendFile;
 					GikoForm.AddMessageList(FBoard.Title + ' ' + GikoSys.GetGikoMessage(gmNewSure), nil, gmiOK);
 					FWork := False;
-          if Gikosys.Setting.ReloadAfterWrite then begin
-            OpenSendTargetAction.Execute;	// 板／スレを表示
-            ReloadTargetAction.Execute;		// 板／スレを再読み込み
-          end;
+          if Gikosys.Setting.ReloadAfterWrite then
+            ReloadTarget(600);  // 板／スレをリロード
 					if (not ContinueModeAction.Enabled) or (not ContinueModeAction.Checked) then
 						Close;
 				end else if State = gdsError then begin
@@ -1935,10 +1951,8 @@ begin
 					SaveSendFile;
 					GikoForm.AddMessageList(FThreadItem.Title + ' ' + GikoSys.GetGikoMessage(gmNewRes), nil, gmiOK);
 					FWork := False;
-          if Gikosys.Setting.ReloadAfterWrite then begin
-            OpenSendTargetAction.Execute;	// 板／スレを表示
-            ReloadTargetAction.Execute;		// 板／スレを再読み込み
-          end;
+          if Gikosys.Setting.ReloadAfterWrite then
+            ReloadTarget(600);  // 板／スレをリロード
 					if (not ContinueModeAction.Enabled) or (not ContinueModeAction.Checked) then
 						Close;
 				end else if State = gdsError then begin
