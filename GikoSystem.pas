@@ -315,6 +315,9 @@ type
     function UTF8toSJIS(pUtf8: PChar): String;
 	end;
 
+//! Windows11以降かどうか
+function ChkWin11orLater: Boolean;
+
 var
 	GikoSys: TGikoSys;
 const
@@ -360,7 +363,7 @@ const
 		  'ProductVersion',
 		  'SpecialBuild');
 
-	UAVers: array[0..34] of TUAVer = (
+	UAVers: array[0..35] of TUAVer = (
       (BetaVer:  0; FileVer: ''),
       (BetaVer: 74; FileVer: '1.75.0.881'),
       (BetaVer: 74; FileVer: '1.75.0.883'),
@@ -395,7 +398,8 @@ const
       (BetaVer: 75; FileVer: '1.76.0.913'),
       (BetaVer: 75; FileVer: '1.76.0.914'),
       (BetaVer: 75; FileVer: '1.76.0.915'),
-      (BetaVer: 75; FileVer: '1.76.0.916')
+      (BetaVer: 75; FileVer: '1.76.0.916'),
+      (BetaVer: 75; FileVer: '1.76.0.917')
 	);	// 当面リリースの度にバージョン情報を追加していく
 
 // *************************************************************************
@@ -4326,6 +4330,54 @@ begin
     end;
   end;
   Result := sjis;
+end;
+
+// RtlGetVersion API定義
+type
+  OSVERSIONINFOEXW = packed record
+    dwOSVersionInfoSize : Cardinal;
+    dwMajorVersion      : Cardinal;
+    dwMinorVersion      : Cardinal;
+    dwBuildNumber       : Cardinal;
+    dwPlatformId        : Cardinal;
+    szCSDVersion        : array [0..127] of WideChar;
+    wServicePackMajor   : WORD;
+    wServicePackMinor   : WORD;
+    wSuiteMask          : WORD;
+    wProductType        : Byte;
+    wReserved           : Byte;
+  end;
+
+  FuncRtlGetVersion = function (var lpVersionInformation: OSVERSIONINFOEXW): Integer; stdcall;
+
+// Windows11以降かどうか
+function ChkWin11orLater: Boolean;
+var
+  RtlGetVersion: FuncRtlGetVersion;
+  verInfo: OSVERSIONINFOEXW;
+  ntdll: THandle;
+begin
+  Result := False;
+
+  ntdll := LoadLibrary('ntdll.dll');
+
+  if ntdll <> 0 then begin
+    try
+      @RtlGetVersion := GetProcAddress(ntdll, 'RtlGetVersion');
+      if @RtlGetVersion <> nil then begin
+        verInfo.dwOSVersionInfoSize := SizeOf(verInfo);
+        if RtlGetVersion(verInfo) = 0 then begin
+          if (verInfo.dwMajorVersion > 10) or
+            ((verInfo.dwMajorVersion = 10) and (verInfo.dwMinorVersion > 0)) or
+            ((verInfo.dwMajorVersion = 10) and (verInfo.dwMinorVersion = 0) and (verInfo.dwBuildNumber >= 22000)) then
+            Result := True;
+        end;
+      end;
+    finally
+      FreeLibrary(ntdll);
+    end;
+  end;
+
 end;
 
 
