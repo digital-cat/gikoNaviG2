@@ -1049,7 +1049,7 @@ const
 implementation
 
 uses
-	Math, UCryptAuto, UBase64, Windows,GikoUtil;
+	Math, UCryptAuto, UBase64, Windows, GikoUtil, GikoSystem;
 
 type
 	TSoundName = record
@@ -1230,6 +1230,7 @@ var
   hostList: TStringList;
   Cnt: Integer;
   key: String;
+  tmp: Integer;
 begin
 	Exists := FileExists(GetFileName);
 	ini := TMemIniFile.Create(GetFileName);
@@ -1358,7 +1359,11 @@ begin
     // URLコピー及びWEBブラウザ表示でitest版URLを使用する
     FURLitest := ini.ReadBool('Thread', 'UseItestURL', False);
     // 文字&#78840;の扱い 0:何もしない 1:数値参照で表示 2:類似文字に置換
-    FReplChar := ini.ReadInteger('Thread','ReplaceChar', 0);
+    if ChkWin11orLater then
+      tmp := 2  // Windows11以降のデフォルト値
+    else
+      tmp := 0; // Windows10までのデフォルト値
+    FReplChar := ini.ReadInteger('Thread','ReplaceChar', tmp);
     if (FReplChar < 0) or (FReplChar > 2) then
     	FReplChar := 0;
     // CAP_USERの日時・ID欄を強調表示する
