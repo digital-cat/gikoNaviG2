@@ -3408,6 +3408,7 @@ var
 	Thread: TBrowserRecord;
 	ThreadTitle, ThreadPTitle: string;
 	ThreadIsLog, {ThreadUnRead,} ThreadNewArraical: boolean;
+  imgIdx: Integer;
 begin
 	Thread := inThread;
 	idx := BrowserTabUC.TabIndex;
@@ -3492,12 +3493,18 @@ begin
 			ItemImage.Picture := nil;
 			if ThreadIsLog then
 				if ThreadNewArraical then
-					ItemImageList.GetBitmap(2, ItemImage.Picture.Bitmap)
+					if (ThreadItem.AgeSage = gasArch) and (ItemImageList.Count >= 5) then
+  					imgIdx := 4
+          else
+  					imgIdx := 2
 				else
-					ItemImageList.GetBitmap(0, ItemImage.Picture.Bitmap)
+					if (ThreadItem.AgeSage = gasArch) and (ItemImageList.Count >= 5) then
+  					imgIdx := 3
+          else
+  					imgIdx := 0
 			else
-				ItemImageList.GetBitmap(1, ItemImage.Picture.Bitmap);
-
+        imgIdx := 1;
+			ItemImageList.GetBitmap(imgIdx, ItemImage.Picture.Bitmap);
 			ItemImage.Left := BrowserBoardNameLabel.Left + BrowserBoardNameLabel.Width + 8;
 			BrowserNameLabelUC.Left := ItemImage.Left + 20;
 
