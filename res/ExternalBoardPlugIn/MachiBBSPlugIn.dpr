@@ -370,7 +370,7 @@ begin
   end;
 end;
 
-// *************************************************************************
+// *************************************************************************
 // 指定した URL をBoardのURLに変換
 // *************************************************************************
 procedure OnExtractBoardURL(
@@ -389,57 +389,53 @@ const
   HOST22 = 'machi.to';
 begin
 	URL := string(inURL);
-	if AnsiPos(THREAD_MARK, URL) > 0 then begin
+
+	if (AnsiPos(THREAD_MARK, URL) > 0) or (AnsiPos(THREAD_MARK2, URL) > 0) then begin
+
 		if Copy( inURL, Length( inURL ), 1 ) = '/' then
 			uri := TIdURI.Create( URL )
 		else
 			uri := TIdURI.Create( URL + '/' );
-
 		uriList := TStringList.Create;
+
 		try
-			ExtractHttpFields(
-				['&'], [],
-				Copy( uri.Params, AnsiPos( '?', uri.Params ) + 1, Length( uri.Params ) ),uriList );
-			// http://hokkaido.machi.to/bbs/read.pl?BBS=hokkaidou&KEY=1061764446
-			// http://hokkaido.machi.to/hokkaidou/
-			URL := uri.Protocol + '://' + uri.Host + '/' + uriList.Values[ 'BBS' ] + '/';
-			outURL := CreateResultString(URL);
+
+			if (Pos('?', URL) > 0) and (Pos('&', uri.Params) > 0) and (Pos('=', uri.Params) > 0) then begin
+				ExtractHttpFields(
+					['&'], [],
+					Copy( uri.Params, AnsiPos( '?', uri.Params ) + 1, Length( uri.Params ) ),uriList );
+				// http://hokkaido.machi.to/bbs/read.pl?BBS=hokkaidou&KEY=1061764446
+				// http://hokkaido.machi.to/hokkaidou/
+				URL := uri.Protocol + '://' + uri.Host + '/' + uriList.Values[ 'BBS' ] + '/';
+				outURL := CreateResultString(URL);
+
+			end else begin
+				// http://kanto.machi.to/bbs/read.cgi/kana/1215253035/l50
+				// http://kanto.machi.to/kana/
+				uriList.Delimiter := '/';
+				uriList.DelimitedText  := uri.Path;
+				URL := '';
+				if (uri.Host = HOST22) and (uriList.Count >= 4) then begin		// ホスト名省略（ドメイン名のみ）
+					// URLの分かる部分
+					urlSub := HOST21 + '/' + uriList[3] + '/';
+					// ホスト名のある板URLに変換
+					URL := CompleteBoardURL(urlSub);
+				end;
+				if URL = '' then begin
+					URL := uri.Protocol + '://' + uri.Host + '/';
+					if (uriList.Count >= 4) then begin
+						URL := URL + uriList[3] + '/';
+					end;
+				end;
+				outURL := CreateResultString(URL);
+			end;
 		finally
 			uri.Free;
 			uriList.Free;
 		end;
-    end else if AnsiPos(THREAD_MARK2, URL) > 0 then begin
-		if Copy( inURL, Length( inURL ), 1 ) = '/' then
-			uri := TIdURI.Create( URL )
-		else
-			uri := TIdURI.Create( URL + '/' );
 
-		uriList := TStringList.Create;
-		try
-			// http://kanto.machi.to/bbs/read.cgi/kana/1215253035/l50
-			// http://kanto.machi.to/kana/
-			uriList.Delimiter := '/';
-			uriList.DelimitedText  := uri.Path;
-      URL := '';
-      if (uri.Host = HOST22) and (uriList.Count >= 4) then begin		// ホスト名省略（ドメイン名のみ）
-        // URLの分かる部分
-      	urlSub := HOST21 + '/' + uriList[3] + '/';
-        // ホスト名のある板URLに変換
-        URL := CompleteBoardURL(urlSub);
-      end;
-      if URL = '' then begin
-        URL := uri.Protocol + '://' + uri.Host + '/';
-        if (uriList.Count >= 4) then begin
-          URL := URL + uriList[3] + '/';
-        end;
-      end;
-			outURL := CreateResultString(URL);
-		finally
-			uri.Free;
-			uriList.Free;
-		end;
 	end else begin
-    	outURL := CreateResultString(URL);
+    outURL := CreateResultString(URL);
 	end;
 
 end;
@@ -1066,9 +1062,10 @@ begin
                 Inc(No);
             end;
 
-            DstTmp.Add(TmpLine);
-
-            Inc(No);
+            if GetNo = No then begin
+              DstTmp.Add(TmpLine);
+              Inc(No);
+            end;
         end;
         ioDat.Clear;
         ioDat.Assign(DstTmp);
