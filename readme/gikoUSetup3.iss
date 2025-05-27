@@ -1,24 +1,28 @@
+; 更新用インストーラです。
+; 通常との違い
+; ・アンインストール情報を作成/更新しません
+; ・ショートカットを作成しません
+; ・デスクトップにある更新ショートカットを削除します。
 [Setup]
 AppName=ギコナビ
 AppVerName=ギコナビ
 AppId=gikoNavi
-AppMutex=gikoNaviSetupMutex
+AppMutex=gikoNaviInstance
 AppPublisherURL=https://github.com/digital-cat/gikoNaviG2
 AppendDefaultDirName = no
 ;DefaultDirName={pf}\gikonavi
 ;DefaultDirName={code:GetBase}\gikonavi
 DefaultDirName=C:\gikonavi
-VersionInfoDescription=ギコナビ(避難所版II)セットアッププログラム
+VersionInfoDescription=ギコナビ(避難所版II)OpenSSL3版セットアッププログラム
 DefaultGroupName=ギコナビ
 ; 自分の環境に合わせてください
-SourceDir=D:\giko\Setup\Release76-918
+SourceDir=D:\giko\Setup\Release76-918_OpenSSL3
 OutputDir=D:\giko\Setup\Output
 SetupIconFile=D:\giko\Setup\GikoSetup.ico
 ; ギコナビのバージョンにあわせてください
 VersionInfoVersion=1.76.0.918
-OutputBaseFilename=gikoNavi_b76_918_setup
-
-
+OutputBaseFilename=gikoNavi_b76_918_os3_up_setup
+CreateUninstallRegKey=no
 
 [Tasks]
 Name: "startmenuicon"; Description: "スタートメニューに登録する"; GroupDescription: "ショートカット"; Flags:
@@ -33,7 +37,9 @@ Name: "{app}\config\NGwords"
 
 
 [Files]
-Source: * ; Destdir: {app} ;Excludes: "gikoNavi.exe,*.dll" ;
+Source: * ; Destdir: {app} ;Excludes: "gikoNavi.*,*.dll" ; Flags: ignoreversion ;
+Source: "gikoNavi.bmp" ; Destdir: {app} ;Permissions: everyone-full; Flags: onlyifdoesntexist
+Source: "gikoNavi.avi" ; Destdir: {app} ;Permissions: everyone-full; Flags: onlyifdoesntexist
 Source: "gikoNavi.exe" ; Destdir: {app} ;Permissions: everyone-full; Flags: ignoreversion
 Source: "*.dll" ; Destdir: {app} ;Permissions: everyone-full; Flags: ignoreversion
 Source: "Sound\*" ; Destdir: {app}\Sound ;Flags: createallsubdirs recursesubdirs ;
@@ -41,15 +47,18 @@ Source: "config\*" ; Destdir: {app}\config ;Excludes: "*.dll";Flags: createallsu
 Source: "config\BoardPlugin\*.dll" ; Destdir: {app}\config\BoardPlugin ;Flags: ignoreversion;
 
 [Icons]
-Name: "{group}\Readme"; Filename: "{app}\readme.txt"; Tasks: startmenuicon
-Name: "{group}\Readme_Goeson"; Filename: "{app}\readme_goeson.txt"; Tasks: startmenuicon
-Name: "{group}\Readme_G2"; Filename: "{app}\readme_g2.txt"; Tasks: startmenuicon
-Name: "{group}\ギコナビ"; Filename: "{app}\gikoNavi.exe"; WorkingDir: "{app}"; Tasks: startmenuicon
-Name: "{commondesktop}\ギコナビ"; Filename: "{app}\gikoNavi.exe"; WorkingDir: "{app}"; Tasks: desktopicon
+;Name: "{group}\Readme"; Filename: "{app}\readme.txt"; Tasks: startmenuicon
+;Name: "{group}\Readme_Goeson"; Filename: "{app}\readme_goeson.txt"; Tasks: startmenuicon
+;Name: "{group}\Readme_G2"; Filename: "{app}\readme_g2.txt"; Tasks: startmenuicon
+;Name: "{group}\ギコナビ"; Filename: "{app}\gikoNavi.exe"; Tasks: startmenuicon
+;Name: "{commondesktop}\ギコナビ"; Filename: "{app}\gikoNavi.exe"; Tasks: desktopicon
 
 [Run]
 Filename: "{app}\readme_g2.txt"; Description: "READMEを表示する"; Flags: postinstall shellexec skipifsilent unchecked
-Filename: "{app}\gikoNavi.exe"; Description: "アプリケーションを起動する"; Flags: postinstall shellexec skipifsilent
+Filename: "{app}\gikoNavi.exe"; Description: "アプリケーションを起動する"; Flags: postinstall shellexec
+
+[InstallDelete]
+Type: files; Name: "{userdesktop}\ギコナビ更新.lnk"
 
 [UninstallDelete]
 Type: files; Name: "{app}\sent.ini"
@@ -61,6 +70,45 @@ Type: files; Name: "{app}\gikoNavi.ini"
 Name: japanese; MessagesFile: compiler:Languages\Japanese.isl
 
 [Code]
+function InitializeSetup(): Boolean;
+var
+  timeout : Integer;
+begin
+  Result := true;
+  // タイムアウト時間1分
+  timeout := 60 * 1000;
+  // ギコナビの起動時ミューテックスをチェック
+  while CheckForMutexes('gikoNaviInstance') do begin
+    // 起動中なのでスリープ
+    // まずは、タイムアウトチェック
+    if (timeout < 0) then begin
+      // タイムアウト
+      Result := False;
+      break;
+    end;
+    timeout := timeout - 500;
+    // スリープ
+    Sleep(500);
+  end;
+  // タイムアウト時は、手動でギコナビシャットダウンを要求
+  if not Result Then begin
+    if MsgBox('ギコナビが起動しているか。完全に終了していません。ギコナビの終了を確認してください。'
+              + #10#13 + '更新を続行するには,「はい」ボタンを押してください。',
+               mbConfirmation, MB_YESNO) = IDYES then begin
+      Result := not CheckForMutexes('gikoNaviInstance');
+      if not Result Then begin
+        MsgBox('ギコナビが起動しています。ギコナビ更新をキャンセルします。'
+          + #10#13 + 'ギコナビ更新は、デスクトップの「ギコナビ更新」ショートカットから再起動できます。'
+        , mbError, MB_OK);
+      end;
+    end else begin
+      MsgBox('ギコナビ更新をキャンセルします。'
+          + #10#13 + 'ギコナビ更新は、デスクトップの「ギコナビ更新」ショートカットから再起動できます。'
+        , mbError, MB_OK);
+    end;
+  end;
+end;
+
 procedure CurStepChanged(CurStep: TSetupStep);
 var
   path :String;
@@ -84,7 +132,7 @@ begin
               end;
           end;
       end;
-    ssPostInstall:
+      ssPostInstall:
       begin
         path := ExpandConstant('{app}') + '\gikoNavi.ini';
         srcpath := ExpandConstant('{srcexe}');
@@ -127,6 +175,8 @@ begin
 end;
 function GetBase(Param: String) : String;
 begin
-  if (GetWindowsVersion shr 24) < 6 then    Result := ExpandConstant('{pf}')
-  else    Result := ExpandConstant('{sd}');
+  if (GetWindowsVersion shr 24) < 6 then
+    Result := ExpandConstant('{pf}')
+  else
+    Result := ExpandConstant('{sd}');
 end;

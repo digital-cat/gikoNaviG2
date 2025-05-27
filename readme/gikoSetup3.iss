@@ -8,15 +8,15 @@ AppendDefaultDirName = no
 ;DefaultDirName={pf}\gikonavi
 ;DefaultDirName={code:GetBase}\gikonavi
 DefaultDirName=C:\gikonavi
-VersionInfoDescription=ギコナビ(避難所版II)セットアッププログラム
+VersionInfoDescription=ギコナビ(避難所版II)OpenSSL3版セットアッププログラム
 DefaultGroupName=ギコナビ
 ; 自分の環境に合わせてください
-SourceDir=D:\giko\Setup\Release76-918
+SourceDir=D:\giko\Setup\Release76-918_OpenSSL3
 OutputDir=D:\giko\Setup\Output
 SetupIconFile=D:\giko\Setup\GikoSetup.ico
 ; ギコナビのバージョンにあわせてください
 VersionInfoVersion=1.76.0.918
-OutputBaseFilename=gikoNavi_b76_918_setup
+OutputBaseFilename=gikoNavi_b76_918_os3_setup
 
 
 
