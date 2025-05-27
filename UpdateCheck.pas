@@ -7,7 +7,8 @@ uses
   Dialogs, IdAntiFreezeBase, IdAntiFreeze, IdBaseComponent, IdComponent,
   IndyModule,   // for Indy10
   IdTCPConnection, IdTCPClient, IdHTTP, StdCtrls, ExtCtrls, Buttons,
-  IdIOHandler, IdIOHandlerSocket, IdIOHandlerStack, IdSSL, IdSSLOpenSSL;
+  IdIOHandler, IdIOHandlerSocket, IdIOHandlerStack, IdSSL, IdSSLOpenSSL,
+  IdCTypes, IdSSLOpenSSLHeaders;
 
 type
 	/// バージョン情報クラス
@@ -19,9 +20,10 @@ type
     FValue4:  Integer;	// バージョン番号4要素目
     FVersion: String;		// バージョン番号文字列（n.n.n.n）
     FURL:     String;		// インストーラーURL
+    FOpenSSL: Integer;  // OpenSSLバージョン
   public
-  	constructor Create; overload;
-  	constructor Create(ASrc: String; AURL: String); overload;
+  	constructor Create(AOpenSSL: Integer); overload;
+  	constructor Create(ASrc: String; AURL: String; AOpenSSL: Integer); overload;
 
     procedure Clear;
     function SetValue(AVer: String; AURL: String): Boolean;
@@ -36,6 +38,7 @@ type
     property Value3:  Integer read FValue3;
     property Value4:  Integer read FValue4;
     property URL:     String  read FURL;
+    property OpenSSL: Integer read FOpenSSL;
   end;
 
 
@@ -66,6 +69,23 @@ type
     NewDateLabel: TLabel;
     Label3: TLabel;
     NlyDateLabel: TLabel;
+    Panel1: TPanel;
+    Panel2: TPanel;
+    UpdateNly3Button: TButton;
+    NlyDate3Label: TLabel;
+    Label6: TLabel;
+    NlyMsg3Label: TLabel;
+    NlyVer3Label: TLabel;
+    Label10: TLabel;
+    NlyName3Label: TLabel;
+    UpdateNew3Button: TButton;
+    NewDate3Label: TLabel;
+    Label13: TLabel;
+    NewMsg3Label: TLabel;
+    NewVer3Label: TLabel;
+    Label16: TLabel;
+    NewName3Label: TLabel;
+    Panel3: TPanel;
     procedure FormCreate(Sender: TObject);
     procedure CancelBitBtnClick(Sender: TObject);
     procedure CheckButtonClick(Sender: TObject);
@@ -73,6 +93,8 @@ type
     procedure UpdateNlyButtonClick(Sender: TObject);
     procedure CloseButtonClick(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+    procedure UpdateNew3ButtonClick(Sender: TObject);
+    procedure UpdateNly3ButtonClick(Sender: TObject);
   private
     { Private 宣言 }
     FExecPath : string;
@@ -82,6 +104,8 @@ type
     FCurVer: VersionNumber;		// 現在のバージョン
     FFmlVer: VersionNumber;		// 最新正式版バージョン
     FNlyVer: VersionNumber;		// 最新人柱版バージョン
+    FFm3Ver: VersionNumber;		// 最新正式版バージョン OpenSSL3版
+    FNl3Ver: VersionNumber;		// 最新人柱版バージョン OpenSSL3版
     function GetDesktopDir:string;
     function GetDownloadFilePath(FileName: String): String;
     function CreateShortCut(FileName, Argment, SavePath :string):boolean;
@@ -109,6 +133,8 @@ uses
 procedure TUpdateCheckForm.FormCreate(Sender: TObject);
 var
 	CenterForm: TCustomForm;
+  curType: String;
+  OpenSSL: Integer;
 begin
   CenterForm := TCustomForm(Owner);
   if Assigned(CenterForm) then begin
@@ -119,23 +145,34 @@ begin
     Top := (Screen.Height - Height) div 2;
   end;
 
+
+{$IFDEF OPENSSL3}
+	curType := 'OpenSSL3版　';
+  OpenSSL := 3;
+{$ELSE}
+	curType := 'OpenSSL1版　';
+  OpenSSL := 1;
+{$ENDIF}
+
   FExecPath := '';
   FExecArgs := '';
   FAllowshutdown := False;
 
-  FCurVer := VersionNumber.Create(GikoSys.Version, '');
-  FFmlVer := VersionNumber.Create;
-  FNlyVer := VersionNumber.Create;
+  FCurVer := VersionNumber.Create(GikoSys.Version, '', OpenSSL);
+  FFmlVer := VersionNumber.Create(1);
+  FNlyVer := VersionNumber.Create(1);
+  FFm3Ver := VersionNumber.Create(3);
+  FNl3Ver := VersionNumber.Create(3);
 
   CurNameLabel.Caption := BETA_VERSION_NAME_J + IntToStr(BETA_VERSION);
   CurVerLabel.Caption  := FCurVer.Version;
   if not FCurVer.IsGood then begin
-    CurTypLabel.Caption := 'エラー発生';
+    curType := curType + 'エラー発生';
     CheckButton.Enabled := False;
-  end else if FCurVer.IsFormal then
-    CurTypLabel.Caption := ''
-  else
-    CurTypLabel.Caption := '人柱版です。';
+  end else if not FCurVer.IsFormal then
+    curType := curType + '人柱版です。';
+  CurTypLabel.Caption := curType;
+
 	NewNameLabel.Caption := '正式版';
   NewDateLabel.Caption := '_';
   NewVerLabel.Caption  := '_';
@@ -146,6 +183,17 @@ begin
   NlyMsgLabel.Caption  := '未確認です。';
   UpdateNewButton.Enabled := False;
   UpdateNlyButton.Enabled := False;
+
+	NewName3Label.Caption := '正式版';
+  NewDate3Label.Caption := '_';
+  NewVer3Label.Caption  := '_';
+  NewMsg3Label.Caption  := '未確認です。';
+  NlyName3Label.Caption := '人柱版';
+  NlyDate3Label.Caption := '_';
+  NlyVer3Label.Caption  := '_';
+  NlyMsg3Label.Caption  := '未確認です。';
+  UpdateNew3Button.Enabled := False;
+  UpdateNly3Button.Enabled := False;
 end;
 
 //! 最新版の確認ボタンクリック
@@ -158,8 +206,12 @@ const
 {$ENDIF}
 var
   value: string;
+  value3: string;
+  idx: Integer;
+  len: Integer;
   ResStream: TMemoryStream;
   downResult: TStringList;
+  downResult3: TStringList;
   url: string;
 begin
   FExecPath := '';
@@ -193,6 +245,7 @@ begin
       IdHTTP.ReadTimeout := 0;
       IdHTTP.HandleRedirects := true;
       downResult := TStringList.Create;
+      downResult3 := TStringList.Create;
       IndyMdl.StartAntiFreeze(250);
       try
         try
@@ -205,7 +258,16 @@ begin
             raise Exception.Create('ダウンロードがキャンセルされました。');
           end;
           value := GikoSys.GzipDecompress(ResStream, IdHTTP.Response.ContentEncoding);
+
+          idx := Pos('[updater3]', value);
+          if idx > 0 then begin
+            len := Length(value) - idx + 1;
+            value3 := Copy(value, idx, len);
+            Delete(value, idx, len);
+          end;
+
           downResult.Text := value;
+          downResult3.Text := value3;
 
           // バージョン番号解析
           FFmlVer.SetValue(downResult.Values[ 'version' ],   downResult.Values[ 'url' ]);
@@ -238,6 +300,41 @@ begin
             UpdateNlyButton.Enabled := True;
           end;
 
+          // OpenSSL3版
+          // バージョン番号解析
+          FFm3Ver.SetValue(downResult3.Values[ 'version' ],   downResult3.Values[ 'url' ]);
+          FNl3Ver.SetValue(downResult3.Values[ 'n_version' ], downResult3.Values[ 'n_url' ]);
+
+          NewVer3Label.Caption  := FFm3Ver.Version;
+          NlyVer3Label.Caption  := FNl3Ver.Version;
+          NewName3Label.Caption := downResult3.Values[ 'name' ];
+          NlyName3Label.Caption := downResult3.Values[ 'n_name' ];
+          NewDate3Label.Caption := downResult3.Values[ 'date' ];
+          NlyDate3Label.Caption := downResult3.Values[ 'n_date' ];
+
+          // 正式版バージョン確認
+          if (not FFm3Ver.IsGood) or (FFm3Ver.URL = '') then
+            if NlyName3Label.Caption = '' then
+              NewMsg3Label.Caption := '存在しません。'
+            else
+              NewMsg3Label.Caption := 'エラー発生'
+          else if not FFm3Ver.IsSelfNew(FCurVer, False) then
+            NewMsg3Label.Caption := '更新不要です。'
+          else begin
+            NewMsg3Label.Caption := '更新可能です。';
+            UpdateNew3Button.Enabled := True;
+          end;
+
+          // 人柱版バージョン確認
+          if (not FNl3Ver.IsGood) or (FNl3Ver.URL = '') then
+            NlyMsg3Label.Caption := 'エラー発生'
+          else if not FNl3Ver.IsSelfNew(FCurVer, True) then
+            NlyMsg3Label.Caption := '更新不要です。'
+          else begin
+            NlyMsg3Label.Caption := '更新可能です。';
+            UpdateNly3Button.Enabled := True;
+          end;
+
         except
           on E: Exception do begin
             GikoUtil.MsgBox(Handle, PChar(E.Message), '最新版の確認', MB_OK or MB_ICONERROR);
@@ -248,6 +345,7 @@ begin
         end;
       finally
         downResult.Free;
+        downResult3.Free;
         IndyMdl.EndAntiFreeze;
       end;
     finally
@@ -262,17 +360,30 @@ begin
 end;
 
 
-//! 最新版に更新ボタンクリック
+//! OpenSSL1 最新版に更新ボタンクリック
 procedure TUpdateCheckForm.UpdateNewButtonClick(Sender: TObject);
 begin
   UpdateProc(FFmlVer);
 end;
 
-//! 人柱版に更新ボタンクリック
+//! OpenSSL1 人柱版に更新ボタンクリック
 procedure TUpdateCheckForm.UpdateNlyButtonClick(Sender: TObject);
 begin
 	if QueryYesNo('正式リリース版ではありませんがよろしいですか？', '更新確認') = ID_YES then
 		UpdateProc(FNlyVer);
+end;
+
+//! OpenSSL3 最新版に更新ボタンクリック
+procedure TUpdateCheckForm.UpdateNew3ButtonClick(Sender: TObject);
+begin
+  UpdateProc(FFm3Ver);
+end;
+
+//! OpenSSL3 人柱版に更新ボタンクリック
+procedure TUpdateCheckForm.UpdateNly3ButtonClick(Sender: TObject);
+begin
+	if QueryYesNo('正式リリース版ではありませんがよろしいですか？', '更新確認') = ID_YES then
+		UpdateProc(FNl3Ver);
 end;
 
 //! YES/NO問い合わせメッセージボックス表示
@@ -283,13 +394,20 @@ end;
 
 //! 更新実行処理
 procedure TUpdateCheckForm.UpdateProc(newVer: VersionNumber);
+var
+  info: String;
 begin
   if (not newVer.IsGood) or (newVer.URL = '') then begin
   	GikoUtil.MsgBox(Handle, '更新情報が確認できませんでした。', '更新確認', MB_OK or MB_ICONERROR);
     Exit;
   end;
 
-	if QueryYesNo('新しいギコナビをダウンロードしますか？', '更新確認') <> ID_YES then
+  info := '新しいギコナビをダウンロードしますか？' + #10
+        + Format('　OpenSSL %d 版', [newVer.FOpenSSL]);
+  if not newVer.IsFormal then
+    info := info + '（人柱版）'; 
+
+	if QueryYesNo(PChar(info), '更新確認') <> ID_YES then
   	Exit;
 
 	if not DonwloadUpdate(newVer.URL) then
@@ -458,15 +576,17 @@ end;
 ////////////////////////////////////////////////////////////////////////////////
 
 //! バージョン情報クラスコンストラクタ
-constructor VersionNumber.Create;
+constructor VersionNumber.Create(AOpenSSL: Integer);
 begin
   Clear;
+  FOpenSSL := AOpenSSL;
 end;
 
 //! バージョン情報クラスコンストラクタ
-constructor VersionNumber.Create(ASrc: String; AURL: String);
+constructor VersionNumber.Create(ASrc: String; AURL: String; AOpenSSL: Integer);
 begin
 	SetValue(ASrc, AURL);
+  FOpenSSL := AOpenSSL;
 end;
 
 //! クリア
@@ -526,11 +646,15 @@ end;
 function VersionNumber.IsSelfNew(const AOther: VersionNumber; ANightly: Boolean): Boolean;
 begin
   if ANightly then
-  	Result := FValue4 > AOther.FValue4
+    Result := FValue4 > AOther.FValue4
   else
     Result := (FValue1 > AOther.FValue1) or
-            	((FValue1 = AOther.FValue1) and (FValue2 > AOther.FValue2)) or
-            	((FValue1 = AOther.FValue1) and (FValue2 = AOther.FValue2)) and (FValue3 > AOther.FValue3);
+              ((FValue1 = AOther.FValue1) and (FValue2 > AOther.FValue2)) or
+              ((FValue1 = AOther.FValue1) and (FValue2 = AOther.FValue2)) and (FValue3 > AOther.FValue3);
+
+  // バージョン番号完全一致でもOpennSSL版が違うなら更新可
+  if Result = False then
+    Result := (FOpenSSL <> AOther.FOpenSSL)  and (FVersion = AOther.FVersion);
 end;
 
 end.

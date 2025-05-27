@@ -4,8 +4,9 @@ interface
 
 uses
   SysUtils, Classes, Windows, Forms, StrUtils, IdBaseComponent, IdAntiFreezeBase,
-  IdAntiFreeze, IdHTTP, IdGlobal, IdCookie, IdURI;
-
+  IdAntiFreeze, IdHTTP, IdGlobal, IdCookie, IdURI, IdIOHandler, IdIOHandlerSocket,
+  IdIOHandlerStack, IdSSL, IdSSLOpenSSL;
+  
 type
   TIndyMdl = class(TDataModule)
     { TIdAntiFreezeはプロセス内にインスタンス1つのみ }
@@ -180,8 +181,14 @@ end;
 
 { OpenSSLバージョン取得 }
 function TIndyMdl.GetOpenSSLVersion: String;
+const
+{$IFDEF OPENSSL3}
+  OPENSSL_DLL_NAME : String = 'libssl-3.dll';
+{$ELSE}
+  OPENSSL_DLL_NAME : String = 'ssleay32.dll';
+{$ENDIF}
 begin
-  Result := GetFileVersion('ssleay32.dll');
+  Result := GetFileVersion(OPENSSL_DLL_NAME);
 end;
 
 { TIdHTTPコンポーネントクリア }
@@ -199,6 +206,8 @@ end;
 
 { TIdHTTPコンポーネント初期化 }
 class procedure TIndyMdl.InitHTTP(IdHTTP: TIdHTTP; WriteMethod: Boolean = False);
+var
+  ssl: TIdSSLIOHandlerSocketOpenSSL;
 begin
   IdHTTP.Disconnect;
   ClearHTTP(IdHTTP);
@@ -254,6 +263,14 @@ begin
 		Writeln('プロキシ設定なし');
 		{$ENDIF}
   end;
+
+  {$IFDEF OPENSSL3}
+  if IdHTTP.IOHandler <> nil then begin
+    ssl := TIdSSLIOHandlerSocketOpenSSL(IdHTTP.IOHandler);
+    ssl.SSLOptions.SSLVersions := [sslvTLSv1_3];
+    ssl.SSLOptions.Method := sslvTLSv1_3;
+  end;
+  {$ENDIF}
 end;
 
 { Cookie件数取得 }

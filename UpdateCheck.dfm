@@ -3,8 +3,8 @@ object UpdateCheckForm: TUpdateCheckForm
   Top = 160
   BorderStyle = bsDialog
   Caption = #26356#26032#12481#12455#12483#12463
-  ClientHeight = 302
-  ClientWidth = 444
+  ClientHeight = 385
+  ClientWidth = 596
   Color = clBtnFace
   Font.Charset = SHIFTJIS_CHARSET
   Font.Color = clWindowText
@@ -17,9 +17,9 @@ object UpdateCheckForm: TUpdateCheckForm
   PixelsPerInch = 96
   TextHeight = 12
   object CancelBitBtn: TBitBtn
-    Left = 336
+    Left = 473
     Top = 80
-    Width = 97
+    Width = 112
     Height = 25
     Cancel = True
     Caption = #12461#12515#12531#12475#12523
@@ -48,7 +48,7 @@ object UpdateCheckForm: TUpdateCheckForm
   object CheckButton: TButton
     Left = 8
     Top = 80
-    Width = 313
+    Width = 459
     Height = 25
     Caption = #26368#26032#29256#12398#30906#35469
     TabOrder = 1
@@ -57,117 +57,248 @@ object UpdateCheckForm: TUpdateCheckForm
   object GroupBox1: TGroupBox
     Left = 8
     Top = 120
-    Width = 425
-    Height = 139
+    Width = 577
+    Height = 217
     Caption = #26368#26032#12398#12496#12540#12472#12519#12531
     TabOrder = 3
     object Label5: TLabel
       Left = 59
-      Top = 28
+      Top = 48
       Width = 39
       Height = 12
       Caption = 'Version'
     end
     object NewVerLabel: TLabel
       Left = 111
-      Top = 28
+      Top = 48
       Width = 48
       Height = 12
       Caption = '1.00.1.000'
     end
     object NewMsgLabel: TLabel
       Left = 183
-      Top = 28
+      Top = 48
       Width = 79
       Height = 12
       Caption = #26356#26032#21487#33021#12391#12377#12290
     end
     object NlyNameLabel: TLabel
       Left = 10
-      Top = 90
+      Top = 140
       Width = 36
       Height = 12
       Caption = #20154#26609#29256
     end
     object Label9: TLabel
       Left = 59
-      Top = 90
+      Top = 140
       Width = 39
       Height = 12
       Caption = 'Version'
     end
     object NlyVerLabel: TLabel
       Left = 111
-      Top = 90
+      Top = 140
       Width = 48
       Height = 12
       Caption = '1.00.0.000'
     end
     object NlyMsgLabel: TLabel
       Left = 183
-      Top = 90
+      Top = 140
       Width = 79
       Height = 12
       Caption = #26356#26032#21487#33021#12391#12377#12290
     end
     object NewNameLabel: TLabel
       Left = 10
-      Top = 28
+      Top = 48
       Width = 29
       Height = 12
       Caption = #65418#65438#65408'00'
     end
     object Label2: TLabel
       Left = 24
-      Top = 48
+      Top = 68
       Width = 53
       Height = 12
       Caption = #12522#12522#12540#12473#26085
     end
     object NewDateLabel: TLabel
       Left = 96
-      Top = 48
+      Top = 68
       Width = 60
       Height = 12
       Caption = '2024/12/31'
     end
     object Label3: TLabel
       Left = 24
-      Top = 110
+      Top = 160
       Width = 53
       Height = 12
       Caption = #12522#12522#12540#12473#26085
     end
     object NlyDateLabel: TLabel
       Left = 96
-      Top = 110
+      Top = 160
       Width = 60
       Height = 12
       Caption = '2024/12/31'
     end
+    object NlyDate3Label: TLabel
+      Left = 396
+      Top = 160
+      Width = 60
+      Height = 12
+      Caption = '2024/12/31'
+    end
+    object Label6: TLabel
+      Left = 324
+      Top = 160
+      Width = 53
+      Height = 12
+      Caption = #12522#12522#12540#12473#26085
+    end
+    object NlyMsg3Label: TLabel
+      Left = 483
+      Top = 140
+      Width = 79
+      Height = 12
+      Caption = #26356#26032#21487#33021#12391#12377#12290
+    end
+    object NlyVer3Label: TLabel
+      Left = 411
+      Top = 140
+      Width = 48
+      Height = 12
+      Caption = '1.00.0.000'
+    end
+    object Label10: TLabel
+      Left = 359
+      Top = 140
+      Width = 39
+      Height = 12
+      Caption = 'Version'
+    end
+    object NlyName3Label: TLabel
+      Left = 310
+      Top = 140
+      Width = 36
+      Height = 12
+      Caption = #20154#26609#29256
+    end
+    object NewDate3Label: TLabel
+      Left = 396
+      Top = 68
+      Width = 60
+      Height = 12
+      Caption = '2024/12/31'
+    end
+    object Label13: TLabel
+      Left = 324
+      Top = 68
+      Width = 53
+      Height = 12
+      Caption = #12522#12522#12540#12473#26085
+    end
+    object NewMsg3Label: TLabel
+      Left = 483
+      Top = 48
+      Width = 79
+      Height = 12
+      Caption = #26356#26032#21487#33021#12391#12377#12290
+    end
+    object NewVer3Label: TLabel
+      Left = 411
+      Top = 48
+      Width = 48
+      Height = 12
+      Caption = '1.00.1.000'
+    end
+    object Label16: TLabel
+      Left = 359
+      Top = 48
+      Width = 39
+      Height = 12
+      Caption = 'Version'
+    end
+    object NewName3Label: TLabel
+      Left = 310
+      Top = 48
+      Width = 29
+      Height = 12
+      Caption = #65418#65438#65408'00'
+    end
     object UpdateNewButton: TButton
-      Left = 280
-      Top = 24
-      Width = 121
+      Left = 24
+      Top = 86
+      Width = 226
       Height = 25
-      Caption = #26368#26032#29256#12395#26356#26032
+      Caption = 'OpenSSL 1 '#26368#26032#29256#12395#26356#26032
       TabOrder = 0
       OnClick = UpdateNewButtonClick
     end
     object UpdateNlyButton: TButton
-      Left = 280
-      Top = 86
-      Width = 121
+      Left = 24
+      Top = 178
+      Width = 226
       Height = 25
-      Caption = #20154#26609#29256#12395#26356#26032
+      Caption = 'OpenSSL 1 '#20154#26609#29256#12395#26356#26032
       TabOrder = 1
       OnClick = UpdateNlyButtonClick
+    end
+    object Panel1: TPanel
+      Left = 6
+      Top = 20
+      Width = 263
+      Height = 17
+      BevelOuter = bvLowered
+      Caption = 'OpenSSL 1 '#29256
+      Color = clWhite
+      ParentBackground = False
+      TabOrder = 2
+    end
+    object Panel2: TPanel
+      Left = 306
+      Top = 20
+      Width = 263
+      Height = 17
+      BevelOuter = bvLowered
+      Caption = 'OpenSSL 3 '#29256
+      Color = clWhite
+      ParentBackground = False
+      TabOrder = 3
+    end
+    object UpdateNly3Button: TButton
+      Left = 324
+      Top = 178
+      Width = 226
+      Height = 25
+      Caption = 'OpenSSL 3 '#20154#26609#29256#12395#26356#26032
+      TabOrder = 4
+      OnClick = UpdateNly3ButtonClick
+    end
+    object UpdateNew3Button: TButton
+      Left = 324
+      Top = 86
+      Width = 226
+      Height = 25
+      Caption = 'OpenSSL 3 '#26368#26032#29256#12395#26356#26032
+      TabOrder = 5
+      OnClick = UpdateNew3ButtonClick
+    end
+    object Panel3: TPanel
+      Left = 286
+      Top = 48
+      Width = 2
+      Height = 153
+      TabOrder = 6
     end
   end
   object GroupBox2: TGroupBox
     Left = 8
     Top = 8
-    Width = 425
+    Width = 577
     Height = 57
     Caption = #29694#22312#12398#12496#12540#12472#12519#12531
     TabOrder = 0
@@ -201,8 +332,8 @@ object UpdateCheckForm: TUpdateCheckForm
     end
   end
   object CloseButton: TButton
-    Left = 335
-    Top = 265
+    Left = 487
+    Top = 350
     Width = 98
     Height = 25
     Caption = #38281#12376#12427

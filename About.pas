@@ -84,7 +84,12 @@ begin
 									+ FloatToStr(BETA_VERSION)
 									+ '('
 									+ GikoSys.Version
-									+ ')');
+{$IFDEF OPENSSL3}
+									+ ') OpenSSL3”Å'
+{$ELSE}
+									+ ') OpenSSL1”Å'
+{$ENDIF}
+                  );
     VersionMemo.Lines.Add('');
 	VersionMemo.Lines.Add('<Plugins>');
 	VersionMemo.Lines.Add(Trim(GikoSys.GetPluginsInfo));
