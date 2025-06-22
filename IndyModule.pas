@@ -206,8 +206,10 @@ end;
 
 { TIdHTTPコンポーネント初期化 }
 class procedure TIndyMdl.InitHTTP(IdHTTP: TIdHTTP; WriteMethod: Boolean = False);
+{$IFDEF OPENSSL3}
 var
   ssl: TIdSSLIOHandlerSocketOpenSSL;
+{$ENDIF}
 begin
   IdHTTP.Disconnect;
   ClearHTTP(IdHTTP);
