@@ -103,3 +103,32 @@ BODY {
   margin-bottom : 30px;
   /* white-space: nowrap; */
 }
+
+
+/* ***** ID件数：IDなし ***** */
+.id_000 {
+  color: #FF0000;
+  font-weight: bold;
+}
+
+/* ***** ID件数：1件 ***** */
+.id_001 {
+}
+
+/* ***** ID件数：2～4件 ***** */
+.id_002 {
+  color: #0000FF;
+  font-weight: bold;
+}
+
+/* ***** ID件数：5～9件 ***** */
+.id_005 {
+  color: #FF00FF;
+  font-weight: bold;
+}
+
+/* ***** ID件数：10件以上 ***** */
+.id_010 {
+  color: #FF0000;
+  font-weight: bold;
+}

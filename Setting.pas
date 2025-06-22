@@ -269,6 +269,8 @@ type
     FReplChar: Integer;
     // CAP_USERの日時・ID欄を強調表示する
     FCapUser: Boolean;
+    // IDの件数を表示する
+    FIDCount: Boolean;
 
 		//ログフォルダ
 		FLogFolder: string;
@@ -777,6 +779,7 @@ type
     property URLitest: Boolean read FURLitest write FURLitest;
     property ReplChar: Integer read FReplChar write FReplChar;
     property CapUser: Boolean read FCapUser write FCapUser;
+    property IDCount: Boolean read FIDCount write FIDCount;
 
 		property LogFolder: string read FLogFolder write WriteLogFolder;
 		property LogFolderP: string read FLogFolderP;
@@ -1368,6 +1371,8 @@ begin
     	FReplChar := 0;
     // CAP_USERの日時・ID欄を強調表示する
     FCapUser := ini.ReadBool('Thread', 'CapUser', False);
+    // IDの件数を表示する
+    FIDCount := ini.ReadBool('Thread', 'IDCount', True);
 
 		//削除確認
 		FDeleteMsg := ini.ReadBool('Function', 'LogDeleteMessage', True);
@@ -1889,6 +1894,8 @@ begin
     ini.WriteInteger('Thread','ReplaceChar', FReplChar);
     // CAP_USERの日時・ID欄を強調表示する
     ini.WriteBool('Thread', 'CapUser', FCapUser);
+    // IDの件数を表示する
+    ini.WriteBool('Thread', 'IDCount', FIDCount);
 
 		//認証用ユーザID・パスワード
 		ini.WriteString('Attestation', 'UserID', FUserID);
@@ -2107,10 +2114,11 @@ begin
     ini.WriteInteger('ThreadSearch', 'Col5W',  FThrdSrchCol5W);
     ini.WriteInteger('ThreadSearch', 'Col6W',  FThrdSrchCol6W);
     ini.WriteInteger('ThreadSearch', 'HistoryCount', FThrdSrchHistory.Count);
-    if (FThrdSrchHistory.Count > 0) then begin
-			for i := 1 to FThrdSrchHistory.Count do begin
-				ini.WriteString('ThreadSearch', 'History' + IntToStr(i), FThrdSrchHistory.Strings[i-1]);
-			end;
+    for i := 1 to 30 do begin  // 画面上のMAXは20
+      if i <= FThrdSrchHistory.Count then
+				ini.WriteString('ThreadSearch', 'History' + IntToStr(i), FThrdSrchHistory.Strings[i-1])
+      else
+        ini.DeleteKey(  'ThreadSearch', 'History' + IntToStr(i));
     end;
 
 		//! どんぐりシステムウィンドウ

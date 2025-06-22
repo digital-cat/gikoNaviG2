@@ -70,8 +70,9 @@ type
              sLen :Integer): String;
     function isOutsideRange(item: TThreadItem; index: Integer ): Boolean;
     function getKeywordLink(item: TThreadItem): String;
-    function GetResString(index: Integer; const Line: String; PResLink : PResLinkRec): String;
+    function GetResString(index: Integer; const Line: String; PResLink : PResLinkRec; cnt: String): String;
     function IsImageExp(const Url: String): Boolean;
+    function GetIdCount(resIdx: Integer; idCnt: TStringList; idNo: TStringList; css: Boolean = True): String;
 	public
 		{ Public 宣言 }
 		procedure AddAnchorTag(PRes: PResRec);
@@ -946,21 +947,62 @@ begin
 	html.Add( LoadFromSkin( GikoSys.GetSkinFooterFileName, ThreadItem, ThreadItem.Size ) );
 end;
 
+function THTMLCreate.GetIdCount(resIdx: Integer; idCnt: TStringList; idNo: TStringList; css: Boolean = True): String;
+var
+  id: String;
+  idx: Integer;
+  cnt: Integer;
+  cls: String;
+begin
+  cls := '';
+  if (idNo.Count > resIdx) and (idCnt.Count > 0) then begin
+    id := idNo.Strings[resIdx];
+    if id = '' then
+      if css then
+        Result := '(<span class="id_000">?</span>)'
+      else
+        Result := '(?)'
+    else if id = ID_MAX_RES then
+      Result := ''
+    else if idCnt.Find(id, idx) and (idx >= 0) and (idx < idCnt.Count) then begin
+      cnt := Integer(idCnt.Objects[idx]);
+      if css then begin
+        if cnt >= 10 then
+          cls := 'id_010'
+        else if cnt >= 5 then
+          cls := 'id_005'
+        else if cnt >= 2 then
+          cls := 'id_002'
+        else if cnt = 1 then
+          cls := 'id_001';
+        Result := Format('(<span class="%s">%d</span>)', [cls, cnt]);
+      end else
+        Result := Format('(%d)', [cnt])
+    end else begin
+      if css then
+        Result := '(<span class="id_err">?</span>)'
+      else
+        Result := '(?)';
+    end;
+  end else
+    Result := '';
+end;
+
 procedure THTMLCreate.CreateUseCSSHTML(html:TBufferedWebBrowser; ThreadItem: TThreadItem; ReadList: TStringList; sTitle: string );
 const
 	FORMAT_NOMAIL  = '<a name="%s"></a><div class="header"><span class="no"><a href="menu:%s">%s</a></span>'
 					+ '<span class="name_label"> 名前： </span> <span class="name"><b>%s</b></span>'
-					+ '<span class="date_label"> 投稿日：</span> <span class="date%s">%s</span></div>'
+					+ '<span class="date_label"> 投稿日：</span> <span class="date%s">%s</span> %s</div>'
 					+ '<div class="mes">%s</div>';
 
 	FORMAT_SHOWMAIL = '<a name="%s"></a><div class="header"><span class="no"><a href="menu:%s">%s</a></span>'
 					+ '<span class="name_label"> 名前： </span><a class="name_mail" href="mailto:%s">'
 					+ '<b>%s</b></a><span class="mail"> [%s]</span><span class="date_label"> 投稿日：</span>'
-					+ '<span class="date%s"> %s</span></div><div class="mes">%s</div>';
+					+ ' <span class="date%s">%s</span> %s</div><div class="mes">%s</div>';
 
 	FORMAT_NOSHOW = '<a name="%s"></a><div class="header"><span class="no"><a href="menu:%s">%s</a></span>'
 					+ '<span class="name_label"> 名前： </span><a class="name_mail" href="mailto:%s">'
-					+ '<b>%s</b></a><span class="date_label"> 投稿日：</span><span class="date%s"> %s</span></div>'
+					+ '<b>%s</b></a><span class="date_label"> 投稿日：</span> <span class="date%s">%s</span> %s</div>'
 					+ '<div class="mes">%s</div>';
 var
 	i: integer;
@@ -972,6 +1014,9 @@ var
 	ThreadName :String;
 	ResLink :TResLinkRec;
   CapUser: String;
+  idCnt: TStringList;
+  idNo:  TStringList;
+  cnt: String;
 begin
 	NewReceiveNo := ThreadItem.NewReceive;
 	ThreadName := ChangeFileExt(ThreadItem.FileName, '');
@@ -992,42 +1037,62 @@ begin
 		html.Add('<a name="top"></a>'#13#10'<p id="idSearch"></p>');
 		html.Add('<div class="title">' + sTitle + '</div>');
 		html.Flush;
-		for i := 0 to ReadList.Count - 1 do begin
-			// 1 は必ず表示
-			if i <> 0 then begin
-    			// 表示範囲を限定
-                if (isOutsideRange(ThreadItem, i)) then begin
-                    Continue;
-                end;
-			end;
 
-			if (NewReceiveNo = (i + 1)) or ((NewReceiveNo = 0) and (i = 0)) then begin
-				html.Add('<a name="new"></a><div class="new">新着レス <span class="newdate">' + FormatDateTime('yyyy/mm/dd(ddd) hh:mm', ThreadItem.RoundDate) + '</span></div>');
-			end;
-
-			if (Trim(ReadList[i]) <> '') then begin
-				No := IntToStr(i + 1);
-				DivideStrLine(ReadList[i], @Res);
-				AddAnchorTag(@Res);
-				ConvRes(@Res, @ResLink);
-				Res.FDateTime := AddBeProfileLink(Res.FDateTime, i + 1);
-				if GikoSys.Setting.CapUser and (Pos('ID:CAP_USER', Res.FDateTime) > 0) then
-          CapUser := ' capuser'
-        else
-          CapUser := '';
-				if Res.FMailTo = '' then
-				  html.Add(Format(FORMAT_NOMAIL, [No, No, No, Res.FName, CapUser, Res.FDateTime, Res.FBody]))
-				else if GikoSys.Setting.ShowMail then
-				  html.Add(Format(FORMAT_SHOWMAIL, [No, No, No, Res.FMailTo, Res.FName, Res.FMailTo, CapUser, Res.FDateTime, Res.FBody]))
-				else
-				  html.Add(Format(FORMAT_NOSHOW, [No, No, No, Res.FMailTo, Res.FName, CapUser, Res.FDateTime, Res.FBody]));
+    if GikoSys.Setting.IDCount then begin
+      idCnt := TStringList.Create;
+      idNo  := TStringList.Create;
+    end;
+    try
+      if GikoSys.Setting.IDCount then begin
+        idCnt.Sorted := True;
+        idCnt.CaseSensitive := True;
+        GikoSys.CountSameIDRes(ThreadItem, idCnt, idNo);
       end;
-			if ThreadItem.Kokomade = (i + 1) then begin
-				html.Add('<a name="koko"></a><div class="koko">ココまで読んだ</div>');
-			end;
 
-		end;
-        html.Add(getKeywordLink(ThreadItem));
+      for i := 0 to ReadList.Count - 1 do begin
+        // 1 は必ず表示
+        if i <> 0 then begin
+          // 表示範囲を限定
+          if (isOutsideRange(ThreadItem, i)) then begin
+            Continue;
+          end;
+        end;
+
+        if (NewReceiveNo = (i + 1)) or ((NewReceiveNo = 0) and (i = 0)) then begin
+          html.Add('<a name="new"></a><div class="new">新着レス <span class="newdate">' + FormatDateTime('yyyy/mm/dd(ddd) hh:mm', ThreadItem.RoundDate) + '</span></div>');
+        end;
+
+        if (Trim(ReadList[i]) <> '') then begin
+          No := IntToStr(i + 1);
+          DivideStrLine(ReadList[i], @Res);
+          AddAnchorTag(@Res);
+          ConvRes(@Res, @ResLink);
+          Res.FDateTime := AddBeProfileLink(Res.FDateTime, i + 1);
+          if GikoSys.Setting.CapUser and (Pos('ID:CAP_USER', Res.FDateTime) > 0) then
+            CapUser := ' capuser'
+          else
+            CapUser := '';
+          if GikoSys.Setting.IDCount then
+            cnt := GetIdCount(i, idCnt, idNo);
+          if Res.FMailTo = '' then
+            html.Add(Format(FORMAT_NOMAIL, [No, No, No, Res.FName, CapUser, Res.FDateTime, cnt, Res.FBody]))
+          else if GikoSys.Setting.ShowMail then
+            html.Add(Format(FORMAT_SHOWMAIL, [No, No, No, Res.FMailTo, Res.FName, Res.FMailTo, CapUser, Res.FDateTime, cnt, Res.FBody]))
+          else
+            html.Add(Format(FORMAT_NOSHOW, [No, No, No, Res.FMailTo, Res.FName, CapUser, Res.FDateTime, cnt, Res.FBody]));
+        end;
+        if ThreadItem.Kokomade = (i + 1) then begin
+          html.Add('<a name="koko"></a><div class="koko">ココまで読んだ</div>');
+        end;
+
+      end;
+    finally
+      if GikoSys.Setting.IDCount then begin
+        idCnt.Free;
+        idNo.Free;
+      end;
+    end;
+    html.Add(getKeywordLink(ThreadItem));
 		html.Add('<a name="bottom"></a>');
 		html.Add('<a name="last"></a>');
 		html.Add('</body></html>');
@@ -1040,6 +1105,9 @@ var
 	NewReceiveNo: Integer;
 	ThreadName: String;
 	ResLink : TResLinkRec;
+  idCnt: TStringList;
+  idNo:  TStringList;
+  cnt: String;
 begin
 	NewReceiveNo := ThreadItem.NewReceive;
 	ThreadName := ChangeFileExt(ThreadItem.FileName, '');
@@ -1054,35 +1122,54 @@ begin
 	html.Add('<dl>');
 	html.Add('<p id="idSearch"></p>');
 	html.Flush;
-	for i := 0 to ReadList.Count - 1 do begin
-		// 1 は必ず表示
-		if i <> 0 then begin
-			// 表示範囲を限定
-            if (isOutsideRange(ThreadItem, i)) then begin
-                Continue;
-            end;
-		end;
 
-		if (NewReceiveNo = (i + 1)) or ((NewReceiveNo = 0) and (i = 0)) then begin
-			html.Add('</dl>');
-			html.Add('<a name="new"></a>');
-			html.Add('<table width="100%" bgcolor="#3333CC" cellpadding="0" cellspacing="1"><tr><td align="center" bgcolor="#6666FF" valign="middle"><font size="-1" color="#ffffff"><b>新着レス ' + FormatDateTime('yyyy/mm/dd(ddd) hh:mm', ThreadItem.RoundDate) + '</b></font></td></tr></table>');
-			html.Add('<dl>');
-		end;
-
-		if (Trim(ReadList[i]) <> '') then begin
-            html.Add(GetResString(i, ReadList[i], @ResLink));
+  if GikoSys.Setting.IDCount then begin
+    idCnt := TStringList.Create;
+    idNo  := TStringList.Create;
+  end;
+  try
+    if GikoSys.Setting.IDCount then begin
+      idCnt.Sorted := True;
+      idCnt.CaseSensitive := True;
+      GikoSys.CountSameIDRes(ThreadItem, idCnt, idNo);
+    end;
+    for i := 0 to ReadList.Count - 1 do begin
+      // 1 は必ず表示
+      if i <> 0 then begin
+        // 表示範囲を限定
+        if (isOutsideRange(ThreadItem, i)) then begin
+          Continue;
         end;
-		if ThreadItem.Kokomade = (i + 1) then begin
-			html.Add('</dl>');
-			html.Add('<a name="koko"></a><table width="100%" bgcolor="#55AA55" cellpadding="0" cellspacing="1"><tr><td align="center" bgcolor="#77CC77" valign="middle"><font size="-1" color="#ffffff"><b>ココまで読んだ</b></font></td></tr></table>');
-			html.Add('<dl>');
-		end;
-	end;
-    html.Add(getKeywordLink(ThreadItem));
+      end;
+
+      if (NewReceiveNo = (i + 1)) or ((NewReceiveNo = 0) and (i = 0)) then begin
+        html.Add('</dl>');
+        html.Add('<a name="new"></a>');
+        html.Add('<table width="100%" bgcolor="#3333CC" cellpadding="0" cellspacing="1"><tr><td align="center" bgcolor="#6666FF" valign="middle"><font size="-1" color="#ffffff"><b>新着レス ' + FormatDateTime('yyyy/mm/dd(ddd) hh:mm', ThreadItem.RoundDate) + '</b></font></td></tr></table>');
+        html.Add('<dl>');
+      end;
+
+      if (Trim(ReadList[i]) <> '') then begin
+        if GikoSys.Setting.IDCount then
+          cnt := GetIdCount(i, idCnt, idNo);
+        html.Add(GetResString(i, ReadList[i], @ResLink, cnt));
+      end;
+      if ThreadItem.Kokomade = (i + 1) then begin
+        html.Add('</dl>');
+        html.Add('<a name="koko"></a><table width="100%" bgcolor="#55AA55" cellpadding="0" cellspacing="1"><tr><td align="center" bgcolor="#77CC77" valign="middle"><font size="-1" color="#ffffff"><b>ココまで読んだ</b></font></td></tr></table>');
+        html.Add('<dl>');
+      end;
+    end;
+  finally
+    if GikoSys.Setting.IDCount then begin
+      idCnt.Free;
+      idNo.Free;
+    end;
+  end;
+  html.Add(getKeywordLink(ThreadItem));
 	html.Add('</dl>'#13#10'<a name="bottom"></a>'#13#10'</body></html>');
 end;
-function THTMLCreate.GetResString(index: Integer; const Line: String; PResLink : PResLinkRec): String;
+function THTMLCreate.GetResString(index: Integer; const Line: String; PResLink : PResLinkRec; cnt: String): String;
 var
     No : String;
     Res: TResRec;
@@ -1099,11 +1186,11 @@ begin
     else
       CapUser := '';
     if Res.FMailTo = '' then
-        Result := '<a name="' + No + '"></a><dt><a href="menu:' + No + '">' + No + '</a> 名前：<font color="forestgreen"><b> ' + Res.FName + ' </b></font> 投稿日： <span class="date' + CapUser + '">' + Res.FDateTime+ '</span><br><dd>' + Res.Fbody + ' <br><br><br>'#13#10
+        Result := '<a name="' + No + '"></a><dt><a href="menu:' + No + '">' + No + '</a> 名前：<font color="forestgreen"><b> ' + Res.FName + ' </b></font> 投稿日： <span class="date' + CapUser + '">' + Res.FDateTime+ '</span> ' + cnt + '<br><dd>' + Res.Fbody + ' <br><br><br>'#13#10
     else if GikoSys.Setting.ShowMail then
-        Result := '<a name="' + No + '"></a><dt><a href="menu:' + No + '">' + No + '</a> 名前：<a href="mailto:' + Res.FMailTo + '"><b> ' + Res.FName + ' </B></a> [' + Res.FMailTo + '] 投稿日： <span class="date' + CapUser + '">' + Res.FDateTime+ '</span><br><dd>' + Res.Fbody + ' <br><br><br>'#13#10
+        Result := '<a name="' + No + '"></a><dt><a href="menu:' + No + '">' + No + '</a> 名前：<a href="mailto:' + Res.FMailTo + '"><b> ' + Res.FName + ' </B></a> [' + Res.FMailTo + '] 投稿日： <span class="date' + CapUser + '">' + Res.FDateTime+ '</span> ' + cnt + '<br><dd>' + Res.Fbody + ' <br><br><br>'#13#10
     else
-        Result := '<a name="' + No + '"></a><dt><a href="menu:' + No + '">' + No + '</a> 名前：<a href="mailto:' + Res.FMailTo + '"><b> ' + Res.FName + ' </B></a> 投稿日： <span class="date' + CapUser + '">' + Res.FDateTime+ '</span><br><dd>' + Res.Fbody + ' <br><br><br>'#13#10;
+        Result := '<a name="' + No + '"></a><dt><a href="menu:' + No + '">' + No + '</a> 名前：<a href="mailto:' + Res.FMailTo + '"><b> ' + Res.FName + ' </B></a> 投稿日： <span class="date' + CapUser + '">' + Res.FDateTime+ '</span> ' + cnt + '<br><dd>' + Res.Fbody + ' <br><br><br>'#13#10;
 end;
 procedure THTMLCreate.CreateHTML2(Browser: TWebBrowser; ThreadItem: TThreadItem; var sTitle: string);
 var
@@ -1200,8 +1287,11 @@ var
 	tmp, tmp1: string;
 	ThreadName: String;
 	ResLink : TResLinkRec;
-    ThreadInfo: TAbonThread;
+  ThreadInfo: TAbonThread;
   CapUser: String;
+  idCnt: TStringList;
+  idNo:  TStringList;
+  cnt: String;
 
 	function LoadSkin( fileName: string ): string;
 	begin
@@ -1213,221 +1303,241 @@ var
 	end;
 
 begin
-	if ThreadItem <> nil then begin
-		CSSFileName := GikoSys.GetStyleSheetDir + GikoSys.Setting.CSSFileName;
-		ThreadName := ChangeFileExt(ThreadItem.FileName, '');
-		ResLink.FBbs := ThreadItem.ParentBoard.BBSID;
-		ResLink.FKey := ThreadName;
-		html.Clear;
-		html.BeginUpdate;
-		//if ThreadItem.IsBoardPlugInAvailable then begin
-		if ThreadItem.ParentBoard.IsBoardPlugInAvailable then begin
-			//===== プラグインによる表示
-			//boardPlugIn		:= ThreadItem.BoardPlugIn;
-			boardPlugIn		:= ThreadItem.ParentBoard.BoardPlugIn;
-			// フォントやサイズの設定
-			UserOptionalStyle := GikoSys.SetUserOptionalStyle;
-			try
-				// 文字コードはプラグインに任せる
-				// ヘッダ
-				tmp := boardPlugIn.GetHeader( DWORD( threadItem ),
-					'<style type="text/css">body {' + UserOptionalStyle + '}</style>' );
-				//絶対参照から相対参照へ
-				if GikoSys.Setting.UseSkin then begin
-					tmp1 := './' + GikoSys.Setting.CSSFileName;
-					tmp1 := CustomStringReplace(tmp1, GikoSys.GetConfigDir, '');
-					tmp1 := CustomStringReplace(tmp1, '\', '/');
-					tmp := CustomStringReplace(tmp, ExtractFilePath(GikoSys.Setting.CSSFileName),  tmp1);
-				end else if GikoSys.Setting.UseCSS then begin
-					tmp1 := './' + CSSFileName;
-					tmp1 := CustomStringReplace(tmp1, GikoSys.GetConfigDir, '');
-					tmp1 := CustomStringReplace(tmp1, '\', '/');
-					tmp := CustomStringReplace(tmp, CSSFileName,  tmp1);
-				end;
-				html.Append( tmp );
+	if ThreadItem = nil then
+    Exit;
 
-				for i := 0 to threadItem.Count - 1 do begin
+  if GikoSys.Setting.IDCount then begin
+    idCnt := TStringList.Create;
+    idNo  := TStringList.Create;
+    idCnt.Sorted := True;
+    idCnt.CaseSensitive := True;
+  end;
+  try
+    CSSFileName := GikoSys.GetStyleSheetDir + GikoSys.Setting.CSSFileName;
+    ThreadName := ChangeFileExt(ThreadItem.FileName, '');
+    ResLink.FBbs := ThreadItem.ParentBoard.BBSID;
+    ResLink.FKey := ThreadName;
+    html.Clear;
+    html.BeginUpdate;
+    //if ThreadItem.IsBoardPlugInAvailable then begin
+    if ThreadItem.ParentBoard.IsBoardPlugInAvailable then begin
+      //===== プラグインによる表示
+      //boardPlugIn		:= ThreadItem.BoardPlugIn;
+      boardPlugIn		:= ThreadItem.ParentBoard.BoardPlugIn;
+      // フォントやサイズの設定
+      UserOptionalStyle := GikoSys.SetUserOptionalStyle;
+      try
+        // 文字コードはプラグインに任せる
+        // ヘッダ
+        tmp := boardPlugIn.GetHeader( DWORD( threadItem ),
+          '<style type="text/css">body {' + UserOptionalStyle + '}</style>' );
+        //絶対参照から相対参照へ
+        if GikoSys.Setting.UseSkin then begin
+          tmp1 := './' + GikoSys.Setting.CSSFileName;
+          tmp1 := CustomStringReplace(tmp1, GikoSys.GetConfigDir, '');
+          tmp1 := CustomStringReplace(tmp1, '\', '/');
+          tmp := CustomStringReplace(tmp, ExtractFilePath(GikoSys.Setting.CSSFileName),  tmp1);
+        end else if GikoSys.Setting.UseCSS then begin
+          tmp1 := './' + CSSFileName;
+          tmp1 := CustomStringReplace(tmp1, GikoSys.GetConfigDir, '');
+          tmp1 := CustomStringReplace(tmp1, '\', '/');
+          tmp := CustomStringReplace(tmp, CSSFileName,  tmp1);
+        end;
+        html.Append( tmp );
 
-					// レス
-					Res.FBody := boardPlugIn.GetRes( DWORD( threadItem ), i + 1 );
-					ConvertResAnchor(@Res);
-					html.Append( Res.FBody );
+        for i := 0 to threadItem.Count - 1 do begin
 
-				end;
-				// スキン(フッタ)
-				html.Append( boardPlugIn.GetFooter( DWORD( threadItem ), '<a name="bottom"></a>' ) );
-			finally
-			end;
-			html.EndUpdate;
-			//Exit;
-		end else begin
-			ShortDayNames[1] := '日';		ShortDayNames[2] := '月';
-			ShortDayNames[3] := '火';		ShortDayNames[4] := '水';
-			ShortDayNames[5] := '木';		ShortDayNames[6] := '金';
-			ShortDayNames[7] := '土';
-			BBSID := ThreadItem.ParentBoard.BBSID;
-			ReadList := TStringList.Create;
-			try
-				if ThreadItem.IsLogFile then begin
-                    ThreadInfo := TAbonThread.Create;
-                    ThreadInfo.Is2ch  := ThreadItem.ParentBoard.Is2ch;
-                    ThreadInfo.Board  := ThreadItem.ParentBoard.BBSID;
-                    ThreadInfo.Thread := ChangeFileExt(ThreadItem.FileName, '');
-					FileName := ThreadItem.GetThreadFileName;
-					ReadList.LoadFromFile(FileName);
-					GikoSys.FAbon.IndividualAbon(ReadList, ChangeFileExt(FileName,'.NG'));
-					GikoSys.FAbon.Execute(ReadList, ThreadInfo);		//	 あぼ～んして
-					GikoSys.FSelectResFilter.Execute(ReadList, ThreadInfo); //レスのフィルタリングをする
-					DivideStrLine(ReadList[0], @Res);
-					//Res.FTitle := CustomStringReplace(Res.FTitle, '＠｀', ',');
-					sTitle := Res.FTitle;
-                    ThreadInfo.Free;
-				end else begin
-					sTitle := CustomStringReplace(ThreadItem.Title, '＠｀', ',');
-				end;
-				try
-					// フォントやサイズの設定
-					UserOptionalStyle := GikoSys.SetUserOptionalStyle;
+          // レス
+          Res.FBody := boardPlugIn.GetRes( DWORD( threadItem ), i + 1 );
+          ConvertResAnchor(@Res);
+          html.Append( Res.FBody );
 
-					if GikoSys.Setting.UseSkin then begin
-						// スキン使用
-						// スキンの設定
-						try
-							SkinHeader := LoadSkin( GikoSys.GetSkinHeaderFileName );
-							if Length( UserOptionalStyle ) > 0 then
-								SkinHeader := CustomStringReplace( SkinHeader, '</head>',
-									'<style type="text/css">body {' + UserOptionalStyle + '}</style></head>');
-							//絶対参照から相対参照へ
-							tmp1 := './' + GikoSys.Setting.CSSFileName;
-							tmp1 := CustomStringReplace(tmp1, GikoSys.GetConfigDir, '');
-							tmp1 := CustomStringReplace(tmp1, '\', '/');
-							SkinHeader := CustomStringReplace(SkinHeader, ExtractFilePath(GikoSys.Setting.CSSFileName),  tmp1);
-							html.Append( SkinHeader );
-						except
-						end;
-						try
-							SkinRes := LoadSkin( GikoSys.GetSkinResFileName );
-						except
-						end;
-						html.Append('<a name="top"></a>');
-						for i := 0 to ReadList.Count - 1 do begin
-							if (Trim(ReadList[i]) <> '') then begin
-								No := IntToStr(i + 1);
+        end;
+        // スキン(フッタ)
+        html.Append( boardPlugIn.GetFooter( DWORD( threadItem ), '<a name="bottom"></a>' ) );
+      finally
+      end;
+      html.EndUpdate;
+      //Exit;
+    end else begin
+      ShortDayNames[1] := '日';		ShortDayNames[2] := '月';
+      ShortDayNames[3] := '火';		ShortDayNames[4] := '水';
+      ShortDayNames[5] := '木';		ShortDayNames[6] := '金';
+      ShortDayNames[7] := '土';
+      BBSID := ThreadItem.ParentBoard.BBSID;
+      ReadList := TStringList.Create;
+      try
+        if GikoSys.Setting.IDCount then
+          GikoSys.CountSameIDRes(ThreadItem, idCnt, idNo);
+        if ThreadItem.IsLogFile then begin
+          ThreadInfo := TAbonThread.Create;
+          ThreadInfo.Is2ch  := ThreadItem.ParentBoard.Is2ch;
+          ThreadInfo.Board  := ThreadItem.ParentBoard.BBSID;
+          ThreadInfo.Thread := ChangeFileExt(ThreadItem.FileName, '');
+          FileName := ThreadItem.GetThreadFileName;
+          ReadList.LoadFromFile(FileName);
+          GikoSys.FAbon.IndividualAbon(ReadList, ChangeFileExt(FileName,'.NG'));
+          GikoSys.FAbon.Execute(ReadList, ThreadInfo);		//	 あぼ～んして
+          GikoSys.FSelectResFilter.Execute(ReadList, ThreadInfo); //レスのフィルタリングをする
+          DivideStrLine(ReadList[0], @Res);
+          //Res.FTitle := CustomStringReplace(Res.FTitle, '＠｀', ',');
+          sTitle := Res.FTitle;
+          ThreadInfo.Free;
+        end else begin
+          sTitle := CustomStringReplace(ThreadItem.Title, '＠｀', ',');
+        end;
+        try
+          // フォントやサイズの設定
+          UserOptionalStyle := GikoSys.SetUserOptionalStyle;
 
-								DivideStrLine(ReadList[i], @Res);
-								AddAnchorTag(@Res);
-								ConvRes(@Res, @ResLink, true);
-								ConvertResAnchor(@Res);
+          if GikoSys.Setting.UseSkin then begin
+            // スキン使用
+            // スキンの設定
+            try
+              SkinHeader := LoadSkin( GikoSys.GetSkinHeaderFileName );
+              if Length( UserOptionalStyle ) > 0 then
+                SkinHeader := CustomStringReplace( SkinHeader, '</head>',
+                  '<style type="text/css">body {' + UserOptionalStyle + '}</style></head>');
+              //絶対参照から相対参照へ
+              tmp1 := './' + GikoSys.Setting.CSSFileName;
+              tmp1 := CustomStringReplace(tmp1, GikoSys.GetConfigDir, '');
+              tmp1 := CustomStringReplace(tmp1, '\', '/');
+              SkinHeader := CustomStringReplace(SkinHeader, ExtractFilePath(GikoSys.Setting.CSSFileName),  tmp1);
+              html.Append( SkinHeader );
+            except
+            end;
+            try
+              SkinRes := LoadSkin( GikoSys.GetSkinResFileName );
+            except
+            end;
+            html.Append('<a name="top"></a>');
+            for i := 0 to ReadList.Count - 1 do begin
+              if (Trim(ReadList[i]) <> '') then begin
+                No := IntToStr(i + 1);
 
-								try
-									html.Append( ReplaceRes( SkinRes ) );
-								except
-								end;
-							end;
+                DivideStrLine(ReadList[i], @Res);
+                AddAnchorTag(@Res);
+                ConvRes(@Res, @ResLink, true);
+                ConvertResAnchor(@Res);
 
-						end;
-						html.Append('<a name="bottom"></a>');
-						// スキン(フッタ)
-						try
-							html.Append( LoadSkin( GikoSys.GetSkinFooterFileName ) );
-						except
-						end;
-					end else if GikoSys.Setting.UseCSS and FileExists(CSSFileName) then begin
-						//CSS使用
-						//CSSFileName := GetAppDir + CSS_FILE_NAME;
-						html.Append('<html><head>');
-						html.Append('<meta http-equiv="Content-type" content="text/html; charset=Shift_JIS">');
-						html.Append('<title>' + sTitle + '</title>');
-						//絶対参照から相対参照へ
-						tmp1 := './' + CSSFileName;
-						tmp1 := CustomStringReplace(tmp1, GikoSys.GetConfigDir, '');
-						tmp1 := CustomStringReplace(tmp1, '\', '/');
+                try
+                  html.Append( ReplaceRes( SkinRes ) );
+                except
+                end;
+              end;
 
-						html.Append('<link rel="stylesheet" href="'+tmp1+'" type="text/css">');
-						if Length( UserOptionalStyle ) > 0 then
-							html.Append('<style type="text/css">body {' + UserOptionalStyle + '}</style>');
-						html.Append('</head>');
-						html.Append('<body>');
-						html.Append('<a name="top"></a>');
-						html.Append('<div class="title">' + sTitle + '</div>');
-						for i := 0 to ReadList.Count - 1 do begin
-							if (Trim(ReadList[i]) <> '') then begin
-								No := IntToStr(i + 1);
-								DivideStrLine(ReadList[i], @Res);
-								AddAnchorTag(@Res);
-								ConvRes(@Res, @ResLink, true);
-								ConvertResAnchor(@Res);
-								if GikoSys.Setting.CapUser and (Pos('ID:CAP_USER', Res.FDateTime) > 0) then
-								  CapUser := ' capuser'
-								else
-								  CapUser := '';
-								if Res.FMailTo = '' then
-									html.Append('<a name="' + No + '"></a>'
-													+ '<div class="header"><span class="no"><a href="menu:' + No + '">' + No + '</a></span> '
-													+ '<span class="name_label">名前：</span> '
-													+ '<span class="name"><b>' + Res.FName + '</b></span> '
-													+ '<span class="date_label">投稿日：</span> '
-													+ '<span class="date' + CapUser + '">' + Res.FDateTime+ '</span></div>'
-																								+ '<div class="mes">' + Res.FBody + ' </div>')
-								else if GikoSys.Setting.ShowMail then
-									html.Append('<a name="' + No + '"></a>'
-													+ '<div class="header"><span class="no"><a href="menu:' + No + '">' + No + '</a></span>'
-																								+ '<span class="name_label"> 名前： </span>'
-													+ '<a class="name_mail" href="mailto:' + Res.FMailTo + '">'
-													+ '<b>' + Res.FName + '</b></a><span class="mail"> [' + Res.FMailTo + ']</span>'
-													+ '<span class="date_label"> 投稿日：</span>'
-													+ '<span class="date' + CapUser + '"> ' + Res.FDateTime+ '</span></div>'
-													+ '<div class="mes">' + Res.FBody + ' </div>')
-								else
-									html.Append('<a name="' + No + '"></a>'
-													+ '<div class="header"><span class="no"><a href="menu:' + No + '">' + No + '</a></span>'
-													+ '<span class="name_label"> 名前： </span>'
-													+ '<a class="name_mail" href="mailto:' + Res.FMailTo + '">'
-													+ '<b>' + Res.FName + '</b></a>'
-													+ '<span class="date_label"> 投稿日：</span>'
-													+ '<span class="date' + CapUser + '"> ' + Res.FDateTime+ '</span></div>'
-																								+ '<div class="mes">' + Res.FBody + ' </div>');
-							end;
-						end;
-						html.Append('<a name="bottom"></a>');
-						html.Append('<a name="last"></a>');
-						html.Append('</body></html>');
-					end else begin
-						//CSS非使用
-						html.Append('<html><head>');
-						html.Append('<meta http-equiv="Content-type" content="text/html; charset=Shift_JIS">');
-						html.Append('<title>' + sTitle + '</title></head>');
-						html.Append('<body TEXT="#000000" BGCOLOR="#EFEFEF" link="#0000FF" alink="#FF0000" vlink="#660099">');
-						html.Append('<a name="top"></a>');
-						html.Append('<font size=+1 color="#FF0000">' + sTitle + '</font>');
-						html.Append('<dl>');
-						for i := 0 to ReadList.Count - 1 do begin
-							if (Trim(ReadList[i]) <> '') then begin
-								No := IntToStr(i + 1);
-								DivideStrLine(ReadList[i], @Res);
-								AddAnchorTag(@Res);
-								ConvRes(@Res, @ResLink, true);
-								ConvertResAnchor(@Res);
-								if Res.FMailTo = '' then
-									html.Append('<a name="' + No + '"></a><dt><a href="menu:' + No + '">' + No + '</a> 名前：<font color="forestgreen"><b> ' + Res.FName + ' </b></font> 投稿日： ' + Res.FDateTime+ '<br><dd>' + Res.Fbody + ' <br><br><br>')
-								else if GikoSys.Setting.ShowMail then
-									html.Append('<a name="' + No + '"></a><dt><a href="menu:' + No + '">' + No + '</a> 名前：<a href="mailto:' + Res.FMailTo + '"><b> ' + Res.FName + ' </B></a> [' + Res.FMailTo + '] 投稿日： ' + Res.FDateTime+ '<br><dd>' + Res.Fbody + ' <br><br><br>')
-								else
-									html.Append('<a name="' + No + '"></a><dt><a href="menu:' + No + '">' + No + '</a> 名前：<a href="mailto:' + Res.FMailTo + '"><b> ' + Res.FName + ' </B></a> 投稿日： ' + Res.FDateTime+ '<br><dd>' + Res.Fbody + ' <br><br><br>');
-							end;
-						end;
-						html.Append('</dl>');
-						html.Append('<a name="bottom"></a>');
-						html.Append('</body></html>');
-					end;
-				finally
-					html.EndUpdate;
-				end;
-			finally
-				ReadList.Free;
-			end;
-		end;
-	end;
+            end;
+            html.Append('<a name="bottom"></a>');
+            // スキン(フッタ)
+            try
+              html.Append( LoadSkin( GikoSys.GetSkinFooterFileName ) );
+            except
+            end;
+          end else if GikoSys.Setting.UseCSS and FileExists(CSSFileName) then begin
+            //CSS使用
+            //CSSFileName := GetAppDir + CSS_FILE_NAME;
+            html.Append('<html><head>');
+            html.Append('<meta http-equiv="Content-type" content="text/html; charset=Shift_JIS">');
+            html.Append('<title>' + sTitle + '</title>');
+            //絶対参照から相対参照へ
+            tmp1 := './' + CSSFileName;
+            tmp1 := CustomStringReplace(tmp1, GikoSys.GetConfigDir, '');
+            tmp1 := CustomStringReplace(tmp1, '\', '/');
+
+            html.Append('<link rel="stylesheet" href="'+tmp1+'" type="text/css">');
+            if Length( UserOptionalStyle ) > 0 then
+              html.Append('<style type="text/css">body {' + UserOptionalStyle + '}</style>');
+            html.Append('</head>');
+            html.Append('<body>');
+            html.Append('<a name="top"></a>');
+            html.Append('<div class="title">' + sTitle + '</div>');
+            for i := 0 to ReadList.Count - 1 do begin
+              if (Trim(ReadList[i]) <> '') then begin
+                No := IntToStr(i + 1);
+                DivideStrLine(ReadList[i], @Res);
+                AddAnchorTag(@Res);
+                ConvRes(@Res, @ResLink, true);
+                ConvertResAnchor(@Res);
+                if GikoSys.Setting.CapUser and (Pos('ID:CAP_USER', Res.FDateTime) > 0) then
+                  CapUser := ' capuser'
+                else
+                  CapUser := '';
+                if GikoSys.Setting.IDCount then
+                  cnt := GetIdCount(i, idCnt, idNo);
+                if Res.FMailTo = '' then
+                  html.Append('<a name="' + No + '"></a>'
+                          + '<div class="header"><span class="no"><a href="menu:' + No + '">' + No + '</a></span> '
+                          + '<span class="name_label">名前：</span> '
+                          + '<span class="name"><b>' + Res.FName + '</b></span> '
+                          + '<span class="date_label">投稿日：</span> '
+                          + '<span class="date' + CapUser + '">' + Res.FDateTime+ '</span> ' + cnt + '</div>'
+                                                + '<div class="mes">' + Res.FBody + ' </div>')
+                else if GikoSys.Setting.ShowMail then
+                  html.Append('<a name="' + No + '"></a>'
+                          + '<div class="header"><span class="no"><a href="menu:' + No + '">' + No + '</a></span>'
+                                                + '<span class="name_label"> 名前： </span>'
+                          + '<a class="name_mail" href="mailto:' + Res.FMailTo + '">'
+                          + '<b>' + Res.FName + '</b></a><span class="mail"> [' + Res.FMailTo + ']</span>'
+                          + '<span class="date_label"> 投稿日：</span>'
+                          + '<span class="date' + CapUser + '"> ' + Res.FDateTime + '</span> ' + cnt + '</div>'
+                          + '<div class="mes">' + Res.FBody + ' </div>')
+                else
+                  html.Append('<a name="' + No + '"></a>'
+                          + '<div class="header"><span class="no"><a href="menu:' + No + '">' + No + '</a></span>'
+                          + '<span class="name_label"> 名前： </span>'
+                          + '<a class="name_mail" href="mailto:' + Res.FMailTo + '">'
+                          + '<b>' + Res.FName + '</b></a>'
+                          + '<span class="date_label"> 投稿日：</span>'
+                          + '<span class="date' + CapUser + '"> ' + Res.FDateTime + '</span> ' + cnt + '</div>'
+                                                + '<div class="mes">' + Res.FBody + ' </div>');
+              end;
+            end;
+            html.Append('<a name="bottom"></a>');
+            html.Append('<a name="last"></a>');
+            html.Append('</body></html>');
+          end else begin
+            //CSS非使用
+            html.Append('<html><head>');
+            html.Append('<meta http-equiv="Content-type" content="text/html; charset=Shift_JIS">');
+            html.Append('<title>' + sTitle + '</title></head>');
+            html.Append('<body TEXT="#000000" BGCOLOR="#EFEFEF" link="#0000FF" alink="#FF0000" vlink="#660099">');
+            html.Append('<a name="top"></a>');
+            html.Append('<font size=+1 color="#FF0000">' + sTitle + '</font>');
+            html.Append('<dl>');
+            for i := 0 to ReadList.Count - 1 do begin
+              if (Trim(ReadList[i]) <> '') then begin
+                No := IntToStr(i + 1);
+                DivideStrLine(ReadList[i], @Res);
+                AddAnchorTag(@Res);
+                ConvRes(@Res, @ResLink, true);
+                ConvertResAnchor(@Res);
+                if GikoSys.Setting.IDCount then
+                  cnt := GetIdCount(i, idCnt, idNo, False);
+                if Res.FMailTo = '' then
+                  html.Append('<a name="' + No + '"></a><dt><a href="menu:' + No + '">' + No + '</a> 名前：<font color="forestgreen"><b> ' + Res.FName + ' </b></font> 投稿日： ' + Res.FDateTime+ ' ' + cnt + '<br><dd>' + Res.Fbody + ' <br><br><br>')
+                else if GikoSys.Setting.ShowMail then
+                  html.Append('<a name="' + No + '"></a><dt><a href="menu:' + No + '">' + No + '</a> 名前：<a href="mailto:' + Res.FMailTo + '"><b> ' + Res.FName + ' </B></a> [' + Res.FMailTo + '] 投稿日： ' + Res.FDateTime+ ' ' + cnt + '<br><dd>' + Res.Fbody + ' <br><br><br>')
+                else
+                  html.Append('<a name="' + No + '"></a><dt><a href="menu:' + No + '">' + No + '</a> 名前：<a href="mailto:' + Res.FMailTo + '"><b> ' + Res.FName + ' </B></a> 投稿日： ' + Res.FDateTime+ ' ' + cnt + '<br><dd>' + Res.Fbody + ' <br><br><br>');
+              end;
+            end;
+            html.Append('</dl>');
+            html.Append('<a name="bottom"></a>');
+            html.Append('</body></html>');
+          end;
+        finally
+          html.EndUpdate;
+        end;
+      finally
+        ReadList.Free;
+      end;
+    end;
+  finally
+    if GikoSys.Setting.IDCount then begin
+      idCnt.Free;
+      idNo.Free;
+    end;
+  end;
 end;
 
 procedure THTMLCreate.SetResPopupText(Hint : TResPopupBrowser; threadItem: TThreadItem; StNum, ToNum: Integer; Title, First: Boolean);
@@ -1439,13 +1549,13 @@ var
 
 	wkInt: Integer;
 
-    boardPlugIn : TBoardPlugIn;
-    Html: TStringList;
+  boardPlugIn : TBoardPlugIn;
+  Html: TStringList;
 	ResLink : TResLinkRec;
-    ThreadInfo: TAbonThread;
+  ThreadInfo: TAbonThread;
 begin
 
-    Html := TStringList.Create;
+  Html := TStringList.Create;
 	try
 		if StNum > ToNum then begin
 			wkInt := StNum;
@@ -1457,56 +1567,56 @@ begin
 		if StNum + MAX_POPUP_RES < ToNum then
 			ToNum := StNum + MAX_POPUP_RES;
 
-        Hint.Title := '';
-        Hint.RawDocument := '';
-        Hint.Thread := nil;
+    Hint.Title := '';
+    Hint.RawDocument := '';
+    Hint.Thread := nil;
 
 		//タイトル表示
 		if Title then
-				if ThreadItem <> nil then
-					Hint.Title := ThreadItem.Title;
+      if ThreadItem <> nil then
+        Hint.Title := ThreadItem.Title;
 
-        if ThreadItem <> nil then begin
-            ThreadInfo := TAbonThread.Create;
-            Hint.Thread := ThreadItem;
-            ResLink.FBbs := ThreadItem.ParentBoard.BBSID;
-            ResLink.FKey := ChangeFileExt(ThreadItem.FileName, '');
-            //if ThreadItem.IsBoardPlugInAvailable then begin
-            if ThreadItem.ParentBoard.IsBoardPlugInAvailable then begin
-                //===== プラグインによる表示
-                //boardPlugIn		:= ThreadItem.BoardPlugIn;
-                boardPlugIn		:= ThreadItem.ParentBoard.BoardPlugIn;
+    if ThreadItem <> nil then begin
+      ThreadInfo := TAbonThread.Create;
+      Hint.Thread := ThreadItem;
+      ResLink.FBbs := ThreadItem.ParentBoard.BBSID;
+      ResLink.FKey := ChangeFileExt(ThreadItem.FileName, '');
+      //if ThreadItem.IsBoardPlugInAvailable then begin
+      if ThreadItem.ParentBoard.IsBoardPlugInAvailable then begin
+        //===== プラグインによる表示
+        //boardPlugIn		:= ThreadItem.BoardPlugIn;
+        boardPlugIn		:= ThreadItem.ParentBoard.BoardPlugIn;
 
-                // フォントやサイズの設定
-                // 文字コードはプラグインに任せる
-                for i := StNum to ToNum do begin
-                    Line := i;
-					//ここで２ちゃんねるのdatの形式で１行読み込めれば･･･。↓読めるようになった
-					tmp := boardPlugIn.GetDat( DWORD( threadItem ), i );
-                    if (tmp <> '') And ( not GikoSys.FAbon.CheckAbonPopupRes(tmp, ThreadInfo) And( not GikoSys.FAbon.CheckIndividualAbonList(line))) then begin
-                        Html.Add(GetResString(Line-1, tmp, @ResLink));
-					end;
-				end;
-			end else begin
-                ThreadInfo.Is2ch  := ThreadItem.ParentBoard.Is2ch;
-                ThreadInfo.Board  := ThreadItem.ParentBoard.BBSID;
-                ThreadInfo.Thread := ChangeFileExt(ThreadItem.FileName, '');
-				for i := StNum to ToNum do begin
-					Line := i;
-					FileName := ThreadItem.FilePath;
-					tmp := GikoSys.ReadThreadFile(FileName, Line);
-					if (tmp <> '') And ( not GikoSys.FAbon.CheckAbonPopupRes(tmp, ThreadInfo) And( not GikoSys.FAbon.CheckIndividualAbonList(line))) then begin
-						Html.Add(GetResString(Line-1, tmp, @ResLink));
-					end;
-				end;
-			end;
-            if (Html.Count > 0) then begin
-                Hint.RawDocument := '<DL>' + Html.Text + '</DL>';
-            end;
-            ThreadInfo.Free;
-		end;
+        // フォントやサイズの設定
+        // 文字コードはプラグインに任せる
+        for i := StNum to ToNum do begin
+          Line := i;
+          //ここで２ちゃんねるのdatの形式で１行読み込めれば･･･。↓読めるようになった
+          tmp := boardPlugIn.GetDat( DWORD( threadItem ), i );
+          if (tmp <> '') And ( not GikoSys.FAbon.CheckAbonPopupRes(tmp, ThreadInfo) And( not GikoSys.FAbon.CheckIndividualAbonList(line))) then begin
+            Html.Add(GetResString(Line-1, tmp, @ResLink, ''));
+          end;
+        end;
+      end else begin
+        ThreadInfo.Is2ch  := ThreadItem.ParentBoard.Is2ch;
+        ThreadInfo.Board  := ThreadItem.ParentBoard.BBSID;
+        ThreadInfo.Thread := ChangeFileExt(ThreadItem.FileName, '');
+        for i := StNum to ToNum do begin
+          Line := i;
+          FileName := ThreadItem.FilePath;
+          tmp := GikoSys.ReadThreadFile(FileName, Line);
+          if (tmp <> '') And ( not GikoSys.FAbon.CheckAbonPopupRes(tmp, ThreadInfo) And( not GikoSys.FAbon.CheckIndividualAbonList(line))) then begin
+            Html.Add(GetResString(Line-1, tmp, @ResLink, ''));
+          end;
+        end;
+      end;
+      if (Html.Count > 0) then begin
+        Hint.RawDocument := '<DL>' + Html.Text + '</DL>';
+      end;
+      ThreadInfo.Free;
+    end;
 	finally
-        Html.Free;
+    Html.Free;
 	end;
 end;
 
