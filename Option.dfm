@@ -60,12 +60,16 @@ object OptionDialog: TOptionDialog
     Top = 4
     Width = 509
     Height = 389
-    ActivePage = TabSheet1
+    ActivePage = ThreadSheet
     MultiLine = True
     TabOrder = 3
     OnChange = OptionTabChange
     object ConnectSheet: TTabSheet
       Caption = #25509#32154
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object ReadProxyGroupBox: TGroupBox
         Left = 12
         Top = 4
@@ -251,7 +255,7 @@ object OptionDialog: TOptionDialog
           Top = 43
           Width = 417
           Height = 20
-          ItemHeight = 12
+          ItemHeight = 0
           TabOrder = 0
           Text = 'BoardURLComboBox'
         end
@@ -278,6 +282,10 @@ object OptionDialog: TOptionDialog
     object Font1Sheet: TTabSheet
       Caption = #12501#12457#12531#12488
       ImageIndex = 1
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Bevel1: TBevel
         Left = 8
         Top = 100
@@ -569,6 +577,10 @@ object OptionDialog: TOptionDialog
     object CSSTabSheet: TTabSheet
       Caption = 'CSS '#12392#12473#12461#12531
       ImageIndex = 10
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object GroupBox12: TGroupBox
         Left = 12
         Top = 8
@@ -673,6 +685,10 @@ object OptionDialog: TOptionDialog
     end
     object TabSheet3: TTabSheet
       Caption = #12473#12524#12483#12489#19968#35239
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object GroupBox9: TGroupBox
         Left = 12
         Top = 8
@@ -733,7 +749,7 @@ object OptionDialog: TOptionDialog
           Width = 229
           Height = 20
           Style = csDropDownList
-          ItemHeight = 12
+          ItemHeight = 0
           TabOrder = 0
           Items.Strings = (
             #26368#22823#21270#12375#12394#12356
@@ -792,7 +808,7 @@ object OptionDialog: TOptionDialog
           Width = 229
           Height = 20
           Style = csDropDownList
-          ItemHeight = 12
+          ItemHeight = 0
           TabOrder = 0
           Items.Strings = (
             #12473#12524#19968#35239#12398#12477#12540#12488#38918
@@ -837,15 +853,15 @@ object OptionDialog: TOptionDialog
         Left = 12
         Top = 8
         Width = 477
-        Height = 124
+        Height = 142
         Caption = #34920#31034#35373#23450
         TabOrder = 0
         object Label30: TLabel
           Left = 12
           Top = 70
-          Width = 271
+          Width = 267
           Height = 12
-          Caption = 'Windows 11'#12391#34920#31034#12434#38459#23475#12377#12427#25991#23383'&&#78840;'#12398#25201#12356'(&C)'
+          Caption = 'Windows11'#12391#34920#31034#12434#38459#23475#12377#12427#25991#23383'&&#78840;'#12398#25201#12356'(&C)'
           FocusControl = ReplCharComboBox
         end
         object ShowMailCheckBox: TCheckBox
@@ -902,26 +918,34 @@ object OptionDialog: TOptionDialog
         end
         object CapUserCheckBox: TCheckBox
           Left = 12
-          Top = 90
+          Top = 92
           Width = 270
           Height = 17
           Caption = 'CAP_USER'#12398#26085#26178#12539'ID'#27396#12434#24375#35519#34920#31034#12377#12427'(&U)'
           TabOrder = 5
         end
+        object IDCountCheckBox: TCheckBox
+          Left = 12
+          Top = 114
+          Width = 161
+          Height = 17
+          Caption = 'ID'#12398#20214#25968#12434#34920#31034#12377#12427'(&D)'
+          TabOrder = 6
+        end
       end
       object GroupBox2: TGroupBox
         Left = 12
-        Top = 140
+        Top = 156
         Width = 477
-        Height = 126
+        Height = 111
         Caption = #12522#12531#12463#12463#12522#12483#12463#26178#21205#20316
         TabOrder = 1
         object AppFolderLabel: TLabel
           Left = 32
-          Top = 40
-          Width = 120
+          Top = 42
+          Width = 37
           Height = 12
-          Caption = #12450#12503#12522#12465#12540#12471#12519#12531#12497#12473'(&L)'
+          Caption = #12497#12473'(&L)'
           FocusControl = AppFolderEdit
         end
         object URLAppCheckBox: TCheckBox
@@ -934,15 +958,15 @@ object OptionDialog: TOptionDialog
           OnClick = URLAppCheckBoxClick
         end
         object AppFolderEdit: TEdit
-          Left = 32
-          Top = 56
-          Width = 309
+          Left = 77
+          Top = 39
+          Width = 388
           Height = 20
           TabOrder = 1
         end
         object AppFolderButton: TButton
-          Left = 350
-          Top = 55
+          Left = 391
+          Top = 60
           Width = 75
           Height = 21
           Caption = #21442#29031'(&B)...'
@@ -951,7 +975,7 @@ object OptionDialog: TOptionDialog
         end
         object OpenMailerCheckBox: TCheckBox
           Left = 12
-          Top = 80
+          Top = 64
           Width = 301
           Height = 17
           Caption = #12473#12524#12483#12489'mailto'#12463#12522#12483#12463#26178#12395#12513#12540#12521#12540#12434#36215#21205#12377#12427'(&T)'
@@ -960,7 +984,7 @@ object OptionDialog: TOptionDialog
         end
         object ResAnchorCheckBox: TCheckBox
           Left = 12
-          Top = 100
+          Top = 86
           Width = 333
           Height = 17
           Caption = #12524#12473#12450#12531#12459#12540#12398#22580#21512#12289#12381#12398#12524#12473#12414#12391#12472#12515#12531#12503#12377#12427
@@ -997,6 +1021,10 @@ object OptionDialog: TOptionDialog
     object TabSheet1: TTabSheet
       Caption = #12473#12524#12483#12489#65298
       ImageIndex = 7
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object TabAddRadioGroup: TRadioGroup
         Left = 12
         Top = 288
@@ -1055,7 +1083,7 @@ object OptionDialog: TOptionDialog
           Width = 145
           Height = 20
           Style = csDropDownList
-          ItemHeight = 12
+          ItemHeight = 0
           TabOrder = 1
           Items.Strings = (
             '128 * 96 pixel'
@@ -1186,6 +1214,10 @@ object OptionDialog: TOptionDialog
     object TabSheet2: TTabSheet
       Caption = #12381#12398#20182#21205#20316#65297
       ImageIndex = 8
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object GroupBox7: TGroupBox
         Left = 12
         Top = 8
@@ -1301,6 +1333,10 @@ object OptionDialog: TOptionDialog
     object TabSheet4: TTabSheet
       Caption = #12381#12398#20182#21205#20316#65298
       ImageIndex = 11
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object GroupBox13: TGroupBox
         Left = 12
         Top = 8
@@ -1409,6 +1445,10 @@ object OptionDialog: TOptionDialog
     object SoundSheet: TTabSheet
       Caption = #12469#12454#12531#12489
       ImageIndex = 6
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object SoundEventGroupBox: TGroupBox
         Left = 12
         Top = 8
@@ -1476,6 +1516,10 @@ object OptionDialog: TOptionDialog
     object FolderSheet: TTabSheet
       Caption = #12501#12457#12523#12480
       ImageIndex = 5
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object FolderGroupBox: TGroupBox
         Left = 12
         Top = 8
@@ -1526,6 +1570,10 @@ object OptionDialog: TOptionDialog
     object NGwordSheet: TTabSheet
       Caption = #12354#12412#65374#12435
       ImageIndex = 11
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object GroupBox14: TGroupBox
         Left = 12
         Top = 8
@@ -1612,7 +1660,7 @@ object OptionDialog: TOptionDialog
           Width = 145
           Height = 20
           Style = csDropDownList
-          ItemHeight = 12
+          ItemHeight = 0
           ItemIndex = 0
           TabOrder = 0
           Text = #20351#29992#12375#12394#12356
@@ -1641,6 +1689,10 @@ object OptionDialog: TOptionDialog
     object UserIDSheet: TTabSheet
       Caption = #65298#12385#12419#12435#12397#12427
       ImageIndex = 9
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object GroupBox3: TGroupBox
         Left = 12
         Top = 6
@@ -1785,7 +1837,7 @@ object OptionDialog: TOptionDialog
           Width = 270
           Height = 20
           Style = csDropDownList
-          ItemHeight = 12
+          ItemHeight = 0
           TabOrder = 2
         end
         object GroupBox25: TGroupBox
@@ -1833,7 +1885,7 @@ object OptionDialog: TOptionDialog
           Width = 395
           Height = 20
           Style = csDropDownList
-          ItemHeight = 12
+          ItemHeight = 0
           ItemIndex = 0
           TabOrder = 1
           Text = #33258#21205#12525#12464#12452#12531#12375#12394#12356

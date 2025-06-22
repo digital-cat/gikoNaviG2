@@ -237,6 +237,7 @@ type
     ReloadAfterWriteCheckBox: TCheckBox;
     CapUserCheckBox: TCheckBox;
     PreviewClearCheckBox: TCheckBox;
+    IDCountCheckBox: TCheckBox;
 		procedure FormCreate(Sender: TObject);
 		procedure FormDestroy(Sender: TObject);
 		procedure ApplyButtonClick(Sender: TObject);
@@ -762,6 +763,8 @@ begin
   ReplCharComboBox.ItemIndex := GikoSys.Setting.ReplChar;
   // CAP_USERの日時・ID欄を強調表示する
   CapUserCheckBox.Checked := GikoSys.Setting.CapUser;
+  // IDの件数を表示する
+  IDCountCheckBox.Checked := GikoSys.Setting.IDCount;
 
 	//タブ追加位置
 	TabAddRadioGroup.ItemIndex := Ord(GikoSys.Setting.BrowserTabAppend);
@@ -1104,6 +1107,9 @@ begin
   // CAP_USERの日時・ID欄を強調表示する
   if GikoSys.Setting.CapUser <> CapUserCheckBox.Checked then FRepaintThread := true;
   GikoSys.Setting.CapUser := CapUserCheckBox.Checked;
+  // IDの件数を表示する
+  if GikoSys.Setting.IDCount <> IDCountCheckBox.Checked then FRepaintThread := true;
+  GikoSys.Setting.IDCount := IDCountCheckBox.Checked;
 
 	GikoSys.Setting.BrowserTabAppend := TGikoTabAppend(TabAddRadioGroup.ItemIndex);
 
