@@ -41,6 +41,8 @@ type
 	TGikoMessageIcon = (gmiOK, gmiSAD, gmiNG, gmiWhat, gmiNone);
 	//! URLオープンブラウザタイプ
 	TGikoBrowserType = (gbtIE, gbtUserApp, gbtAuto);
+  //! ワイドAPI有効状況
+  TWideAPIEnable = (wapiEnable, wapiDisable, wapiUnknown);
 
 
 	TStrTokSeparator = set of Char;
@@ -131,10 +133,13 @@ type
 		FGikoMessage: TGikoMessage;
     FBelib: TBelib;
     FDonguriSys: TDonguriSys;
+    FWideAPIEnable: TWideAPIEnable;
 		//! あるセパレータで区切られた文字列からｎ番目の文字列を取り出す
 		function ChooseString(const Text, Separator: string; Index: integer): string;
     //! 一時ファイルからの復旧
     procedure RestoreThreadData(Board: TBoard);
+    //! ワイドAPI有効無効取得
+    function GetWideAPIEnable: Boolean;
 	public
 		{ Public 宣言 }
 		FAbon : TAbon;
@@ -245,6 +250,7 @@ type
 		procedure GetSameIDRes(AIDNum : Integer; ThreadItem: TThreadItem;var body: TStringList); overload;
     function GetResID(AIDNum: Integer; ThreadItem: TThreadItem): String;
     function ExtructResID(ADateStr: String): String;
+    procedure CountSameIDRes(ThreadItem: TThreadItem; var idCnt: TStringList; var idNo: TStringList);
 
     function GetResWacchoi(AIDNum: Integer; ThreadItem: TThreadItem; ALow4: Boolean): String;
 		procedure GetSameWacchoiRes(AResNo: Integer; ThreadItem: TThreadItem; ALow4: Boolean; var ANumbers: TStringList);
@@ -307,12 +313,17 @@ type
     function Is2chURL(url: String; shortening: Boolean = False): Boolean;
     //! したらばのURLかどうか
     function IsShitarabaURL(url: String): Boolean;
+    //! まちBBSのURLかどうか
+    function IsMachiBBSURL(url: String): Boolean;
     //! 実際に使うURL取得（IPv6/v4確認と変換）
     function GetActualURL(url: String): String;
     //! 実際に使うホスト名取得（IPv6/v4確認と変換）
     function GetActualHost(host: String; var modified: Boolean): String;
   	//! UTF-8文字列をShift-JIS文字列へ変換
     function UTF8toSJIS(pUtf8: PChar): String;
+    //! ワイドAPI有効無効取得
+    property WideAPIEnable: Boolean read GetWideAPIEnable;
+
 	end;
 
 //! Windows11以降かどうか
@@ -328,8 +339,8 @@ const
 	BETA_VERSION				= 75;
 	BETA_VERSION_BUILD	= '';				//!< debug版など
 	APP_NAME						= 'gikoNavi';
-	BE_PHP_URL = 'https://be.5ch.net/test/p.php?i=';
-
+	BE_PHP_URL          = 'https://be.5ch.net/test/p.php?i=';
+  ID_MAX_RES          = 'Over 1000 Thread';
 
 implementation
 
@@ -341,13 +352,12 @@ const
 	FOLDER_INDEX_VERSION					= '1.01';
 	USER_AGENT										= 'Monazilla';
 	USER_AGENT_VERSION            = '1.00';
-	DEFAULT_NGWORD_FILE_NAME : String = 'NGword.txt';
-	NGWORDs_DIR_NAME : String 		= 'NGwords';
-
-	READ_PATH: string = 			'/test/read.cgi/';
-    HTML_READ_PATH: string =        '/test/read.html/';
-	OLD_READ_PATH: string =		'/test/read.cgi?';
-	KAKO_PATH: string = 			'/kako/';
+	DEFAULT_NGWORD_FILE_NAME      = 'NGword.txt';
+	NGWORDs_DIR_NAME  : String 		= 'NGwords';
+	READ_PATH         : string    = '/test/read.cgi/';
+  HTML_READ_PATH    : string    = '/test/read.html/';
+	OLD_READ_PATH     : string    =	'/test/read.cgi?';
+	KAKO_PATH         : string    = '/kako/';
 
 	KeyWordStr: array [TVerResourceKey] of String = (
 		  'Comments',
@@ -363,7 +373,7 @@ const
 		  'ProductVersion',
 		  'SpecialBuild');
 
-	UAVers: array[0..36] of TUAVer = (
+	UAVers: array[0..37] of TUAVer = (
       (BetaVer:  0; FileVer: ''),
       (BetaVer: 74; FileVer: '1.75.0.881'),
       (BetaVer: 74; FileVer: '1.75.0.883'),
@@ -400,7 +410,8 @@ const
       (BetaVer: 75; FileVer: '1.76.0.915'),
       (BetaVer: 75; FileVer: '1.76.0.916'),
       (BetaVer: 75; FileVer: '1.76.0.917'),
-      (BetaVer: 75; FileVer: '1.76.0.918')
+      (BetaVer: 75; FileVer: '1.76.0.918'),
+      (BetaVer: 75; FileVer: '1.76.0.919')
 	);	// 当面リリースの度にバージョン情報を追加していく
 
 // *************************************************************************
@@ -439,6 +450,8 @@ begin
 	//メッセージの作成
 	FGikoMessage := TGikoMessage.Create;
   FDonguriSys := TDonguriSys.Create;
+  // ワイドAPI有効無効
+  FWideAPIEnable := wapiUnknown;
 end;
 
 // *************************************************************************
@@ -3233,30 +3246,90 @@ end;
 }
 function TGikoSys.ExtructResID(ADateStr: String): String;
 var
-    stlist : TStringList;
+  stlist : TStringList;
+  i, j: Integer;
+  len: Integer;
 begin
-    Result := '';
-    if AnsiPos('id', AnsiLowerCase(ADateStr)) > 0 then begin
-        Result := Copy(ADateStr, AnsiPos('id', AnsiLowerCase(ADateStr)), Length(ADateStr));
-        if AnsiPos(' ', Result) > 0 then begin
-            Result := Copy(Result, 1, AnsiPos(' ', Result) - 1);
+  if ADateStr = ID_MAX_RES then begin
+    Result := ID_MAX_RES;   // 後で除外するためのマークとしてそのまま返す
+    Exit;
+  end;
+
+  Result := '';
+  stlist := TStringList.Create;
+  try
+    stList.Delimiter := ' ';
+    stList.DelimitedText := ADateStr;
+    for i := 0 to stList.Count - 1 do begin
+      len := Length(stList[i]);
+      for j := 1 to len do begin
+        if (Ord(stList[i][j]) and $80) = $80 then begin
+          len := j - 1;
+          break;
         end;
-        Result := ' ' + Result;
-    end else begin
-        stlist := TStringList.Create;
-        try
-            stList.Delimiter := ' ';
-            stList.DelimitedText := ADateStr;
-            // 日付 時刻 ID 他　と固定で考える
-            if (stList.Count >= 3) then begin
-                if Length(stList[3 - 1]) >= 7 then begin
-                    Result := stList[3 - 1];
-                end;
-            end;
-        finally
-            stList.Free;
-        end;
+      end;
+      if (len > 4) and
+         (AnsiPos('ID:', stList[i]) = 1) and
+         (stList[i][4] <> '?') then begin
+        Result := Copy(stList[i], 4, len - 3);
+        break;
+      end;
     end;
+  finally
+    stList.Free;
+  end;
+end;
+
+/// スレ内各ID毎の件数
+procedure TGikoSys.CountSameIDRes(ThreadItem: TThreadItem; var idCnt: TStringList; var idNo: TStringList);
+var
+	i: integer;
+	ReadList: TStringList;
+	Res: TResRec;
+	boardPlugIn : TBoardPlugIn;
+
+	procedure CountSameID(const Target: String);
+	var
+		idx: Integer;
+		id: String;
+	begin
+		id := ExtructResID(Target);
+    idNo.Add(id);
+		if id <> '' then begin
+			if idCnt.Find(id, idx) then
+				idCnt.Objects[idx] := TObject(Integer(idCnt.Objects[idx]) + 1)
+			else
+				idCnt.AddObject(id, TObject(1));
+		end;
+	end;
+begin
+	if (ThreadItem <> nil) and (ThreadItem.IsLogFile) then begin
+		idCnt.Sorted := True;
+		idCnt.CaseSensitive := True;
+		//if ThreadItem.IsBoardPlugInAvailable then begin
+		if ThreadItem.ParentBoard.IsBoardPlugInAvailable then begin
+			//===== プラグインによる表示
+			//boardPlugIn		:= ThreadItem.BoardPlugIn;
+			boardPlugIn := ThreadItem.ParentBoard.BoardPlugIn;
+
+			for i := 0 to threadItem.Count - 1 do begin
+				// レス
+				THTMLCreate.DivideStrLine(boardPlugIn.GetDat(DWORD( threadItem ), i + 1), @Res);
+				CountSameID(Res.FDateTime);
+			end;
+		end else begin
+			ReadList := TStringList.Create;
+			try
+				ReadList.LoadFromFile(ThreadItem.GetThreadFileName);
+				for i := 0 to ReadList.Count - 1 do begin
+					THTMLCreate.DivideStrLine(ReadList[i], @Res);
+					CountSameID(Res.FDateTime);
+				end;
+			finally
+				ReadList.Free;
+			end;
+		end;
+	end;
 end;
 
 
@@ -4230,11 +4303,27 @@ begin
   end;
 end;
 
-//! したらばのURLかどうか
+//! したらばのURLかどうか（この処理はプラグインに移動したい！！）
 function TGikoSys.IsShitarabaURL(url: String): Boolean;
 begin
   Result := (AnsiPos('http://jbbs.shitaraba.net/',  url) = 1) or
             (AnsiPos('https://jbbs.shitaraba.net/', url) = 1);
+end;
+
+//! まちBBSのURLかどうか（この処理はプラグインに移動したい！！）
+function TGikoSys.IsMachiBBSURL(url: String): Boolean;
+const
+  MACHI_DOMAIN    : String = 'machi.to';
+  MACHI_DOMAIN_OLD: String = '.machi.to';
+var
+  Protocol, Host, Path, Document, Port, Bookmark: string;
+begin
+  ParseURI(url, Protocol, Host, Path, Document, Port, Bookmark);
+
+  if Host = MACHI_DOMAIN then // 鯖名なし
+    Result := True
+  else                        // 鯖名あり（abcdefg.machi.to）
+    Result := Pos(MACHI_DOMAIN_OLD, Host) = Length(Host) - Length(MACHI_DOMAIN_OLD) + 1;
 end;
 
 //! 実際に使うURL取得（IPv6/v4確認と変換）
@@ -4379,6 +4468,26 @@ begin
     end;
   end;
 
+end;
+
+//! ワイドAPI有効無効取得
+function TGikoSys.GetWideAPIEnable: Boolean;
+var
+  dll: THandle;
+begin
+  if FWideAPIEnable = wapiUnknown then begin
+    FWideAPIEnable := wapiDisable;
+    dll := LoadLibrary('kernel32.dll');
+    if dll <> 0 then begin
+      try
+        if GetProcAddress(dll, 'GetModuleHandleW') <> nil then
+          FWideAPIEnable := wapiEnable;
+      finally
+        FreeLibrary(dll);
+      end;
+    end;
+  end;
+  Result := FWideAPIEnable = wapiEnable;
 end;
 
 
