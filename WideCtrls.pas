@@ -8,7 +8,7 @@ interface
 
 uses
   Messages, Windows, Controls, StdCtrls, Classes, SysUtils, StrUtils, CommCtrl,
-  TntStdCtrls, TntMenus, TntComCtrls, GikoListView, WideStrings;
+  TntStdCtrls, TntMenus, TntComCtrls, GikoListView, WideStrings, Clipbrd, GikoSystem;
 
 { TWideMemo }
 type
@@ -765,7 +765,12 @@ end;
 { クリップボードにShift-JIS文字列(数値文字参照を含む)をUTF-16文字列としてコピー }
 function SetClipboardFromEncAnsi(SrcText: AnsiString): Boolean;
 begin
-	Result := SetClipboard(EncAnsiToWideString(SrcText));
+  if GikoSys.WideAPIEnable then
+  	Result := SetClipboard(EncAnsiToWideString(SrcText))
+  else begin
+    Clipboard.AsText := SrcText;
+    Result := True;
+  end;
 end;
 
 end.
