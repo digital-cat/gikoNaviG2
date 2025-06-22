@@ -34,6 +34,8 @@ type
     CmbKW: TTntComboBox;
     MessageList: TTntListBox;
     Splitter1: TSplitter;
+    BtnClear: TButton;
+    Label2: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure BtnSearchClick(Sender: TObject);
     procedure ResultListDblClick(Sender: TObject);
@@ -50,6 +52,8 @@ type
     procedure ResultListColumnClick(Sender: TObject; Column: TListColumn);
     procedure ResultListCompare(Sender: TObject; Item1, Item2: TListItem;
       Data: Integer; var Compare: Integer);
+    procedure BtnClearClick(Sender: TObject);
+    procedure CmbKWKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     { Private êÈåæ }
     FSortIdx: Integer;
@@ -117,6 +121,12 @@ begin
     CmbKW.Items.Add(EncAnsiToWideString(GikoSys.Setting.ThrdSrchHistory.Strings[i]));
   FSortIdx := 0;
   FSortAsc := True;
+end;
+
+procedure TThreadSrch.BtnClearClick(Sender: TObject);
+begin
+  GikoSys.Setting.ThrdSrchHistory.Clear;
+  CmbKW.Items.Clear;
 end;
 
 procedure TThreadSrch.BtnSearchClick(Sender: TObject);
@@ -406,6 +416,24 @@ begin
         FormStyle := fsNormal;
 end;
 
+procedure TThreadSrch.CmbKWKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+var
+  idx: Integer;
+begin
+  case Key of
+    VK_RETURN:
+      BtnSearchClick(BtnSearch);
+    VK_DELETE:
+      if (ssCtrl in Shift) and (CmbKW.Text <> '') then begin
+        idx := CmbKW.Items.IndexOf(CmbKW.Text);
+        if idx >= 0 then
+          CmbKW.Items.Delete(idx);
+        CmbKW.Text := '';
+      end;
+  end;
+end;
+
 procedure TThreadSrch.SaveSetting;
 var
   i: Integer;
@@ -541,7 +569,8 @@ end;
 
 procedure TThreadSrch.FormResize(Sender: TObject);
 begin
-  BtnSearch.Left := PanelHead.Width - 6 - BtnSearch.Width;
+  BtnClear.Left  := PanelHead.Width - 6 - BtnClear.Width;
+  BtnSearch.Left := BtnClear.Left   - 6 - BtnSearch.Width;
   CmbKW.Width    := BtnSearch.Left  - 6 - CmbKW.Left;
   MemoHelp.Width := PanelHead.Width - 6 - MemoHelp.Left;
 end;

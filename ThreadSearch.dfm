@@ -45,7 +45,6 @@ object ThreadSrch: TThreadSrch
       BevelOuter = bvNone
       Constraints.MinWidth = 510
       TabOrder = 0
-      ExplicitWidth = 510
       object Label1: TLabel
         Left = 8
         Top = 21
@@ -53,8 +52,15 @@ object ThreadSrch: TThreadSrch
         Height = 12
         Caption = #12461#12540#12527#12540#12489'(&K)'
       end
+      object Label2: TLabel
+        Left = 130
+        Top = 26
+        Width = 187
+        Height = 12
+        Caption = '(Ctrl+Delete '#12391#23653#27508#12363#12425#36984#25246#34892#21066#38500')'
+      end
       object BtnSearch: TButton
-        Left = 420
+        Left = 330
         Top = 37
         Width = 75
         Height = 25
@@ -116,10 +122,20 @@ object ThreadSrch: TThreadSrch
       object CmbKW: TTntComboBox
         Left = 8
         Top = 39
-        Width = 406
+        Width = 321
         Height = 20
         ItemHeight = 12
         TabOrder = 0
+        OnKeyDown = CmbKWKeyDown
+      end
+      object BtnClear: TButton
+        Left = 411
+        Top = 37
+        Width = 84
+        Height = 25
+        Caption = #23653#27508#20840#28040'(&C)'
+        TabOrder = 7
+        OnClick = BtnClearClick
       end
     end
     object ResultList: TTntListView
@@ -164,10 +180,6 @@ object ThreadSrch: TThreadSrch
       OnColumnClick = ResultListColumnClick
       OnCompare = ResultListCompare
       OnDblClick = ResultListDblClick
-      ExplicitLeft = 29
-      ExplicitTop = 256
-      ExplicitWidth = 306
-      ExplicitHeight = 150
     end
     object MessageList: TTntListBox
       Left = 0
