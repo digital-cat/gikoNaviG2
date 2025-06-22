@@ -4904,49 +4904,41 @@ end;
 //! このレスのURLコピー（Query_STRING)
 procedure TGikoDM.konoURLQueryActionExecute(Sender: TObject);
 var
-    No : Integer;
-    ThreadItem : TThreadItem;
-    URL, Protocol, Host, Path, Document, Port, Bookmark : String;
+  No : Integer;
+  ThreadItem : TThreadItem;
+  URL, Protocol, Host, Path, Document, Port, Bookmark : String;
 begin
+  ThreadItem := GikoForm.KokoPopupThreadItem;
+  URL := ThreadItem.URL;
+  // 2ch・したらば・まちBBSは、レス番号をうまく処理してくれないので利用不可
+  if ThreadItem.ParentBoard.Is2ch or
+     GikoSys.IsShitarabaURL(URL) or
+     GikoSys.IsMachiBBSURL(URL) then
+    Exit;
+
 	No := GikoForm.KokoPopupMenu.Tag;
 	if No = 0 then Exit;
 
-    ThreadItem := GikoForm.KokoPopupThreadItem;
-    // 2chとしたらばは、レス番号をうまく処理してくれないので利用不可
-    if ThreadItem.ParentBoard.Is2ch or not (Pos('?', ThreadItem.URL) > 0) then begin
-        GikoSys.ParseURI(ThreadItem.URL, Protocol, Host, Path, Document, Port, Bookmark);
-        URL := Protocol + '://' + Host + '/test/read.cgi?bbs=' + ThreadItem.ParentBoard.BBSID
-            + '&key=' + ChangeFileExt(ThreadItem.FileName, '') + '&st=' + IntToStr(No) + '&to=' + IntToStr(No);
-    end else begin
-        URL := ThreadItem.URL;
-        // まちBBS
-        if Pos('&LAST=', URL) > 0 then begin
-            URL := Copy(URL, 1, Pos('&LAST=', URL) - 1);
-            URL := URL + '&START=' + IntToStr(No) + '&END=' + IntToStr(No);
-        end;
-        // その他外部板
-        if Pos('&ls=', URL) > 0 then begin
-            URL := Copy(URL, 1, Pos('&ls=', URL) - 1);
-            URL := URL + '&st=' + IntToStr(No) + '&to=' + IntToStr(No);
-        end;
+  if not (Pos('?', URL) > 0) then begin
+    GikoSys.ParseURI(URL, Protocol, Host, Path, Document, Port, Bookmark);
+    URL := Protocol + '://' + Host + '/test/read.cgi?bbs=' + ThreadItem.ParentBoard.BBSID
+          + '&key=' + ChangeFileExt(ThreadItem.FileName, '');
+  end else if Pos('&ls=', URL) > 0 then
+    // その他外部板
+    URL := Copy(URL, 1, Pos('&ls=', URL) - 1);
 
-    end;
-    Clipboard.SetTextBuf( PChar(URL) );
+  URL := URL + Format('&st=%d&to=%d', [No, No]);
+
+  Clipboard.SetTextBuf( PChar(URL) );
 end;
 //! このレスのURLコピー（Query_STRING）の利用チェック
 procedure TGikoDM.konoURLQueryActionUpdate(Sender: TObject);
-//const
-//	LIVEDOOR_URL = 'http://jbbs.shitaraba.net/';
 begin
-    // 2chとしたらばは利用できないようにする（うまくレス指定できないので）
-    konoURLQueryAction.Enabled := false;
-    if (GikoForm.KokoPopupThreadItem <> nil) then begin
-        konoURLQueryAction.Enabled := not GikoForm.KokoPopupThreadItem.ParentBoard.Is2ch;
-        if konoURLQueryAction.Enabled then begin
-            //konoURLQueryAction.Enabled := not (Pos(LIVEDOOR_URL, GikoForm.KokoPopupThreadItem.URL) = 1);
-            konoURLQueryAction.Enabled := not GikoSys.IsShitarabaURL(GikoForm.KokoPopupThreadItem.URL);
-        end;
-    end;
+  // 5ch・したらば・まちBBSは利用不可
+  konoURLQueryAction.Enabled := (GikoForm.KokoPopupThreadItem <> nil) and
+                                (not GikoForm.KokoPopupThreadItem.ParentBoard.Is2ch) and
+                                (not GikoSys.IsShitarabaURL(GikoForm.KokoPopupThreadItem.URL)) and
+                                (not GikoSys.IsMachiBBSURL(GikoForm.KokoPopupThreadItem.URL));
 end;
 //! ポップアップメニュー設定ダイアログを開く
 procedure TGikoDM.PopupMenuSettingActionExecute(Sender: TObject);

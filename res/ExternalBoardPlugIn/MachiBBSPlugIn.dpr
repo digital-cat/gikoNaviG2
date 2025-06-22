@@ -13,6 +13,7 @@ uses
   DateUtils,
   Dialogs,
   IdURI,
+  StrUtils,
   PlugInMain in 'PlugInMain.pas',
   ThreadItem in 'ThreadItem.pas',
   BoardItem in 'BoardItem.pas',
@@ -43,6 +44,7 @@ type
 		function	GetHeader( inOptionalHeader : string ) : string;
 		function	GetFooter( inOptionalFooter : string ) : string;
 		function	GetBoardURL : string;
+    function  SplitURL(var protocol: String; var host: String; var bbs: String; var key: String): Boolean;
 
 //		procedure	To2chDat( ioHTML : TStringList; inStartNo : Integer = 1 );
 		procedure	To2chDat2( var ioDat: TStringList );
@@ -87,12 +89,14 @@ type
 const
 	LOG_DIR						= 'MachiBBS\';
 	SUBJECT_NAME			= 'subject.txt';
+  PROTOCOL          = 'https';
+  DOMAIN            = 'machi.to';
 
 	PLUGIN_NAME				= 'MachiBBSPlugIn';
 	MAJOR_VERSION			= 1;
 	MINOR_VERSION			= 1;
 	RELEASE_VERSION		= 'beta';
-	REVISION_VERSION	= 28;
+	REVISION_VERSION	= 29;
 
 	SYNCRONIZE_MENU_CAPTION	= 'まちBBS板更新';
 
@@ -105,7 +109,28 @@ var
 // =========================================================================
 // 雑用関数
 // =========================================================================
+{
+procedure DebugLog(text: String);
+var
+  dst: TextFile;
+  path: String;
+begin
+	path := 'd:\log\MachiBBSPlugIn.log';
 
+  try
+    AssignFile(dst, path);
+    if FileExists(path) then
+      Append(dst)
+    else
+      Rewrite(dst);
+
+		Writeln(dst, FormatDateTime('YYYY/MM/DD HH:NN:SS', Now) + ' ' + text);
+
+  finally
+		CloseFile(dst);
+  end;
+end;
+}
 // *************************************************************************
 // テンポラリなパスの取得
 // *************************************************************************
@@ -300,7 +325,7 @@ const
 	BBS_HOST		= 'machi.to';
 	BBS_HOST2		= 'machibbs.com';
 	THREAD_MARK	= '/bbs/read.pl';
-    THREAD_MARK2= '/bbs/read.cgi';
+  THREAD_MARK2= '/bbs/read.cgi';
 begin
 	try
 		// ホスト名が machi.to で終わる場合は受け付けるようにしている
@@ -311,10 +336,10 @@ begin
 			foundPos := AnsiPos( BBS_HOST, uri.Host );
 			if (foundPos > 0) and (Length( uri.Host ) - foundPos + 1 = Length( BBS_HOST )) then begin
 				foundPos := Pos( THREAD_MARK, inURL );
-                if (foundPos = 0) then begin
-                    // 新URL対応
-                    foundPos := Pos( THREAD_MARK2, inURL );
-                end;
+        if (foundPos = 0) then begin
+          // 新URL対応
+          foundPos := Pos( THREAD_MARK2, inURL );
+        end;
 				if foundPos > 0 then
 					Result := atThread
 				else if (uriList.Count > 1) and (uri.Path <> '/') then	// 最後が '/' で閉められてるなら 3
@@ -322,23 +347,22 @@ begin
 				else
 					Result := atBBS;
 			end else begin
-                foundPos := AnsiPos( BBS_HOST2, uri.Host );
-                if (foundPos > 0) and (Length( uri.Host ) - foundPos + 1 = Length( BBS_HOST2 )) then begin
-                    foundPos := Pos( THREAD_MARK, inURL );
-                    if (foundPos = 0) then begin
-                        // 新URL対応
-                        foundPos := Pos( THREAD_MARK2, inURL );
-                    end;
-                    if foundPos > 0 then
-                        Result := atThread
-                    else if (uriList.Count > 1) and (uri.Path <> '/') then	// 最後が '/' で閉められてるなら 3
-                        Result := atBoard
-                    else
-                        Result := atBBS;
-                end else begin
-
-                    Result := atNoAccept;
-                end;
+        foundPos := AnsiPos( BBS_HOST2, uri.Host );
+        if (foundPos > 0) and (Length( uri.Host ) - foundPos + 1 = Length( BBS_HOST2 )) then begin
+          foundPos := Pos( THREAD_MARK, inURL );
+          if (foundPos = 0) then begin
+            // 新URL対応
+            foundPos := Pos( THREAD_MARK2, inURL );
+          end;
+          if foundPos > 0 then
+            Result := atThread
+          else if (uriList.Count > 1) and (uri.Path <> '/') then	// 最後が '/' で閉められてるなら 3
+            Result := atBoard
+          else
+            Result := atBBS;
+        end else begin
+          Result := atNoAccept;
+        end;
 			end;
 		finally
 			uri.Free;
@@ -381,22 +405,21 @@ var
 	uri     : TIdURI;
 	uriList : TStringList;
 	URL     : String;
-  urlSub  : String;
+  bbs     : String;
 const
 	THREAD_MARK	= '/bbs/read.pl';
 	THREAD_MARK2= '/bbs/read.cgi';
-  HOST21 = '.machi.to';
-  HOST22 = 'machi.to';
 begin
-	URL := string(inURL);
+  URL := String(inURL);
+  uri := TIdURI.Create( URL );
+  if (uri.Host <> DOMAIN) or (uri.Protocol <> PROTOCOL) then begin
+    uri.Protocol := PROTOCOL;
+    uri.Host := DOMAIN;
+    URL := uri.GetFullURI;
+  end;
+  uriList := TStringList.Create;
 
 	if (AnsiPos(THREAD_MARK, URL) > 0) or (AnsiPos(THREAD_MARK2, URL) > 0) then begin
-
-		if Copy( inURL, Length( inURL ), 1 ) = '/' then
-			uri := TIdURI.Create( URL )
-		else
-			uri := TIdURI.Create( URL + '/' );
-		uriList := TStringList.Create;
 
 		try
 
@@ -405,36 +428,29 @@ begin
 					['&'], [],
 					Copy( uri.Params, AnsiPos( '?', uri.Params ) + 1, Length( uri.Params ) ),uriList );
 				// http://hokkaido.machi.to/bbs/read.pl?BBS=hokkaidou&KEY=1061764446
-				// http://hokkaido.machi.to/hokkaidou/
-				URL := uri.Protocol + '://' + uri.Host + '/' + uriList.Values[ 'BBS' ] + '/';
-				outURL := CreateResultString(URL);
+				// http://machi.to/hokkaidou/
+				bbs := uriList.Values[ 'BBS' ];
 
 			end else begin
 				// http://kanto.machi.to/bbs/read.cgi/kana/1215253035/l50
-				// http://kanto.machi.to/kana/
+				// http://machi.to/kana/
 				uriList.Delimiter := '/';
 				uriList.DelimitedText  := uri.Path;
-				URL := '';
-				if (uri.Host = HOST22) and (uriList.Count >= 4) then begin		// ホスト名省略（ドメイン名のみ）
-					// URLの分かる部分
-					urlSub := HOST21 + '/' + uriList[3] + '/';
-					// ホスト名のある板URLに変換
-					URL := CompleteBoardURL(urlSub);
-				end;
-				if URL = '' then begin
-					URL := uri.Protocol + '://' + uri.Host + '/';
-					if (uriList.Count >= 4) then begin
-						URL := URL + uriList[3] + '/';
-					end;
-				end;
-				outURL := CreateResultString(URL);
+        if uriList.Count >= 4 then
+  				bbs := uriList[3];
 			end;
+
+      URL := PROTOCOL + '://' + DOMAIN + '/' + bbs + '/';
+      outURL := CreateResultString(URL);
+
 		finally
 			uri.Free;
 			uriList.Free;
 		end;
 
 	end else begin
+    if (Pos('?', URL) < 1) and (URL[Length(URL)] <> '/') then
+      URL := URL + '/';
     outURL := CreateResultString(URL);
 	end;
 
@@ -479,9 +495,11 @@ constructor TMachiBBSThreadItem.Create(
 	inInstance	: DWORD
 );
 var
-	uri					: TIdURI;
-	uriList			: TStringList;
 	FilePath		: String;
+  protocol    : String;
+  host        : String;
+  bbs         : String;
+  key         : String;
 begin
 
 	inherited;
@@ -497,22 +515,13 @@ begin
 	//FFilePath			:= '';
 	FIsTemporary	:= False;
 	FDat					:= nil;
-	URL						:= ReadURL + '&LAST=50';
+	URL						:= ReadURL + 'l50';
 
-	uri			:= TIdURI.Create( URL );
-	uriList	:= TStringList.Create;
-	try
-		// http://hokkaido.machi.to/bbs/read.pl?BBS=hokkaidou&KEY=1061764446&LAST=50
-		ExtractHttpFields(
-			['&'], [],
-			Copy( uri.Params, AnsiPos( '?', uri.Params ) + 1, Length( uri.Params ) ), uriList );
-		FileName	:= uriList.Values[ 'KEY' ] + '.dat';
-		FilePath	:= MyLogFolder + uriList.Values[ 'BBS' ] + '\' + uriList.Values[ 'KEY' ] + '.dat';
-		IsLogFile	:= FileExists( FilePath );
-	finally
-		uri.Free;
-		uriList.Free;
-	end;
+  SplitURL(protocol, host, bbs, key);
+
+  FileName	:= key + '.dat';
+  FilePath	:= MyLogFolder + bbs + '\' + FileName;
+  IsLogFile	:= FileExists( FilePath );
 
 end;
 
@@ -533,6 +542,51 @@ begin
 end;
 
 // *************************************************************************
+// URLからBBS及びKEYの値を抽出
+// *************************************************************************
+function TMachiBBSThreadItem.SplitURL(var protocol: String; var host: String; var bbs: String; var key: String): Boolean;
+var
+	uri			: TIdURI;
+	uriList	: TStringList;
+  i       : Integer;
+begin
+	uri			:= TIdURI.Create( URL );
+	uriList := TStringList.Create;
+
+  try
+    if (Pos('?', URL) > 0) and (Pos('&', uri.Params) > 0) and (Pos('=', uri.Params) > 0) then begin
+      ExtractHttpFields(
+        ['&'], [],
+        Copy( uri.Params, AnsiPos( '?', uri.Params ) + 1, Length( uri.Params ) ), uriList );
+      bbs := uriList.Values[ 'BBS' ];
+      key := uriList.Values[ 'KEY' ];
+    end else begin
+      uriList.Delimiter := '/';
+      uriList.DelimitedText  := uri.Path;
+      for i := 0 to uriList.Count - 1 do begin
+        if uriList[i] = 'read.cgi' then begin
+          if (i + 2) < uriList.Count then begin
+            bbs := uriList[i + 1];
+            key := uriList[i + 2];
+          end;
+          Break;
+        end;
+      end;
+    end;
+
+    protocol := MachiBBSPlugIn.PROTOCOL; // uri.Protocol;
+    host     := MachiBBSPlugIn.DOMAIN;   // uri.Host;
+
+    Result := (bbs <> '') and (key <> '');
+
+  finally
+		uri.Free;
+		uriList.Free;
+  end;
+
+end;
+
+// *************************************************************************
 // 指定した URL のスレッドのダウンロードを指示された
 // *************************************************************************
 function TMachiBBSThreadItem.Download : TDownloadState;
@@ -545,21 +599,24 @@ var
 	content				: TStringList;
 	responseCode	: Longint;
 	logStream			: TFileStream;
-	uri						: TIdURI;
-	uriList				: TStringList;
 	datURL				: string;
 //	foundPos			: Integer;
 	FilePath			: String;
+  protocol      : String;
+  host          : String;
+  bbs           : String;
+  key           : String;
+
 	procedure	downAndParse;
 	begin
 		responseCode := InternalDownload( PChar( datURL ), modified, tmp, 0 );
 
 		try
 			if responseCode = 200 then begin
-                // APIではdat形式で返ってくる
-                content.Text := string( tmp );
-                if (content.Count > 0) and (Pos(RES_ERROR, content.Strings[0]) <> 1) then
-                    To2chDat2( content );   // 形式変換
+        // APIではdat形式で返ってくる
+        content.Text := string( tmp );
+        if (content.Count > 0) and (Pos(RES_ERROR, content.Strings[0]) <> 1) then
+            To2chDat2( content );   // 形式変換
 (* 旧仕様（HTMLで受信しdatに変換する）
 				downResult	:= TStringList.Create;
 				try
@@ -600,21 +657,17 @@ var
 begin
 
 	Result := dsError;
-
-	uri			:= TIdURI.Create( URL );
-	uriList := TStringList.Create;
 	content	:= TStringList.Create;
 	try
-		ExtractHttpFields(
-			['&'], [],
-			Copy( uri.Params, AnsiPos( '?', uri.Params ) + 1, Length( uri.Params ) ), uriList );
-		FileName := uriList.Values[ 'KEY' ] + '.dat';
+    SplitURL(protocol, host, bbs, key);
+
+    FileName := key + '.dat';
 		if MyLogFolder = '' then begin
 			// どこに保存していいのか分からないので一時ファイルに保存
 			FilePath 			:= TemporaryFile;
 			FIsTemporary	:= True;
 		end else begin
-			FilePath	:= MyLogFolder + uriList.Values[ 'BBS' ] + '\' + uriList.Values[ 'KEY' ] + '.dat';
+			FilePath	:= MyLogFolder + bbs + '\' + FileName;
 			FIsTemporary	:= False;
 		end;
 
@@ -624,11 +677,11 @@ begin
 		// 独自にダウンロードやフィルタリングを行わない場合は
 		// InternalDownload に任せることが出来る
 		modified	:= LastModified;
-        // APIのURL
-        datURL := uri.Protocol + '://' + uri.Host + '/bbs/offlaw.cgi/2/' +
-                    uriList.Values[ 'BBS' ] + '/' + uriList.Values[ 'KEY' ] + '/';
+    // APIのURL
+    datURL := protocol + '://' + host + '/bbs/offlaw.cgi/2/' +
+                    bbs + '/' + key + '/';
 		if (Count > 0) then
-            datURL := datURL + IntToStr( Count + 1 ) + '-';     // 新着のみ取得
+      datURL := datURL + IntToStr( Count + 1 ) + '-';     // 新着のみ取得
 (* 旧形式
 		if Count = 0 then
 			// 1～
@@ -688,8 +741,6 @@ begin
 			Result := dsNotModify;
 		end;
 	finally
-		uri.Free;
-		uriList.Free;
 		content.Free;
 	end;
 
@@ -707,36 +758,29 @@ var
 	postURL				: string;
 	postData			: string;
 	postResult		: PChar;
-	uri						: TIdURI;
-	uriList				: TStringList;
+  protocol      : String;
+  host          : String;
+  bbs           : String;
+  key           : String;
 begin
 
-	uri			:= TIdURI.Create( URL );
-	uriList	:= TStringList.Create;
-	try
-		ExtractHttpFields(
-			['&'], [],
-			Copy( uri.Params, AnsiPos( '?', uri.Params ) + 1, Length( uri.Params ) ), uriList );
+  SplitURL(protocol, host, bbs, key);
 
-		postURL		:= uri.Protocol + '://' + uri.Host + '/bbs/write.cgi';
-		postData	:=
-			'NAME='			+ HttpEncode( inName ) +
-			'&MAIL='		+ HttpEncode( inMail ) +
-			'&MESSAGE='	+ HttpEncode( inMessage ) +
-			'&BBS='			+ uriList.Values[ 'BBS' ] +
-			'&KEY='			+ uriList.Values[ 'KEY' ] +
-			'&TIME='		+ IntToStr( DateTimeToUnix( Now ) ) +
-			'&submit='	+ HttpEncode( '書き込む' );
+  postURL		:= protocol + '://' + host + '/bbs/write.cgi';
+  postData	:=
+    'NAME='			+ HttpEncode( inName ) +
+    '&MAIL='		+ HttpEncode( inMail ) +
+    '&MESSAGE='	+ HttpEncode( inMessage ) +
+    '&BBS='			+ bbs +
+    '&KEY='			+ key +
+    '&TIME='		+ IntToStr( DateTimeToUnix( Now ) ) +
+    '&submit='	+ HttpEncode( '書き込む' );
 
-		// 独自に通信しない場合は InternalPost に任せることが出来る
-		InternalPost( PChar( postURL ), PChar( postData ),PChar(URL), postResult );
-		DisposeResultString( postResult );
+  // 独自に通信しない場合は InternalPost に任せることが出来る
+  InternalPost( PChar( postURL ), PChar( postData ),PChar(URL), postResult );
+  DisposeResultString( postResult );
 
-		Result := dsComplete
-	finally
-		uri.Free;
-		uriList.Free;
-	end;
+  Result := dsComplete
 
 end;
 
@@ -776,10 +820,8 @@ function TMachiBBSThreadItem.GetDat(
 	inNo		: Integer		// 要求されたレス番号
 ) : string;						// ２ちゃんねるのDat形式
 var
-	//res: string;
 	tmp: PChar;
 begin
-	//Result	:= '';
 	// 独自にフィルタリングを行わない場合は
 	LoadDat;
 	if (FDat = nil) or (inNo - 1 < 0 ) or (inNo - 1 >= FDat.Count)  then begin
@@ -850,37 +892,33 @@ const
   HOST21 = '.machi.to';
   HOST22 = 'machi.to';
 var
-	uri						: TIdURI;
-	uriList				: TStringList;
-	tmp: PChar;
-  urlFull: String;
-  urlSub: String;
+	tmp           : PChar;
+  urlFull       : String;
+  urlSub        : String;
+  protocol      : String;
+  host          : String;
+  bbs           : String;
+  key           : String;
 begin
-    tmp := nil;
-	if Copy( URL, Length( URL ), 1 ) = '/' then
-		uri := TIdURI.Create( URL )
-	else
-		uri := TIdURI.Create( URL + '/' );
-	uriList := TStringList.Create;
+  tmp := nil;
+
 	try
-		ExtractHttpFields(
-			['&'], [],
-			Copy( uri.Params, AnsiPos( '?', uri.Params ) + 1, Length( uri.Params ) ), uriList );
-		FileName := uriList.Values[ 'KEY' ] + '.dat';
+
+    SplitURL(protocol, host, bbs, key);
+
+		FileName := key + '.dat';
 		// http://hokkaido.machi.to/bbs/read.pl?BBS=hokkaidou&KEY=1061764446
 		// http://hokkaido.machi.to/hokkaidou/
-		urlSub := uri.Host + '/' + uriList.Values[ 'BBS' ] + '/';
-    if uri.Host = HOST22 then
+		urlSub := host + '/' + bbs + '/';
+    if host = HOST22 then
 			urlFull := CompleteBoardURL(urlSub);
     if urlFull <> '' then
       tmp := CreateResultString(urlFull)
     else
-			tmp := CreateResultString(uri.Protocol + '://' + urlSub);
+			tmp := CreateResultString(protocol + '://' + urlSub);
 		Result := string(tmp);
 	finally
 		DisposeResultString(tmp);
-		uri.Free;
-		uriList.Free;
 	end;
 
 end;
@@ -1123,32 +1161,32 @@ begin
 		try
 			ExtractHttpFields( ['&'], [], Copy( URL, foundPos + 1, MaxInt ), uriList );
 			Result :=
-				uri.Protocol + '://' + uri.Host + '/bbs/read.cgi?' +
-				'BBS=' + uriList.Values[ 'BBS' ] + '&KEY=' + uriList.Values[ 'KEY' ];
+				PROTOCOL + '://' + DOMAIN + '/bbs/read.cgi/' +
+        uriList.Values[ 'BBS' ] + '/' + uriList.Values[ 'KEY' ] + '/';
 		finally
 			uri.Free;
 			uriList.Free;
 		end;
 	end else begin
-        // 新形式 ?
-        foundPos := AnsiPos(THREAD_MARK2, URL);
-    	if (foundPos > 0) then begin
-            uri := TIdURI.Create( URL );
-            uriList := TStringList.Create;
-            try
-                uriList.Delimiter := '/';
-                uriList.DelimitedText  := uri.Path;
-                if (uriList.Count >= 5) then begin
-    			    Result :=
-	    			    uri.Protocol + '://' + uri.Host + '/bbs/read.cgi?' +
-		    		    'BBS=' + uriList[3] + '&KEY=' + uriList[4];
-                end;
-            finally
-    			uri.Free;
-	    		uriList.Free;
-            end;
+    // 新形式 ?
+    foundPos := AnsiPos(THREAD_MARK2, URL);
+    if (foundPos > 0) then begin
+      uri := TIdURI.Create( URL );
+      uriList := TStringList.Create;
+      try
+        uriList.Delimiter := '/';
+        uriList.DelimitedText  := uri.Path;
+        if (uriList.Count >= 5) then begin
+          Result :=
+            PROTOCOL + '://' + DOMAIN + '/bbs/read.cgi/' +
+            uriList[3] + '/' + uriList[4] + '/';
         end;
+      finally
+        uri.Free;
+        uriList.Free;
+      end;
     end;
+  end;
 
 end;
 
@@ -1207,7 +1245,7 @@ begin
 	FilePath			:= '';
 	FIsTemporary	:= False;
 	FDat					:= nil;
-    Is2ch			:= False;
+  Is2ch         := False;
 
 	uri			:= TIdURI.Create( SubjectURL );
 	uriList	:= TStringList.Create;
@@ -1255,7 +1293,7 @@ var
 	responseCode	: Longint;
 	uri						: TIdURI;
 	uriList				: TStringList;
-    dlURL           : String;
+  dlURL         : String;
 begin
 
 	Result := dsError;
@@ -1269,12 +1307,12 @@ begin
 	end;
 	FDat		:= TStringList.Create;
 	uri			:= TIdURI.Create( SubjectURL );
+  uri.Host := DOMAIN;
 	uriList	:= TStringList.Create;
 	// 独自にダウンロードやフィルタリングを行わない場合は
 	// InternalDownload に任せることが出来る
 	modified			:= LastModified;
-    dlURL       := SubjectURL2;
-//	responseCode	:= InternalDownload( PChar( uri.URI ), modified, downResult );
+  dlURL         := SubjectURL2;
 	responseCode	:= InternalDownload( PChar( dlURL ), modified, downResult );
 	try
 		if responseCode = 200 then begin
@@ -1294,8 +1332,8 @@ begin
 				ForceDirectoriesEx( Copy( FilePath, 1, LastDelimiter( '\', FilePath ) ) );
 
 				FDat.Text := string( downResult );
-                // 形式変換(Ver.2->Ver.1)
-                ChangeSubjectFormat(FDat);
+        // 形式変換(Ver.2->Ver.1)
+        ChangeSubjectFormat(FDat);
 				// 保存
 				FDat.SaveToFile( FilePath );
 
@@ -1353,15 +1391,13 @@ var
 	uri						: TIdURI;
 	uriList				: TStringList;
 begin
-
 	uri			:= TIdURI.Create( URL );
 	uriList	:= TStringList.Create;
 	try
-		ExtractHttpFields(
-			['&'], [],
-			Copy( uri.Params, AnsiPos( '?', uri.Params ) + 1, Length( uri.Params ) ), uriList );
+    uriList.Delimiter := '/';
+    uriList.DelimitedText  := uri.Path;
 
-		postURL		:= uri.Protocol + '://' + uri.Host + '/bbs/write.cgi';
+		postURL		:= PROTOCOL + '://' + DOMAIN + '/bbs/write.cgi';
 		postData	:=
 			'SUBJECT='	+ HttpEncode( inSubject ) +
 			'&NAME='		+ HttpEncode( inName ) +
@@ -1404,11 +1440,11 @@ begin
 	uriList	:= TStringList.Create;
 	try
 		try
-			// http://hokkaido.machi.to/hokkaidou/
-			// http://hokkaido.machi.to/bbs/read.pl?BBS=hokkaidou&KEY=1061764446&LAST=50
-			ExtractHttpFields( ['/', '?'], [], uri.Path, uriList );
-			threadURL	:= uri.Protocol + '://' + uri.Host + '/bbs/read.cgi?' +
-				'BBS=' + uriList[ 1 ] + '&KEY=' + inFileName + '&LAST=50';
+      // https://machi.to/bbs/read.cgi/tokyo/1748319182/l50
+      uriList.Delimiter := '/';
+      uriList.DelimitedText  := uri.Path;
+			threadURL	:= PROTOCOL + '://' + DOMAIN + '/bbs/read.cgi/' +
+              				uriList[ 1 ] + '/' + inFileName + '/l50';
 			Result		:= threadURL;
 		finally
 			uri.Free;
@@ -1470,15 +1506,10 @@ begin
 	uri			:= TIdURI.Create( URL );
 	uriList	:= TStringList.Create;
 	try
-		if uri.Document <> SUBJECT_NAME then begin
-			if Copy( URL, Length( URL ), 1 ) = '/' then
-				Result := URL + SUBJECT_NAME
-			else
-				Result := URL + '/' + SUBJECT_NAME;
-		end else begin
-			// ここには来ないと思うけど
-			Result := URL;
-		end;
+    Result := PROTOCOL + '://' + DOMAIN + uri.Path;
+    if Result[Length(Result)] <> '/' then
+      Result := Result + '/';
+    Result := Result + SUBJECT_NAME;
 	finally
 		uri.Free;
 		uriList.Free;
@@ -1496,7 +1527,7 @@ begin
 
 	uri := TIdURI.Create( URL );
 	try
-        Result := uri.Protocol + '://' + uri.Host + '/bbs/offlaw.cgi/2' + uri.Path;
+    Result := PROTOCOL + '://' + DOMAIN + '/bbs/offlaw.cgi/2' + uri.Path;
 	finally
 		uri.Free;
 	end;
