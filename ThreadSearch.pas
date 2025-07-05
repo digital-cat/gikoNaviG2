@@ -7,7 +7,8 @@ uses
   Dialogs, ComCtrls, ExtCtrls, StdCtrls, IdBaseComponent, IdComponent,
   IdTCPConnection, IdTCPClient, IdHTTP, Menus, Clipbrd, IniFiles,
   OleCtrls, SHDocVw, IdIOHandler, IdIOHandlerSocket, IdIOHandlerStack, IdSSL,
-  IdSSLOpenSSL, StrUtils, TntComCtrls, TntStdCtrls;
+  IdSSLOpenSSL, StrUtils, TntComCtrls, TntStdCtrls, IdCTypes,
+  IdSSLOpenSSLHeaders;
 
 type
   TColumnType = (ctString, ctInteger, ctDecimal);
@@ -66,6 +67,7 @@ type
     function DecComp(text1, text2: String): Integer;
     function atoi(str: String; var numLen: Integer): Integer;
     function atof(str: String): Double;
+    procedure SetClipboardText(text: WideString);
   public
     { Public êÈåæ }
     procedure SaveSetting;
@@ -480,15 +482,23 @@ end;
 
 procedure TThreadSrch.MenuCopyThreadClick(Sender: TObject);
 begin
-    if (ResultList.Selected <> nil) then
-        Clipboard.AsText := ResultList.Selected.SubItems[IDX_TTL];
+  if (ResultList.Selected <> nil) then
+    SetClipboardText(ResultList.Selected.SubItems[IDX_TTL]);
 end;
 
 procedure TThreadSrch.MenuCopyThrURLClick(Sender: TObject);
 begin
-    if (ResultList.Selected <> nil) then
-        Clipboard.AsText := ResultList.Selected.SubItems[IDX_TTL] + #13#10
-                          + ResultList.Selected.SubItems[IDX_URL];
+  if (ResultList.Selected <> nil) then
+    SetClipboardText(ResultList.Selected.SubItems[IDX_TTL] + #13#10
+                   + ResultList.Selected.SubItems[IDX_URL]);
+end;
+
+procedure TThreadSrch.SetClipboardText(text: WideString);
+begin
+  if Win32Platform = VER_PLATFORM_WIN32_NT then
+    SetClipboard(text)
+  else
+    Clipboard.AsText := text;
 end;
 
 procedure TThreadSrch.PopupMenuPopup(Sender: TObject);
