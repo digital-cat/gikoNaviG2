@@ -7052,7 +7052,8 @@ begin
 
 			Header := Header + Body;
 
-			Clipboard.SetTextBuf( PChar(Header) );
+			//Clipboard.SetTextBuf( PChar(Header) );
+			SetClipboardFromEncAnsi(Header);
 		end;
 	end;
 end;
