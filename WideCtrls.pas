@@ -765,7 +765,7 @@ end;
 { クリップボードにShift-JIS文字列(数値文字参照を含む)をUTF-16文字列としてコピー }
 function SetClipboardFromEncAnsi(SrcText: AnsiString): Boolean;
 begin
-  if GikoSys.WideAPIEnable then
+  if Win32Platform = VER_PLATFORM_WIN32_NT then
   	Result := SetClipboard(EncAnsiToWideString(SrcText))
   else begin
     Clipboard.AsText := SrcText;
