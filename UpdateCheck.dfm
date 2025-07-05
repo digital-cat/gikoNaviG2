@@ -340,6 +340,23 @@ object UpdateCheckForm: TUpdateCheckForm
     TabOrder = 4
     OnClick = CloseButtonClick
   end
+  object Panel4: TPanel
+    Left = 14
+    Top = 350
+    Width = 427
+    Height = 22
+    BevelOuter = bvLowered
+    Caption = #8251'OpenSSL 1 '#29256#12399#65301#12385#12419#12435#12397#12427#12395#25509#32154#12391#12365#12394#12356#21487#33021#24615#12364#12354#12426#12414#12377#12290
+    Color = clWhite
+    Font.Charset = SHIFTJIS_CHARSET
+    Font.Color = clRed
+    Font.Height = -12
+    Font.Name = #65325#65331' '#65328#12468#12471#12483#12463
+    Font.Style = [fsBold]
+    ParentBackground = False
+    ParentFont = False
+    TabOrder = 5
+  end
   object IdHTTP: TIdHTTP
     IOHandler = IdSSLIOHandlerSocketOpenSSL
     ProxyParams.BasicAuthentication = False

@@ -86,6 +86,7 @@ type
     Label16: TLabel;
     NewName3Label: TLabel;
     Panel3: TPanel;
+    Panel4: TPanel;
     procedure FormCreate(Sender: TObject);
     procedure CancelBitBtnClick(Sender: TObject);
     procedure CheckButtonClick(Sender: TObject);
@@ -405,7 +406,10 @@ begin
   info := '新しいギコナビをダウンロードしますか？' + #10
         + Format('　OpenSSL %d 版', [newVer.FOpenSSL]);
   if not newVer.IsFormal then
-    info := info + '（人柱版）'; 
+    info := info + '（人柱版）';
+
+  if newVer.FOpenSSL = 1 then
+    info := info + #10#10 + '注意：OpenSSL 1 版は５ちゃんねるに接続できない可能性があります！';
 
 	if QueryYesNo(PChar(info), '更新確認') <> ID_YES then
   	Exit;
