@@ -41,8 +41,6 @@ type
 	TGikoMessageIcon = (gmiOK, gmiSAD, gmiNG, gmiWhat, gmiNone);
 	//! URLオープンブラウザタイプ
 	TGikoBrowserType = (gbtIE, gbtUserApp, gbtAuto);
-  //! ワイドAPI有効状況
-  TWideAPIEnable = (wapiEnable, wapiDisable, wapiUnknown);
 
 
 	TStrTokSeparator = set of Char;
@@ -133,13 +131,10 @@ type
 		FGikoMessage: TGikoMessage;
     FBelib: TBelib;
     FDonguriSys: TDonguriSys;
-    FWideAPIEnable: TWideAPIEnable;
 		//! あるセパレータで区切られた文字列からｎ番目の文字列を取り出す
 		function ChooseString(const Text, Separator: string; Index: integer): string;
     //! 一時ファイルからの復旧
     procedure RestoreThreadData(Board: TBoard);
-    //! ワイドAPI有効無効取得
-    function GetWideAPIEnable: Boolean;
 	public
 		{ Public 宣言 }
 		FAbon : TAbon;
@@ -321,8 +316,6 @@ type
     function GetActualHost(host: String; var modified: Boolean): String;
   	//! UTF-8文字列をShift-JIS文字列へ変換
     function UTF8toSJIS(pUtf8: PChar): String;
-    //! ワイドAPI有効無効取得
-    property WideAPIEnable: Boolean read GetWideAPIEnable;
 
 	end;
 
@@ -373,7 +366,7 @@ const
 		  'ProductVersion',
 		  'SpecialBuild');
 
-	UAVers: array[0..37] of TUAVer = (
+	UAVers: array[0..38] of TUAVer = (
       (BetaVer:  0; FileVer: ''),
       (BetaVer: 74; FileVer: '1.75.0.881'),
       (BetaVer: 74; FileVer: '1.75.0.883'),
@@ -411,7 +404,8 @@ const
       (BetaVer: 75; FileVer: '1.76.0.916'),
       (BetaVer: 75; FileVer: '1.76.0.917'),
       (BetaVer: 75; FileVer: '1.76.0.918'),
-      (BetaVer: 75; FileVer: '1.76.0.919')
+      (BetaVer: 75; FileVer: '1.76.0.919'),
+      (BetaVer: 75; FileVer: '1.76.0.920')
 	);	// 当面リリースの度にバージョン情報を追加していく
 
 // *************************************************************************
@@ -450,8 +444,6 @@ begin
 	//メッセージの作成
 	FGikoMessage := TGikoMessage.Create;
   FDonguriSys := TDonguriSys.Create;
-  // ワイドAPI有効無効
-  FWideAPIEnable := wapiUnknown;
 end;
 
 // *************************************************************************
@@ -3246,9 +3238,10 @@ end;
 }
 function TGikoSys.ExtructResID(ADateStr: String): String;
 var
-  stlist : TStringList;
-  i, j: Integer;
+  idx: Integer;
+  j:   Integer;
   len: Integer;
+  id:  String;
 begin
   if ADateStr = ID_MAX_RES then begin
     Result := ID_MAX_RES;   // 後で除外するためのマークとしてそのまま返す
@@ -3256,27 +3249,19 @@ begin
   end;
 
   Result := '';
-  stlist := TStringList.Create;
-  try
-    stList.Delimiter := ' ';
-    stList.DelimitedText := ADateStr;
-    for i := 0 to stList.Count - 1 do begin
-      len := Length(stList[i]);
-      for j := 1 to len do begin
-        if (Ord(stList[i][j]) and $80) = $80 then begin
-          len := j - 1;
+  idx := AnsiPos('id:', AnsiLowerCase(ADateStr));
+  if idx > 0 then begin
+    len := Length(ADateStr) - idx + 1;
+    id := Copy(ADateStr, idx, len);
+    if (len >= 4) and (id[4] <> '?') then begin
+      for j := 4 to len do begin
+        if ((Ord(id[j]) and $80) = $80) or (id[j] = ' ') then begin
+          SetLength(id, j - 1);
           break;
         end;
       end;
-      if (len > 4) and
-         (AnsiPos('ID:', stList[i]) = 1) and
-         (stList[i][4] <> '?') then begin
-        Result := Copy(stList[i], 4, len - 3);
-        break;
-      end;
+      Result := ' ' + id;
     end;
-  finally
-    stList.Free;
   end;
 end;
 
@@ -4468,26 +4453,6 @@ begin
     end;
   end;
 
-end;
-
-//! ワイドAPI有効無効取得
-function TGikoSys.GetWideAPIEnable: Boolean;
-var
-  dll: THandle;
-begin
-  if FWideAPIEnable = wapiUnknown then begin
-    FWideAPIEnable := wapiDisable;
-    dll := LoadLibrary('kernel32.dll');
-    if dll <> 0 then begin
-      try
-        if GetProcAddress(dll, 'GetModuleHandleW') <> nil then
-          FWideAPIEnable := wapiEnable;
-      finally
-        FreeLibrary(dll);
-      end;
-    end;
-  end;
-  Result := FWideAPIEnable = wapiEnable;
 end;
 
 
