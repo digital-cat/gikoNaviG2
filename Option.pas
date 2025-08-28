@@ -238,6 +238,9 @@ type
     CapUserCheckBox: TCheckBox;
     PreviewClearCheckBox: TCheckBox;
     IDCountCheckBox: TCheckBox;
+    Label17: TLabel;
+    EditMona: TEdit;
+    Label18: TLabel;
 		procedure FormCreate(Sender: TObject);
 		procedure FormDestroy(Sender: TObject);
 		procedure ApplyButtonClick(Sender: TObject);
@@ -816,6 +819,13 @@ begin
 	AllTabCloseCheckBox.Checked := GikoSys.Setting.ShowDialogForAllTabClose;
 	//Samba
 	UseSambaCheckBox.Checked := GikoSys.Setting.UseSamba;
+  // Cookie「MonaTicket」を期限のx日前に削除する
+  if (GikoSys.Setting.DelMonaTicket < 0) or (GikoSys.Setting.DelMonaTicket > 9) then
+    GikoSys.Setting.DelMonaTicket := 0;
+  if GikoSys.Setting.DelMonaTicket > 0 then
+    EditMona.Text := IntToStr(GikoSys.Setting.DelMonaTicket)
+  else
+    EditMona.Text := '';
 	ResAnchorCheckBox.Checked := GikoSys.Setting.ResAnchorJamp;
 	// ブラウザ最大化
 	BrowserMaxCombo.ItemIndex := Ord( GikoSys.Setting.BrowserAutoMaximize );
@@ -1142,8 +1152,12 @@ begin
 	GikoSys.Setting.ShowDialogForEnd := ShowDialogForEndCheckBox.Checked;
 	//AllTabClose
 	GikoSys.Setting.ShowDialogForAllTabClose := AllTabCloseCheckBox.Checked;
-        //Samba
+  //Samba
 	GikoSys.Setting.UseSamba := UseSambaCheckBox.Checked;
+  // Cookie「MonaTicket」を期限のx日前に削除する
+  GikoSys.Setting.DelMonaTicket := StrToIntDef(EditMona.Text, 0);
+  if (GikoSys.Setting.DelMonaTicket < 0) or (GikoSys.Setting.DelMonaTicket > 9) then
+    GikoSys.Setting.DelMonaTicket := 0;
 	GikoSys.Setting.ResAnchorJamp := ResAnchorCheckBox.Checked;
 	// ブラウザ最大化
 	GikoSys.Setting.BrowserAutoMaximize := TGikoBrowserAutoMaximize( BrowserMaxCombo.ItemIndex );

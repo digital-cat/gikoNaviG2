@@ -265,6 +265,8 @@ type
     FThreadTitleTrim: Boolean;
     // URLコピー及びWEBブラウザ表示でitest版URLを使用する
     FURLitest: Boolean;
+    // Cookie「MonaTicket」を期限のx日前に削除する
+    FDelMonaTicket: Integer;
     // 文字&#78840;の扱い 0:何もしない 1:数値参照で表示 2:類似文字に置換
     FReplChar: Integer;
     // CAP_USERの日時・ID欄を強調表示する
@@ -777,6 +779,7 @@ type
 		property IconImageDisplay: Boolean read FIconImageDisplay write FIconImageDisplay;
 		property ThreadTitleTrim: Boolean read FThreadTitleTrim write FThreadTitleTrim;
     property URLitest: Boolean read FURLitest write FURLitest;
+    property DelMonaTicket: Integer read FDelMonaTicket write FDelMonaTicket;
     property ReplChar: Integer read FReplChar write FReplChar;
     property CapUser: Boolean read FCapUser write FCapUser;
     property IDCount: Boolean read FIDCount write FIDCount;
@@ -1380,8 +1383,12 @@ begin
 		FShowDialogForEnd := ini.ReadBool('Function','ShowDialogForEnd',false);
 		//AllTabClose
 		FShowDialogForAllTabClose := ini.ReadBool('Function','ShowDialogForAllTabClose',false);
-                //Samba
+    //Samba
 		FUseSamba := ini.ReadBool('Function','UseSamba', True);
+    // Cookie「MonaTicket」を期限のx日前に削除する
+    FDelMonaTicket := ini.ReadInteger('Function','DelMonaTicket', 0);
+    if (FDelMonaTicket < 0) or (FDelMonaTicket > 9) then
+      FDelMonaTicket := 0;
 		//ResAnchorjamp
 		ResAnchorJamp := ini.ReadBool('Function', 'ResAnchoJamp', True);
 		//ログフォルダ
@@ -1874,6 +1881,8 @@ begin
 		ini.WriteBool('Function','ShowDialogForAllTabClose', FShowDialogForAllTabClose);
 		//Samba
 		ini.WriteBool('Function','UseSamba', FUseSamba);
+    // Cookie「MonaTicket」を期限のx日前に削除する
+    ini.WriteInteger('Function','DelMonaTicket', FDelMonaTicket);
 		//ResAnchorjamp
 		ini.WriteBool('Function', 'ResAnchoJamp', ResAnchorJamp);
 
