@@ -953,9 +953,12 @@ var
   idx: Integer;
   cnt: Integer;
   cls: String;
+  idExists: Boolean;
 begin
   cls := '';
-  if (idNo.Count > resIdx) and (idCnt.Count > 0) then begin
+  idExists := (idCnt.Count > 1) or ((idCnt.Count = 1) and (idCnt.Strings[0] <> ID_MAX_RES));
+
+  if (idNo.Count > resIdx) and idExists then begin
     id := idNo.Strings[resIdx];
     if id = '' then
       if css then
