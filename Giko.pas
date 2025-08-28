@@ -1870,6 +1870,8 @@ begin
           				'ÉçÉOÉCÉì', MB_OK or MB_ICONERROR);
         end;
       end;
+    end else begin
+      GikoDM.UpliftLoginActionUpdate;
     end;
 
     if GikoSys.Setting.BeAutoLogin then begin

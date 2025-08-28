@@ -54,6 +54,7 @@ var
 begin
 	try
   	ListView.Clear;
+    IndyMdl.DelExpiredCookie;
     max := IndyMdl.CookieCount - 1;
     for i := 0 to max do begin
       cookie := IndyMdl.GetCookie(i);
@@ -150,20 +151,22 @@ begin
 
   	if item.SubItems.Count >= 5 then begin
     	if item.SubItems.Strings[4] = 'UPLIFT' then begin
-      	if Session5ch_Connected and		// ログイン中
-					(MsgBox(Handle, 'UPLIFTからログアウトします。' + #10 +
-           								'よろしいですか？', Caption, MB_YESNO or MB_ICONQUESTION) = IDYES) then begin
+      	if Session5ch_Connected then begin		// ログイン中
+					if MsgBox(Handle, 'UPLIFTからログアウトします。' + #10 +
+           								'よろしいですか？', Caption, MB_YESNO or MB_ICONQUESTION) = IDYES then begin
             GikoDM.LoginAction.Execute;
             LoadItems;
-            Exit;
+          end;
+          Exit;
 				end;
     	end else if item.SubItems.Strings[4] = 'Be' then begin
-        if GikoSys.Belib.Connected and	// ログイン中
-					(MsgBox(Handle, 'Beからログアウトします。' + #10 +
-           								'よろしいですか？', Caption, MB_YESNO or MB_ICONQUESTION) = IDYES) then begin
+        if GikoSys.Belib.Connected then begin	// ログイン中
+					if MsgBox(Handle, 'Beからログアウトします。' + #10 +
+           								'よろしいですか？', Caption, MB_YESNO or MB_ICONQUESTION) = IDYES then begin
             GikoDM.BeLogInOutAction.Execute;
             LoadItems;
-            Exit;
+          end;
+          Exit;
 				end;
       end;
     end;

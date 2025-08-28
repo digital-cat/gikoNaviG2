@@ -5,7 +5,7 @@ interface
 uses
   SysUtils, Classes, IdIOHandler, IdIOHandlerSocket, IdIOHandlerStack, IdSSL,
   IdSSLOpenSSL, IdBaseComponent, IdComponent, IdTCPConnection, IdTCPClient,
-  IdHTTP, IdCookieManager, IdCookie, IdURI;
+  IdHTTP, IdCookieManager, IdCookie, IdURI, IdCTypes, IdSSLOpenSSLHeaders, IdGlobal;
 
 type
   TSession5ch = class(TDataModule)
@@ -13,16 +13,14 @@ type
     IdSSLIOHandlerSocketOpenSSL: TIdSSLIOHandlerSocketOpenSSL;
     IdCookieManager: TIdCookieManager;
   private
-		FConnected:   Boolean;
-		FSessionID:   string;
+		FConnected:  Boolean;
 		FErrorCode:   Integer;
 		FErrorString: string;
-		FUserAgent:   string;
 
 		function GetSessionID: string;
-		function GetUserAgent: string;
     function Login: Boolean;
     procedure Clear;
+    function IsConnected: Boolean;  // できるだけ呼ばない
   public
 		constructor Create(AOwner: TComponent); reintroduce; virtual;
 		destructor  Destroy; override;
@@ -32,7 +30,6 @@ type
 
 		property  Connected: Boolean read  FConnected;
 		property  SessionID: string  read  GetSessionID;
-		property  UserAgent: string  read  GetUserAgent;
 		property  ErrorCode: Integer read  FErrorCode;
 		property  ErrorMsg:  string  read  FErrorString;
   end;
@@ -58,11 +55,11 @@ const
   LOGIN_5CH_URL     = 'https://uplift.5ch.net/log';
   LOGIN_5CH_URLV6   = 'https://[uplift.5ch.net]/log';
   LOGIN_5CH_REFERER = 'https://uplift.5ch.net/login';
-  LOGIN_5GH_ACCEPT  = 'text/html,image/gif,image/x-xbitmap,image/jpeg,image/pjpeg,*/*';
+  LOGIN_5GH_ACCEPT  = 'text/html,image/gif,image/jpeg,image/png,*/*';
   LOGIN_5CH_CNTTYPE = 'application/x-www-form-urlencoded';
   LOGIN_5CH_FORMFMT = 'usr=%s&pwd=%s&log=';
   LOGIN_5CH_SID     = 'sid';
-  LOGIN_5CH_ERRMSG  = 'Error: ログインできませんでした。';
+  LOGIN_5CH_ERRMSG  = 'Error: UPLIFTにログインできませんでした。';
   ROOT_5CH_URL			= 'https://5ch.net/';
 
 
@@ -94,9 +91,8 @@ end;
 function Session5ch_Connected: Boolean;
 begin
   if Session5ch = nil then
-    Result := False
-  else
-    Result := Session5ch.Connected;
+    Session5ch := TSession5ch.Create(nil);
+  Result := Session5ch.Connected;
 end;
 
 function Session5ch_Connect: Boolean;
@@ -104,10 +100,10 @@ var
   i: Integer;
 begin
 
-  if Session5ch_Connected then begin
-    Result := True;
-    Exit;
-  end;
+  Result := Session5ch_Connected;
+
+  if Result then
+    Exit;   // ログイン済み
 
   for i := 0 to 2 do begin
 
@@ -119,13 +115,11 @@ begin
     if Session5ch <> nil then
       FreeAndNil(Session5ch);
 
-      Session5ch := TSession5ch.Create(nil);
+    Session5ch := TSession5ch.Create(nil);
 
-      Result := Session5ch.Connect;
-    if Result then begin
-      DebugLog('Session5ch_Connect() UPLIFTログイン成功');
+    Result := Session5ch.Connect;
+    if Result then
       Exit;		// 成功
-    end;
 
     DebugLog(Format('Session5ch_Connect() UPLIFTログイン失敗[%d][%s]', [Session5ch.ErrorCode, Session5ch.ErrorMsg]));
 
@@ -136,20 +130,16 @@ end;
 
 function Session5ch_Disconnect: Boolean;
 begin
-  if Session5ch <> nil then
-    Result := Session5ch.Disconnect
-  else begin
-    IndyMdl.DelUpliftCookie;
-    Result := True;
-  end;
+  if Session5ch = nil then
+    Session5ch := TSession5ch.Create(nil);
+  Result := Session5ch.Disconnect;
 end;
 
 function Session5ch_SessionID: String;
 begin
-  if Session5ch <> nil then
-    Result := Session5ch.SessionID
-  else
-    Result := '';
+  if Session5ch = nil then
+    Session5ch := TSession5ch.Create(nil);
+  Result := Session5ch.SessionID;
 end;
 
 function Session5ch_ErrorMsg: String;
@@ -177,51 +167,47 @@ constructor TSession5ch.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
   Clear;
+  IsConnected;
 end;
 
 { デストラクタ }
 destructor TSession5ch.Destroy;
 begin
-	if Connected then
-		Disconnect;
+//	if Connected then
+//		Disconnect;
   inherited Destroy;
 end;
 
 { セッション情報クリア }
 procedure TSession5ch.Clear;
 begin
-  FConnected   := False;
-  FSessionID   := '';
   FErrorCode   := 0;
   FErrorString := '';
-  FUserAgent   := '';
+end;
+
+{ ログイン中か }
+function TSession5ch.IsConnected: Boolean;
+begin
+  FConnected := (IndyMdl.UpliftCookieValue <> '');
+  Result := FConnected;
 end;
 
 { ログイン }
 function TSession5ch.Connect: Boolean;
 begin
-	Result := False;
-	if not FConnected then begin
+	Result := IsConnected;
+	if not Result then begin
     Clear;
-		if Login then
-			Result := True
-		else begin
-			DebugLog(Format('UPLIFTログインエラー[%d][%s]', [FErrorCode, FErrorString]));
-
-			//Disconnect;
-      FConnected   := False;
-      FSessionID   := '';
-      FUserAgent   := '';
-		  IndyMdl.DelUpliftCookie;
-		end;
+		Result := Login;
 	end;
 end;
 
 { ログアウト }
 function TSession5ch.Disconnect: Boolean;
 begin
-  Clear;
   IndyMdl.DelUpliftCookie;
+  FConnected := False;
+  Clear;
 	Result := True;
 end;
 
@@ -233,13 +219,17 @@ var
   FormData: String;
   OK: Boolean;
   Idx: Integer;
-  Sep: Integer;
-  Cookie: TIdCookie;
   url: String;
-	uri: TIdURI;
-  sendCookies: String;
+//	uri: TIdURI;
+//  sendCookies: String;
 begin
-  Result := False;
+
+  Result := IsConnected;
+
+  if Result then
+    Exit;
+
+  IndyMdl.DelUpliftCookie;  // 念のため
 
   try
     if GikoSys.Setting.IPv6 then
@@ -249,15 +239,20 @@ begin
 
     FormData := Format(LOGIN_5CH_FORMFMT, [HttpEncode(GikoSys.Setting.UserID),
                                            HttpEncode(GikoSys.Setting.Password)]);
+    idx := Pos('@', FormData);
+    if idx > 0 then begin
+      Delete(FormData, idx, 1);
+      Insert('%40', FormData, idx);
+    end;
     SrcContent := TStringStream.Create(FormData);
     ResContent := TMemoryStream.Create;
 
-		uri := TIdURI.Create(LOGIN_5CH_URL);
-  	try
-	    sendCookies := IndyMdl.GetCookieString(uri);
-    finally
-		  uri.Free;
-    end;
+//		uri := TIdURI.Create(LOGIN_5CH_URL);
+//  	try
+//	    sendCookies := IndyMdl.GetCookieString(uri);
+//    finally
+//		  uri.Free;
+//    end;
 
     TIndyMdl.InitHTTP(IdHTTP);
 
@@ -267,8 +262,8 @@ begin
     IdHTTP.Request.Accept         := LOGIN_5GH_ACCEPT;
     IdHTTP.Request.ContentType    := LOGIN_5CH_CNTTYPE;
     IdHTTP.Request.Referer        := LOGIN_5CH_REFERER;
-  	if sendCookies <> '' then
-	    IdHTTP.Request.CustomHeaders.Add('Cookie: ' + sendCookies);
+//  	if sendCookies <> '' then
+//	    IdHTTP.Request.CustomHeaders.Add('Cookie: ' + sendCookies);
 
     OK := False;
 
@@ -277,7 +272,7 @@ begin
       IdHTTP.Post(url, SrcContent, ResContent);
       OK := True;
     except
-      FErrorString := IdHTTP.ResponseText;
+      FErrorString := LOGIN_5CH_ERRMSG + IdHTTP.ResponseText;
       FErrorCode   := IdHTTP.ResponseCode;
     end;
     IndyMdl.EndAntiFreeze;
@@ -288,35 +283,20 @@ begin
     if ResContent <> nil then
       ResContent.Free;
 
-    if not OK then begin
+    if not OK then
       Exit;
-    end;
 
     if IdHTTP.ResponseCode <> 200 then begin
-      FErrorString := IdHTTP.ResponseText;
+      FErrorString := LOGIN_5CH_ERRMSG + IdHTTP.ResponseText;
       FErrorCode   := IdHTTP.ResponseCode;
       Exit;
     end;
 
-    Idx := IdCookieManager.CookieCollection.GetCookieIndex(LOGIN_5CH_SID);
-    if Idx < 0 then begin
+    if not IsConnected then begin
       FErrorString := LOGIN_5CH_ERRMSG;
       FErrorCode   := -1;
       Exit;
     end;
-
-    Cookie := IdCookieManager.CookieCollection.Items[Idx] as TIdCookie;
-    FSessionID := Cookie.Value;
-    if FSessionID = '' then begin
-      FErrorString := LOGIN_5CH_ERRMSG;
-      FErrorCode   := -2;
-      Exit;
-    end;
-
-    Sep := Pos(':', FSessionID);
-    if Sep > 1 then
-      FUserAgent := Copy(FSessionID, 1, Sep - 1);
-    FConnected := True;
 
     Result := True;
 
@@ -332,19 +312,7 @@ end;
 { セッションID取得 }
 function TSession5ch.GetSessionID: string;
 begin
-  if FConnected then
-    Result := FSessionID
-  else
-    Result := '';
-end;
-
-{ セッションIDのUSER-AGENT取得 }
-function TSession5ch.GetUserAgent: string;
-begin
-  if FConnected then
-    Result := FUserAgent
-  else
-    Result := '';
+  Result := IndyMdl.UpliftCookieValue;
 end;
 
 end.

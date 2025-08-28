@@ -559,6 +559,7 @@ type
     procedure MoveURLWithHistory(URL : String; KeyMask: Boolean = False);
     procedure SaveThreadSearchSetting;
     procedure DonguriHomeUpdate;
+    procedure UpliftLoginActionUpdate;
   published
 	{ Published 宣言 }
 	//! TActionでGetActiveContentがnil以外で有効になる
@@ -589,7 +590,7 @@ uses
 	ThreadControl, GikoMessage, InputAssist,
   DefaultFileManager, Forms, NewBoardURL, UpdateCheck,
   PopupMenuSetting, ThreadSearch, ThreadNGEdt, DmSession5ch, DonguriBase,
-  CookieManager;
+  CookieManager, IndyModule;
 
 const
 	MSG_ERROR : string = 'エラー';
@@ -2062,6 +2063,15 @@ begin
 		end;
 	end;
 end;
+
+// *************************************************************************
+//! ログイン／ログアウト状態更新（過剰な呼び出し回避のためイベントは使わない）
+// *************************************************************************
+procedure TGikoDM.UpliftLoginActionUpdate;
+begin
+  LoginAction.Checked := (IndyMdl.UpliftCookieValue <> ''); //Session5ch_Connected;
+end;
+
 // *************************************************************************
 //! ボード更新ダイアログを表示する
 // *************************************************************************
