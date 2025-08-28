@@ -19,10 +19,12 @@ type
 
     function GetFileVersion(path: String): String;
     function GetCookieFilePath: String;
-    function GetCookieValue(text, name: String): String;
+    function GetCookieValueFromText(text, name: String): String;
+    function DelCookieValueFromText(text, name: String): String;
     procedure AddServerCookie(const ACookie: String; AURL: TIdURI);
-    procedure DelCookies(delFlgs: array of Boolean);
+    procedure DelCookies(delFlgs: array of Boolean; chkUplift: Boolean = True);
     function GetCookieCount: Integer;
+    function ChkExpired(cookie: TIdCookie): Boolean;
   public
     { Public 宣言 }
     function StartAntiFreeze(IdleTimeOut : Integer): Boolean;
@@ -34,8 +36,9 @@ type
     procedure SaveCookies(idHTTP: TIdHTTP; is2ch: Boolean = False; handle: HWND = 0);
     function GetCookieString(uri: TIdURI): String;
     procedure GetCookieList(uri: TIdURI; names, values: TStringList);
-    procedure DelCookie(name: String; url: String);
+    procedure DelCookie(name: String; url: String; chkUplift: Boolean = True);
     procedure SetCookieValue(name, url, value: String);
+    function  GetCookieValue(name, url: String): String;
     procedure Serialize;
     procedure Deserialize;
     function GetCookie(index: integer): TIdCookie;
@@ -47,12 +50,15 @@ type
     function HasTakoCookie: Boolean;
 
 		function GetDonguriCookieValue: String;
+		function GetUpliftCookieValue: String;
     procedure DelDonguriCookie;
     procedure DelUpliftCookie;
     procedure DelBeCookie;
     procedure DelMonaTicketCookie;
+    procedure DelExpiredCookie;
 
     property CookieCount: Integer read GetCookieCount;
+    property UpliftCookieValue: String read GetUpliftCookieValue;
 
     class procedure InitHTTP(IdHTTP: TIdHTTP; WriteMethod: Boolean = False); static;
     class procedure ClearHTTP(idHTTP: TIdHTTP); static;
@@ -68,9 +74,12 @@ uses
 
 const
 	URL_5CH_ROOT   = 'https://5ch.net/';
+	URL_UPL_ROOT   = 'https://uplift.5ch.net/';
 	DOMAIN_5CH     = '5ch.net';
+	DOMAIN_UPLIFT  = 'uplift.5ch.net';
   COOKIE_DONGURI = 'acorn';
-	COOKIE_UPLIFT  = 'sid';
+	COOKIE_UPLIFT1 = 'sid';
+	COOKIE_UPLIFT2 = 'eid';
 	COOKIE_BE1     = 'DMDM';
 	COOKIE_BE2     = 'MDMD';
 	COOKIE_TAKO    = 'TAKO';
@@ -206,8 +215,9 @@ end;
 
 { TIdHTTPコンポーネント初期化 }
 class procedure TIndyMdl.InitHTTP(IdHTTP: TIdHTTP; WriteMethod: Boolean = False);
-{$IFDEF OPENSSL3}
 var
+  protocol: Boolean;
+{$IFDEF OPENSSL3}
   ssl: TIdSSLIOHandlerSocketOpenSSL;
 {$ENDIF}
 begin
@@ -222,12 +232,8 @@ begin
 	Writeln('------------------------------------------------------------');
 	{$ENDIF}
 
-  if GikoSys.Setting.ProxyProtocol then
-    IdHTTP.ProtocolVersion := pv1_1
-  else
-    IdHTTP.ProtocolVersion := pv1_0;
-
   if WriteMethod and GikoSys.Setting.WriteProxy then begin
+    protocol := GikoSys.Setting.ProxyProtocol;
     IdHTTP.ProxyParams.ProxyServer   := GikoSys.Setting.WriteProxyAddress;
     IdHTTP.ProxyParams.ProxyPort     := GikoSys.Setting.WriteProxyPort;
     IdHTTP.ProxyParams.ProxyUsername := GikoSys.Setting.WriteProxyUserID;
@@ -242,6 +248,7 @@ begin
 		{$ENDIF}
 
   end else if not WriteMethod and GikoSys.Setting.ReadProxy then begin
+    protocol := GikoSys.Setting.ProxyProtocol;
     IdHTTP.ProxyParams.ProxyServer   := GikoSys.Setting.ReadProxyAddress;
     IdHTTP.ProxyParams.ProxyPort     := GikoSys.Setting.ReadProxyPort;
     IdHTTP.ProxyParams.ProxyUsername := GikoSys.Setting.ReadProxyUserID;
@@ -256,6 +263,7 @@ begin
 		{$ENDIF}
 
   end else begin
+    protocol := GikoSys.Setting.Protocol;
     IdHTTP.ProxyParams.ProxyServer   := '';
     IdHTTP.ProxyParams.ProxyPort     := 80;
     IdHTTP.ProxyParams.ProxyUsername := '';
@@ -265,6 +273,11 @@ begin
 		Writeln('プロキシ設定なし');
 		{$ENDIF}
   end;
+
+  if protocol then
+    IdHTTP.ProtocolVersion := pv1_1
+  else
+    IdHTTP.ProtocolVersion := pv1_0;
 
   {$IFDEF OPENSSL3}
   if IdHTTP.IOHandler <> nil then begin
@@ -295,6 +308,7 @@ begin
   LCookie := FCookieCollection.Add;
   try
     if LCookie.ParseServerCookie(ACookie, AURL) and
+       (not ChkExpired(LCookie)) and
        FCookieCollection.AddCookie(LCookie, AURL) then
       LCookie := nil;
   finally
@@ -354,6 +368,25 @@ begin
   end;
 end;
 
+{ Cookie期限切れ確認 }
+function TIndyMdl.ChkExpired(cookie: TIdCookie): Boolean;
+var
+  expr: TDateTime;
+begin
+  Result := cookie.IsExpired;
+
+  if (not Result) and
+     (GikoSys.Setting.DelMonaTicket >  0) and
+     (GikoSys.Setting.DelMonaTicket <= 9) and
+     (cookie.Expires   <> 0.0)            and
+     (cookie.CookieName = COOKIE_MTICKET) and
+     (cookie.Domain     = DOMAIN_5CH) then begin
+
+    expr := cookie.Expires - GikoSys.Setting.DelMonaTicket;
+    Result := (expr <= Now);
+  end;
+end;
+
 { リクエスト用Cookie文字列取得 }
 function TIndyMdl.GetCookieString(uri: TIdURI): String;
 var
@@ -366,7 +399,8 @@ begin
 
     for i := 0 to FCookieCollection.Count - 1 do begin
 			cookie := TIdCookie(FCookieCollection.Items[i]);
-			del[i] := cookie.IsExpired;
+			//del[i] := cookie.IsExpired;
+			del[i] := ChkExpired(cookie);
       if (not del[i]) and IsDomainMatch(uri.Host, cookie.Domain) then
 				Result := Result + cookie.CookieName + '=' + cookie.Value + '; ';
     end;
@@ -388,7 +422,8 @@ begin
 
     for i := 0 to FCookieCollection.Count - 1 do begin
 			cookie := TIdCookie(FCookieCollection.Items[i]);
-			del[i] := cookie.IsExpired;
+			//del[i] := cookie.IsExpired;
+			del[i] := ChkExpired(cookie);
       if (not del[i]) and IsDomainMatch(uri.Host, cookie.Domain) then begin
       	names.Add(cookie.CookieName);
         values.Add(cookie.Value);
@@ -401,7 +436,7 @@ begin
 end;
 
 { Cookie削除 }
-procedure TIndyMdl.DelCookie(name: String; url: String);
+procedure TIndyMdl.DelCookie(name: String; url: String; chkUplift: Boolean = True);
 var
 	i: Integer;
 	cookie: TIdCookie;
@@ -414,42 +449,68 @@ begin
 
     for i := 0 to FCookieCollection.Count - 1 do begin
 			cookie := TIdCookie(FCookieCollection.Items[i]);
-			del[i] := cookie.IsExpired;
+			//del[i] := cookie.IsExpired;
+			del[i] := ChkExpired(cookie);
       if (not del[i]) and
       	 IsDomainMatch(uri.Host, cookie.Domain) and
          (cookie.CookieName = name) then
       	del[i] := True;
     end;
 
-    DelCookies(del);
+    DelCookies(del, chkUplift);
   finally
     uri.Free;
   end;
 end;
 
-{ 削除対象Cookie全削除 }
-procedure TIndyMdl.DelCookies(delFlgs: array of Boolean);
+{ 期限切れCookie削除 }
+procedure TIndyMdl.DelExpiredCookie;
 var
 	i: Integer;
 	cookie: TIdCookie;
-  uplift: Boolean;
+  del: array of Boolean;
 begin
 	try
-  	// UPLIFTログイン済みの場合はセッションID期限切れ確認を行う
-  	uplift := Session5ch_Connected;
+    SetLength(del, FCookieCollection.Count);
+
+    for i := 0 to FCookieCollection.Count - 1 do begin
+			cookie := TIdCookie(FCookieCollection.Items[i]);
+			del[i] := ChkExpired(cookie);
+    end;
+
+    DelCookies(del);
+  except
+  end;
+end;
+
+{ 削除対象Cookie全削除 }
+procedure TIndyMdl.DelCookies(delFlgs: array of Boolean; chkUplift: Boolean = True);
+var
+	i: Integer;
+	cookie: TIdCookie;
+  upliftLogout: Boolean;
+begin
+	try
+  	// UPLIFTログアウトさせるか
+    upliftLogout := False;
 
     for i := FCookieCollection.Count - 1 downto 0 do begin
       if delFlgs[i] then begin
-        if uplift then begin
+        if chkUplift and (not upliftLogout) then begin
           cookie := TIdCookie(FCookieCollection.Items[i]);
-          if (cookie.Domain = DOMAIN_5CH) and (cookie.CookieName = COOKIE_UPLIFT) then begin
-          	GikoDM.LoginAction.Execute;		// UPLIFTをログアウトさせる
-            uplift := False;	// これ以降はUPLIFTチェック不要
+          if (cookie.Domain = DOMAIN_5CH) and (cookie.CookieName = COOKIE_UPLIFT1) then begin
+            upliftLogout := True;
           end;
         end;
 	    	FCookieCollection.Delete(i);
       end;
     end;
+
+    if upliftLogout then begin
+      Session5ch_Disconnect;
+      GikoDM.UpliftLoginActionUpdate; // 画面側更新
+    end;
+
   except
   end;
 end;
@@ -468,7 +529,8 @@ begin
 
     for i := 0 to FCookieCollection.Count - 1 do begin
 			cookie := TIdCookie(FCookieCollection.Items[i]);
-			del[i] := cookie.IsExpired;
+			//del[i] := cookie.IsExpired;
+			del[i] := ChkExpired(cookie);
       if (not del[i]) and
       	 IsDomainMatch(uri.Host, cookie.Domain) and
          (cookie.CookieName = name) then
@@ -481,8 +543,8 @@ begin
   end;
 end;
 
-{ どんぐりCookie値取得 }
-function TIndyMdl.GetDonguriCookieValue: String;
+{ Cookie値取得 }
+function TIndyMdl.GetCookieValue(name, url: String): String;
 var
 	i: Integer;
 	cookie: TIdCookie;
@@ -490,16 +552,16 @@ var
   uri: TIdURI;
 begin
 	Result := '';
-  uri := TIdURI.Create(URL_5CH_ROOT);
+  uri := TIdURI.Create(url);
 	try
     SetLength(del, FCookieCollection.Count);
 
     for i := 0 to FCookieCollection.Count - 1 do begin
 			cookie := TIdCookie(FCookieCollection.Items[i]);
-			del[i] := cookie.IsExpired;
+			del[i] := ChkExpired(cookie);
       if (not del[i]) and
       	 IsDomainMatch(uri.Host, cookie.Domain) and
-         (cookie.CookieName = COOKIE_DONGURI) then
+         (cookie.CookieName = name) then
       	Result := cookie.Value;
     end;
 
@@ -509,16 +571,29 @@ begin
   end;
 end;
 
+{ どんぐりCookie値取得 }
+function TIndyMdl.GetDonguriCookieValue: String;
+begin
+	Result := GetCookieValue(COOKIE_DONGURI, URL_5CH_ROOT);
+end;
+
 { どんぐりCookie削除 }
 procedure TIndyMdl.DelDonguriCookie;
 begin
 	DelCookie(COOKIE_DONGURI, URL_5CH_ROOT);
 end;
 
+{ UPLIFT Cookie値取得 }
+function TIndyMdl.GetUpliftCookieValue: String;
+begin
+	Result := GetCookieValue(COOKIE_UPLIFT1, URL_5CH_ROOT);
+end;
+
 { UPLIFT Cookie削除 }
 procedure TIndyMdl.DelUpliftCookie;
 begin
-	DelCookie(COOKIE_UPLIFT, URL_5CH_ROOT);
+	DelCookie(COOKIE_UPLIFT1, URL_5CH_ROOT, False);
+	DelCookie(COOKIE_UPLIFT2, URL_UPL_ROOT, False);
 end;
 
 { Be Cookie削除 }
@@ -542,7 +617,8 @@ end;
 
 function TIndyMdl.IsUpliftCookie(cookie: TIdCookie): Boolean;
 begin
-	Result := (cookie.Domain = DOMAIN_5CH) and (cookie.Path = '/') and (cookie.CookieName = COOKIE_UPLIFT);
+	Result := ((cookie.Domain = DOMAIN_5CH)    and (cookie.Path = '/') and (cookie.CookieName = COOKIE_UPLIFT1)) or
+            ((cookie.Domain = DOMAIN_UPLIFT) and (cookie.Path = '/') and (cookie.CookieName = COOKIE_UPLIFT2));
 end;
 
 function TIndyMdl.IsBeCookie(cookie: TIdCookie): Boolean;
@@ -602,8 +678,9 @@ begin
 
     for i := 0 to FCookieCollection.Count - 1 do begin
 			cookie := TIdCookie(FCookieCollection.Items[i]);
-			del[i] := cookie.IsExpired;
-      if (not del[i]) and ((cookie.Domain <> DOMAIN_5CH) or (cookie.CookieName <> COOKIE_UPLIFT)) then	// UPLIFTのセッションIDは保存しない
+			//del[i] := cookie.IsExpired;
+			del[i] := ChkExpired(cookie);
+      if not del[i] then
 				dst.Add(cookie.CookieText);
     end;
 
@@ -637,9 +714,9 @@ begin
     src.LoadFromFile(path);
 
     for i := 0 to src.Count - 1 do begin
-      text := src.Strings[i];
-      uriDomain := GetCookieValue(text, 'Domain');
-      uriPath := GetCookieValue(text, 'Path');
+      text := DelCookieValueFromText(src.Strings[i], 'Max-Age');
+      uriDomain := GetCookieValueFromText(text, 'Domain');
+      uriPath := GetCookieValueFromText(text, 'Path');
       if uriDomain = '' then
         Continue;
       uri := TIdURI.Create('https://' + uriDomain + uriPath);
@@ -655,7 +732,7 @@ begin
 end;
 
 { CookieTextから指定項目の値を取得 }
-function TIndyMdl.GetCookieValue(text, name: String): String;
+function TIndyMdl.GetCookieValueFromText(text, name: String): String;
 var
   idx1: Integer;
   idx2: Integer;
@@ -669,6 +746,33 @@ begin
     idx2 := PosEx(';', text, idx1);
     if idx2 > 0 then
       Result := Copy(text, idx1, idx2 - idx1);
+  end;
+end;
+
+{ CookieTextから指定項目を削除 }
+function TIndyMdl.DelCookieValueFromText(text, name: String): String;
+var
+  items: TStringList;
+  item : String;
+  key  : String;
+  i    : Integer;
+begin
+	Result := '';
+	key := name + '=';
+  items := TStringList.Create;
+  try
+    items.LineBreak := ';';
+    items.Text := text;
+    for i := 0 to items.Count - 1 do begin
+      item := Trim(items.Strings[i]);
+      if Pos(key, item) <> 1 then begin
+        if Result <> '' then
+          Result := Result + '; ';
+        Result := Result + item;
+      end;
+    end;
+  finally
+    items.Free;
   end;
 end;
 
