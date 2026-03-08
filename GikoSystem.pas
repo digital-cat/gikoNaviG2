@@ -332,7 +332,8 @@ const
 	BETA_VERSION				= 75;
 	BETA_VERSION_BUILD	= '';				//!< debug”Å‚È‚Ç
 	APP_NAME						= 'gikoNavi';
-	BE_PHP_URL          = 'https://be.5ch.net/test/p.php?i=';
+//	BE_PHP_URL          = 'https://be.5ch.net/test/p.php?i=';
+	BE_PHP_URL          = 'https://be.5ch.io/test/p.php?i=';
   ID_MAX_RES          = 'Over 1000 Thread';
 
 implementation
@@ -366,7 +367,7 @@ const
 		  'ProductVersion',
 		  'SpecialBuild');
 
-	UAVers: array[0..39] of TUAVer = (
+	UAVers: array[0..40] of TUAVer = (
       (BetaVer:  0; FileVer: ''),
       (BetaVer: 74; FileVer: '1.75.0.881'),
       (BetaVer: 74; FileVer: '1.75.0.883'),
@@ -406,7 +407,8 @@ const
       (BetaVer: 75; FileVer: '1.76.0.918'),
       (BetaVer: 75; FileVer: '1.76.0.919'),
       (BetaVer: 75; FileVer: '1.76.0.920'),
-      (BetaVer: 75; FileVer: '1.76.0.921')
+      (BetaVer: 75; FileVer: '1.76.0.921'),
+      (BetaVer: 75; FileVer: '1.76.0.922')
 	);	// “––ÊƒŠƒŠ[ƒX‚Ì“x‚Éƒo[ƒWƒ‡ƒ“î•ñ‚ð’Ç‰Á‚µ‚Ä‚¢‚­
 
 // *************************************************************************
@@ -1623,8 +1625,8 @@ end;
 
 function TGikoSys.TrimThreadTitle(const SrcTitle: string): string;
 const
-    TRIM_STRING: array [1..5] of String =
-        ('[“]Ú‹ÖŽ~]', '&copy;5ch.net', '&copy;2ch.net', '&copy;bbspink.com', #9);
+    TRIM_STRING: array [1..6] of String =
+        ('[“]Ú‹ÖŽ~]', '&copy;5ch.io', '&copy;5ch.net', '&copy;2ch.net', '&copy;bbspink.com', #9);
 var
     i: Integer;
     Idx: Integer;
@@ -2130,7 +2132,8 @@ end;
 }
 function TGikoSys.Is2chHost(Host: string): Boolean;
 const
-	HOST_NAME: array[0..2] of string = ('.5ch.net', '.2ch.net', '.bbspink.com');
+//	HOST_NAME: array[0..2] of string = ('.5ch.net', '.2ch.net', '.bbspink.com');
+	HOST_NAME: array[0..3] of string = ('.5ch.io', '.5ch.net', '.2ch.net', '.bbspink.com');
 var
 	i: Integer;
 //	Len: Integer;
@@ -2396,7 +2399,8 @@ begin
 	if URL[length(URL)] = '\' then
 		URL := URL + 'n';
 	//FAWKStr.RegExp := 'http://.+\.(2ch\.net|bbspink\.com)/';
-	FAWKStr.RegExp := '(http|https)://.+\.(2ch\.net|5ch\.net|bbspink\.com)/';   // for 5ch
+	//FAWKStr.RegExp := '(http|https)://.+\.(2ch\.net|5ch\.net|bbspink\.com)/';   // for 5ch
+	FAWKStr.RegExp := '(http|https)://.+\.(2ch\.net|5ch\.net|5ch\.io|bbspink\.com)/';   // for 5ch
 	if FAWKStr.Match(FAWKStr.ProcessEscSeq(URL), RStart, RLength) <> 0 then begin
 		s := Copy(URL, RStart + RLength - 1, Length(URL));
 
@@ -4104,16 +4108,27 @@ end;
 //! 2ch/5ch‚ÌURL‚ðŽÀÛ‚ÉŒÄ‚×‚éŒ`‚É‚·‚é
 procedure TGikoSys.Regulate2chURL(var url: String);
 const
-  SP_5CHURL  = 'https://itest.5ch.net/';
+//  SP_5CHURL  = 'https://itest.5ch.net/';
+  SP_5CHURL  = 'https://itest.5ch.io/';
   SP_PNKURL  = 'https://itest.bbspink.com/';
-  DOMAIN_5CH = '5ch.net';
+//  DOMAIN_5CH = '5ch.net';
+  DOMAIN_5CH = '5ch.io';
   DOMAIN_PNK = 'bbspink.com';
-  CLSSC_5CH  = '.5ch.net/test/read.cgi/c/';
+//  CLSSC_5CH  = '.5ch.net/test/read.cgi/c/';
+  CLSSC_5CH  = '.5ch.io/test/read.cgi/c/';
   CLSSC_PNK  = '.bbspink.com/test/read.cgi/c/';
   EXCL_URL: array[0..1] of String  = (
-      'https://itest.5ch.net/setting',
-      'https://itest.5ch.net/setting/'
+//      'https://itest.5ch.net/setting',
+//      'https://itest.5ch.net/setting/'
+      'https://itest.5ch.io/setting',
+      'https://itest.5ch.io/setting/'
     );
+  REPLACE_SRC: array[0..1] of String = (
+      '.2ch.net/',
+      '.5ch.net/'
+    );
+  REPLACE_DST = '.5ch.io/';
+
 var
   idx1: Integer;
   idx2: Integer;
@@ -4135,9 +4150,14 @@ begin
   if url[5] = ':' then
     Insert('s', url, 5);  // http:// -> https://
 
-  idx1 := Pos('.2ch.net/', url);
-  if idx1 > 0 then
-    url[idx1 + 1] := '5'; // 2ch.net -> 5ch.net
+  // [2ch.net, 5ch.net] -> 5ch.io
+  for i := Low(REPLACE_SRC) to High(REPLACE_SRC) do begin
+    idx1 := Pos(REPLACE_SRC[i], url);
+    if (idx1 > 0) then begin
+      Delete(url, idx1, Length(REPLACE_SRC[i]));
+      Insert(REPLACE_DST, url, idx1);
+    end;
+  end;
 
   for i := Low(EXCL_URL) to High(EXCL_URL) do begin
     if url = EXCL_URL[i] then
@@ -4249,7 +4269,8 @@ const
   PROTOCOL2CH: array [0..1] of String = ('http://', 'https://');
   PROTOCOL2CH_SH = '://';
   PROTOCOL2CH_SH_MAX = 6;
-  DOMAIN2CH: array [0..2] of String = ('.2ch.net/', '.5ch.net/', '.bbspink.com/');
+//  DOMAIN2CH: array [0..2] of String = ('.2ch.net/', '.5ch.net/', '.bbspink.com/');
+  DOMAIN2CH: array [0..3] of String = ('.2ch.net/', '.5ch.net/', '.5ch.io/', '.bbspink.com/');
 var
   idx: Integer;
   start: Integer;
