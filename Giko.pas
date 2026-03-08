@@ -956,7 +956,7 @@ uses
 	NewBoard, MojuUtils, Clipbrd, GikoBayesian,Y_TextConverter,
 	HTMLCreate, ListViewUtils, GikoDataModule, GikoMessage,
 	InputAssistDataModule, Types, ReplaceDataModule, PopupMenuUtil, RangeAbon,
-  DonguriBase;
+  DonguriBase, DmSession5ch;
 
 const
 	BLANK_HTML: string = 'about:blank';
@@ -1861,7 +1861,7 @@ begin
 			end;
 		end;
     //オートログイン
-    if GikoSys.Setting.AutoLogin then begin
+    if GikoSys.Setting.AutoLogin and (not Session5ch_Connected) then begin
     	try
       	GikoDM.LoginAction.Execute;
       except
@@ -2446,6 +2446,7 @@ var
   doc: IHTMLDocument2;
   isHttp: Boolean;
 begin
+Text2 := Text;
     // ギコナビはレスアンカーが about:blank.. で始まることを期待しているが
     // IE 7 では about:blank.. ではなく about:.. になるので、置換する(投げやり)
     if Pos('about:..', Text) = 1 then
@@ -5353,8 +5354,10 @@ begin
 			// 外部の板なのに2chのURLにされてしまった奴をここで確認する
 			URL :=  Board.URL;
 			GikoSys.ParseURI(URL , protocol2, host2, path2, document2, port2, bookmark2 );
-			tmp1 := Copy(host, AnsiPos('.', host) + 1, Length(host));
-			tmp2 := Copy(host2, AnsiPos('.', host2) + 1, Length(host2));
+			//tmp1 := Copy(host, AnsiPos('.', host) + 1, Length(host));
+			//tmp2 := Copy(host2, AnsiPos('.', host2) + 1, Length(host2));
+			tmp1 := Copy(host, AnsiPos('.', host), Length(host));
+			tmp2 := Copy(host2, AnsiPos('.', host2), Length(host2));
 			if ( not GikoSys.Is2chHost(tmp1)) and (tmp1 <> tmp2) then begin
 				GikoSys.OpenBrowser(regURL, gbtUserApp);
 				Exit;
