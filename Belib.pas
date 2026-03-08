@@ -60,7 +60,8 @@ uses
 
 const
 	BELIB_LOGIN_UA      = 'BELIB/1.00';
-	BELIB_LOGIN_HOST    = 'be.5ch.net';
+//	BELIB_LOGIN_HOST    = 'be.5ch.net';
+	BELIB_LOGIN_HOST    = 'be.5ch.io';
 	BELIB_LOGIN_URL     = '/log';
 	BELIB_2CH_UA        = 'X-2ch-UA:';
 	BELIB_ENOMEM_STRING = 'ÉÅÉÇÉäÇ™ë´ÇËÇ‹ÇπÇÒÅB';

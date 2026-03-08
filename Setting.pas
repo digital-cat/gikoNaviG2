@@ -1073,14 +1073,17 @@ const
 	DEFAULT_WINDOW_COLOR:    string = 'clWindow';
 	DEFAULT_TAB_FONT_NAME:   string = 'ＭＳ Ｐゴシック';
 	DEFAULT_TAB_FONT_SIZE:  Integer = 9;
-	DEFAULT_2CH_BOARD_URL1:  string = 'https://menu.5ch.net/bbsmenu.json';
-	DEFAULT_2CH_BOARD_URL2:  string = 'https://menu.5ch.net/bbsmenu.html';
+//	DEFAULT_2CH_BOARD_URL1:  string = 'https://menu.5ch.net/bbsmenu.json';
+//	DEFAULT_2CH_BOARD_URL2:  string = 'https://menu.5ch.net/bbsmenu.html';
+	DEFAULT_2CH_BOARD_URL1:  string = 'https://menu.5ch.io/bbsmenu.json';
+	DEFAULT_2CH_BOARD_URL2:  string = 'https://menu.5ch.io/bbsmenu.html';
 	GIKO_ENCRYPT_TEXT:       string = 'gikoNaviEncryptText';
 
   // IPv6で接続しないドメイン
   DEFAULT_IPV4_DOMAIN: array [0..4] of string = (
   	'flounder.s27.xrea.com',	// 非公式ギコナビ板
-    'be.5ch.net',							// beログインホスト
+//    'be.5ch.net',							// beログインホスト
+    'be.5ch.io',							// beログインホスト
     'shitaraba.com',					// したらばJBBS
     'shitaraba.net',					// したらばJBBS
     'machi.to'                // まちBBS

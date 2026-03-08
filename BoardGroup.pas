@@ -294,11 +294,11 @@ type
 		function GetDatURL: string;
 		function GetDatgzURL: string;
 //		function GetOldDatgzURL: string;
-		function GetOfflawCgiURL(const SessionID: string): string;
+//		function GetOfflawCgiURL(const SessionID: string): string;
 //////////////// 2013/10/13 ShiroKuma対応 zako Start ///////////////////////////
-        function GetOfflaw2SoURL: string;
+//        function GetOfflaw2SoURL: string;
 //////////////// 2013/10/13 ShiroKuma対応 zako End /////////////////////////////
-        function GetRokkaURL(const SessionID: string): string;  // Rokka対応  
+//        function GetRokkaURL(const SessionID: string): string;  // Rokka対応  
 		function GetExternalBoardKakoDatURL: string; // 外部板過去ログURL取得
 		function GetSendURL: string;
 		procedure DeleteLogFile;
@@ -931,7 +931,8 @@ end;
 //*************************************************************************)
 function TCategory.FindBoardFromURL2(const inURL: string): TBoard;
 const
-	HOST_NAME: array[0..2] of string = ('.5ch.net', '.2ch.net', '.bbspink.com');
+//	HOST_NAME: array[0..2] of string = ('.5ch.net', '.2ch.net', '.bbspink.com');
+	HOST_NAME: array[0..3] of string = ('.5ch.io', '.5ch.net', '.2ch.net', '.bbspink.com');
 var
 	i	: Integer;
     idx: Integer;
@@ -1638,8 +1639,10 @@ end;
 //! ５ちゃん板のitest URL取得
 function TBoard.GetURLitest: String;
 const
-	DOMAIN_5CH: String = '.5ch.net';
-  HOST_ITEST: String = 'itest.5ch.net';
+//	DOMAIN_5CH: String = '.5ch.net';
+//  HOST_ITEST: String = 'itest.5ch.net';
+	DOMAIN_5CH: String = '.5ch.io';
+  HOST_ITEST: String = 'itest.5ch.io';
 var
   protocol, host, path, document, port, bookmark, board: String;
   splitter: TStringList;
@@ -1841,67 +1844,67 @@ begin
 	end;
 end;
 
-function TThreadItem.GetOfflawCgiURL(const SessionID: string): string;
-begin
-	if FDownloadHost = '' then begin
-		Result := GikoSys.UrlToServer(ParentBoard.URL)
-						+ 'test/offlaw.cgi/' + ParentBoard.BBSID + '/'
-						+ ChangeFileExt(FileName, '') + '/?raw=.0&sid=' + HttpEncode(SessionID);
-	end else begin
-		//http://news.2ch.net/test/offlaw.cgi/newsplus/1014038577/?raw=.196928&sid=
-		//GikoSys.ParseURI(Result, Protocol, Host, Path, Document, Port, Bookmark);
-		Result := 'http://' + FDownloadHost
-						+ '/test/offlaw.cgi/' + ParentBoard.BBSID + '/'
-						+ ChangeFileExt(FileName, '') + '/?raw=.0&sid=' + HttpEncode(SessionID);
-	end;
-end;
+//function TThreadItem.GetOfflawCgiURL(const SessionID: string): string;
+//begin
+//	if FDownloadHost = '' then begin
+//		Result := GikoSys.UrlToServer(ParentBoard.URL)
+//						+ 'test/offlaw.cgi/' + ParentBoard.BBSID + '/'
+//						+ ChangeFileExt(FileName, '') + '/?raw=.0&sid=' + HttpEncode(SessionID);
+//	end else begin
+//		//http://news.2ch.net/test/offlaw.cgi/newsplus/1014038577/?raw=.196928&sid=
+//		//GikoSys.ParseURI(Result, Protocol, Host, Path, Document, Port, Bookmark);
+//		Result := 'http://' + FDownloadHost
+//						+ '/test/offlaw.cgi/' + ParentBoard.BBSID + '/'
+//						+ ChangeFileExt(FileName, '') + '/?raw=.0&sid=' + HttpEncode(SessionID);
+//	end;
+//end;
+///
+//function TThreadItem.GetOfflaw2SoURL: string;
+//begin
+//    Result := GikoSys.UrlToServer(ParentBoard.URL)
+//                    + 'test/offlaw2.so?shiro=kuma&bbs=' + ParentBoard.BBSID
+//                    + '&key=' + ChangeFileExt(FileName, '');
+//end;
 
-function TThreadItem.GetOfflaw2SoURL: string;
-begin
-    Result := GikoSys.UrlToServer(ParentBoard.URL)
-                    + 'test/offlaw2.so?shiro=kuma&bbs=' + ParentBoard.BBSID
-                    + '&key=' + ChangeFileExt(FileName, '');
-end;
-
-function TThreadItem.GetRokkaURL(const SessionID: string): string;
-const
-	HOST_NAME: array[0..2] of string = ('5ch.net', '5ch.net', 'bbspink.com');
-	HOST_CHECK: array[0..2] of string = ('.5ch.net/', '.2ch.net/', '.bbspink.com/');
-var
-    Domain: string;
-    Host: string;
-    Idx: Integer;
-    HostPos: Integer;
-  	i	: Integer;
-begin
-	if FDownloadHost = '' then begin
-    for i := 0 to Length(HOST_NAME) - 1 do begin
-      Idx := AnsiPos(HOST_CHECK[i], ParentBoard.URL);
-      if (Idx > 0) then begin
-        Domain := HOST_NAME[i];
-        HostPos := AnsiPos('://', ParentBoard.URL) + 3;
-        Host := Copy(ParentBoard.URL, HostPos, Idx - HostPos);
-        Break;
-      end;
-    end;
-  end else begin
-    for i := 0 to Length(HOST_NAME) - 1 do begin
-      Idx := AnsiPos(HOST_CHECK[i], FDownloadHost);
-      if (Idx > 0) then begin
-        Domain := HOST_NAME[i];
-        Host := Copy(FDownloadHost, 1, Idx - 1);
-        Break;
-      end;
-    end;
-  end;
-
-  if ((Domain = '') or (Host = '')) then
-    Result := ''
-  else
-    Result := 'http://rokka.' + Domain + '/' + Host + '/'
-            + ParentBoard.BBSID + '/' + ChangeFileExt(FileName, '')
-            + '/?sid=' + SessionID;
-end;
+//function TThreadItem.GetRokkaURL(const SessionID: string): string;
+//const
+//	HOST_NAME: array[0..2] of string = ('5ch.net', '5ch.net', 'bbspink.com');
+//	HOST_CHECK: array[0..2] of string = ('.5ch.net/', '.2ch.net/', '.bbspink.com/');
+//var
+//    Domain: string;
+//    Host: string;
+//    Idx: Integer;
+//    HostPos: Integer;
+//  	i	: Integer;
+//begin
+//	if FDownloadHost = '' then begin
+//    for i := 0 to Length(HOST_NAME) - 1 do begin
+//      Idx := AnsiPos(HOST_CHECK[i], ParentBoard.URL);
+//      if (Idx > 0) then begin
+//        Domain := HOST_NAME[i];
+//        HostPos := AnsiPos('://', ParentBoard.URL) + 3;
+//        Host := Copy(ParentBoard.URL, HostPos, Idx - HostPos);
+//        Break;
+//      end;
+//    end;
+//  end else begin
+//    for i := 0 to Length(HOST_NAME) - 1 do begin
+//      Idx := AnsiPos(HOST_CHECK[i], FDownloadHost);
+//      if (Idx > 0) then begin
+//        Domain := HOST_NAME[i];
+//        Host := Copy(FDownloadHost, 1, Idx - 1);
+//        Break;
+//      end;
+//    end;
+//  end;
+///
+//  if ((Domain = '') or (Host = '')) then
+//    Result := ''
+//  else
+//    Result := 'http://rokka.' + Domain + '/' + Host + '/'
+//            + ParentBoard.BBSID + '/' + ChangeFileExt(FileName, '')
+//            + '/?sid=' + SessionID;
+//end;
 
 // 外部板過去ログURL取得
 function TThreadItem.GetExternalBoardKakoDatURL: string;
@@ -2065,8 +2068,10 @@ end;
 //! ５ちゃんスレのitest URL取得
 function TThreadItem.GetURLitest: String;
 const
-	DOMAIN_5CH: String = '.5ch.net';
-  HOST_ITEST: String = 'itest.5ch.net';
+//	DOMAIN_5CH: String = '.5ch.net';
+//  HOST_ITEST: String = 'itest.5ch.net';
+	DOMAIN_5CH: String = '.5ch.io';
+  HOST_ITEST: String = 'itest.5ch.io';
 var
   protocol, host, path, document, port, bookmark, server, board, threadid: String;
   splitter: TStringList;

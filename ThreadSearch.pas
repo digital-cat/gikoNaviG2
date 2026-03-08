@@ -150,7 +150,8 @@ begin
     ResultList.Clear;
     AddHistory;
 
-    URL := 'https://find.5ch.net/search?q=' + HttpEncode(UTF8Encode(CmbKW.Text));
+//    URL := 'https://find.5ch.net/search?q=' + HttpEncode(UTF8Encode(CmbKW.Text));
+    URL := 'https://find.5ch.io/search?q=' + HttpEncode(UTF8Encode(CmbKW.Text));
     if RadioGroupDomain.ItemIndex = 1 then
       URL := URL + '&domain=bbspink.com';
 

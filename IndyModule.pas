@@ -21,6 +21,7 @@ type
     function GetCookieFilePath: String;
     function GetCookieValueFromText(text, name: String): String;
     function DelCookieValueFromText(text, name: String): String;
+    procedure RepDomainInCookieText(var text: String);
     procedure AddServerCookie(const ACookie: String; AURL: TIdURI);
     procedure DelCookies(delFlgs: array of Boolean; chkUplift: Boolean = True);
     function GetCookieCount: Integer;
@@ -73,10 +74,14 @@ uses
   GikoSystem, DmSession5ch, GikoUtil, GikoDataModule;
 
 const
-	URL_5CH_ROOT   = 'https://5ch.net/';
-	URL_UPL_ROOT   = 'https://uplift.5ch.net/';
-	DOMAIN_5CH     = '5ch.net';
-	DOMAIN_UPLIFT  = 'uplift.5ch.net';
+//	URL_5CH_ROOT   = 'https://5ch.net/';
+//	URL_UPL_ROOT   = 'https://uplift.5ch.net/';
+//	DOMAIN_5CH     = '5ch.net';
+//	DOMAIN_UPLIFT  = 'uplift.5ch.net';
+	URL_5CH_ROOT   = 'https://5ch.io/';
+	URL_UPL_ROOT   = 'https://uplift.5ch.io/';
+	DOMAIN_5CH     = '5ch.io';
+	DOMAIN_UPLIFT  = 'uplift.5ch.io';
   COOKIE_DONGURI = 'acorn';
 	COOKIE_UPLIFT1 = 'sid';
 	COOKIE_UPLIFT2 = 'eid';
@@ -715,10 +720,11 @@ begin
 
     for i := 0 to src.Count - 1 do begin
       text := DelCookieValueFromText(src.Strings[i], 'Max-Age');
+      RepDomainInCookieText(text);
       uriDomain := GetCookieValueFromText(text, 'Domain');
-      uriPath := GetCookieValueFromText(text, 'Path');
       if uriDomain = '' then
         Continue;
+      uriPath := GetCookieValueFromText(text, 'Path');
       uri := TIdURI.Create('https://' + uriDomain + uriPath);
       try
         AddServerCookie(text, uri);
@@ -773,6 +779,21 @@ begin
     end;
   finally
     items.Free;
+  end;
+end;
+
+{ CookieText‚ÌƒhƒƒCƒ“‚ð’uŠ· }
+procedure TIndyMdl.RepDomainInCookieText(var text: String);
+const
+  DOMAIN_OLD: String = 'Domain=5ch.net;';
+  DOMAIN_NEW: String = 'Domain=5ch.io;';
+var
+  idx : Integer;
+begin
+  idx := Pos(DOMAIN_OLD, text);
+  if idx > 0 then begin
+    Delete(text, idx, Length(DOMAIN_OLD));
+    Insert(DOMAIN_NEW, text, idx);
   end;
 end;
 

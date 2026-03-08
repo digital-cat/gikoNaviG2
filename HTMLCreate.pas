@@ -348,8 +348,9 @@ end;
  *************************************************************************)
 procedure THTMLCreate.AddAnchorTag(PRes: PResRec);
 const
-    EMOTICONS: String = 'sssp://img.2ch.net/';
-    EMOTICONS5: String = 'sssp://img.5ch.net/';   // for 5ch
+//  EMOTICONS: String = 'sssp://img.2ch.net/';
+//  EMOTICONS5: String = 'sssp://img.5ch.net/';   // for 5ch
+  EMOTICONS5: String = 'sssp://img.5ch.io/';
 var
 	url: string;
 	href: string;
@@ -447,7 +448,8 @@ begin
             GikoSys.Regulate2chURL(href);      // for 5ch
 
             if (GikoSys.Setting.IconImageDisplay = True) and
-               ((AnsiPos(EMOTICONS, url) = 1) or (AnsiPos(EMOTICONS5, url) = 1)) and (IsImageExp(url) = True) then
+//               ((AnsiPos(EMOTICONS, url) = 1) or (AnsiPos(EMOTICONS5, url) = 1)) and (IsImageExp(url) = True) then
+               (AnsiPos(EMOTICONS5, url) = 1) and (IsImageExp(url) = True) then
                 PRes.FBody := Format('%s<img src="%s" title="%s">', [PRes.FBody, href, url])
             else
                 PRes.FBody

@@ -337,9 +337,11 @@ begin
               ///---
 
               if (SakuCheckBox.Checked = True) and (Title = '削除要請') then begin
-                  SakuIdx := Pos('.5ch.net/saku/', URL);
+//                  SakuIdx := Pos('.5ch.net/saku/', URL);
+                  SakuIdx := Pos('.5ch.io/saku/', URL);
                   if (SakuIdx > 0) then
-                      URL := Copy(URL, 1, SakuIdx - 1) + '.5ch.net/saku2ch/';
+//                      URL := Copy(URL, 1, SakuIdx - 1) + '.5ch.net/saku2ch/';
+                      URL := Copy(URL, 1, SakuIdx - 1) + '.5ch.io/saku2ch/';
               end;
 
               // カテゴリ\板名での除外リストチェック
@@ -515,9 +517,11 @@ begin
               Title := HtmlDecode(String(field.Value));
 
               if SakuCheckBox.Checked and (Title = '削除要請') then begin
-                SakuIdx := Pos('.5ch.net/saku/', URL);
+//                SakuIdx := Pos('.5ch.net/saku/', URL);
+                SakuIdx := Pos('.5ch.io/saku/', URL);
                 if (SakuIdx > 0) then
-                  URL := Copy(URL, 1, SakuIdx - 1) + '.5ch.net/saku2ch/';
+//                  URL := Copy(URL, 1, SakuIdx - 1) + '.5ch.net/saku2ch/';
+                  URL := Copy(URL, 1, SakuIdx - 1) + '.5ch.io/saku2ch/';
               end;
 
               // カテゴリ\板名での除外リストチェック

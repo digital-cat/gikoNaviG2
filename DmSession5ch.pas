@@ -52,15 +52,19 @@ uses
   GikoSystem, YofUtils, IndyModule;
 
 const
-  LOGIN_5CH_URL     = 'https://uplift.5ch.net/log';
-  LOGIN_5CH_URLV6   = 'https://[uplift.5ch.net]/log';
-  LOGIN_5CH_REFERER = 'https://uplift.5ch.net/login';
+//  LOGIN_5CH_URL     = 'https://uplift.5ch.net/log';
+//  LOGIN_5CH_URLV6   = 'https://[uplift.5ch.net]/log';
+//  LOGIN_5CH_REFERER = 'https://uplift.5ch.net/login';
+  LOGIN_5CH_URL     = 'https://uplift.5ch.io/log';
+  LOGIN_5CH_URLV6   = 'https://[uplift.5ch.io]/log';
+  LOGIN_5CH_REFERER = 'https://uplift.5ch.io/login';
   LOGIN_5GH_ACCEPT  = 'text/html,image/gif,image/jpeg,image/png,*/*';
   LOGIN_5CH_CNTTYPE = 'application/x-www-form-urlencoded';
   LOGIN_5CH_FORMFMT = 'usr=%s&pwd=%s&log=';
   LOGIN_5CH_SID     = 'sid';
   LOGIN_5CH_ERRMSG  = 'Error: UPLIFTÇ…ÉçÉOÉCÉìÇ≈Ç´Ç‹ÇπÇÒÇ≈ÇµÇΩÅB';
-  ROOT_5CH_URL			= 'https://5ch.net/';
+//  ROOT_5CH_URL			= 'https://5ch.net/';
+  ROOT_5CH_URL			= 'https://5ch.io/';
 
 
 

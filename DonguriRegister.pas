@@ -182,7 +182,8 @@ end;
 
 procedure TDonguriRegForm.ButtonOk3Click(Sender: TObject);
 const
-	URL_HEAD: String = 'https://donguri.5ch.net/code/';
+//	URL_HEAD: String = 'https://donguri.5ch.net/code/';
+	URL_HEAD: String = 'https://donguri.5ch.io/code/';
   RES_OK:   String = 'OK: Success';
 var
 	link: String;

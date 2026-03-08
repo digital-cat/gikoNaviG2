@@ -44,9 +44,11 @@ const
 	//! MonazillaサイトのURL
 	URL_MONAZILLA: string = 'www.monazilla.org/';   // このサイトは消滅
 	//! 2ちゃんねるのURL
-	URL_2ch: string = 'www.5ch.net/';
+//	URL_2ch: string = 'www.5ch.net/';
+	URL_2ch: string = 'www.5ch.io/';
 	//! itest形式5ちゃんねるのURL
-	URL_ITEST2CH: string = 'itest.5ch.net/';
+//	URL_ITEST2CH: string = 'itest.5ch.net/';
+	URL_ITEST2CH: string = 'itest.5ch.io/';
 	//! ギコナビWikiのURL
 	//URL_Wiki: string = 'sourceforge.jp/projects/gikonavi/wiki/FAQ';
 	URL_Wiki: string = 'ja.osdn.net/projects/gikonavi/wiki/FAQ';

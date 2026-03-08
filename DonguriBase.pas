@@ -588,20 +588,34 @@ const
   CAP_USING_TOP: String = 'レアリティ';
 
   LINK_INFO: array[0..13] of TLinkInfo = (
-    (Title: 'どんぐりシステムWEBサイト'; URL: 'https://donguri.5ch.net/';               Note: '※未登録警備員ではログインできません。'),
-    (Title: 'どんぐりアリーナ';          URL: 'https://donguri.5ch.net/arena';          Note: ''),
-    (Title: 'どんぐりチーム';            URL: 'https://donguri.5ch.net/team';           Note: ''),
-    (Title: 'どんぐりチームバトル';      URL: 'https://donguri.5ch.net/teambattle';     Note: ''),
-    (Title: 'どんぐりシステムFAQ';       URL: 'https://donguri.5ch.net/faq';            Note: ''),
-    (Title: 'どんぐり大砲API';           URL: 'https://donguri.5ch.net/api';            Note: ''),
-    (Title: 'どんぐりランキング';        URL: 'https://donguri.5ch.net/rank';           Note: ''),
-    (Title: 'どんぐり大砲ログ';          URL: 'https://donguri.5ch.net/cannonlogs';     Note: ''),
-    (Title: 'どんぐり大乱闘ログ';        URL: 'https://donguri.5ch.net/fightlogs';      Note: ''),
-    (Title: 'どんぐりアリーナログ';      URL: 'https://donguri.5ch.net/arenalogs';      Note: ''),
-    (Title: 'アイテムウォッチ';          URL: 'https://donguri.5ch.net/itemwatch';      Note: ''),
-    (Title: '荒らしアラート';            URL: 'https://donguri.5ch.net/alert';          Note: ''),
-    (Title: 'どんぐりショップ（鉄のキー購入）'; URL: 'https://donguri.5ch.net/keyshop'; Note: '※未登録警備員では利用できません。'),
-    (Title: 'UPLIFT';                    URL: 'https://uplift.5ch.net/';                Note: '')
+//    (Title: 'どんぐりシステムWEBサイト'; URL: 'https://donguri.5ch.net/';               Note: '※未登録警備員ではログインできません。'),
+//    (Title: 'どんぐりアリーナ';          URL: 'https://donguri.5ch.net/arena';          Note: ''),
+//    (Title: 'どんぐりチーム';            URL: 'https://donguri.5ch.net/team';           Note: ''),
+//    (Title: 'どんぐりチームバトル';      URL: 'https://donguri.5ch.net/teambattle';     Note: ''),
+//    (Title: 'どんぐりシステムFAQ';       URL: 'https://donguri.5ch.net/faq';            Note: ''),
+//    (Title: 'どんぐり大砲API';           URL: 'https://donguri.5ch.net/api';            Note: ''),
+//    (Title: 'どんぐりランキング';        URL: 'https://donguri.5ch.net/rank';           Note: ''),
+//    (Title: 'どんぐり大砲ログ';          URL: 'https://donguri.5ch.net/cannonlogs';     Note: ''),
+//    (Title: 'どんぐり大乱闘ログ';        URL: 'https://donguri.5ch.net/fightlogs';      Note: ''),
+//    (Title: 'どんぐりアリーナログ';      URL: 'https://donguri.5ch.net/arenalogs';      Note: ''),
+//    (Title: 'アイテムウォッチ';          URL: 'https://donguri.5ch.net/itemwatch';      Note: ''),
+//    (Title: '荒らしアラート';            URL: 'https://donguri.5ch.net/alert';          Note: ''),
+//    (Title: 'どんぐりショップ（鉄のキー購入）'; URL: 'https://donguri.5ch.net/keyshop'; Note: '※未登録警備員では利用できません。'),
+//    (Title: 'UPLIFT';                    URL: 'https://uplift.5ch.net/';                Note: '')
+    (Title: 'どんぐりシステムWEBサイト'; URL: 'https://donguri.5ch.io/';               Note: '※未登録警備員ではログインできません。'),
+    (Title: 'どんぐりアリーナ';          URL: 'https://donguri.5ch.io/arena';          Note: ''),
+    (Title: 'どんぐりチーム';            URL: 'https://donguri.5ch.io/team';           Note: ''),
+    (Title: 'どんぐりチームバトル';      URL: 'https://donguri.5ch.io/teambattle';     Note: ''),
+    (Title: 'どんぐりシステムFAQ';       URL: 'https://donguri.5ch.io/faq';            Note: ''),
+    (Title: 'どんぐり大砲API';           URL: 'https://donguri.5ch.io/api';            Note: ''),
+    (Title: 'どんぐりランキング';        URL: 'https://donguri.5ch.io/rank';           Note: ''),
+    (Title: 'どんぐり大砲ログ';          URL: 'https://donguri.5ch.io/cannonlogs';     Note: ''),
+    (Title: 'どんぐり大乱闘ログ';        URL: 'https://donguri.5ch.io/fightlogs';      Note: ''),
+    (Title: 'どんぐりアリーナログ';      URL: 'https://donguri.5ch.io/arenalogs';      Note: ''),
+    (Title: 'アイテムウォッチ';          URL: 'https://donguri.5ch.io/itemwatch';      Note: ''),
+    (Title: '荒らしアラート';            URL: 'https://donguri.5ch.io/alert';          Note: ''),
+    (Title: 'どんぐりショップ（鉄のキー購入）'; URL: 'https://donguri.5ch.io/keyshop'; Note: '※未登録警備員では利用できません。'),
+    (Title: 'UPLIFT';                    URL: 'https://uplift.5ch.io/';                Note: '')
   );
 
 {$R *.dfm}
@@ -3416,21 +3430,29 @@ const
   KW_MODC_E = '</span>';
   KW_DMDC_S = '<span id="armorDeModCount">';
   KW_DMDC_E = '</span>';
-  KW_FM_DFMN_S = '<form class="upgrade-option" action="https://donguri.5ch.net/modify/armor/deflow/';
+//  KW_FM_DFMN_S = '<form class="upgrade-option" action="https://donguri.5ch.net/modify/armor/deflow/';
+  KW_FM_DFMN_S = '<form class="upgrade-option" action="https://donguri.5ch.io/modify/armor/deflow/';
   KW_FM_DFMN_E = '</form>';
-  KW_FM_DFMX_S = '<form class="upgrade-option" action="https://donguri.5ch.net/modify/armor/defhigh/';
+//  KW_FM_DFMX_S = '<form class="upgrade-option" action="https://donguri.5ch.net/modify/armor/defhigh/';
+  KW_FM_DFMX_S = '<form class="upgrade-option" action="https://donguri.5ch.io/modify/armor/defhigh/';
   KW_FM_DFMX_E = '</form>';
-  KW_FM_WGHT_S = '<form class="upgrade-option" action="https://donguri.5ch.net/modify/armor/weight/';
+//  KW_FM_WGHT_S = '<form class="upgrade-option" action="https://donguri.5ch.net/modify/armor/weight/';
+  KW_FM_WGHT_S = '<form class="upgrade-option" action="https://donguri.5ch.io/modify/armor/weight/';
   KW_FM_WGHT_E = '</form>';
-  KW_FM_CRIT_S = '<form class="upgrade-option" action="https://donguri.5ch.net/modify/armor/critical/';
+//  KW_FM_CRIT_S = '<form class="upgrade-option" action="https://donguri.5ch.net/modify/armor/critical/';
+  KW_FM_CRIT_S = '<form class="upgrade-option" action="https://donguri.5ch.io/modify/armor/critical/';
   KW_FM_CRIT_E = '</form>';
-  KW_FM_DDMN_S = '<form class="upgrade-option" action="https://donguri.5ch.net/modify/armor/deflowdown/';
+//  KW_FM_DDMN_S = '<form class="upgrade-option" action="https://donguri.5ch.net/modify/armor/deflowdown/';
+  KW_FM_DDMN_S = '<form class="upgrade-option" action="https://donguri.5ch.io/modify/armor/deflowdown/';
   KW_FM_DDMN_E = '</form>';
-  KW_FM_DDMX_S = '<form class="upgrade-option " action="https://donguri.5ch.net/modify/armor/defhighdown/';
+//  KW_FM_DDMX_S = '<form class="upgrade-option " action="https://donguri.5ch.net/modify/armor/defhighdown/';
+  KW_FM_DDMX_S = '<form class="upgrade-option " action="https://donguri.5ch.io/modify/armor/defhighdown/';
   KW_FM_DDMX_E = '</form>';
-  KW_FM_DWWT_S = '<form class="upgrade-option " action="https://donguri.5ch.net/modify/armor/weightdown/';
+//  KW_FM_DWWT_S = '<form class="upgrade-option " action="https://donguri.5ch.net/modify/armor/weightdown/';
+  KW_FM_DWWT_S = '<form class="upgrade-option " action="https://donguri.5ch.io/modify/armor/weightdown/';
   KW_FM_DWWT_E = '</form>';
-  KW_FM_DCRT_S = '<form class="upgrade-option " action="https://donguri.5ch.net/modify/armor/criticaldown/';
+//  KW_FM_DCRT_S = '<form class="upgrade-option " action="https://donguri.5ch.net/modify/armor/criticaldown/';
+  KW_FM_DCRT_S = '<form class="upgrade-option " action="https://donguri.5ch.io/modify/armor/criticaldown/';
   KW_FM_DCRT_E = '</form>';
   KW_CURVAL_S  = '旧値:';
   KW_CURVAL_E  = '</span>';
@@ -3864,21 +3886,29 @@ const
   KW_MODC_E = '</span>';
   KW_DMDC_S = '<span id="weaponDeModCount">';
   KW_DMDC_E = '</span>';
-  KW_FM_DMMN_S = '<form class="upgrade-option" action="https://donguri.5ch.net/modify/weapon/dmglow/';
+//  KW_FM_DMMN_S = '<form class="upgrade-option" action="https://donguri.5ch.net/modify/weapon/dmglow/';
+  KW_FM_DMMN_S = '<form class="upgrade-option" action="https://donguri.5ch.io/modify/weapon/dmglow/';
   KW_FM_DMMN_E = '</form>';
-  KW_FM_DMMX_S = '<form class="upgrade-option" action="https://donguri.5ch.net/modify/weapon/dmghigh/';
+//  KW_FM_DMMX_S = '<form class="upgrade-option" action="https://donguri.5ch.net/modify/weapon/dmghigh/';
+  KW_FM_DMMX_S = '<form class="upgrade-option" action="https://donguri.5ch.io/modify/weapon/dmghigh/';
   KW_FM_DMMX_E = '</form>';
-  KW_FM_WSPD_S = '<form class="upgrade-option" action="https://donguri.5ch.net/modify/weapon/speed/';
+//  KW_FM_WSPD_S = '<form class="upgrade-option" action="https://donguri.5ch.net/modify/weapon/speed/';
+  KW_FM_WSPD_S = '<form class="upgrade-option" action="https://donguri.5ch.io/modify/weapon/speed/';
   KW_FM_WSPD_E = '</form>';
-  KW_FM_CRIT_S = '<form class="upgrade-option" action="https://donguri.5ch.net/modify/weapon/critical/';
+//  KW_FM_CRIT_S = '<form class="upgrade-option" action="https://donguri.5ch.net/modify/weapon/critical/';
+  KW_FM_CRIT_S = '<form class="upgrade-option" action="https://donguri.5ch.io/modify/weapon/critical/';
   KW_FM_CRIT_E = '</form>';
-  KW_FM_DDMN_S = '<form class="upgrade-option " action="https://donguri.5ch.net/modify/weapon/dmglowdown/';
+//  KW_FM_DDMN_S = '<form class="upgrade-option " action="https://donguri.5ch.net/modify/weapon/dmglowdown/';
+  KW_FM_DDMN_S = '<form class="upgrade-option " action="https://donguri.5ch.io/modify/weapon/dmglowdown/';
   KW_FM_DDMN_E = '</form>';
-  KW_FM_DDMX_S = '<form class="upgrade-option " action="https://donguri.5ch.net/modify/weapon/dmghighdown/';
+//  KW_FM_DDMX_S = '<form class="upgrade-option " action="https://donguri.5ch.net/modify/weapon/dmghighdown/';
+  KW_FM_DDMX_S = '<form class="upgrade-option " action="https://donguri.5ch.io/modify/weapon/dmghighdown/';
   KW_FM_DDMX_E = '</form>';
-  KW_FM_DWSP_S = '<form class="upgrade-option" action="https://donguri.5ch.net/modify/weapon/speeddown/';
+//  KW_FM_DWSP_S = '<form class="upgrade-option" action="https://donguri.5ch.net/modify/weapon/speeddown/';
+  KW_FM_DWSP_S = '<form class="upgrade-option" action="https://donguri.5ch.io/modify/weapon/speeddown/';
   KW_FM_DWSP_E = '</form>';
-  KW_FM_DCRT_S = '<form class="upgrade-option " action="https://donguri.5ch.net/modify/weapon/criticaldown/';
+//  KW_FM_DCRT_S = '<form class="upgrade-option " action="https://donguri.5ch.net/modify/weapon/criticaldown/';
+  KW_FM_DCRT_S = '<form class="upgrade-option " action="https://donguri.5ch.io/modify/weapon/criticaldown/';
   KW_FM_DCRT_E = '</form>';
   KW_CURVAL_S  = '旧値:';
   KW_CURVAL_E  = '</span>';

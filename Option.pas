@@ -335,7 +335,8 @@ const
 	DEFAULT_TABFONT_SIZE: Integer = 9;
 //	URL_TORA3: WideString = 'http://2ch.tora3.net/';
 //	URL_TORA3: WideString = 'https://ronin.bbspink.com/';
-	URL_TORA3: WideString = 'https://uplift.5ch.net/';
+//	URL_TORA3: WideString = 'https://uplift.5ch.net/';
+	URL_TORA3: WideString = 'https://uplift.5ch.io/';
 	DEFAULT_CSS_FILENAME = 'default.css';
 
 {$R *.DFM}

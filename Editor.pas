@@ -814,7 +814,8 @@ begin
     if FOekaki <> '' then begin
     	if Res.FBody <> '' then
 	    	Res.FBody := Res.FBody + #13#10;
-    	Res.FBody := Res.FBody + 'sssp://o.5ch.net/dummy.png';
+//    	Res.FBody := Res.FBody + 'sssp://o.5ch.net/dummy.png';
+    	Res.FBody := Res.FBody + 'sssp://o.5ch.io/dummy.png';
     end;
     Res.FBody := THTMLCreate.RepHtml(Res.FBody);
     Res.FBody := CustomStringReplace(Res.FBody, #13#10, '<br>', False);

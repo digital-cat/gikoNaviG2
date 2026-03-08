@@ -285,67 +285,129 @@ var
 	DonguriSys: TDonguriSys;
 
 const
-	URL_DNG_BASE    = 'https://donguri.5ch.net';
-	URL_DNG_ROOT    = 'https://donguri.5ch.net/';
-  URL_DNG_AUTH    = 'https://donguri.5ch.net/auth';
-  URL_DNG_LOGIN   = 'https://donguri.5ch.net/login';
-  URL_DNG_LOGOUT  = 'https://donguri.5ch.net/logout';
-  URL_DNG_REGIST  = 'https://donguri.5ch.net/register';
-  URL_DNG_SET_ALN = 'https://donguri.5ch.net/setting/autologin';
-  URL_DNG_SET_DST = 'https://donguri.5ch.net/setting/displaytype';	// 識別切り替え
+//	URL_DNG_BASE    = 'https://donguri.5ch.net';
+//	URL_DNG_ROOT    = 'https://donguri.5ch.net/';
+//  URL_DNG_AUTH    = 'https://donguri.5ch.net/auth';
+//  URL_DNG_LOGIN   = 'https://donguri.5ch.net/login';
+//  URL_DNG_LOGOUT  = 'https://donguri.5ch.net/logout';
+//  URL_DNG_REGIST  = 'https://donguri.5ch.net/register';
+//  URL_DNG_SET_ALN = 'https://donguri.5ch.net/setting/autologin';
+//  URL_DNG_SET_DST = 'https://donguri.5ch.net/setting/displaytype';	// 識別切り替え
+///
+//  URL_DNG_EXPLOR  = 'https://donguri.5ch.net/focus/exploration';    // 探検
+//  URL_DNG_MINING  = 'https://donguri.5ch.net/focus/mining';         // 採掘
+//  URL_DNG_WOODCT  = 'https://donguri.5ch.net/focus/woodcutting';    // 木こり
+//  URL_DNG_WEAPON  = 'https://donguri.5ch.net/focus/weaponcraft';    // 武器製作
+//  URL_DNG_ARMORC  = 'https://donguri.5ch.net/focus/armorcraft';     // 防具製作
+//  URL_DNG_RENAME  = 'https://donguri.5ch.net/rename';								// ハンター呼び名変更サービス
+//  URL_DNG_RESRRCT = 'https://donguri.5ch.net/resurrect';						// 復活サービス
+//  URL_DNG_TRNSFR  = 'https://donguri.5ch.net/transfer';							// ドングリ転送サービス
+//  URL_DNG_CRAFT   = 'https://donguri.5ch.net/craft';								// 工作センター
+//  URL_DNG_CRAFTCB = 'https://donguri.5ch.net/craft/cannonball';			// 工作センター鉄の大砲の玉作成
+//	URL_DNG_CRAFTKY = 'https://donguri.5ch.net/craft/key';						// 工作センター鉄のキー作成
+//  URL_DNG_CRAFTRP = 'https://donguri.5ch.net/craft/resource';				// 工作センター資源パック作成
+//  URL_DNG_BAG     = 'https://donguri.5ch.net/bag';									// アイテムバッグ
+//  URL_DNG_ADDSLOT = 'https://donguri.5ch.net/addslots';							// スロット追加
+//  URL_DNG_UNEQW   = 'https://donguri.5ch.net/unequip/weapon';				// 装備中の武器を外す
+//  URL_DNG_UNEQA   = 'https://donguri.5ch.net/unequip/armor';				// 装備中の防具を外す
+//  URL_DNG_UNEQN   = 'https://donguri.5ch.net/unequip/necklace';     // 装備中のネックレスを外す
+//  URL_DNG_CHEST   = 'https://donguri.5ch.net/chest';								// 宝箱
+//  URL_DNG_CHESTOP = 'https://donguri.5ch.net/open';									// 宝箱を開ける
+//  URL_DNG_RECYALL = 'https://donguri.5ch.net/recycleunlocked';			// ロックされていない武器防具を全て分解する
+//  URL_DNG_LOCK    = 'https://donguri.5ch.net/lock/';								// ロック
+//  URL_DNG_UNLOCK  = 'https://donguri.5ch.net/unlock/';							// アンロック
+//  URL_DNG_EQUIP   = 'https://donguri.5ch.net/equip/';								// 装備
+//  URL_DNG_RECYCLE = 'https://donguri.5ch.net/recycle/';							// 分解
+///
+//  URL_DNG_MDYW_VW = 'https://donguri.5ch.net/modify/weapon/view/';					// 武器改造 詳細表示
+//  URL_DNG_MDYW_DL = 'https://donguri.5ch.net/modify/weapon/dmglow/';				// 武器改造 ダメージ最小値
+//  URL_DNG_MDYW_DH = 'https://donguri.5ch.net/modify/weapon/dmghigh/';				// 武器改造 ダメージ最大値
+//  URL_DNG_MDYW_SP = 'https://donguri.5ch.net/modify/weapon/speed/';					// 武器改造 スピード
+//  URL_DNG_MDYW_CR = 'https://donguri.5ch.net/modify/weapon/critical/';			// 武器改造 クリティカル
+//  URL_DNG_DWNW_DL = 'https://donguri.5ch.net/modify/weapon/dmglowdown/';		// 武器改造 ダメージ最小値 低下
+//  URL_DNG_DWNW_DH = 'https://donguri.5ch.net/modify/weapon/dmghighdown/';		// 武器改造 ダメージ最大値 低下
+//  URL_DNG_DWNW_SP = 'https://donguri.5ch.net/modify/weapon/speeddown/';			// 武器改造 スピード       低下
+//  URL_DNG_DWNW_CR = 'https://donguri.5ch.net/modify/weapon/criticaldown/';	// 武器改造 クリティカル   低下
+///
+//  URL_DNG_MDYA_VW = 'https://donguri.5ch.net/modify/armor/view/';					// 防具改造 詳細表示
+//  URL_DNG_MDYA_DL = 'https://donguri.5ch.net/modify/armor/deflow/';				// 防具改造 防御最小値
+//  URL_DNG_MDYA_DH = 'https://donguri.5ch.net/modify/armor/defhigh/';			// 防具改造 防御最大値
+//  URL_DNG_MDYA_WT = 'https://donguri.5ch.net/modify/armor/weight/';				// 防具改造 重量
+//  URL_DNG_MDYA_CR = 'https://donguri.5ch.net/modify/armor/critical/';			// 防具改造 クリティカル
+//  URL_DNG_DWNA_DL = 'https://donguri.5ch.net/modify/armor/deflowdown/';		// 防具改造 防御最小値		低下
+//  URL_DNG_DWNA_DH = 'https://donguri.5ch.net/modify/armor/defhighdown/';	// 防具改造 防御最大値   低下
+//  URL_DNG_DWNA_WT = 'https://donguri.5ch.net/modify/armor/weightdown/';		// 防具改造 重量         低下
+//  URL_DNG_DWNA_CR = 'https://donguri.5ch.net/modify/armor/criticaldown/';	// 防具改造 クリティカル 低下
+///
+//  URL_DNG_BCHEST  = 'https://donguri.5ch.net/battlechest';          // バトル宝箱
+//  URL_DNG_BCHESTO = 'https://donguri.5ch.net/openbattlechest';      // バトル宝箱を開ける
+///
+//  URL_DNG_CANNON  = 'https://donguri.5ch.net/cannon';								// どんぐり大砲
+//  URL_DNG_CANNON2 = 'https://donguri.5ch.net/confirm';							// どんぐり大砲確認
+//  URL_DNG_CANNON3 = 'https://donguri.5ch.net/fire';									// どんぐり大砲発射
+//	URL_5CH_ROOT    = 'https://5ch.net/';
 
-  URL_DNG_EXPLOR  = 'https://donguri.5ch.net/focus/exploration';    // 探検
-  URL_DNG_MINING  = 'https://donguri.5ch.net/focus/mining';         // 採掘
-  URL_DNG_WOODCT  = 'https://donguri.5ch.net/focus/woodcutting';    // 木こり
-  URL_DNG_WEAPON  = 'https://donguri.5ch.net/focus/weaponcraft';    // 武器製作
-  URL_DNG_ARMORC  = 'https://donguri.5ch.net/focus/armorcraft';     // 防具製作
-  URL_DNG_RENAME  = 'https://donguri.5ch.net/rename';								// ハンター呼び名変更サービス
-  URL_DNG_RESRRCT = 'https://donguri.5ch.net/resurrect';						// 復活サービス
-  URL_DNG_TRNSFR  = 'https://donguri.5ch.net/transfer';							// ドングリ転送サービス
-  URL_DNG_CRAFT   = 'https://donguri.5ch.net/craft';								// 工作センター
-  URL_DNG_CRAFTCB = 'https://donguri.5ch.net/craft/cannonball';			// 工作センター鉄の大砲の玉作成
-	URL_DNG_CRAFTKY = 'https://donguri.5ch.net/craft/key';						// 工作センター鉄のキー作成
-  URL_DNG_CRAFTRP = 'https://donguri.5ch.net/craft/resource';				// 工作センター資源パック作成
-  URL_DNG_BAG     = 'https://donguri.5ch.net/bag';									// アイテムバッグ
-  URL_DNG_ADDSLOT = 'https://donguri.5ch.net/addslots';							// スロット追加
-  URL_DNG_UNEQW   = 'https://donguri.5ch.net/unequip/weapon';				// 装備中の武器を外す
-  URL_DNG_UNEQA   = 'https://donguri.5ch.net/unequip/armor';				// 装備中の防具を外す
-  URL_DNG_UNEQN   = 'https://donguri.5ch.net/unequip/necklace';     // 装備中のネックレスを外す
-  URL_DNG_CHEST   = 'https://donguri.5ch.net/chest';								// 宝箱
-  URL_DNG_CHESTOP = 'https://donguri.5ch.net/open';									// 宝箱を開ける
-  URL_DNG_RECYALL = 'https://donguri.5ch.net/recycleunlocked';			// ロックされていない武器防具を全て分解する
-  URL_DNG_LOCK    = 'https://donguri.5ch.net/lock/';								// ロック
-  URL_DNG_UNLOCK  = 'https://donguri.5ch.net/unlock/';							// アンロック
-  URL_DNG_EQUIP   = 'https://donguri.5ch.net/equip/';								// 装備
-  URL_DNG_RECYCLE = 'https://donguri.5ch.net/recycle/';							// 分解
+	URL_DNG_BASE    = 'https://donguri.5ch.io';
+	URL_DNG_ROOT    = 'https://donguri.5ch.io/';
+  URL_DNG_AUTH    = 'https://donguri.5ch.io/auth';
+  URL_DNG_LOGIN   = 'https://donguri.5ch.io/login';
+  URL_DNG_LOGOUT  = 'https://donguri.5ch.io/logout';
+  URL_DNG_REGIST  = 'https://donguri.5ch.io/register';
+  URL_DNG_SET_ALN = 'https://donguri.5ch.io/setting/autologin';
+  URL_DNG_SET_DST = 'https://donguri.5ch.io/setting/displaytype';	// 識別切り替え
 
-  URL_DNG_MDYW_VW = 'https://donguri.5ch.net/modify/weapon/view/';					// 武器改造 詳細表示
-  URL_DNG_MDYW_DL = 'https://donguri.5ch.net/modify/weapon/dmglow/';				// 武器改造 ダメージ最小値
-  URL_DNG_MDYW_DH = 'https://donguri.5ch.net/modify/weapon/dmghigh/';				// 武器改造 ダメージ最大値
-  URL_DNG_MDYW_SP = 'https://donguri.5ch.net/modify/weapon/speed/';					// 武器改造 スピード
-  URL_DNG_MDYW_CR = 'https://donguri.5ch.net/modify/weapon/critical/';			// 武器改造 クリティカル
-  URL_DNG_DWNW_DL = 'https://donguri.5ch.net/modify/weapon/dmglowdown/';		// 武器改造 ダメージ最小値 低下
-  URL_DNG_DWNW_DH = 'https://donguri.5ch.net/modify/weapon/dmghighdown/';		// 武器改造 ダメージ最大値 低下
-  URL_DNG_DWNW_SP = 'https://donguri.5ch.net/modify/weapon/speeddown/';			// 武器改造 スピード       低下
-  URL_DNG_DWNW_CR = 'https://donguri.5ch.net/modify/weapon/criticaldown/';	// 武器改造 クリティカル   低下
+  URL_DNG_EXPLOR  = 'https://donguri.5ch.io/focus/exploration';    // 探検
+  URL_DNG_MINING  = 'https://donguri.5ch.io/focus/mining';         // 採掘
+  URL_DNG_WOODCT  = 'https://donguri.5ch.io/focus/woodcutting';    // 木こり
+  URL_DNG_WEAPON  = 'https://donguri.5ch.io/focus/weaponcraft';    // 武器製作
+  URL_DNG_ARMORC  = 'https://donguri.5ch.io/focus/armorcraft';     // 防具製作
+  URL_DNG_RENAME  = 'https://donguri.5ch.io/rename';								// ハンター呼び名変更サービス
+  URL_DNG_RESRRCT = 'https://donguri.5ch.io/resurrect';						// 復活サービス
+  URL_DNG_TRNSFR  = 'https://donguri.5ch.io/transfer';							// ドングリ転送サービス
+  URL_DNG_CRAFT   = 'https://donguri.5ch.io/craft';								// 工作センター
+  URL_DNG_CRAFTCB = 'https://donguri.5ch.io/craft/cannonball';			// 工作センター鉄の大砲の玉作成
+	URL_DNG_CRAFTKY = 'https://donguri.5ch.io/craft/key';						// 工作センター鉄のキー作成
+  URL_DNG_CRAFTRP = 'https://donguri.5ch.io/craft/resource';				// 工作センター資源パック作成
+  URL_DNG_BAG     = 'https://donguri.5ch.io/bag';									// アイテムバッグ
+  URL_DNG_ADDSLOT = 'https://donguri.5ch.io/addslots';							// スロット追加
+  URL_DNG_UNEQW   = 'https://donguri.5ch.io/unequip/weapon';				// 装備中の武器を外す
+  URL_DNG_UNEQA   = 'https://donguri.5ch.io/unequip/armor';				// 装備中の防具を外す
+  URL_DNG_UNEQN   = 'https://donguri.5ch.io/unequip/necklace';     // 装備中のネックレスを外す
+  URL_DNG_CHEST   = 'https://donguri.5ch.io/chest';								// 宝箱
+  URL_DNG_CHESTOP = 'https://donguri.5ch.io/open';									// 宝箱を開ける
+  URL_DNG_RECYALL = 'https://donguri.5ch.io/recycleunlocked';			// ロックされていない武器防具を全て分解する
+  URL_DNG_LOCK    = 'https://donguri.5ch.io/lock/';								// ロック
+  URL_DNG_UNLOCK  = 'https://donguri.5ch.io/unlock/';							// アンロック
+  URL_DNG_EQUIP   = 'https://donguri.5ch.io/equip/';								// 装備
+  URL_DNG_RECYCLE = 'https://donguri.5ch.io/recycle/';							// 分解
 
-  URL_DNG_MDYA_VW = 'https://donguri.5ch.net/modify/armor/view/';					// 防具改造 詳細表示
-  URL_DNG_MDYA_DL = 'https://donguri.5ch.net/modify/armor/deflow/';				// 防具改造 防御最小値
-  URL_DNG_MDYA_DH = 'https://donguri.5ch.net/modify/armor/defhigh/';			// 防具改造 防御最大値
-  URL_DNG_MDYA_WT = 'https://donguri.5ch.net/modify/armor/weight/';				// 防具改造 重量
-  URL_DNG_MDYA_CR = 'https://donguri.5ch.net/modify/armor/critical/';			// 防具改造 クリティカル
-  URL_DNG_DWNA_DL = 'https://donguri.5ch.net/modify/armor/deflowdown/';		// 防具改造 防御最小値		低下
-  URL_DNG_DWNA_DH = 'https://donguri.5ch.net/modify/armor/defhighdown/';	// 防具改造 防御最大値   低下
-  URL_DNG_DWNA_WT = 'https://donguri.5ch.net/modify/armor/weightdown/';		// 防具改造 重量         低下
-  URL_DNG_DWNA_CR = 'https://donguri.5ch.net/modify/armor/criticaldown/';	// 防具改造 クリティカル 低下
+  URL_DNG_MDYW_VW = 'https://donguri.5ch.io/modify/weapon/view/';					// 武器改造 詳細表示
+  URL_DNG_MDYW_DL = 'https://donguri.5ch.io/modify/weapon/dmglow/';				// 武器改造 ダメージ最小値
+  URL_DNG_MDYW_DH = 'https://donguri.5ch.io/modify/weapon/dmghigh/';				// 武器改造 ダメージ最大値
+  URL_DNG_MDYW_SP = 'https://donguri.5ch.io/modify/weapon/speed/';					// 武器改造 スピード
+  URL_DNG_MDYW_CR = 'https://donguri.5ch.io/modify/weapon/critical/';			// 武器改造 クリティカル
+  URL_DNG_DWNW_DL = 'https://donguri.5ch.io/modify/weapon/dmglowdown/';		// 武器改造 ダメージ最小値 低下
+  URL_DNG_DWNW_DH = 'https://donguri.5ch.io/modify/weapon/dmghighdown/';		// 武器改造 ダメージ最大値 低下
+  URL_DNG_DWNW_SP = 'https://donguri.5ch.io/modify/weapon/speeddown/';			// 武器改造 スピード       低下
+  URL_DNG_DWNW_CR = 'https://donguri.5ch.io/modify/weapon/criticaldown/';	// 武器改造 クリティカル   低下
 
-  URL_DNG_BCHEST  = 'https://donguri.5ch.net/battlechest';          // バトル宝箱
-  URL_DNG_BCHESTO = 'https://donguri.5ch.net/openbattlechest';      // バトル宝箱を開ける
+  URL_DNG_MDYA_VW = 'https://donguri.5ch.io/modify/armor/view/';					// 防具改造 詳細表示
+  URL_DNG_MDYA_DL = 'https://donguri.5ch.io/modify/armor/deflow/';				// 防具改造 防御最小値
+  URL_DNG_MDYA_DH = 'https://donguri.5ch.io/modify/armor/defhigh/';			// 防具改造 防御最大値
+  URL_DNG_MDYA_WT = 'https://donguri.5ch.io/modify/armor/weight/';				// 防具改造 重量
+  URL_DNG_MDYA_CR = 'https://donguri.5ch.io/modify/armor/critical/';			// 防具改造 クリティカル
+  URL_DNG_DWNA_DL = 'https://donguri.5ch.io/modify/armor/deflowdown/';		// 防具改造 防御最小値		低下
+  URL_DNG_DWNA_DH = 'https://donguri.5ch.io/modify/armor/defhighdown/';	// 防具改造 防御最大値   低下
+  URL_DNG_DWNA_WT = 'https://donguri.5ch.io/modify/armor/weightdown/';		// 防具改造 重量         低下
+  URL_DNG_DWNA_CR = 'https://donguri.5ch.io/modify/armor/criticaldown/';	// 防具改造 クリティカル 低下
 
-  URL_DNG_CANNON  = 'https://donguri.5ch.net/cannon';								// どんぐり大砲
-  URL_DNG_CANNON2 = 'https://donguri.5ch.net/confirm';							// どんぐり大砲確認
-  URL_DNG_CANNON3 = 'https://donguri.5ch.net/fire';									// どんぐり大砲発射
-	URL_5CH_ROOT    = 'https://5ch.net/';
+  URL_DNG_BCHEST  = 'https://donguri.5ch.io/battlechest';          // バトル宝箱
+  URL_DNG_BCHESTO = 'https://donguri.5ch.io/openbattlechest';      // バトル宝箱を開ける
+
+  URL_DNG_CANNON  = 'https://donguri.5ch.io/cannon';								// どんぐり大砲
+  URL_DNG_CANNON2 = 'https://donguri.5ch.io/confirm';							// どんぐり大砲確認
+  URL_DNG_CANNON3 = 'https://donguri.5ch.io/fire';									// どんぐり大砲発射
+	URL_5CH_ROOT    = 'https://5ch.io/';
 
   // イメージインデックス
 
@@ -2369,10 +2431,12 @@ const
   TAG_PRG_S = '<div class="progress-bar">';
   TAG_PRG_E = '</div>';
   TAG_ALN_H = '<div>自動ログイン：ON<br>';
-  TAG_ALN_S = '<a href="https://donguri.5ch.net/setting/autologin">自動ログイン：';
+//  TAG_ALN_S = '<a href="https://donguri.5ch.net/setting/autologin">自動ログイン：';
+  TAG_ALN_S = '<a href="https://donguri.5ch.io/setting/autologin">自動ログイン：';
   TAG_ALN_E = '</a>';
   TAG_DST_G = '<div>ハンターとして識別する：OFF<br>';
-  TAG_DST_S = '<a href="https://donguri.5ch.net/setting/displaytype">ハンターとして識別する：';
+//  TAG_DST_S = '<a href="https://donguri.5ch.net/setting/displaytype">ハンターとして識別する：';
+  TAG_DST_S = '<a href="https://donguri.5ch.io/setting/displaytype">ハンターとして識別する：';
   TAG_DST_E = '</a>';
 
   COL_NAME_ACRN : String = '　どんぐり残高';
@@ -2570,8 +2634,10 @@ end;
 
 procedure TDonguriItem.SetModify(html: String; wpn: Boolean);
 const
-	HREF_WPN = 'href="https://donguri.5ch.net/modify/weapon/view/';
-  HREF_ARM = 'href="https://donguri.5ch.net/modify/armor/view/';
+//	HREF_WPN = 'href="https://donguri.5ch.net/modify/weapon/view/';
+//  HREF_ARM = 'href="https://donguri.5ch.net/modify/armor/view/';
+	HREF_WPN = 'href="https://donguri.5ch.io/modify/weapon/view/';
+  HREF_ARM = 'href="https://donguri.5ch.io/modify/armor/view/';
 var
   idx1: Integer;
   idx2: Integer;
@@ -2618,10 +2684,12 @@ begin
   Lock := (Pos('[解錠]', html) > 0);
   if ItemNo = '' then begin
     if Lock then begin
-      if Extract2('href="https://donguri.5ch.net/unlock/', '">', html, tmp) then
+//      if Extract2('href="https://donguri.5ch.net/unlock/', '">', html, tmp) then
+      if Extract2('href="https://donguri.5ch.io/unlock/', '">', html, tmp) then
         ItemNo := tmp;
     end else begin
-      if Extract2('href="https://donguri.5ch.net/lock/', '">', html, tmp) then
+//      if Extract2('href="https://donguri.5ch.net/lock/', '">', html, tmp) then
+      if Extract2('href="https://donguri.5ch.io/lock/', '">', html, tmp) then
         ItemNo := tmp;
     end;
   end;
@@ -2923,10 +2991,14 @@ end;
 
 procedure TDonguriNcklc.SetItems(html: String);
 const
-  URL_EQUIP = 'https://donguri.5ch.net/equip/';
-  URL_LOCK  = 'https://donguri.5ch.net/lock/';
-  URL_UNLCK = 'https://donguri.5ch.net/unlock/';
-  URL_RCYCL = 'https://donguri.5ch.net/recycle/';
+//  URL_EQUIP = 'https://donguri.5ch.net/equip/';
+//  URL_LOCK  = 'https://donguri.5ch.net/lock/';
+//  URL_UNLCK = 'https://donguri.5ch.net/unlock/';
+//  URL_RCYCL = 'https://donguri.5ch.net/recycle/';
+  URL_EQUIP = 'https://donguri.5ch.io/equip/';
+  URL_LOCK  = 'https://donguri.5ch.io/lock/';
+  URL_UNLCK = 'https://donguri.5ch.io/unlock/';
+  URL_RCYCL = 'https://donguri.5ch.io/recycle/';
   UNT_MARIMO = ' マ'; // マリモ単位
   UNT_MARIMO_LEN = 3; // マリモ単位の文字列長
 var
@@ -2968,7 +3040,8 @@ begin
     end;
 
     // 外すリンク（これがあるのは使用中欄）
-    if Pos('<a href="https://donguri.5ch.net/unequip/necklace">', tmp1) > 0 then begin
+//    if Pos('<a href="https://donguri.5ch.net/unequip/necklace">', tmp1) > 0 then begin
+    if Pos('<a href="https://donguri.5ch.io/unequip/necklace">', tmp1) > 0 then begin
       Used := True;
       Continue;
     end;
