@@ -96,7 +96,7 @@ const
 	MAJOR_VERSION			= 1;
 	MINOR_VERSION			= 1;
 	RELEASE_VERSION		= 'beta';
-	REVISION_VERSION	= 29;
+	REVISION_VERSION	= 30;
 
 	SYNCRONIZE_MENU_CAPTION	= 'まちBBS板更新';
 
@@ -264,6 +264,10 @@ begin
 
 end;
 
+function HttpStatus(code: Integer): Boolean;
+begin
+  Result := (code >= 200) and (code <= 299);
+end;
 
 
 // =========================================================================
@@ -612,7 +616,8 @@ var
 		responseCode := InternalDownload( PChar( datURL ), modified, tmp, 0 );
 
 		try
-			if responseCode = 200 then begin
+			//if responseCode = 200 then begin
+			if HttpStatus(responseCode) then begin
         // APIではdat形式で返ってくる
         content.Text := string( tmp );
         if (content.Count > 0) and (Pos(RES_ERROR, content.Strings[0]) <> 1) then
@@ -1295,7 +1300,6 @@ var
 	uriList				: TStringList;
   dlURL         : String;
 begin
-
 	Result := dsError;
 
 	if FDat <> nil then begin
@@ -1315,7 +1319,8 @@ begin
   dlURL         := SubjectURL2;
 	responseCode	:= InternalDownload( PChar( dlURL ), modified, downResult );
 	try
-		if responseCode = 200 then begin
+		//if responseCode = 200 then begin
+		if HttpStatus(responseCode) then begin
 			try
 				// パスを算出
 				ExtractHttpFields( ['/', '?'], [], uri.Path, uriList );
